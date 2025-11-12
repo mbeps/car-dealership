@@ -33,9 +33,16 @@ export function CarListings() {
   const bodyType = searchParams.get("bodyType") || "";
   const fuelType = searchParams.get("fuelType") || "";
   const transmission = searchParams.get("transmission") || "";
-  const minPrice = searchParams.get("minPrice") || 0;
-  const maxPrice = searchParams.get("maxPrice") || Number.MAX_SAFE_INTEGER;
-  const sortBy = searchParams.get("sortBy") || "newest";
+  const minPrice = searchParams.get("minPrice")
+    ? parseInt(searchParams.get("minPrice")!)
+    : 0;
+  const maxPrice = searchParams.get("maxPrice")
+    ? parseInt(searchParams.get("maxPrice")!)
+    : Number.MAX_SAFE_INTEGER;
+  const sortBy = (searchParams.get("sortBy") || "newest") as
+    | "newest"
+    | "priceAsc"
+    | "priceDesc";
   const page = parseInt(searchParams.get("page") || "1");
 
   // Use the useFetch hook
@@ -77,12 +84,12 @@ export function CarListings() {
   }, [currentPage, router, searchParams, page]);
 
   // Handle pagination clicks
-  const handlePageChange = (pageNum) => {
+  const handlePageChange = (pageNum: number) => {
     setCurrentPage(pageNum);
   };
 
   // Generate pagination URL
-  const getPaginationUrl = (pageNum) => {
+  const getPaginationUrl = (pageNum: number) => {
     const params = new URLSearchParams(searchParams);
     params.set("page", pageNum.toString());
     return `?${params.toString()}`;
@@ -133,10 +140,10 @@ export function CarListings() {
   }
 
   // Generate pagination items
-  const paginationItems = [];
+  const paginationItems: React.ReactElement[] = [];
 
   // Calculate which page numbers to show (first, last, and around current page)
-  const visiblePageNumbers = [];
+  const visiblePageNumbers: number[] = [];
 
   // Always show page 1
   visiblePageNumbers.push(1);

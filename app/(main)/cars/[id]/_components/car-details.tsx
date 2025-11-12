@@ -32,8 +32,23 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import EmiCalculator from "./emi-calculator";
+import {
+  SerializedCar,
+  UserTestDrive,
+  SerializedDealershipInfo,
+  SerializedWorkingHour,
+} from "@/types";
 
-export function CarDetails({ car, testDriveInfo }) {
+export function CarDetails({
+  car,
+  testDriveInfo,
+}: {
+  car: SerializedCar & { wishlisted: boolean };
+  testDriveInfo: {
+    userTestDrive: UserTestDrive | null;
+    dealership: SerializedDealershipInfo | null;
+  };
+}) {
   const router = useRouter();
   const { isSignedIn } = useAuth();
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -273,7 +288,7 @@ export function CarDetails({ car, testDriveInfo }) {
             <Button
               className="w-full py-6 text-lg"
               onClick={handleBookTestDrive}
-              disabled={testDriveInfo.userTestDrive}
+              disabled={!!testDriveInfo.userTestDrive}
             >
               <Calendar className="mr-2 h-5 w-5" />
               {testDriveInfo.userTestDrive
@@ -403,21 +418,27 @@ export function CarDetails({ car, testDriveInfo }) {
               <div className="space-y-2">
                 {testDriveInfo.dealership?.workingHours
                   ? testDriveInfo.dealership.workingHours
-                      .sort((a, b) => {
-                        const days = [
-                          "MONDAY",
-                          "TUESDAY",
-                          "WEDNESDAY",
-                          "THURSDAY",
-                          "FRIDAY",
-                          "SATURDAY",
-                          "SUNDAY",
-                        ];
-                        return (
-                          days.indexOf(a.dayOfWeek) - days.indexOf(b.dayOfWeek)
-                        );
-                      })
-                      .map((day) => (
+                      .sort(
+                        (
+                          a: SerializedWorkingHour,
+                          b: SerializedWorkingHour
+                        ) => {
+                          const days = [
+                            "MONDAY",
+                            "TUESDAY",
+                            "WEDNESDAY",
+                            "THURSDAY",
+                            "FRIDAY",
+                            "SATURDAY",
+                            "SUNDAY",
+                          ];
+                          return (
+                            days.indexOf(a.dayOfWeek) -
+                            days.indexOf(b.dayOfWeek)
+                          );
+                        }
+                      )
+                      .map((day: SerializedWorkingHour) => (
                         <div
                           key={day.dayOfWeek}
                           className="flex justify-between text-sm"

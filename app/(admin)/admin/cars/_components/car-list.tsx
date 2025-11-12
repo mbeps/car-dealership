@@ -46,6 +46,8 @@ import useFetch from "@/hooks/use-fetch";
 import { getCars, deleteCar, updateCarStatus } from "@/actions/cars";
 import { formatCurrency } from "@/lib/helpers";
 import Image from "next/image";
+import { SerializedCar } from "@/types";
+import { CarStatus } from "@prisma/client";
 
 export const CarsList = () => {
   const router = useRouter();
@@ -53,7 +55,7 @@ export const CarsList = () => {
   // State for search and dialogs
   const [search, setSearch] = useState("");
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const [carToDelete, setCarToDelete] = useState(null);
+  const [carToDelete, setCarToDelete] = useState<SerializedCar | null>(null);
 
   // Custom hooks for API calls
   const {
@@ -111,7 +113,7 @@ export const CarsList = () => {
   }, [deleteResult, updateResult, search]);
 
   // Handle search submit
-  const handleSearchSubmit = (e) => {
+  const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     fetchCars(search);
   };
@@ -126,17 +128,20 @@ export const CarsList = () => {
   };
 
   // Handle toggle featured status
-  const handleToggleFeatured = async (car) => {
+  const handleToggleFeatured = async (car: SerializedCar) => {
     await updateCarStatusFn(car.id, { featured: !car.featured });
   };
 
   // Handle status change
-  const handleStatusUpdate = async (car, newStatus) => {
+  const handleStatusUpdate = async (
+    car: SerializedCar,
+    newStatus: CarStatus
+  ) => {
     await updateCarStatusFn(car.id, { status: newStatus });
   };
 
   // Get status badge color
-  const getStatusBadge = (status) => {
+  const getStatusBadge = (status: string) => {
     switch (status) {
       case "AVAILABLE":
         return (
@@ -274,7 +279,7 @@ export const CarsList = () => {
                             <DropdownMenuLabel>Status</DropdownMenuLabel>
                             <DropdownMenuItem
                               onClick={() =>
-                                handleStatusUpdate(car, "AVAILABLE")
+                                handleStatusUpdate(car, CarStatus.AVAILABLE)
                               }
                               disabled={
                                 car.status === "AVAILABLE" || updatingCar
@@ -284,7 +289,7 @@ export const CarsList = () => {
                             </DropdownMenuItem>
                             <DropdownMenuItem
                               onClick={() =>
-                                handleStatusUpdate(car, "UNAVAILABLE")
+                                handleStatusUpdate(car, CarStatus.UNAVAILABLE)
                               }
                               disabled={
                                 car.status === "UNAVAILABLE" || updatingCar
@@ -293,7 +298,9 @@ export const CarsList = () => {
                               Set Unavailable
                             </DropdownMenuItem>
                             <DropdownMenuItem
-                              onClick={() => handleStatusUpdate(car, "SOLD")}
+                              onClick={() =>
+                                handleStatusUpdate(car, CarStatus.SOLD)
+                              }
                               disabled={car.status === "SOLD" || updatingCar}
                             >
                               Mark as Sold

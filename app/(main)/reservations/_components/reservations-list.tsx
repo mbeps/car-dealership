@@ -6,8 +6,13 @@ import { Calendar } from "lucide-react";
 import { TestDriveCard } from "@/components/test-drive-card";
 import useFetch from "@/hooks/use-fetch";
 import { cancelTestDrive } from "@/actions/test-drive";
+import { ActionResponse, TestDriveBookingWithCar } from "@/types";
 
-export function ReservationsList({ initialData }) {
+export function ReservationsList({
+  initialData,
+}: {
+  initialData: ActionResponse<TestDriveBookingWithCar[]>;
+}) {
   const {
     loading: cancelling,
     fn: cancelBookingFn,
@@ -15,21 +20,27 @@ export function ReservationsList({ initialData }) {
   } = useFetch(cancelTestDrive);
 
   // Handle cancellation
-  const handleCancelBooking = async (bookingId) => {
+  const handleCancelBooking = async (bookingId: string) => {
     await cancelBookingFn(bookingId);
   };
 
   // Group bookings by status
-  const upcomingBookings = initialData?.data?.filter((booking) =>
-    ["PENDING", "CONFIRMED"].includes(booking.status)
-  );
+  const upcomingBookings =
+    initialData && initialData.success
+      ? initialData.data.filter((booking: TestDriveBookingWithCar) =>
+          ["PENDING", "CONFIRMED"].includes(booking.status)
+        )
+      : [];
 
-  const pastBookings = initialData?.data?.filter((booking) =>
-    ["COMPLETED", "CANCELLED", "NO_SHOW"].includes(booking.status)
-  );
+  const pastBookings =
+    initialData && initialData.success
+      ? initialData.data.filter((booking: TestDriveBookingWithCar) =>
+          ["COMPLETED", "CANCELLED", "NO_SHOW"].includes(booking.status)
+        )
+      : [];
 
   // No reservations
-  if (initialData?.data?.length === 0) {
+  if (initialData && initialData.success && initialData.data.length === 0) {
     return (
       <div className="min-h-[400px] flex flex-col items-center justify-center text-center p-8 border rounded-lg bg-gray-50">
         <div className="bg-gray-100 p-4 rounded-full mb-4">
@@ -56,7 +67,7 @@ export function ReservationsList({ initialData }) {
           <p className="text-gray-500 italic">No upcoming test drives.</p>
         ) : (
           <div className="space-y-3">
-            {upcomingBookings.map((booking) => (
+            {upcomingBookings.map((booking: TestDriveBookingWithCar) => (
               <TestDriveCard
                 key={booking.id}
                 booking={booking}
@@ -74,7 +85,7 @@ export function ReservationsList({ initialData }) {
         <div>
           <h2 className="text-2xl font-bold mb-4">Past Test Drives</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {pastBookings.map((booking) => (
+            {pastBookings.map((booking: TestDriveBookingWithCar) => (
               <TestDriveCard
                 key={booking.id}
                 booking={booking}

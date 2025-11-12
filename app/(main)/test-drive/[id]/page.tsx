@@ -9,9 +9,13 @@ export async function generateMetadata() {
   };
 }
 
-export default async function TestDrivePage({ params }) {
+export default async function TestDrivePage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
   // Fetch car details
-  const { id } = params;
+  const { id } = await params;
   const result = await getCarById(id);
 
   // If car not found, show 404
@@ -24,7 +28,10 @@ export default async function TestDrivePage({ params }) {
       <h1 className="text-6xl mb-6 gradient-title">Book a Test Drive</h1>
       <TestDriveForm
         car={result.data}
-        testDriveInfo={result.data.testDriveInfo}
+        testDriveInfo={{
+          ...result.data.testDriveInfo,
+          existingBookings: [],
+        }}
       />
     </div>
   );

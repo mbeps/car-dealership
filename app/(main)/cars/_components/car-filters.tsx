@@ -21,8 +21,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { CarFiltersData } from "@/types";
 
-export const CarFilters = ({ filters }) => {
+export const CarFilters = ({ filters }: { filters: CarFiltersData }) => {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -33,10 +34,10 @@ export const CarFilters = ({ filters }) => {
   const currentFuelType = searchParams.get("fuelType") || "";
   const currentTransmission = searchParams.get("transmission") || "";
   const currentMinPrice = searchParams.get("minPrice")
-    ? parseInt(searchParams.get("minPrice"))
+    ? parseInt(searchParams.get("minPrice")!)
     : filters.priceRange.min;
   const currentMaxPrice = searchParams.get("maxPrice")
-    ? parseInt(searchParams.get("maxPrice"))
+    ? parseInt(searchParams.get("maxPrice")!)
     : filters.priceRange.max;
   const currentSortBy = searchParams.get("sortBy") || "newest";
 
@@ -119,28 +120,28 @@ export const CarFilters = ({ filters }) => {
   ]);
 
   // Handle filter changes
-  const handleFilterChange = (filterName, value) => {
+  const handleFilterChange = (filterName: string, value: string | number[]) => {
     switch (filterName) {
       case "make":
-        setMake(value);
+        setMake(value as string);
         break;
       case "bodyType":
-        setBodyType(value);
+        setBodyType(value as string);
         break;
       case "fuelType":
-        setFuelType(value);
+        setFuelType(value as string);
         break;
       case "transmission":
-        setTransmission(value);
+        setTransmission(value as string);
         break;
       case "priceRange":
-        setPriceRange(value);
+        setPriceRange(value as number[]);
         break;
     }
   };
 
   // Handle clearing specific filter
-  const handleClearFilter = (filterName) => {
+  const handleClearFilter = (filterName: string) => {
     handleFilterChange(filterName, "");
   };
 

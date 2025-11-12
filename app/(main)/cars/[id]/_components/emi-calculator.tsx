@@ -2,16 +2,25 @@
 
 import React, { useEffect, useState } from "react";
 
-function EmiCalculator({ price = 1000 }) {
+interface EMIResults {
+  emi: number;
+  totalAmount: number;
+  totalInterest: number;
+  loanPrincipal: number;
+  downPayment: number;
+  totalPayment: number;
+}
+
+function EmiCalculator({ price = 1000 }: { price?: number }) {
   const [loanAmount, setLoanAmount] = useState(price);
   const [downPayment, setDownPayment] = useState(0);
   const [downPaymentPercent, setDownPaymentPercent] = useState(0);
   const [interestRate, setInterestRate] = useState(5);
   const [loanTenure, setLoanTenure] = useState(1);
-  const [results, setResults] = useState(null);
+  const [results, setResults] = useState<EMIResults | null>(null);
   const [error, setError] = useState("");
 
-  const handleLoanAmountChange = (value) => {
+  const handleLoanAmountChange = (value: number) => {
     const newLoanAmount = Math.min(Math.max(value, 1000), 150000);
     setLoanAmount(newLoanAmount);
     const newDownPayment = (downPaymentPercent / 100) * newLoanAmount;
@@ -19,14 +28,14 @@ function EmiCalculator({ price = 1000 }) {
     calculateLoan(newLoanAmount, newDownPayment, interestRate, loanTenure);
   };
 
-  const handleDownPaymentChange = (value) => {
+  const handleDownPaymentChange = (value: number) => {
     const newDownPayment = Math.min(Math.max(value, 0), loanAmount);
     setDownPayment(newDownPayment);
     setDownPaymentPercent((newDownPayment / loanAmount) * 100);
     calculateLoan(loanAmount, newDownPayment, interestRate, loanTenure);
   };
 
-  const handleDownPaymentPercentChange = (percent) => {
+  const handleDownPaymentPercentChange = (percent: number) => {
     const newPercent = Math.min(Math.max(percent, 0), 100);
     setDownPaymentPercent(newPercent);
     const newDownPayment = (newPercent / 100) * loanAmount;
@@ -34,19 +43,24 @@ function EmiCalculator({ price = 1000 }) {
     calculateLoan(loanAmount, newDownPayment, interestRate, loanTenure);
   };
 
-  const handleInterestRateChange = (value) => {
+  const handleInterestRateChange = (value: number) => {
     const newRate = Math.min(Math.max(value, 0.1), 25);
     setInterestRate(newRate);
     calculateLoan(loanAmount, downPayment, newRate, loanTenure);
   };
 
-  const handleLoanTenureChange = (value) => {
+  const handleLoanTenureChange = (value: number) => {
     const newTenure = Math.min(Math.max(value, 1), 8);
     setLoanTenure(newTenure);
     calculateLoan(loanAmount, downPayment, interestRate, newTenure);
   };
 
-  const calculateLoan = (principal, down, rate, years) => {
+  const calculateLoan = (
+    principal: number,
+    down: number,
+    rate: number,
+    years: number
+  ) => {
     const loanPrincipal = principal - down;
     if (loanPrincipal <= 0) {
       setResults(null);
@@ -63,11 +77,12 @@ function EmiCalculator({ price = 1000 }) {
     const totalInterest = totalPayment - loanPrincipal;
 
     setResults({
-      emi: emi.toFixed(2),
-      totalInterest: totalInterest.toFixed(2),
-      totalPayment: totalPayment.toFixed(2),
-      loanPrincipal: loanPrincipal.toFixed(2),
-      downPayment: down.toFixed(2),
+      emi,
+      totalInterest,
+      totalPayment,
+      loanPrincipal,
+      downPayment: down,
+      totalAmount: totalPayment + down,
     });
   };
 
@@ -75,7 +90,7 @@ function EmiCalculator({ price = 1000 }) {
     calculateLoan(loanAmount, downPayment, interestRate, loanTenure);
   }, []);
 
-  const formatNumber = (num) => {
+  const formatNumber = (num: number) => {
     return new Intl.NumberFormat("en-US").format(num);
   };
 
@@ -278,11 +293,7 @@ function EmiCalculator({ price = 1000 }) {
                     Total Amount (Down Payment + Total Payments)
                   </div>
                   <div className="text-lg font-bold text-gray-900 dark:text-white mt-1">
-                    $
-                    {formatNumber(
-                      parseFloat(results.downPayment) +
-                        parseFloat(results.totalPayment)
-                    )}
+                    ${formatNumber(results.downPayment + results.totalPayment)}
                   </div>
                 </div>
               </div>

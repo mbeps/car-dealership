@@ -2,7 +2,11 @@ import { getCarById } from "@/actions/car-listing";
 import { CarDetails } from "./_components/car-details";
 import { notFound } from "next/navigation";
 
-export async function generateMetadata({ params }) {
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
   const { id } = await params;
   const result = await getCarById(id);
 
@@ -24,7 +28,11 @@ export async function generateMetadata({ params }) {
   };
 }
 
-export default async function CarDetailsPage({ params }) {
+export default async function CarDetailsPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
   // Fetch car details
   const { id } = await params;
   const result = await getCarById(id);
@@ -36,7 +44,13 @@ export default async function CarDetailsPage({ params }) {
 
   return (
     <div className="container mx-auto px-4 py-12">
-      <CarDetails car={result.data} testDriveInfo={result.data.testDriveInfo} />
+      <CarDetails
+        car={{
+          ...result.data,
+          wishlisted: result.data.wishlisted ?? false,
+        }}
+        testDriveInfo={result.data.testDriveInfo}
+      />
     </div>
   );
 }

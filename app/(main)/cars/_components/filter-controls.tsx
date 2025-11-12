@@ -3,12 +3,26 @@
 import { Check, X } from "lucide-react";
 import { Slider } from "@/components/ui/slider";
 import { Badge } from "@/components/ui/badge";
+import { CarFiltersData } from "@/types";
+
+interface CurrentFilters {
+  make: string;
+  bodyType: string;
+  fuelType: string;
+  transmission: string;
+  priceRange: number[];
+}
 
 export const CarFilterControls = ({
   filters,
   currentFilters,
   onFilterChange,
   onClearFilter,
+}: {
+  filters: CarFiltersData;
+  currentFilters: CurrentFilters;
+  onFilterChange: (filterName: string, value: string | number[]) => void;
+  onClearFilter: (filterName: string) => void;
 }) => {
   const { make, bodyType, fuelType, transmission, priceRange } = currentFilters;
 
@@ -18,21 +32,21 @@ export const CarFilterControls = ({
       title: "Make",
       options: filters.makes.map((make) => ({ value: make, label: make })),
       currentValue: make,
-      onChange: (value) => onFilterChange("make", value),
+      onChange: (value: string) => onFilterChange("make", value),
     },
     {
       id: "bodyType",
       title: "Body Type",
       options: filters.bodyTypes.map((type) => ({ value: type, label: type })),
       currentValue: bodyType,
-      onChange: (value) => onFilterChange("bodyType", value),
+      onChange: (value: string) => onFilterChange("bodyType", value),
     },
     {
       id: "fuelType",
       title: "Fuel Type",
       options: filters.fuelTypes.map((type) => ({ value: type, label: type })),
       currentValue: fuelType,
-      onChange: (value) => onFilterChange("fuelType", value),
+      onChange: (value: string) => onFilterChange("fuelType", value),
     },
     {
       id: "transmission",
@@ -42,7 +56,7 @@ export const CarFilterControls = ({
         label: type,
       })),
       currentValue: transmission,
-      onChange: (value) => onFilterChange("transmission", value),
+      onChange: (value: string) => onFilterChange("transmission", value),
     },
   ];
 

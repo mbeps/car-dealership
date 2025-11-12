@@ -1,22 +1,22 @@
 import { useState } from "react";
 import { toast } from "sonner";
 
-type UseFetchResult<T> = {
+type UseFetchResult<T, Args extends unknown[]> = {
   data: T | undefined;
   loading: boolean;
   error: Error | null;
-  fn: (...args: unknown[]) => Promise<void>;
+  fn: (...args: Args) => Promise<void>;
   setData: React.Dispatch<React.SetStateAction<T | undefined>>;
 };
 
-const useFetch = <T>(
-  cb: (...args: unknown[]) => Promise<T>
-): UseFetchResult<T> => {
+const useFetch = <T, Args extends unknown[] = []>(
+  cb: (...args: Args) => Promise<T>
+): UseFetchResult<T, Args> => {
   const [data, setData] = useState<T | undefined>(undefined);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<Error | null>(null);
 
-  const fn = async (...args: unknown[]) => {
+  const fn = async (...args: Args) => {
     setLoading(true);
     setError(null);
 

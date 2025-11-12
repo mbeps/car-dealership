@@ -49,6 +49,7 @@ import {
   getUsers,
   updateUserRole,
 } from "@/actions/settings";
+import { SerializedUser, WorkingHourInput } from "@/types";
 
 // Day names for display
 const DAYS = [
@@ -59,10 +60,10 @@ const DAYS = [
   { value: "FRIDAY", label: "Friday" },
   { value: "SATURDAY", label: "Saturday" },
   { value: "SUNDAY", label: "Sunday" },
-];
+] as const;
 
 export const SettingsForm = () => {
-  const [workingHours, setWorkingHours] = useState(
+  const [workingHours, setWorkingHours] = useState<WorkingHourInput[]>(
     DAYS.map((day) => ({
       dayOfWeek: day.value,
       openTime: "09:00",
@@ -73,9 +74,11 @@ export const SettingsForm = () => {
 
   const [userSearch, setUserSearch] = useState("");
   const [confirmAdminDialog, setConfirmAdminDialog] = useState(false);
-  const [userToPromote, setUserToPromote] = useState(null);
+  const [userToPromote, setUserToPromote] = useState<SerializedUser | null>(
+    null
+  );
   const [confirmRemoveDialog, setConfirmRemoveDialog] = useState(false);
-  const [userToDemote, setUserToDemote] = useState(null);
+  const [userToDemote, setUserToDemote] = useState<SerializedUser | null>(null);
 
   // Custom hooks for API calls
   const {
@@ -183,7 +186,11 @@ export const SettingsForm = () => {
   }, [saveResult, updateRoleResult]);
 
   // Handle working hours change
-  const handleWorkingHourChange = (index, field, value) => {
+  const handleWorkingHourChange = (
+    index: number,
+    field: keyof WorkingHourInput,
+    value: string | boolean
+  ) => {
     const updatedHours = [...workingHours];
     updatedHours[index] = {
       ...updatedHours[index],

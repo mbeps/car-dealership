@@ -15,8 +15,13 @@ import {
   Star,
   DollarSign,
 } from "lucide-react";
+import { ActionResponse, DashboardData } from "@/types";
 
-export function Dashboard({ initialData }) {
+export function Dashboard({
+  initialData,
+}: {
+  initialData: ActionResponse<DashboardData>;
+}) {
   const [activeTab, setActiveTab] = useState("overview");
 
   // Show error if data fetch failed

@@ -19,6 +19,7 @@ import {
   CardTitle,
   CardDescription,
 } from "@/components/ui/card";
+import { BookingStatus } from "@prisma/client";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { TestDriveCard } from "@/components/test-drive-card";
 import useFetch from "@/hooks/use-fetch";
@@ -87,21 +88,24 @@ export const TestDrivesList = () => {
   }, [updateResult, cancelResult]);
 
   // Handle search submit
-  const handleSearchSubmit = (e) => {
+  const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const actualStatus = statusFilter === "all" ? "" : statusFilter;
     fetchTestDrives({ search, status: actualStatus });
   };
 
   // Handle status update
-  const handleUpdateStatus = async (bookingId, newStatus) => {
+  const handleUpdateStatus = async (
+    bookingId: string,
+    newStatus: BookingStatus
+  ) => {
     if (newStatus) {
       await updateStatusFn(bookingId, newStatus);
     }
   };
 
   // Handle booking cancellation
-  const handleCancel = async (bookingId) => {
+  const handleCancel = async (bookingId: string) => {
     await cancelTestDriveFn(bookingId);
   };
 
@@ -198,7 +202,10 @@ export const TestDrivesList = () => {
                         <Select
                           value={booking.status}
                           onValueChange={(value) =>
-                            handleUpdateStatus(booking.id, value)
+                            handleUpdateStatus(
+                              booking.id,
+                              value as BookingStatus
+                            )
                           }
                           disabled={updatingStatus}
                         >

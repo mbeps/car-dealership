@@ -67,9 +67,11 @@ const carFormSchema = z.object({
   // Images are handled separately
 });
 
+type CarFormData = z.infer<typeof carFormSchema>;
+
 export const AddCarForm = () => {
   const router = useRouter();
-  const [uploadedImages, setUploadedImages] = useState([]);
+  const [uploadedImages, setUploadedImages] = useState<string[]>([]);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [imageError, setImageError] = useState("");
 
@@ -116,7 +118,7 @@ export const AddCarForm = () => {
   }, [addCarResult, router]);
 
   // Handle multiple image uploads with Dropzone
-  const onMultiImagesDrop = useCallback((acceptedFiles) => {
+  const onMultiImagesDrop = useCallback((acceptedFiles: File[]) => {
     const validFiles = acceptedFiles.filter((file) => {
       if (file.size > 5 * 1024 * 1024) {
         toast.error(`${file.name} exceeds 5MB limit and will be skipped`);
@@ -137,11 +139,14 @@ export const AddCarForm = () => {
         clearInterval(interval);
 
         // Process the images
-        const newImages = [];
+        const newImages: string[] = [];
         validFiles.forEach((file) => {
           const reader = new FileReader();
           reader.onload = (e) => {
-            newImages.push(e.target.result);
+            const result = e.target?.result;
+            if (typeof result === "string") {
+              newImages.push(result);
+            }
 
             // When all images are processed
             if (newImages.length === validFiles.length) {
@@ -171,11 +176,11 @@ export const AddCarForm = () => {
   });
 
   // Remove image from upload preview
-  const removeImage = (index) => {
+  const removeImage = (index: number) => {
     setUploadedImages((prev) => prev.filter((_, i) => i !== index));
   };
 
-  const onSubmit = async (data) => {
+  const onSubmit = async (data: CarFormData) => {
     // Check if images are uploaded
     if (uploadedImages.length === 0) {
       setImageError("Please upload at least one image");
@@ -188,7 +193,7 @@ export const AddCarForm = () => {
       year: parseInt(data.year),
       price: parseFloat(data.price),
       mileage: parseInt(data.mileage),
-      seats: data.seats ? parseInt(data.seats) : null,
+      seats: data.seats ? parseInt(data.seats) : undefined,
     };
 
     // Call the addCar function with our useFetch hook

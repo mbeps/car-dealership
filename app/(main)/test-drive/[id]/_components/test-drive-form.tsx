@@ -39,6 +39,11 @@ import { cn } from "@/lib/utils";
 import { bookTestDrive } from "@/actions/test-drive";
 import { toast } from "sonner";
 import useFetch from "@/hooks/use-fetch";
+import {
+  SerializedCar,
+  SerializedDealershipInfo,
+  UserTestDrive,
+} from "@/types";
 
 // Define Zod schema for form validation
 const testDriveSchema = z.object({
@@ -51,11 +56,45 @@ const testDriveSchema = z.object({
   notes: z.string().optional(),
 });
 
-export function TestDriveForm({ car, testDriveInfo }) {
+type TestDriveFormData = z.infer<typeof testDriveSchema>;
+
+interface BookingDetails {
+  carId: string;
+  date: string;
+  timeSlot: string;
+  notes?: string;
+}
+
+interface ExistingBooking {
+  date: string;
+  startTime: string;
+  endTime: string;
+}
+
+interface TimeSlot {
+  id: string;
+  label: string;
+  startTime: string;
+  endTime: string;
+}
+
+export function TestDriveForm({
+  car,
+  testDriveInfo,
+}: {
+  car: SerializedCar;
+  testDriveInfo: {
+    userTestDrive: UserTestDrive | null;
+    dealership: SerializedDealershipInfo | null;
+    existingBookings: ExistingBooking[];
+  };
+}) {
   const router = useRouter();
-  const [availableTimeSlots, setAvailableTimeSlots] = useState([]);
+  const [availableTimeSlots, setAvailableTimeSlots] = useState<TimeSlot[]>([]);
   const [showConfirmation, setShowConfirmation] = useState(false);
-  const [bookingDetails, setBookingDetails] = useState(null);
+  const [bookingDetails, setBookingDetails] = useState<BookingDetails | null>(
+    null
+  );
 
   // Initialize react-hook-form with zod resolver
   const {
@@ -93,6 +132,7 @@ export function TestDriveForm({ car, testDriveInfo }) {
   useEffect(() => {
     if (bookingResult?.success) {
       setBookingDetails({
+        carId: car.id,
         date: format(bookingResult?.data?.bookingDate, "EEEE, MMMM d, yyyy"),
         timeSlot: `${format(
           parseISO(`2022-01-01T${bookingResult?.data?.startTime}`),
@@ -101,14 +141,14 @@ export function TestDriveForm({ car, testDriveInfo }) {
           parseISO(`2022-01-01T${bookingResult?.data?.endTime}`),
           "h:mm a"
         )}`,
-        notes: bookingResult?.data?.notes,
+        notes: bookingResult?.data?.notes ?? undefined,
       });
       setShowConfirmation(true);
 
       // Reset form
       reset();
     }
-  }, [bookingResult, reset]);
+  }, [bookingResult, reset, car.id]);
 
   // Handle booking error
   useEffect(() => {
@@ -171,7 +211,7 @@ export function TestDriveForm({ car, testDriveInfo }) {
   }, [selectedDate]);
 
   // Create a function to determine which days should be disabled
-  const isDayDisabled = (day) => {
+  const isDayDisabled = (day: Date) => {
     // Disable past dates
     if (day < new Date()) {
       return true;
@@ -190,7 +230,7 @@ export function TestDriveForm({ car, testDriveInfo }) {
   };
 
   // Submit handler
-  const onSubmit = async (data) => {
+  const onSubmit = async (data: TestDriveFormData) => {
     const selectedSlot = availableTimeSlots.find(
       (slot) => slot.id === data.timeSlot
     );
