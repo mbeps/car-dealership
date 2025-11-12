@@ -6,10 +6,15 @@ import { auth } from "@clerk/nextjs/server";
 import {
   ActionResponse,
   SerializedDealershipInfo,
-  SerializedUser,
   WorkingHourInput,
+  User,
 } from "@/types";
 import { DealershipInfo, UserRole } from "@prisma/client";
+
+type SerializedUser = Omit<User, "createdAt" | "updatedAt"> & {
+  createdAt: string;
+  updatedAt: string;
+};
 
 // Get dealership info with working hours
 export async function getDealershipInfo(): Promise<

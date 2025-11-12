@@ -49,7 +49,12 @@ import {
   getUsers,
   updateUserRole,
 } from "@/actions/settings";
-import { SerializedUser, WorkingHourInput } from "@/types";
+import { WorkingHourInput, User } from "@/types";
+
+type SerializedUser = Omit<User, "createdAt" | "updatedAt"> & {
+  createdAt: string;
+  updatedAt: string;
+};
 
 // Day names for display
 const DAYS = [

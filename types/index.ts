@@ -9,72 +9,42 @@ import {
   UserRole,
 } from "@prisma/client";
 
-// Car related types
-export interface SerializedCar
-  extends Omit<Car, "price" | "createdAt" | "updatedAt"> {
-  price: number;
-  createdAt: string;
-  updatedAt: string;
-  wishlisted?: boolean;
-}
+// Utility types
+type DateToString<T> = {
+  [K in keyof T]: T[K] extends Date ? string : T[K];
+};
 
-export interface CarWithWishlist extends Car {
-  wishlisted: boolean;
-}
+type UserSelection = Pick<User, "id" | "name" | "email" | "imageUrl" | "phone">;
+
+// Car related types
+export type SerializedCar = DateToString<
+  Omit<Car, "price"> & { price: number }
+> & {
+  wishlisted?: boolean;
+};
 
 // Test drive related types
-export interface TestDriveBookingWithCar
-  extends Omit<TestDriveBooking, "bookingDate" | "createdAt" | "updatedAt"> {
-  car: SerializedCar;
-  bookingDate: string;
-  createdAt: string;
-  updatedAt: string;
-}
+type SerializedTestDriveBooking = DateToString<TestDriveBooking>;
 
-export interface TestDriveBookingWithUser
-  extends Omit<TestDriveBooking, "bookingDate" | "createdAt" | "updatedAt"> {
+export type TestDriveBookingWithCar = SerializedTestDriveBooking & {
   car: SerializedCar;
-  user: {
-    id: string;
-    name: string | null;
-    email: string;
-    imageUrl: string | null;
-    phone: string | null;
-  };
-  bookingDate: string;
-  createdAt: string;
-  updatedAt: string;
-}
+};
 
-export interface UserTestDrive {
-  id: string;
-  status: BookingStatus;
-  bookingDate: string;
-}
+export type TestDriveBookingWithUser = TestDriveBookingWithCar & {
+  user: UserSelection;
+};
+
+export type UserTestDrive = Pick<
+  SerializedTestDriveBooking,
+  "id" | "status" | "bookingDate"
+>;
 
 // Dealership related types
-export interface SerializedWorkingHour
-  extends Omit<WorkingHour, "createdAt" | "updatedAt"> {
-  createdAt: string;
-  updatedAt: string;
-}
+export type SerializedWorkingHour = DateToString<WorkingHour>;
 
-export interface SerializedDealershipInfo
-  extends Omit<DealershipInfo, "createdAt" | "updatedAt"> {
-  createdAt: string;
-  updatedAt: string;
+export type SerializedDealershipInfo = DateToString<DealershipInfo> & {
   workingHours: SerializedWorkingHour[];
-}
-
-export interface DealershipInfoWithHours extends DealershipInfo {
-  workingHours: WorkingHour[];
-}
-
-// User related types
-export interface SerializedUser extends Omit<User, "createdAt" | "updatedAt"> {
-  createdAt: string;
-  updatedAt: string;
-}
+};
 
 // Filter types
 export interface CarFilters {
@@ -91,17 +61,9 @@ export interface CarFilters {
 }
 
 // Response types
-export interface SuccessResponse<T> {
-  success: true;
-  data: T;
-}
-
-export interface ErrorResponse {
-  success: false;
-  error: string;
-}
-
-export type ActionResponse<T> = SuccessResponse<T> | ErrorResponse;
+export type ActionResponse<T> =
+  | { success: true; data: T }
+  | { success: false; error: string };
 
 export interface PaginationInfo {
   total: number;
@@ -142,11 +104,9 @@ export interface DashboardData {
 }
 
 // Admin types
-export interface AdminAuthResult {
-  authorized: boolean;
-  user?: User;
-  reason?: string;
-}
+export type AdminAuthResult =
+  | { authorized: true; user: User }
+  | { authorized: false; reason?: string };
 
 // Test drive form data
 export interface TestDriveFormData {
@@ -157,23 +117,6 @@ export interface TestDriveFormData {
   notes?: string;
 }
 
-// Car form data
-export interface CarFormData {
-  make: string;
-  model: string;
-  year: number;
-  price: number;
-  mileage: number;
-  color: string;
-  fuelType: string;
-  transmission: string;
-  bodyType: string;
-  seats?: number;
-  description: string;
-  status: string;
-  featured: boolean;
-}
-
 // Working hour input
 export interface WorkingHourInput {
   dayOfWeek: DayOfWeek;
@@ -181,3 +124,6 @@ export interface WorkingHourInput {
   closeTime: string;
   isOpen: boolean;
 }
+
+// Re-export for convenience
+export type { User, BookingStatus, DayOfWeek, UserRole };

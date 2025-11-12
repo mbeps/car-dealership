@@ -6,8 +6,25 @@ import { db } from "@/lib/prisma";
 import { createAdminClient } from "@/lib/supabase";
 import { auth } from "@clerk/nextjs/server";
 import { serializeCarData } from "@/lib/helpers";
-import { ActionResponse, SerializedCar, CarFormData } from "@/types";
+import { ActionResponse, SerializedCar } from "@/types";
 import { CarStatus } from "@prisma/client";
+
+// Car form data type
+interface CarFormData {
+  make: string;
+  model: string;
+  year: number;
+  price: number;
+  mileage: number;
+  color: string;
+  fuelType: string;
+  transmission: string;
+  bodyType: string;
+  seats?: number;
+  description: string;
+  status: string;
+  featured: boolean;
+}
 
 // Add a car to the database with images
 export async function addCar({
