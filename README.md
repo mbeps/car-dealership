@@ -1,4 +1,4 @@
-# Full Stack AI Car Marketplace with Next JS, Supabase, Tailwind, Prisma, ArcJet, Shadcn UI Tutorial 🔥🔥
+# Full Stack Car Marketplace with Next JS, Supabase, Tailwind, Prisma, ArcJet, Shadcn UI Tutorial 🔥🔥
 ## https://youtu.be/HyGi_SjQqV4
 
 
@@ -17,8 +17,6 @@ NEXT_PUBLIC_CLERK_SIGN_IN_URL=/sign-in
 NEXT_PUBLIC_CLERK_SIGN_UP_URL=/sign-up
 NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL=/onboarding
 NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL=/onboarding
-
-GEMINI_API_KEY=
 
 ARCJET_KEY=
 ```
