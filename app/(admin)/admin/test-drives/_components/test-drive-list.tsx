@@ -19,7 +19,7 @@ import {
   CardTitle,
   CardDescription,
 } from "@/components/ui/card";
-import { BookingStatus } from "@prisma/client";
+import { BookingStatusEnum as BookingStatus } from "@/types";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { TestDriveCard } from "@/components/test-drive-card";
 import useFetch from "@/hooks/use-fetch";

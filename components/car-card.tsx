@@ -9,7 +9,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { toggleSavedCar } from "@/actions/car-listing";
-import { useAuth } from "@clerk/nextjs";
+import { useAuth } from "@/lib/auth-context";
 import { useRouter } from "next/navigation";
 import useFetch from "@/hooks/use-fetch";
 import { SerializedCar } from "@/types";

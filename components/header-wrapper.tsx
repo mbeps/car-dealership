@@ -1,11 +1,11 @@
 import { ensureProfile } from "@/lib/ensure-profile";
 import HeaderClient from "./header-client";
 
-interface HeaderProps {
+interface HeaderWrapperProps {
   isAdminPage?: boolean;
 }
 
-const Header = async ({ isAdminPage = false }: HeaderProps) => {
+const Header = async ({ isAdminPage = false }: HeaderWrapperProps) => {
   const user = await ensureProfile();
   const userRole = user?.role || null;
 

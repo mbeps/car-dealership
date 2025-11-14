@@ -1,9 +1,9 @@
 "use server";
 
 import { serializeCarData } from "@/lib/helpers";
-import { db } from "@/lib/prisma";
-import { auth } from "@clerk/nextjs/server";
+import { createClient } from "@/lib/supabase";
 import { revalidatePath } from "next/cache";
+import type { SupabaseClient, User as SupabaseAuthUser } from "@supabase/supabase-js";
 import {
   ActionResponse,
   CarFiltersData,
@@ -12,66 +12,128 @@ import {
   PaginationInfo,
   UserTestDrive,
   SerializedDealershipInfo,
+  User as DbUser,
 } from "@/types";
+
+type DatabaseClient = SupabaseClient<any>;
+
+async function getOrCreateDbUser(
+  supabase: DatabaseClient,
+  authUser: SupabaseAuthUser
+): Promise<DbUser> {
+  const { data: user, error } = await supabase
+    .from("User")
+    .select("*")
+    .eq("supabaseAuthUserId", authUser.id)
+    .maybeSingle();
+
+  if (error && error.code !== "PGRST116") {
+    throw error;
+  }
+
+  if (user) {
+    return user as DbUser;
+  }
+
+  const name =
+    authUser.user_metadata?.full_name ||
+    authUser.user_metadata?.name ||
+    authUser.email?.split("@")[0] ||
+    "User";
+
+  const profilePayload = {
+    id: authUser.id,
+    supabaseAuthUserId: authUser.id,
+    email: authUser.email || "",
+    name,
+    imageUrl:
+      authUser.user_metadata?.avatar_url ||
+      authUser.user_metadata?.picture ||
+      null,
+    phone: authUser.user_metadata?.phone || null,
+  };
+
+  const { data: newUser, error: createError } = await supabase
+    .from("User")
+    .insert(profilePayload)
+    .select()
+    .single();
+
+  if (createError) {
+    throw createError;
+  }
+
+  return newUser as DbUser;
+}
 
 /**
  * Get simplified filters for the car marketplace
  */
 export async function getCarFilters(): Promise<ActionResponse<CarFiltersData>> {
   try {
+    const supabase = await createClient();
+
     // Get unique makes
-    const makes = await db.car.findMany({
-      where: { status: "AVAILABLE" },
-      select: { make: true },
-      distinct: ["make"],
-      orderBy: { make: "asc" },
-    });
+    const { data: makes } = await supabase
+      .from("Car")
+      .select("make")
+      .eq("status", "AVAILABLE")
+      .order("make", { ascending: true });
 
     // Get unique body types
-    const bodyTypes = await db.car.findMany({
-      where: { status: "AVAILABLE" },
-      select: { bodyType: true },
-      distinct: ["bodyType"],
-      orderBy: { bodyType: "asc" },
-    });
+    const { data: bodyTypes } = await supabase
+      .from("Car")
+      .select("bodyType")
+      .eq("status", "AVAILABLE")
+      .order("bodyType", { ascending: true });
 
     // Get unique fuel types
-    const fuelTypes = await db.car.findMany({
-      where: { status: "AVAILABLE" },
-      select: { fuelType: true },
-      distinct: ["fuelType"],
-      orderBy: { fuelType: "asc" },
-    });
+    const { data: fuelTypes } = await supabase
+      .from("Car")
+      .select("fuelType")
+      .eq("status", "AVAILABLE")
+      .order("fuelType", { ascending: true });
 
     // Get unique transmissions
-    const transmissions = await db.car.findMany({
-      where: { status: "AVAILABLE" },
-      select: { transmission: true },
-      distinct: ["transmission"],
-      orderBy: { transmission: "asc" },
-    });
+    const { data: transmissions } = await supabase
+      .from("Car")
+      .select("transmission")
+      .eq("status", "AVAILABLE")
+      .order("transmission", { ascending: true });
 
-    // Get min and max prices using Prisma aggregations
-    const priceAggregations = await db.car.aggregate({
-      where: { status: "AVAILABLE" },
-      _min: { price: true },
-      _max: { price: true },
-    });
+    // Get min and max prices
+    const { data: priceData } = await supabase
+      .from("Car")
+      .select("price")
+      .eq("status", "AVAILABLE");
+
+    const prices =
+      priceData?.map((car) => parseFloat(car.price.toString())) || [];
+    const minPrice = prices.length > 0 ? Math.min(...prices) : 0;
+    const maxPrice = prices.length > 0 ? Math.max(...prices) : 100000;
+
+    // Remove duplicates
+    const uniqueMakes = [...new Set(makes?.map((m) => m.make) || [])];
+    const uniqueBodyTypes = [
+      ...new Set(bodyTypes?.map((b) => b.bodyType) || []),
+    ];
+    const uniqueFuelTypes = [
+      ...new Set(fuelTypes?.map((f) => f.fuelType) || []),
+    ];
+    const uniqueTransmissions = [
+      ...new Set(transmissions?.map((t) => t.transmission) || []),
+    ];
 
     return {
       success: true,
       data: {
-        makes: makes.map((item) => item.make),
-        bodyTypes: bodyTypes.map((item) => item.bodyType),
-        fuelTypes: fuelTypes.map((item) => item.fuelType),
-        transmissions: transmissions.map((item) => item.transmission),
+        makes: uniqueMakes,
+        bodyTypes: uniqueBodyTypes,
+        fuelTypes: uniqueFuelTypes,
+        transmissions: uniqueTransmissions,
         priceRange: {
-          min: priceAggregations._min.price
-            ? parseFloat(priceAggregations._min.price.toString())
-            : 0,
-          max: priceAggregations._max.price
-            ? parseFloat(priceAggregations._max.price.toString())
-            : 100000,
+          min: minPrice,
+          max: maxPrice,
         },
       },
     };
@@ -102,101 +164,84 @@ export async function getCars(
       limit = 6,
     } = filters;
 
+    const supabase = await createClient();
+
     // Get current user if authenticated
-    const { userId } = await auth();
+    const {
+      data: { user: authUser },
+    } = await supabase.auth.getUser();
     let dbUser = null;
 
-    if (userId) {
-      dbUser = await db.user.findUnique({
-        where: { clerkUserId: userId },
-      });
+    if (authUser) {
+      const { data } = await supabase
+        .from("User")
+        .select("*")
+        .eq("supabaseAuthUserId", authUser.id)
+        .single();
+      dbUser = data;
     }
 
-    // Build where conditions
-    const where: {
-      status: "AVAILABLE";
-      make?: { equals: string; mode: "insensitive" };
-      bodyType?: { equals: string; mode: "insensitive" };
-      fuelType?: { equals: string; mode: "insensitive" };
-      transmission?: { equals: string; mode: "insensitive" };
-      price?: {
-        gte: number;
-        lte?: number;
-      };
-      OR?: Array<{
-        make?: { contains: string; mode: "insensitive" };
-        model?: { contains: string; mode: "insensitive" };
-        description?: { contains: string; mode: "insensitive" };
-      }>;
-    } = {
-      status: "AVAILABLE",
-    };
+    // Build query
+    let query = supabase
+      .from("Car")
+      .select("*", { count: "exact" })
+      .eq("status", "AVAILABLE");
 
+    // Add search filter
     if (search) {
-      where.OR = [
-        { make: { contains: search, mode: "insensitive" } },
-        { model: { contains: search, mode: "insensitive" } },
-        { description: { contains: search, mode: "insensitive" } },
-      ];
+      query = query.or(
+        `make.ilike.%${search}%,model.ilike.%${search}%,description.ilike.%${search}%`
+      );
     }
 
-    if (make) where.make = { equals: make, mode: "insensitive" };
-    if (bodyType) where.bodyType = { equals: bodyType, mode: "insensitive" };
-    if (fuelType) where.fuelType = { equals: fuelType, mode: "insensitive" };
-    if (transmission)
-      where.transmission = { equals: transmission, mode: "insensitive" };
+    // Add filters
+    if (make) query = query.ilike("make", make);
+    if (bodyType) query = query.ilike("bodyType", bodyType);
+    if (fuelType) query = query.ilike("fuelType", fuelType);
+    if (transmission) query = query.ilike("transmission", transmission);
 
     // Add price range
-    where.price = {
-      gte: parseFloat(minPrice.toString()) || 0,
-    };
-
+    query = query.gte("price", minPrice);
     if (maxPrice && maxPrice < Number.MAX_SAFE_INTEGER) {
-      where.price.lte = parseFloat(maxPrice.toString());
+      query = query.lte("price", maxPrice);
     }
 
-    // Calculate pagination
-    const skip = (page - 1) * limit;
-
-    // Determine sort order
-    let orderBy: { price?: "asc" | "desc"; createdAt?: "desc" } = {};
+    // Add sorting
     switch (sortBy) {
       case "priceAsc":
-        orderBy = { price: "asc" };
+        query = query.order("price", { ascending: true });
         break;
       case "priceDesc":
-        orderBy = { price: "desc" };
+        query = query.order("price", { ascending: false });
         break;
       case "newest":
       default:
-        orderBy = { createdAt: "desc" };
+        query = query.order("createdAt", { ascending: false });
         break;
     }
 
-    // Get total count for pagination
-    const totalCars = await db.car.count({ where });
+    // Calculate pagination
+    const offset = (page - 1) * limit;
+    query = query.range(offset, offset + limit - 1);
 
-    // Execute the main query
-    const cars = await db.car.findMany({
-      where,
-      take: limit,
-      skip,
-      orderBy,
-    });
+    // Execute query
+    const { data: cars, error, count } = await query;
+
+    if (error) throw error;
 
     // If we have a user, check which cars are wishlisted
     let wishlisted = new Set<string>();
     if (dbUser) {
-      const savedCars = await db.userSavedCar.findMany({
-        where: { userId: dbUser.id },
-        select: { carId: true },
-      });
+      const { data: savedCars } = await supabase
+        .from("UserSavedCar")
+        .select("carId")
+        .eq("userId", dbUser.id);
 
-      wishlisted = new Set(savedCars.map((saved) => saved.carId));
+      wishlisted = new Set(savedCars?.map((saved) => saved.carId) || []);
     }
 
     // Serialize and check wishlist status
-    const serializedCars = cars.map((car) =>
+    const serializedCars = (cars || []).map((car) =>
       serializeCarData(car, wishlisted.has(car.id))
     );
 
@@ -205,10 +250,10 @@ export async function getCars(
       data: {
         cars: serializedCars,
         pagination: {
-          total: totalCars,
+          total: count || 0,
           page,
           limit,
-          pages: Math.ceil(totalCars / limit),
+          pages: Math.ceil((count || 0) / limit),
         },
       },
     };
@@ -224,19 +269,22 @@ export async function toggleSavedCar(
   carId: string
 ): Promise<ActionResponse<{ saved: boolean; message: string }>> {
   try {
-    const { userId } = await auth();
-    if (!userId) throw new Error("Unauthorized");
+    const supabase = await createClient();
 
-    const user = await db.user.findUnique({
-      where: { clerkUserId: userId },
-    });
+    const {
+      data: { user: authUser },
+      error: authError,
+    } = await supabase.auth.getUser();
+    if (authError || !authUser) throw new Error("Unauthorized");
 
-    if (!user) throw new Error("User not found");
+    const user = await getOrCreateDbUser(supabase, authUser);
 
     // Check if car exists
-    const car = await db.car.findUnique({
-      where: { id: carId },
-    });
+    const { data: car } = await supabase
+      .from("Car")
+      .select("id")
+      .eq("id", carId)
+      .single();
 
     if (!car) {
       return {
@@ -246,25 +294,28 @@ export async function toggleSavedCar(
     }
 
     // Check if car is already saved
-    const existingSave = await db.userSavedCar.findUnique({
-      where: {
-        userId_carId: {
-          userId: user.id,
-          carId,
-        },
-      },
-    });
+    const { data: existingSave, error: existingSaveError } = await supabase
+      .from("UserSavedCar")
+      .select("*")
+      .eq("userId", user.id)
+      .eq("carId", carId)
+      .maybeSingle();
+
+    if (existingSaveError && existingSaveError.code !== "PGRST116") {
+      throw existingSaveError;
+    }
 
     // If car is already saved, remove it
     if (existingSave) {
-      await db.userSavedCar.delete({
-        where: {
-          userId_carId: {
-            userId: user.id,
-            carId,
-          },
-        },
-      });
+      const { error: deleteError } = await supabase
+        .from("UserSavedCar")
+        .delete()
+        .eq("userId", user.id)
+        .eq("carId", carId);
+
+      if (deleteError) {
+        throw deleteError;
+      }
 
       revalidatePath(`/saved-cars`);
       return {
@@ -277,12 +328,16 @@ export async function toggleSavedCar(
     }
 
     // If car is not saved, add it
-    await db.userSavedCar.create({
-      data: {
+    const { error: insertError } = await supabase
+      .from("UserSavedCar")
+      .insert({
         userId: user.id,
         carId,
-      },
-    });
+      });
+
+    if (insertError) {
+      throw insertError;
+    }
 
     revalidatePath(`/saved-cars`);
     return {
@@ -311,22 +366,31 @@ export async function getCarById(carId: string): Promise<
   >
 > {
   try {
+    const supabase = await createClient();
+
     // Get current user if authenticated
-    const { userId } = await auth();
+    const {
+      data: { user: authUser },
+    } = await supabase.auth.getUser();
     let dbUser = null;
 
-    if (userId) {
-      dbUser = await db.user.findUnique({
-        where: { clerkUserId: userId },
-      });
+    if (authUser) {
+      const { data } = await supabase
+        .from("User")
+        .select("*")
+        .eq("supabaseAuthUserId", authUser.id)
+        .single();
+      dbUser = data;
     }
 
     // Get car details
-    const car = await db.car.findUnique({
-      where: { id: carId },
-    });
+    const { data: car, error } = await supabase
+      .from("Car")
+      .select("*")
+      .eq("id", carId)
+      .single();
 
-    if (!car) {
+    if (error || !car) {
       return {
         success: false,
         error: "Car not found",
@@ -336,48 +400,49 @@ export async function getCarById(carId: string): Promise<
     // Check if car is wishlisted by user
     let isWishlisted = false;
     if (dbUser) {
-      const savedCar = await db.userSavedCar.findUnique({
-        where: {
-          userId_carId: {
-            userId: dbUser.id,
-            carId,
-          },
-        },
-      });
+      const { data: savedCar } = await supabase
+        .from("UserSavedCar")
+        .select("*")
+        .eq("userId", dbUser.id)
+        .eq("carId", carId)
+        .single();
 
       isWishlisted = !!savedCar;
     }
 
     // Check if user has already booked a test drive for this car
-    const existingTestDrive = dbUser
-      ? await db.testDriveBooking.findFirst({
-          where: {
-            carId,
-            userId: dbUser.id,
-            status: { in: ["PENDING", "CONFIRMED", "COMPLETED"] },
-          },
-          orderBy: {
-            createdAt: "desc",
-          },
-        })
-      : null;
-
     let userTestDrive: UserTestDrive | null = null;
 
-    if (existingTestDrive) {
-      userTestDrive = {
-        id: existingTestDrive.id,
-        status: existingTestDrive.status,
-        bookingDate: existingTestDrive.bookingDate.toISOString(),
-      };
+    if (dbUser) {
+      const { data: existingTestDrive } = await supabase
+        .from("TestDriveBooking")
+        .select("*")
+        .eq("carId", carId)
+        .eq("userId", dbUser.id)
+        .in("status", ["PENDING", "CONFIRMED", "COMPLETED"])
+        .order("createdAt", { ascending: false })
+        .limit(1)
+        .single();
+
+      if (existingTestDrive) {
+        userTestDrive = {
+          id: existingTestDrive.id,
+          status: existingTestDrive.status,
+          bookingDate: existingTestDrive.bookingDate,
+        };
+      }
     }
 
     // Get dealership info for test drive availability
-    const dealership = await db.dealershipInfo.findFirst({
-      include: {
-        workingHours: true,
-      },
-    });
+    const { data: dealership } = await supabase
+      .from("DealershipInfo")
+      .select(
+        `
+        *,
+        workingHours:WorkingHour(*)
+      `
+      )
+      .single();
 
     return {
       success: true,
@@ -385,18 +450,7 @@ export async function getCarById(carId: string): Promise<
         ...serializeCarData(car, isWishlisted),
         testDriveInfo: {
           userTestDrive,
-          dealership: dealership
-            ? {
-                ...dealership,
-                createdAt: dealership.createdAt.toISOString(),
-                updatedAt: dealership.updatedAt.toISOString(),
-                workingHours: dealership.workingHours.map((hour) => ({
-                  ...hour,
-                  createdAt: hour.createdAt.toISOString(),
-                  updatedAt: hour.updatedAt.toISOString(),
-                })),
-              }
-            : null,
+          dealership: dealership || null,
         },
       },
     };
@@ -410,37 +464,37 @@ export async function getCarById(carId: string): Promise<
  */
 export async function getSavedCars(): Promise<ActionResponse<SerializedCar[]>> {
   try {
-    const { userId } = await auth();
-    if (!userId) {
+    const supabase = await createClient();
+
+    const {
+      data: { user: authUser },
+      error: authError,
+    } = await supabase.auth.getUser();
+    if (authError || !authUser) {
       return {
         success: false,
         error: "Unauthorized",
       };
     }
 
-    // Get the user from our database
-    const user = await db.user.findUnique({
-      where: { clerkUserId: userId },
-    });
-
-    if (!user) {
-      return {
-        success: false,
-        error: "User not found",
-      };
-    }
+    const user = await getOrCreateDbUser(supabase, authUser);
 
     // Get saved cars with their details
-    const savedCars = await db.userSavedCar.findMany({
-      where: { userId: user.id },
-      include: {
-        car: true,
-      },
-      orderBy: { savedAt: "desc" },
-    });
+    const { data: savedCars, error } = await supabase
+      .from("UserSavedCar")
+      .select(
+        `
+        *,
+        car:Car(*)
+      `
+      )
+      .eq("userId", user.id)
+      .order("savedAt", { ascending: false });
+
+    if (error) throw error;
 
     // Extract and format car data
-    const cars = savedCars.map((saved) => serializeCarData(saved.car));
+    const cars = (savedCars || []).map((saved) => serializeCarData(saved.car));
 
     return {
       success: true,

@@ -34,7 +34,17 @@ const nextConfig: NextConfig = {
     serverComponentsHmrCache: false, // defaults to true
   },
   images: {
-    remotePatterns: SUPABASE_REMOTE_PATTERNS,
+    remotePatterns: [
+      ...SUPABASE_REMOTE_PATTERNS,
+      {
+        protocol: "https",
+        hostname: "lh3.googleusercontent.com",
+      },
+      {
+        protocol: "https",
+        hostname: "avatars.githubusercontent.com",
+      },
+    ],
   },
 
   async headers() {

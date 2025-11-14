@@ -1,243 +1,203 @@
 "use server";
 
+import { createClient } from "@/lib/supabase";
 import { revalidatePath } from "next/cache";
-import { db } from "@/lib/prisma";
-import { auth } from "@clerk/nextjs/server";
-import {
-  ActionResponse,
-  SerializedDealershipInfo,
-  WorkingHourInput,
-  User,
-} from "@/types";
-import { DealershipInfo, UserRole } from "@prisma/client";
+import { ActionResponse, DealershipInfo, WorkingHour, User } from "@/types";
 
-type SerializedUser = Omit<User, "createdAt" | "updatedAt"> & {
-  createdAt: string;
-  updatedAt: string;
-};
-
-// Get dealership info with working hours
 export async function getDealershipInfo(): Promise<
-  ActionResponse<SerializedDealershipInfo>
+  ActionResponse<DealershipInfo | null>
 > {
   try {
-    const { userId } = await auth();
-    if (!userId) throw new Error("Unauthorized");
+    const supabase = await createClient();
 
-    // Get the dealership record
-    let dealership = await db.dealershipInfo.findFirst({
-      include: {
-        workingHours: {
-          orderBy: {
-            dayOfWeek: "asc",
-          },
-        },
-      },
-    });
+    const { data: dealership, error } = await supabase
+      .from("DealershipInfo")
+      .select(
+        `
+        *,
+        workingHours:WorkingHour(*)
+      `
+      )
+      .single();
 
-    // If no dealership exists, create a default one
-    if (!dealership) {
-      dealership = await db.dealershipInfo.create({
-        data: {
-          // Default values will be used from schema
-          workingHours: {
-            create: [
-              {
-                dayOfWeek: "MONDAY",
-                openTime: "09:00",
-                closeTime: "18:00",
-                isOpen: true,
-              },
-              {
-                dayOfWeek: "TUESDAY",
-                openTime: "09:00",
-                closeTime: "18:00",
-                isOpen: true,
-              },
-              {
-                dayOfWeek: "WEDNESDAY",
-                openTime: "09:00",
-                closeTime: "18:00",
-                isOpen: true,
-              },
-              {
-                dayOfWeek: "THURSDAY",
-                openTime: "09:00",
-                closeTime: "18:00",
-                isOpen: true,
-              },
-              {
-                dayOfWeek: "FRIDAY",
-                openTime: "09:00",
-                closeTime: "18:00",
-                isOpen: true,
-              },
-              {
-                dayOfWeek: "SATURDAY",
-                openTime: "10:00",
-                closeTime: "16:00",
-                isOpen: true,
-              },
-              {
-                dayOfWeek: "SUNDAY",
-                openTime: "10:00",
-                closeTime: "16:00",
-                isOpen: false,
-              },
-            ],
-          },
-        },
-        include: {
-          workingHours: {
-            orderBy: {
-              dayOfWeek: "asc",
-            },
-          },
-        },
-      });
+    if (error && error.code !== "PGRST116") {
+      // PGRST116 = no rows returned
+      throw error;
     }
 
-    // Format the data
     return {
       success: true,
-      data: {
-        ...dealership,
-        createdAt: dealership.createdAt.toISOString(),
-        updatedAt: dealership.updatedAt.toISOString(),
-        workingHours: dealership.workingHours.map((hour) => ({
-          ...hour,
-          createdAt: hour.createdAt.toISOString(),
-          updatedAt: hour.updatedAt.toISOString(),
-        })),
-      },
+      data: dealership || null,
     };
   } catch (error) {
-    throw new Error(
-      "Error fetching dealership info:" + (error as Error).message
-    );
+    console.error("Error fetching dealership info:", error);
+    return {
+      success: false,
+      error: (error as Error).message,
+    };
   }
 }
 
-// Save working hours
-export async function saveWorkingHours(
-  workingHours: WorkingHourInput[]
-): Promise<ActionResponse<null>> {
-  try {
-    const { userId } = await auth();
-    if (!userId) throw new Error("Unauthorized");
+type WorkingHourInput = Omit<
+  WorkingHour,
+  "id" | "dealershipId" | "createdAt" | "updatedAt"
+>;
 
-    // Check if user is admin
-    const user = await db.user.findUnique({
-      where: { clerkUserId: userId },
-    });
+export async function saveWorkingHours(
+  dealershipId: string,
+  workingHours: WorkingHourInput[]
+): Promise<ActionResponse<string>> {
+  try {
+    const supabase = await createClient();
+
+    const {
+      data: { user: authUser },
+      error: authError,
+    } = await supabase.auth.getUser();
+    if (authError || !authUser) throw new Error("Unauthorized");
+
+    // Verify admin status
+    const { data: user } = await supabase
+      .from("User")
+      .select("*")
+      .eq("supabaseAuthUserId", authUser.id)
+      .single();
 
     if (!user || user.role !== "ADMIN") {
-      throw new Error("Unauthorized: Admin access required");
+      throw new Error("Unauthorized access");
     }
 
-    // Get current dealership info
-    const dealership = await db.dealershipInfo.findFirst();
+    // Delete existing working hours for this dealership
+    const { error: deleteError } = await supabase
+      .from("WorkingHour")
+      .delete()
+      .eq("dealershipId", dealershipId);
 
-    if (!dealership) {
-      throw new Error("Dealership info not found");
+    if (deleteError) throw deleteError;
+
+    // Insert new working hours if any provided
+    if (workingHours.length > 0) {
+      const hoursToInsert = workingHours.map((hour) => ({
+        ...hour,
+        dealershipId,
+      }));
+
+      const { error: insertError } = await supabase
+        .from("WorkingHour")
+        .insert(hoursToInsert);
+
+      if (insertError) throw insertError;
     }
 
-    // Update working hours - first delete existing hours
-    await db.workingHour.deleteMany({
-      where: { dealershipId: dealership.id },
-    });
-
-    // Then create new hours
-    for (const hour of workingHours) {
-      await db.workingHour.create({
-        data: {
-          dayOfWeek: hour.dayOfWeek,
-          openTime: hour.openTime,
-          closeTime: hour.closeTime,
-          isOpen: hour.isOpen,
-          dealershipId: dealership.id,
-        },
-      });
-    }
-
-    // Revalidate paths
     revalidatePath("/admin/settings");
-    revalidatePath("/"); // Homepage might display hours
+    revalidatePath("/test-drive");
 
     return {
       success: true,
-      data: null,
+      data: "Working hours updated successfully",
     };
   } catch (error) {
-    throw new Error("Error saving working hours:" + (error as Error).message);
+    console.error("Error saving working hours:", error);
+    return {
+      success: false,
+      error: (error as Error).message,
+    };
   }
 }
 
-// Get all users
-export async function getUsers(): Promise<ActionResponse<SerializedUser[]>> {
+export async function getUsers(): Promise<ActionResponse<User[]>> {
   try {
-    const { userId } = await auth();
-    if (!userId) throw new Error("Unauthorized");
+    const supabase = await createClient();
 
-    // Check if user is admin
-    const adminUser = await db.user.findUnique({
-      where: { clerkUserId: userId },
-    });
+    const {
+      data: { user: authUser },
+      error: authError,
+    } = await supabase.auth.getUser();
+    if (authError || !authUser) throw new Error("Unauthorized");
 
-    if (!adminUser || adminUser.role !== "ADMIN") {
-      throw new Error("Unauthorized: Admin access required");
+    // Verify admin status
+    const { data: user } = await supabase
+      .from("User")
+      .select("*")
+      .eq("supabaseAuthUserId", authUser.id)
+      .single();
+
+    if (!user || user.role !== "ADMIN") {
+      throw new Error("Unauthorized access");
     }
 
-    // Get all users
-    const users = await db.user.findMany({
-      orderBy: { createdAt: "desc" },
-    });
+    // Fetch all users
+    const { data: users, error } = await supabase
+      .from("User")
+      .select("*")
+      .order("createdAt", { ascending: false });
+
+    if (error) throw error;
 
     return {
       success: true,
-      data: users.map((user) => ({
-        ...user,
-        createdAt: user.createdAt.toISOString(),
-        updatedAt: user.updatedAt.toISOString(),
-      })),
+      data: users || [],
     };
   } catch (error) {
-    throw new Error("Error fetching users:" + (error as Error).message);
+    console.error("Error fetching users:", error);
+    return {
+      success: false,
+      error: (error as Error).message,
+    };
   }
 }
 
-// Update user role
 export async function updateUserRole(
   userId: string,
-  role: UserRole
-): Promise<ActionResponse<null>> {
+  newRole: "ADMIN" | "USER"
+): Promise<ActionResponse<string>> {
   try {
-    const { userId: adminId } = await auth();
-    if (!adminId) throw new Error("Unauthorized");
+    const supabase = await createClient();
 
-    // Check if user is admin
-    const adminUser = await db.user.findUnique({
-      where: { clerkUserId: adminId },
-    });
+    const {
+      data: { user: authUser },
+      error: authError,
+    } = await supabase.auth.getUser();
+    if (authError || !authUser) throw new Error("Unauthorized");
 
-    if (!adminUser || adminUser.role !== "ADMIN") {
-      throw new Error("Unauthorized: Admin access required");
+    // Verify admin status
+    const { data: user } = await supabase
+      .from("User")
+      .select("*")
+      .eq("supabaseAuthUserId", authUser.id)
+      .single();
+
+    if (!user || user.role !== "ADMIN") {
+      throw new Error("Unauthorized access");
+    }
+
+    // Don't allow updating own role
+    if (user.id === userId) {
+      return {
+        success: false,
+        error: "You cannot change your own role",
+      };
     }
 
     // Update user role
-    await db.user.update({
-      where: { id: userId },
-      data: { role },
-    });
+    const { error: updateError } = await supabase
+      .from("User")
+      .update({ role: newRole })
+      .eq("id", userId);
 
-    // Revalidate paths
+    if (updateError) throw updateError;
+
     revalidatePath("/admin/settings");
 
     return {
       success: true,
-      data: null,
+      data: "User role updated successfully",
     };
   } catch (error) {
-    throw new Error("Error updating user role:" + (error as Error).message);
+    console.error("Error updating user role:", error);
+    return {
+      success: false,
+      error: (error as Error).message,
+    };
   }
 }

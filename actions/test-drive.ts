@@ -1,52 +1,57 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { auth } from "@clerk/nextjs/server";
-import { db } from "@/lib/prisma";
+import { createClient } from "@/lib/supabase";
 import { serializeCarData } from "@/lib/helpers";
 import {
   ActionResponse,
   TestDriveFormData,
   TestDriveBookingWithCar,
 } from "@/types";
-import { TestDriveBooking } from "@prisma/client";
 
 /**
  * Books a test drive for a car
  */
 export async function bookTestDrive(
   formData: TestDriveFormData
-): Promise<ActionResponse<TestDriveBooking>> {
+): Promise<ActionResponse<any>> {
   try {
     const { carId, bookingDate, startTime, endTime, notes } = formData;
 
+    const supabase = await createClient();
+
     // Authenticate user
-    const { userId } = await auth();
-    if (!userId) throw new Error("You must be logged in to book a test drive");
+    const { data: { user: authUser }, error: authError } = await supabase.auth.getUser();
+    if (authError || !authUser) throw new Error("You must be logged in to book a test drive");
 
     // Find user in our database
-    const user = await db.user.findUnique({
-      where: { clerkUserId: userId },
-    });
+    const { data: user } = await supabase
+      .from("User")
+      .select("*")
+      .eq("supabaseAuthUserId", authUser.id)
+      .single();
 
     if (!user) throw new Error("User not found in database");
 
     // Check if car exists and is available
-    const car = await db.car.findUnique({
-      where: { id: carId, status: "AVAILABLE" },
-    });
+    const { data: car } = await supabase
+      .from("Car")
+      .select("*")
+      .eq("id", carId)
+      .eq("status", "AVAILABLE")
+      .single();
 
     if (!car) throw new Error("Car not available for test drive");
 
     // Check if slot is already booked
-    const existingBooking = await db.testDriveBooking.findFirst({
-      where: {
-        carId,
-        bookingDate: new Date(bookingDate),
-        startTime,
-        status: { in: ["PENDING", "CONFIRMED"] },
-      },
-    });
+    const { data: existingBooking } = await supabase
+      .from("TestDriveBooking")
+      .select("*")
+      .eq("carId", carId)
+      .eq("bookingDate", bookingDate)
+      .eq("startTime", startTime)
+      .in("status", ["PENDING", "CONFIRMED"])
+      .single();
 
     if (existingBooking) {
       throw new Error(
@@ -55,17 +60,21 @@ export async function bookTestDrive(
     }
 
     // Create the booking
-    const booking = await db.testDriveBooking.create({
-      data: {
+    const { data: booking, error: insertError } = await supabase
+      .from("TestDriveBooking")
+      .insert({
         carId,
         userId: user.id,
-        bookingDate: new Date(bookingDate),
+        bookingDate,
         startTime,
         endTime,
         notes: notes || null,
         status: "PENDING",
-      },
-    });
+      })
+      .select()
+      .single();
+
+    if (insertError) throw insertError;
 
     // Revalidate relevant paths
     revalidatePath(`/test-drive/${carId}`);
@@ -91,8 +100,10 @@ export async function getUserTestDrives(): Promise<
   ActionResponse<TestDriveBookingWithCar[]>
 > {
   try {
-    const { userId } = await auth();
-    if (!userId) {
+    const supabase = await createClient();
+    
+    const { data: { user: authUser }, error: authError } = await supabase.auth.getUser();
+    if (authError || !authUser) {
       return {
         success: false,
         error: "Unauthorized",
@@ -100,9 +111,11 @@ export async function getUserTestDrives(): Promise<
     }
 
     // Get the user from our database
-    const user = await db.user.findUnique({
-      where: { clerkUserId: userId },
-    });
+    const { data: user } = await supabase
+      .from("User")
+      .select("*")
+      .eq("supabaseAuthUserId", authUser.id)
+      .single();
 
     if (!user) {
       return {
@@ -112,28 +125,31 @@ export async function getUserTestDrives(): Promise<
     }
 
     // Get user's test drive bookings
-    const bookings = await db.testDriveBooking.findMany({
-      where: { userId: user.id },
-      include: {
-        car: true,
-      },
-      orderBy: { bookingDate: "desc" },
-    });
+    const { data: bookings, error } = await supabase
+      .from("TestDriveBooking")
+      .select(`
+        *,
+        car:Car(*)
+      `)
+      .eq("userId", user.id)
+      .order("bookingDate", { ascending: false });
+
+    if (error) throw error;
 
     // Format the bookings
-    const formattedBookings: TestDriveBookingWithCar[] = bookings.map(
+    const formattedBookings: TestDriveBookingWithCar[] = (bookings || []).map(
       (booking) => ({
         id: booking.id,
         carId: booking.carId,
         car: serializeCarData(booking.car),
         userId: booking.userId,
-        bookingDate: booking.bookingDate.toISOString(),
+        bookingDate: booking.bookingDate,
         startTime: booking.startTime,
         endTime: booking.endTime,
         status: booking.status,
         notes: booking.notes,
-        createdAt: booking.createdAt.toISOString(),
-        updatedAt: booking.updatedAt.toISOString(),
+        createdAt: booking.createdAt,
+        updatedAt: booking.updatedAt,
       })
     );
 
@@ -157,8 +173,10 @@ export async function cancelTestDrive(
   bookingId: string
 ): Promise<ActionResponse<string>> {
   try {
-    const { userId } = await auth();
-    if (!userId) {
+    const supabase = await createClient();
+    
+    const { data: { user: authUser }, error: authError } = await supabase.auth.getUser();
+    if (authError || !authUser) {
       return {
         success: false,
         error: "Unauthorized",
@@ -166,9 +184,11 @@ export async function cancelTestDrive(
     }
 
     // Get the user from our database
-    const user = await db.user.findUnique({
-      where: { clerkUserId: userId },
-    });
+    const { data: user } = await supabase
+      .from("User")
+      .select("*")
+      .eq("supabaseAuthUserId", authUser.id)
+      .single();
 
     if (!user) {
       return {
@@ -178,9 +198,11 @@ export async function cancelTestDrive(
     }
 
     // Get the booking
-    const booking = await db.testDriveBooking.findUnique({
-      where: { id: bookingId },
-    });
+    const { data: booking } = await supabase
+      .from("TestDriveBooking")
+      .select("*")
+      .eq("id", bookingId)
+      .single();
 
     if (!booking) {
       return {
@@ -213,10 +235,12 @@ export async function cancelTestDrive(
     }
 
     // Update the booking status
-    await db.testDriveBooking.update({
-      where: { id: bookingId },
-      data: { status: "CANCELLED" },
-    });
+    const { error: updateError } = await supabase
+      .from("TestDriveBooking")
+      .update({ status: "CANCELLED" })
+      .eq("id", bookingId);
+
+    if (updateError) throw updateError;
 
     // Revalidate paths
     revalidatePath("/reservations");

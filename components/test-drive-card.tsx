@@ -17,7 +17,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { TestDriveBookingWithCar, TestDriveBookingWithUser } from "@/types";
-import { BookingStatus } from "@prisma/client";
+import { BookingStatusEnum as BookingStatus } from "@/types";
 
 // Helper function to format time
 const formatTime = (timeString: string): string => {
