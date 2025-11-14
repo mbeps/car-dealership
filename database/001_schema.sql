@@ -1,0 +1,140 @@
+-- Base schema for the Supabase Vehiql project.
+-- Run this on a fresh database to provision all enums, tables, and indexes.
+
+CREATE EXTENSION IF NOT EXISTS "pgcrypto";
+
+-- Enumerations --------------------------------------------------------------
+CREATE TYPE "UserRole" AS ENUM ('USER', 'ADMIN');
+CREATE TYPE "CarStatus" AS ENUM ('AVAILABLE', 'UNAVAILABLE', 'SOLD');
+CREATE TYPE "DayOfWeek" AS ENUM ('MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY', 'SUNDAY');
+CREATE TYPE "BookingStatus" AS ENUM ('PENDING', 'CONFIRMED', 'COMPLETED', 'CANCELLED', 'NO_SHOW');
+
+-- Tables -------------------------------------------------------------------
+CREATE TABLE public."User" (
+  "id" TEXT PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  "supabaseAuthUserId" UUID NOT NULL,
+  "email" TEXT NOT NULL,
+  "name" TEXT,
+  "imageUrl" TEXT,
+  "phone" TEXT,
+  "createdAt" TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT timezone('utc', now()),
+  "updatedAt" TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT timezone('utc', now()),
+  "role" "UserRole" NOT NULL DEFAULT 'USER',
+  CONSTRAINT "User_email_key" UNIQUE ("email"),
+  CONSTRAINT "User_supabaseAuthUserId_key" UNIQUE ("supabaseAuthUserId"),
+  CONSTRAINT "User_supabaseAuthUserId_fkey"
+    FOREIGN KEY ("supabaseAuthUserId")
+    REFERENCES auth.users (id)
+    ON DELETE CASCADE
+);
+
+CREATE TABLE public."Car" (
+  "id" TEXT PRIMARY KEY,
+  "make" TEXT NOT NULL,
+  "model" TEXT NOT NULL,
+  "year" INTEGER NOT NULL,
+  "price" NUMERIC(10, 2) NOT NULL,
+  "mileage" INTEGER NOT NULL,
+  "color" TEXT NOT NULL,
+  "fuelType" TEXT NOT NULL,
+  "transmission" TEXT NOT NULL,
+  "bodyType" TEXT NOT NULL,
+  "seats" INTEGER,
+  "description" TEXT NOT NULL,
+  "status" "CarStatus" NOT NULL DEFAULT 'AVAILABLE',
+  "featured" BOOLEAN NOT NULL DEFAULT FALSE,
+  "createdAt" TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  "updatedAt" TIMESTAMP WITHOUT TIME ZONE NOT NULL,
+  "images" TEXT[]
+);
+
+CREATE TABLE public."DealershipInfo" (
+  "id" TEXT PRIMARY KEY,
+  "name" TEXT NOT NULL DEFAULT 'Vehiql Motors',
+  "address" TEXT NOT NULL DEFAULT '69 Car Street, Autoville, CA 69420',
+  "phone" TEXT NOT NULL DEFAULT '+1 (555) 123-4567',
+  "email" TEXT NOT NULL DEFAULT 'contact@vehiql.com',
+  "createdAt" TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  "updatedAt" TIMESTAMP WITHOUT TIME ZONE NOT NULL
+);
+
+CREATE TABLE public."WorkingHour" (
+  "id" TEXT PRIMARY KEY,
+  "dealershipId" TEXT NOT NULL,
+  "dayOfWeek" "DayOfWeek" NOT NULL,
+  "openTime" TEXT NOT NULL,
+  "closeTime" TEXT NOT NULL,
+  "isOpen" BOOLEAN NOT NULL DEFAULT TRUE,
+  "createdAt" TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  "updatedAt" TIMESTAMP WITHOUT TIME ZONE NOT NULL,
+  CONSTRAINT "WorkingHour_dealershipId_fkey"
+    FOREIGN KEY ("dealershipId")
+    REFERENCES public."DealershipInfo"("id")
+    ON DELETE CASCADE
+    ON UPDATE CASCADE,
+  CONSTRAINT "WorkingHour_dealershipId_dayOfWeek_key"
+    UNIQUE ("dealershipId", "dayOfWeek")
+);
+
+CREATE TABLE public."UserSavedCar" (
+  "id" TEXT PRIMARY KEY,
+  "userId" TEXT NOT NULL,
+  "carId" TEXT NOT NULL,
+  "savedAt" TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT "UserSavedCar_userId_fkey"
+    FOREIGN KEY ("userId")
+    REFERENCES public."User"("id")
+    ON DELETE CASCADE
+    ON UPDATE CASCADE,
+  CONSTRAINT "UserSavedCar_carId_fkey"
+    FOREIGN KEY ("carId")
+    REFERENCES public."Car"("id")
+    ON DELETE CASCADE
+    ON UPDATE CASCADE,
+  CONSTRAINT "UserSavedCar_userId_carId_key"
+    UNIQUE ("userId", "carId")
+);
+
+CREATE TABLE public."TestDriveBooking" (
+  "id" TEXT PRIMARY KEY,
+  "carId" TEXT NOT NULL,
+  "userId" TEXT NOT NULL,
+  "bookingDate" DATE NOT NULL,
+  "startTime" TEXT NOT NULL,
+  "endTime" TEXT NOT NULL,
+  "status" "BookingStatus" NOT NULL DEFAULT 'PENDING',
+  "notes" TEXT,
+  "createdAt" TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  "updatedAt" TIMESTAMP WITHOUT TIME ZONE NOT NULL,
+  CONSTRAINT "TestDriveBooking_carId_fkey"
+    FOREIGN KEY ("carId")
+    REFERENCES public."Car"("id")
+    ON DELETE RESTRICT
+    ON UPDATE CASCADE,
+  CONSTRAINT "TestDriveBooking_userId_fkey"
+    FOREIGN KEY ("userId")
+    REFERENCES public."User"("id")
+    ON DELETE RESTRICT
+    ON UPDATE CASCADE
+);
+
+-- Indexes ------------------------------------------------------------------
+CREATE INDEX "Car_make_model_idx" ON public."Car"("make", "model");
+CREATE INDEX "Car_bodyType_idx" ON public."Car"("bodyType");
+CREATE INDEX "Car_price_idx" ON public."Car"("price");
+CREATE INDEX "Car_year_idx" ON public."Car"("year");
+CREATE INDEX "Car_status_idx" ON public."Car"("status");
+CREATE INDEX "Car_fuelType_idx" ON public."Car"("fuelType");
+CREATE INDEX "Car_featured_idx" ON public."Car"("featured");
+
+CREATE INDEX "UserSavedCar_userId_idx" ON public."UserSavedCar"("userId");
+CREATE INDEX "UserSavedCar_carId_idx" ON public."UserSavedCar"("carId");
+
+CREATE INDEX "TestDriveBooking_carId_idx" ON public."TestDriveBooking"("carId");
+CREATE INDEX "TestDriveBooking_userId_idx" ON public."TestDriveBooking"("userId");
+CREATE INDEX "TestDriveBooking_bookingDate_idx" ON public."TestDriveBooking"("bookingDate");
+CREATE INDEX "TestDriveBooking_status_idx" ON public."TestDriveBooking"("status");
+
+CREATE INDEX "WorkingHour_dealershipId_idx" ON public."WorkingHour"("dealershipId");
+CREATE INDEX "WorkingHour_dayOfWeek_idx" ON public."WorkingHour"("dayOfWeek");
+CREATE INDEX "WorkingHour_isOpen_idx" ON public."WorkingHour"("isOpen");
