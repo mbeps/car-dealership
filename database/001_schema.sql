@@ -44,7 +44,7 @@ CREATE TABLE public."Car" (
   "status" "CarStatus" NOT NULL DEFAULT 'AVAILABLE',
   "featured" BOOLEAN NOT NULL DEFAULT FALSE,
   "createdAt" TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  "updatedAt" TIMESTAMP WITHOUT TIME ZONE NOT NULL,
+  "updatedAt" TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT timezone('utc', now()),
   "images" TEXT[]
 );
 
@@ -55,18 +55,18 @@ CREATE TABLE public."DealershipInfo" (
   "phone" TEXT NOT NULL DEFAULT '+1 (555) 123-4567',
   "email" TEXT NOT NULL DEFAULT 'contact@vehiql.com',
   "createdAt" TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  "updatedAt" TIMESTAMP WITHOUT TIME ZONE NOT NULL
+  "updatedAt" TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT timezone('utc', now())
 );
 
 CREATE TABLE public."WorkingHour" (
-  "id" TEXT PRIMARY KEY,
+  "id" TEXT PRIMARY KEY DEFAULT gen_random_uuid()::text,
   "dealershipId" TEXT NOT NULL,
   "dayOfWeek" "DayOfWeek" NOT NULL,
   "openTime" TEXT NOT NULL,
   "closeTime" TEXT NOT NULL,
   "isOpen" BOOLEAN NOT NULL DEFAULT TRUE,
   "createdAt" TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  "updatedAt" TIMESTAMP WITHOUT TIME ZONE NOT NULL,
+  "updatedAt" TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT timezone('utc', now()),
   CONSTRAINT "WorkingHour_dealershipId_fkey"
     FOREIGN KEY ("dealershipId")
     REFERENCES public."DealershipInfo"("id")
@@ -77,10 +77,11 @@ CREATE TABLE public."WorkingHour" (
 );
 
 CREATE TABLE public."UserSavedCar" (
-  "id" TEXT PRIMARY KEY,
+  "id" TEXT PRIMARY KEY DEFAULT gen_random_uuid()::text,
   "userId" TEXT NOT NULL,
   "carId" TEXT NOT NULL,
   "savedAt" TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  "updatedAt" TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT timezone('utc', now()),
   CONSTRAINT "UserSavedCar_userId_fkey"
     FOREIGN KEY ("userId")
     REFERENCES public."User"("id")
@@ -96,7 +97,7 @@ CREATE TABLE public."UserSavedCar" (
 );
 
 CREATE TABLE public."TestDriveBooking" (
-  "id" TEXT PRIMARY KEY,
+  "id" TEXT PRIMARY KEY DEFAULT gen_random_uuid()::text,
   "carId" TEXT NOT NULL,
   "userId" TEXT NOT NULL,
   "bookingDate" DATE NOT NULL,
@@ -105,7 +106,7 @@ CREATE TABLE public."TestDriveBooking" (
   "status" "BookingStatus" NOT NULL DEFAULT 'PENDING',
   "notes" TEXT,
   "createdAt" TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  "updatedAt" TIMESTAMP WITHOUT TIME ZONE NOT NULL,
+  "updatedAt" TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT timezone('utc', now()),
   CONSTRAINT "TestDriveBooking_carId_fkey"
     FOREIGN KEY ("carId")
     REFERENCES public."Car"("id")
@@ -134,6 +135,9 @@ CREATE INDEX "TestDriveBooking_carId_idx" ON public."TestDriveBooking"("carId");
 CREATE INDEX "TestDriveBooking_userId_idx" ON public."TestDriveBooking"("userId");
 CREATE INDEX "TestDriveBooking_bookingDate_idx" ON public."TestDriveBooking"("bookingDate");
 CREATE INDEX "TestDriveBooking_status_idx" ON public."TestDriveBooking"("status");
+CREATE UNIQUE INDEX "TestDriveBooking_unique_slot"
+  ON public."TestDriveBooking" ("carId", "bookingDate", "startTime")
+  WHERE "status" IN ('PENDING', 'CONFIRMED');
 
 CREATE INDEX "WorkingHour_dealershipId_idx" ON public."WorkingHour"("dealershipId");
 CREATE INDEX "WorkingHour_dayOfWeek_idx" ON public."WorkingHour"("dayOfWeek");

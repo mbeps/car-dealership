@@ -16,22 +16,17 @@ ALTER TABLE public."TestDriveBooking" ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public."DealershipInfo" ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public."WorkingHour" ENABLE ROW LEVEL SECURITY;
 
--- User table policies ------------------------------------------------------
 DROP POLICY IF EXISTS "user_read_own" ON public."User";
-DROP POLICY IF EXISTS "user_read_all" ON public."User";
 DROP POLICY IF EXISTS "user_self_update" ON public."User";
 DROP POLICY IF EXISTS "user_self_insert" ON public."User";
 DROP POLICY IF EXISTS "admin_delete_users" ON public."User";
+DROP POLICY IF EXISTS "user_admin_read_all" ON public."User";
+DROP POLICY IF EXISTS "user_admin_update" ON public."User";
 
 CREATE POLICY "user_read_own" ON public."User"
   FOR SELECT
   TO authenticated
   USING (auth.uid() = "supabaseAuthUserId");
-
-CREATE POLICY "user_read_all" ON public."User"
-  FOR SELECT
-  TO authenticated
-  USING (TRUE);
 
 CREATE POLICY "user_self_update" ON public."User"
   FOR UPDATE
@@ -43,6 +38,17 @@ CREATE POLICY "user_self_insert" ON public."User"
   FOR INSERT
   TO authenticated
   WITH CHECK (auth.uid() = "supabaseAuthUserId");
+
+CREATE POLICY "user_admin_read_all" ON public."User"
+  FOR SELECT
+  TO authenticated
+  USING (public.is_admin());
+
+CREATE POLICY "user_admin_update" ON public."User"
+  FOR UPDATE
+  TO authenticated
+  USING (public.is_admin())
+  WITH CHECK (public.is_admin());
 
 CREATE POLICY "admin_delete_users" ON public."User"
   FOR DELETE
@@ -63,35 +69,17 @@ CREATE POLICY "cars_public_read" ON public."Car"
 CREATE POLICY "cars_admin_insert" ON public."Car"
   FOR INSERT
   TO authenticated
-  WITH CHECK (
-    EXISTS (
-      SELECT 1 FROM public."User" u
-      WHERE u."supabaseAuthUserId" = auth.uid()
-        AND u.role = 'ADMIN'
-    )
-  );
+  WITH CHECK (public.is_admin());
 
 CREATE POLICY "cars_admin_update" ON public."Car"
   FOR UPDATE
   TO authenticated
-  USING (
-    EXISTS (
-      SELECT 1 FROM public."User" u
-      WHERE u."supabaseAuthUserId" = auth.uid()
-        AND u.role = 'ADMIN'
-    )
-  );
+  USING (public.is_admin());
 
 CREATE POLICY "cars_admin_delete" ON public."Car"
   FOR DELETE
   TO authenticated
-  USING (
-    EXISTS (
-      SELECT 1 FROM public."User" u
-      WHERE u."supabaseAuthUserId" = auth.uid()
-        AND u.role = 'ADMIN'
-    )
-  );
+  USING (public.is_admin());
 
 -- UserSavedCar policies ----------------------------------------------------
 DROP POLICY IF EXISTS "saved_cars_owner_read" ON public."UserSavedCar";
@@ -144,13 +132,9 @@ CREATE POLICY "bookings_read" ON public."TestDriveBooking"
     EXISTS (
       SELECT 1 FROM public."User" u
       WHERE u.id = "TestDriveBooking"."userId"
-        AND (u."supabaseAuthUserId" = auth.uid() OR u.role = 'ADMIN')
-    ) OR
-    EXISTS (
-      SELECT 1 FROM public."User" u
-      WHERE u."supabaseAuthUserId" = auth.uid()
-        AND u.role = 'ADMIN'
+        AND u."supabaseAuthUserId" = auth.uid()
     )
+    OR public.is_admin()
   );
 
 CREATE POLICY "bookings_create" ON public."TestDriveBooking"
@@ -172,24 +156,14 @@ CREATE POLICY "bookings_update" ON public."TestDriveBooking"
       SELECT 1 FROM public."User" u
       WHERE u.id = "TestDriveBooking"."userId"
         AND u."supabaseAuthUserId" = auth.uid()
-    ) OR
-    EXISTS (
-      SELECT 1 FROM public."User" u
-      WHERE u."supabaseAuthUserId" = auth.uid()
-        AND u.role = 'ADMIN'
     )
+    OR public.is_admin()
   );
 
 CREATE POLICY "bookings_delete" ON public."TestDriveBooking"
   FOR DELETE
   TO authenticated
-  USING (
-    EXISTS (
-      SELECT 1 FROM public."User" u
-      WHERE u."supabaseAuthUserId" = auth.uid()
-        AND u.role = 'ADMIN'
-    )
-  );
+  USING (public.is_admin());
 
 -- DealershipInfo policies --------------------------------------------------
 DROP POLICY IF EXISTS "dealership_read" ON public."DealershipInfo";
@@ -205,35 +179,17 @@ CREATE POLICY "dealership_read" ON public."DealershipInfo"
 CREATE POLICY "dealership_admin_insert" ON public."DealershipInfo"
   FOR INSERT
   TO authenticated
-  WITH CHECK (
-    EXISTS (
-      SELECT 1 FROM public."User" u
-      WHERE u."supabaseAuthUserId" = auth.uid()
-        AND u.role = 'ADMIN'
-    )
-  );
+  WITH CHECK (public.is_admin());
 
 CREATE POLICY "dealership_admin_update" ON public."DealershipInfo"
   FOR UPDATE
   TO authenticated
-  USING (
-    EXISTS (
-      SELECT 1 FROM public."User" u
-      WHERE u."supabaseAuthUserId" = auth.uid()
-        AND u.role = 'ADMIN'
-    )
-  );
+  USING (public.is_admin());
 
 CREATE POLICY "dealership_admin_delete" ON public."DealershipInfo"
   FOR DELETE
   TO authenticated
-  USING (
-    EXISTS (
-      SELECT 1 FROM public."User" u
-      WHERE u."supabaseAuthUserId" = auth.uid()
-        AND u.role = 'ADMIN'
-    )
-  );
+  USING (public.is_admin());
 
 -- WorkingHour policies -----------------------------------------------------
 DROP POLICY IF EXISTS "hours_read" ON public."WorkingHour";
@@ -249,35 +205,17 @@ CREATE POLICY "hours_read" ON public."WorkingHour"
 CREATE POLICY "hours_admin_insert" ON public."WorkingHour"
   FOR INSERT
   TO authenticated
-  WITH CHECK (
-    EXISTS (
-      SELECT 1 FROM public."User" u
-      WHERE u."supabaseAuthUserId" = auth.uid()
-        AND u.role = 'ADMIN'
-    )
-  );
+  WITH CHECK (public.is_admin());
 
 CREATE POLICY "hours_admin_update" ON public."WorkingHour"
   FOR UPDATE
   TO authenticated
-  USING (
-    EXISTS (
-      SELECT 1 FROM public."User" u
-      WHERE u."supabaseAuthUserId" = auth.uid()
-        AND u.role = 'ADMIN'
-    )
-  );
+  USING (public.is_admin());
 
 CREATE POLICY "hours_admin_delete" ON public."WorkingHour"
   FOR DELETE
   TO authenticated
-  USING (
-    EXISTS (
-      SELECT 1 FROM public."User" u
-      WHERE u."supabaseAuthUserId" = auth.uid()
-        AND u.role = 'ADMIN'
-    )
-  );
+  USING (public.is_admin());
 
 -- Note: storage bucket policies must be created inside the storage schema
 -- via the Supabase Dashboard. Keep the app-level policies in sync if you

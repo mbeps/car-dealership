@@ -10,7 +10,37 @@ $$ LANGUAGE plpgsql;
 
 DROP TRIGGER IF EXISTS set_updated_at_User ON public."User";
 CREATE TRIGGER set_updated_at_User
-BEFORE UPDATE ON public."User"
+BEFORE INSERT OR UPDATE ON public."User"
+FOR EACH ROW
+EXECUTE FUNCTION public.set_updated_at();
+
+DROP TRIGGER IF EXISTS set_updated_at_Car ON public."Car";
+CREATE TRIGGER set_updated_at_Car
+BEFORE INSERT OR UPDATE ON public."Car"
+FOR EACH ROW
+EXECUTE FUNCTION public.set_updated_at();
+
+DROP TRIGGER IF EXISTS set_updated_at_DealershipInfo ON public."DealershipInfo";
+CREATE TRIGGER set_updated_at_DealershipInfo
+BEFORE INSERT OR UPDATE ON public."DealershipInfo"
+FOR EACH ROW
+EXECUTE FUNCTION public.set_updated_at();
+
+DROP TRIGGER IF EXISTS set_updated_at_WorkingHour ON public."WorkingHour";
+CREATE TRIGGER set_updated_at_WorkingHour
+BEFORE INSERT OR UPDATE ON public."WorkingHour"
+FOR EACH ROW
+EXECUTE FUNCTION public.set_updated_at();
+
+DROP TRIGGER IF EXISTS set_updated_at_UserSavedCar ON public."UserSavedCar";
+CREATE TRIGGER set_updated_at_UserSavedCar
+BEFORE INSERT OR UPDATE ON public."UserSavedCar"
+FOR EACH ROW
+EXECUTE FUNCTION public.set_updated_at();
+
+DROP TRIGGER IF EXISTS set_updated_at_TestDriveBooking ON public."TestDriveBooking";
+CREATE TRIGGER set_updated_at_TestDriveBooking
+BEFORE INSERT OR UPDATE ON public."TestDriveBooking"
 FOR EACH ROW
 EXECUTE FUNCTION public.set_updated_at();
 
