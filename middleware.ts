@@ -2,6 +2,11 @@ import arcjet, { createMiddleware, detectBot, shield } from "@arcjet/next";
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
+import {
+  getSupabasePublishableKey,
+  getSupabaseUrl,
+} from "./lib/supabase-env";
+
 // Protected routes that require authentication
 const protectedRoutes = ["/admin", "/saved-cars", "/reservations"];
 
@@ -36,8 +41,8 @@ async function supabaseMiddleware(request: NextRequest) {
   });
 
   const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    getSupabaseUrl(),
+    getSupabasePublishableKey(),
     {
       cookies: {
         getAll() {
@@ -60,8 +65,9 @@ async function supabaseMiddleware(request: NextRequest) {
 
   // Refresh session if expired
   const {
-    data: { user },
-  } = await supabase.auth.getUser();
+    data: { session },
+  } = await supabase.auth.getSession();
+  const user = session?.user ?? null;
 
   // Redirect to sign-in if accessing protected route without auth
   if (isProtectedRoute(request.nextUrl.pathname) && !user) {
