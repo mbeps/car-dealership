@@ -6,7 +6,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { SignedOut } from "@clerk/nextjs";
+import { SignedOut } from "@/lib/auth-context";
 import { getFeaturedCars } from "@/actions/home";
 import { CarCard } from "@/components/car-card";
 import { HomeSearch } from "@/components/home-search";

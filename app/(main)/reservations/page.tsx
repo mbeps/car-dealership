@@ -1,5 +1,5 @@
 import { getUserTestDrives } from "@/actions/test-drive";
-import { auth } from "@clerk/nextjs/server";
+import { createClient } from "@/lib/supabase";
 import { redirect } from "next/navigation";
 import { ReservationsList } from "./_components/reservations-list";
 
@@ -10,8 +10,12 @@ export const metadata = {
 
 export default async function ReservationsPage() {
   // Check authentication on server
-  const { userId } = await auth();
-  if (!userId) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
     redirect("/sign-in?redirect=/reservations");
   }
 

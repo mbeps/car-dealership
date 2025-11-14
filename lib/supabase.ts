@@ -10,15 +10,22 @@ const getSupabaseUrl = (): string => {
   return url;
 };
 
-export const createClient = async () => {
-  const publishableKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
-  if (!publishableKey) {
-    throw new Error("NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY is not configured.");
+const getSupabaseAnonKey = (): string => {
+  const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  if (!key) {
+    throw new Error("NEXT_PUBLIC_SUPABASE_ANON_KEY is not configured.");
   }
+  return key;
+};
 
+/**
+ * Creates a Supabase server client for use in Server Components, Server Actions, and Route Handlers.
+ * Handles cookie-based session management for SSR.
+ */
+export const createClient = async () => {
   const cookieStore = await cookies();
 
-  return createServerClient(getSupabaseUrl(), publishableKey, {
+  return createServerClient(getSupabaseUrl(), getSupabaseAnonKey(), {
     cookies: {
       getAll() {
         return cookieStore.getAll();
@@ -36,11 +43,21 @@ export const createClient = async () => {
   });
 };
 
+/**
+ * Re-export createBrowserClient from client-only module
+ */
+export { createBrowserClient } from "./supabase-client";
+
+/**
+ * Creates a Supabase admin client with elevated privileges (service role).
+ * ONLY use server-side for storage operations or privileged maintenance.
+ * Never expose service role to client code.
+ */
 export const createAdminClient = () => {
-  const secretKey = process.env.SUPABASE_SECRET_KEY;
-  if (!secretKey) {
-    throw new Error("SUPABASE_SECRET_KEY is not configured.");
+  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!serviceRoleKey) {
+    throw new Error("SUPABASE_SERVICE_ROLE_KEY is not configured.");
   }
 
-  return createSupabaseClient(getSupabaseUrl(), secretKey);
+  return createSupabaseClient(getSupabaseUrl(), serviceRoleKey);
 };

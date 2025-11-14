@@ -1,7 +1,7 @@
 import { Inter } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/header";
-import { ClerkProvider } from "@clerk/nextjs";
+import { AuthProvider } from "@/lib/auth-context";
 import { Toaster } from "sonner";
 import type { Metadata } from "next";
 
@@ -18,12 +18,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <ClerkProvider>
-      <html lang="en">
-        <head>
-          <link rel="icon" href="/logo-white.png" sizes="any" />
-        </head>
-        <body className={`${inter.className}`}>
+    <html lang="en">
+      <head>
+        <link rel="icon" href="/logo-white.png" sizes="any" />
+      </head>
+      <body className={`${inter.className}`}>
+        <AuthProvider>
           <Header />
           <main className="min-h-screen">{children}</main>
           <Toaster richColors />
@@ -33,8 +33,8 @@ export default function RootLayout({
               <p>Made with 💗 by RoadsideCoder</p>
             </div>
           </footer>
-        </body>
-      </html>
-    </ClerkProvider>
+        </AuthProvider>
+      </body>
+    </html>
   );
 }

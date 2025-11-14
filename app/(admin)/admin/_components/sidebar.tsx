@@ -1,10 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { LayoutDashboard, Car, Calendar, Cog, LogOut } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { SignOutButton } from "@clerk/nextjs";
+import { createBrowserClient } from "@/lib/supabase-client";
 
 // Navigation items
 const routes = [
@@ -32,6 +32,14 @@ const routes = [
 
 export const Sidebar = () => {
   const pathname = usePathname();
+  const router = useRouter();
+
+  const handleSignOut = async () => {
+    const supabase = createBrowserClient();
+    await supabase.auth.signOut();
+    router.push("/");
+    router.refresh();
+  };
 
   return (
     <>
@@ -61,12 +69,13 @@ export const Sidebar = () => {
           ))}
         </div>
         <div className="mt-auto p-6">
-          <SignOutButton>
-            <button className="flex items-center gap-x-2 text-slate-500 text-sm font-medium transition-all hover:text-slate-600">
-              <LogOut className="h-5 w-5" />
-              Log out
-            </button>
-          </SignOutButton>
+          <button
+            onClick={handleSignOut}
+            className="flex items-center gap-x-2 text-slate-500 text-sm font-medium transition-all hover:text-slate-600"
+          >
+            <LogOut className="h-5 w-5" />
+            Log out
+          </button>
         </div>
       </div>
 

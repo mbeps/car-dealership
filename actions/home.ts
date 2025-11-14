@@ -1,51 +1,31 @@
 "use server";
 
-import { db } from "@/lib/prisma";
+import { createClient } from "@/lib/supabase";
 import { SerializedCar } from "@/types";
-
-// Function to serialize car data
-function serializeCarData(car: {
-  id: string;
-  make: string;
-  model: string;
-  year: number;
-  price: import("@prisma/client").Prisma.Decimal;
-  mileage: number;
-  color: string;
-  fuelType: string;
-  transmission: string;
-  bodyType: string;
-  seats: number | null;
-  description: string;
-  status: import("@prisma/client").CarStatus;
-  featured: boolean;
-  images: string[];
-  createdAt: Date;
-  updatedAt: Date;
-}): SerializedCar {
-  return {
-    ...car,
-    price: car.price ? parseFloat(car.price.toString()) : 0,
-    createdAt: car.createdAt?.toISOString(),
-    updatedAt: car.updatedAt?.toISOString(),
-  };
-}
 
 /**
  * Get featured cars for the homepage
  */
 export async function getFeaturedCars(limit = 3): Promise<SerializedCar[]> {
   try {
-    const cars = await db.car.findMany({
-      where: {
-        featured: true,
-        status: "AVAILABLE",
-      },
-      take: limit,
-      orderBy: { createdAt: "desc" },
-    });
+    const supabase = await createClient();
+    
+    const { data: cars, error } = await supabase
+      .from("Car")
+      .select("*")
+      .eq("featured", true)
+      .eq("status", "AVAILABLE")
+      .order("createdAt", { ascending: false })
+      .limit(limit);
 
-    return cars.map(serializeCarData);
+    if (error) throw error;
+
+    return (cars || []).map(car => ({
+      ...car,
+      price: parseFloat(car.price.toString()),
+      createdAt: car.createdAt,
+      updatedAt: car.updatedAt,
+    }));
   } catch (error) {
     throw new Error("Error fetching featured cars:" + (error as Error).message);
   }

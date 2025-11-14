@@ -49,23 +49,18 @@ import {
   getUsers,
   updateUserRole,
 } from "@/actions/settings";
-import { WorkingHourInput, User } from "@/types";
-
-type SerializedUser = Omit<User, "createdAt" | "updatedAt"> & {
-  createdAt: string;
-  updatedAt: string;
-};
+import { WorkingHourInput, User, DayOfWeekEnum } from "@/types";
 
 // Day names for display
-const DAYS = [
-  { value: "MONDAY", label: "Monday" },
-  { value: "TUESDAY", label: "Tuesday" },
-  { value: "WEDNESDAY", label: "Wednesday" },
-  { value: "THURSDAY", label: "Thursday" },
-  { value: "FRIDAY", label: "Friday" },
-  { value: "SATURDAY", label: "Saturday" },
-  { value: "SUNDAY", label: "Sunday" },
-] as const;
+const DAYS: Array<{ value: DayOfWeekEnum; label: string }> = [
+  { value: DayOfWeekEnum.MONDAY, label: "Monday" },
+  { value: DayOfWeekEnum.TUESDAY, label: "Tuesday" },
+  { value: DayOfWeekEnum.WEDNESDAY, label: "Wednesday" },
+  { value: DayOfWeekEnum.THURSDAY, label: "Thursday" },
+  { value: DayOfWeekEnum.FRIDAY, label: "Friday" },
+  { value: DayOfWeekEnum.SATURDAY, label: "Saturday" },
+  { value: DayOfWeekEnum.SUNDAY, label: "Sunday" },
+];
 
 export const SettingsForm = () => {
   const [workingHours, setWorkingHours] = useState<WorkingHourInput[]>(
@@ -73,17 +68,15 @@ export const SettingsForm = () => {
       dayOfWeek: day.value,
       openTime: "09:00",
       closeTime: "18:00",
-      isOpen: day.value !== "SUNDAY",
+      isOpen: day.value !== DayOfWeekEnum.SUNDAY,
     }))
   );
 
   const [userSearch, setUserSearch] = useState("");
   const [confirmAdminDialog, setConfirmAdminDialog] = useState(false);
-  const [userToPromote, setUserToPromote] = useState<SerializedUser | null>(
-    null
-  );
+  const [userToPromote, setUserToPromote] = useState<User | null>(null);
   const [confirmRemoveDialog, setConfirmRemoveDialog] = useState(false);
-  const [userToDemote, setUserToDemote] = useState<SerializedUser | null>(null);
+  const [userToDemote, setUserToDemote] = useState<User | null>(null);
 
   // Custom hooks for API calls
   const {
@@ -126,10 +119,10 @@ export const SettingsForm = () => {
       const dealership = settingsData.data;
 
       // Map the working hours
-      if (dealership.workingHours.length > 0) {
+      if (dealership.workingHours && dealership.workingHours.length > 0) {
         const mappedHours = DAYS.map((day) => {
           // Find matching working hour
-          const hourData = dealership.workingHours.find(
+          const hourData = dealership.workingHours?.find(
             (h) => h.dayOfWeek === day.value
           );
 
@@ -206,7 +199,11 @@ export const SettingsForm = () => {
 
   // Save working hours
   const handleSaveHours = async () => {
-    await saveHours(workingHours);
+    if (!settingsData?.success || !settingsData.data?.id) {
+      toast.error("No dealership found. Please create dealership info first.");
+      return;
+    }
+    await saveHours(settingsData.data.id, workingHours);
   };
 
   // Make user admin

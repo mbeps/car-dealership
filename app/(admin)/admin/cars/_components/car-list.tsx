@@ -47,7 +47,7 @@ import { getCars, deleteCar, updateCarStatus } from "@/actions/cars";
 import { formatCurrency } from "@/lib/helpers";
 import Image from "next/image";
 import { SerializedCar } from "@/types";
-import { CarStatus } from "@prisma/client";
+import { CarStatusEnum as CarStatus } from "@/types";
 
 export const CarsList = () => {
   const router = useRouter();

@@ -1,8 +1,7 @@
 "use server";
 
 import { serializeCarData } from "@/lib/helpers";
-import { db } from "@/lib/prisma";
-import { auth } from "@clerk/nextjs/server";
+import { createClient } from "@/lib/supabase";
 import { revalidatePath } from "next/cache";
 import {
   AdminAuthResult,
@@ -10,15 +9,20 @@ import {
   TestDriveBookingWithUser,
   DashboardData,
 } from "@/types";
-import { BookingStatus } from "@prisma/client";
+
+type BookingStatus = "PENDING" | "CONFIRMED" | "COMPLETED" | "CANCELLED" | "NO_SHOW";
 
 export async function getAdmin(): Promise<AdminAuthResult> {
-  const { userId } = await auth();
-  if (!userId) throw new Error("Unauthorized");
+  const supabase = await createClient();
+  
+  const { data: { user: authUser }, error: authError } = await supabase.auth.getUser();
+  if (authError || !authUser) throw new Error("Unauthorized");
 
-  const user = await db.user.findUnique({
-    where: { clerkUserId: userId },
-  });
+  const { data: user } = await supabase
+    .from("User")
+    .select("*")
+    .eq("supabaseAuthUserId", authUser.id)
+    .single();
 
   // If user not found in our db or not an admin, return not authorized
   if (!user || user.role !== "ADMIN") {
@@ -39,103 +43,75 @@ export async function getAdminTestDrives({
   status?: string;
 }): Promise<ActionResponse<TestDriveBookingWithUser[]>> {
   try {
-    const { userId } = await auth();
-    if (!userId) throw new Error("Unauthorized");
+    const supabase = await createClient();
+    
+    const { data: { user: authUser }, error: authError } = await supabase.auth.getUser();
+    if (authError || !authUser) throw new Error("Unauthorized");
 
     // Verify admin status
-    const user = await db.user.findUnique({
-      where: { clerkUserId: userId },
-    });
+    const { data: user } = await supabase
+      .from("User")
+      .select("*")
+      .eq("supabaseAuthUserId", authUser.id)
+      .single();
 
     if (!user || user.role !== "ADMIN") {
       throw new Error("Unauthorized access");
     }
 
-    // Build where conditions
-    const where: {
-      status?: BookingStatus;
-      OR?: Array<{
-        car?: {
-          OR: Array<{
-            make?: { contains: string; mode: "insensitive" };
-            model?: { contains: string; mode: "insensitive" };
-          }>;
-        };
-        user?: {
-          OR: Array<{
-            name?: { contains: string; mode: "insensitive" };
-            email?: { contains: string; mode: "insensitive" };
-          }>;
-        };
-      }>;
-    } = {};
+    // Build query
+    let query = supabase
+      .from("TestDriveBooking")
+      .select(`
+        *,
+        car:Car(*),
+        user:User(id, name, email, imageUrl, phone)
+      `)
+      .order("bookingDate", { ascending: false })
+      .order("startTime", { ascending: true });
 
     // Add status filter
     if (status) {
-      where.status = status as BookingStatus;
+      query = query.eq("status", status);
     }
 
-    // Add search filter
-    if (search) {
-      where.OR = [
-        {
-          car: {
-            OR: [
-              { make: { contains: search, mode: "insensitive" } },
-              { model: { contains: search, mode: "insensitive" } },
-            ],
-          },
-        },
-        {
-          user: {
-            OR: [
-              { name: { contains: search, mode: "insensitive" } },
-              { email: { contains: search, mode: "insensitive" } },
-            ],
-          },
-        },
-      ];
-    }
+    const { data: bookings, error } = await query;
 
-    // Get bookings
-    const bookings = await db.testDriveBooking.findMany({
-      where,
-      include: {
-        car: true,
-        user: {
-          select: {
-            id: true,
-            name: true,
-            email: true,
-            imageUrl: true,
-            phone: true,
-          },
-        },
-      },
-      orderBy: [{ bookingDate: "desc" }, { startTime: "asc" }],
-    });
+    if (error) throw error;
 
     // Format the bookings
-    const formattedBookings: TestDriveBookingWithUser[] = bookings.map(
+    const formattedBookings: TestDriveBookingWithUser[] = (bookings || []).map(
       (booking) => ({
         id: booking.id,
         carId: booking.carId,
         car: serializeCarData(booking.car),
         userId: booking.userId,
         user: booking.user,
-        bookingDate: booking.bookingDate.toISOString(),
+        bookingDate: booking.bookingDate,
         startTime: booking.startTime,
         endTime: booking.endTime,
         status: booking.status,
         notes: booking.notes,
-        createdAt: booking.createdAt.toISOString(),
-        updatedAt: booking.updatedAt.toISOString(),
+        createdAt: booking.createdAt,
+        updatedAt: booking.updatedAt,
       })
     );
 
+    // Filter by search if provided (client-side filtering for now)
+    let filtered = formattedBookings;
+    if (search) {
+      const searchLower = search.toLowerCase();
+      filtered = formattedBookings.filter(booking => 
+        booking.car.make.toLowerCase().includes(searchLower) ||
+        booking.car.model.toLowerCase().includes(searchLower) ||
+        booking.user.name?.toLowerCase().includes(searchLower) ||
+        booking.user.email.toLowerCase().includes(searchLower)
+      );
+    }
+
     return {
       success: true,
-      data: formattedBookings,
+      data: filtered,
     };
   } catch (error) {
     console.error("Error fetching test drives:", error);
@@ -154,22 +130,28 @@ export async function updateTestDriveStatus(
   newStatus: BookingStatus
 ): Promise<ActionResponse<string>> {
   try {
-    const { userId } = await auth();
-    if (!userId) throw new Error("Unauthorized");
+    const supabase = await createClient();
+    
+    const { data: { user: authUser }, error: authError } = await supabase.auth.getUser();
+    if (authError || !authUser) throw new Error("Unauthorized");
 
     // Verify admin status
-    const user = await db.user.findUnique({
-      where: { clerkUserId: userId },
-    });
+    const { data: user } = await supabase
+      .from("User")
+      .select("*")
+      .eq("supabaseAuthUserId", authUser.id)
+      .single();
 
     if (!user || user.role !== "ADMIN") {
       throw new Error("Unauthorized access");
     }
 
     // Get the booking
-    const booking = await db.testDriveBooking.findUnique({
-      where: { id: bookingId },
-    });
+    const { data: booking } = await supabase
+      .from("TestDriveBooking")
+      .select("*")
+      .eq("id", bookingId)
+      .single();
 
     if (!booking) {
       throw new Error("Booking not found");
@@ -191,10 +173,12 @@ export async function updateTestDriveStatus(
     }
 
     // Update status
-    await db.testDriveBooking.update({
-      where: { id: bookingId },
-      data: { status: newStatus },
-    });
+    const { error: updateError } = await supabase
+      .from("TestDriveBooking")
+      .update({ status: newStatus })
+      .eq("id", bookingId);
+
+    if (updateError) throw updateError;
 
     // Revalidate paths
     revalidatePath("/admin/test-drives");
@@ -215,13 +199,17 @@ export async function getDashboardData(): Promise<
   ActionResponse<DashboardData>
 > {
   try {
-    const { userId } = await auth();
-    if (!userId) throw new Error("Unauthorized");
+    const supabase = await createClient();
+    
+    const { data: { user: authUser }, error: authError } = await supabase.auth.getUser();
+    if (authError || !authUser) throw new Error("Unauthorized");
 
     // Get user
-    const user = await db.user.findUnique({
-      where: { clerkUserId: userId },
-    });
+    const { data: user } = await supabase
+      .from("User")
+      .select("*")
+      .eq("supabaseAuthUserId", authUser.id)
+      .single();
 
     if (!user || user.role !== "ADMIN") {
       return {
@@ -230,55 +218,33 @@ export async function getDashboardData(): Promise<
       };
     }
 
-    // Fetch all necessary data in a single parallel operation
-    const [cars, testDrives] = await Promise.all([
-      // Get all cars with minimal fields
-      db.car.findMany({
-        select: {
-          id: true,
-          status: true,
-          featured: true,
-        },
-      }),
-
-      // Get all test drives with minimal fields
-      db.testDriveBooking.findMany({
-        select: {
-          id: true,
-          status: true,
-          carId: true,
-        },
-      }),
+    // Fetch all necessary data in parallel
+    const [carsResult, testDrivesResult] = await Promise.all([
+      supabase
+        .from("Car")
+        .select("id, status, featured"),
+      supabase
+        .from("TestDriveBooking")
+        .select("id, status, carId"),
     ]);
+
+    const cars = carsResult.data || [];
+    const testDrives = testDrivesResult.data || [];
 
     // Calculate car statistics
     const totalCars = cars.length;
-    const availableCars = cars.filter(
-      (car) => car.status === "AVAILABLE"
-    ).length;
+    const availableCars = cars.filter((car) => car.status === "AVAILABLE").length;
     const soldCars = cars.filter((car) => car.status === "SOLD").length;
-    const unavailableCars = cars.filter(
-      (car) => car.status === "UNAVAILABLE"
-    ).length;
+    const unavailableCars = cars.filter((car) => car.status === "UNAVAILABLE").length;
     const featuredCars = cars.filter((car) => car.featured === true).length;
 
     // Calculate test drive statistics
     const totalTestDrives = testDrives.length;
-    const pendingTestDrives = testDrives.filter(
-      (td) => td.status === "PENDING"
-    ).length;
-    const confirmedTestDrives = testDrives.filter(
-      (td) => td.status === "CONFIRMED"
-    ).length;
-    const completedTestDrives = testDrives.filter(
-      (td) => td.status === "COMPLETED"
-    ).length;
-    const cancelledTestDrives = testDrives.filter(
-      (td) => td.status === "CANCELLED"
-    ).length;
-    const noShowTestDrives = testDrives.filter(
-      (td) => td.status === "NO_SHOW"
-    ).length;
+    const pendingTestDrives = testDrives.filter((td) => td.status === "PENDING").length;
+    const confirmedTestDrives = testDrives.filter((td) => td.status === "CONFIRMED").length;
+    const completedTestDrives = testDrives.filter((td) => td.status === "COMPLETED").length;
+    const cancelledTestDrives = testDrives.filter((td) => td.status === "CANCELLED").length;
+    const noShowTestDrives = testDrives.filter((td) => td.status === "NO_SHOW").length;
 
     // Calculate test drive conversion rate
     const completedTestDriveCarIds = testDrives
@@ -286,8 +252,7 @@ export async function getDashboardData(): Promise<
       .map((td) => td.carId);
 
     const soldCarsAfterTestDrive = cars.filter(
-      (car) =>
-        car.status === "SOLD" && completedTestDriveCarIds.includes(car.id)
+      (car) => car.status === "SOLD" && completedTestDriveCarIds.includes(car.id)
     ).length;
 
     const conversionRate =

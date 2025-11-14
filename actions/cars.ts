@@ -2,12 +2,11 @@
 
 import { revalidatePath } from "next/cache";
 import { v4 as uuidv4 } from "uuid";
-import { db } from "@/lib/prisma";
-import { createAdminClient } from "@/lib/supabase";
-import { auth } from "@clerk/nextjs/server";
+import { createClient, createAdminClient } from "@/lib/supabase";
 import { serializeCarData } from "@/lib/helpers";
 import { ActionResponse, SerializedCar } from "@/types";
-import { CarStatus } from "@prisma/client";
+
+type CarStatus = "AVAILABLE" | "UNAVAILABLE" | "SOLD";
 
 // Car form data type
 interface CarFormData {
@@ -35,21 +34,28 @@ export async function addCar({
   images: string[];
 }): Promise<ActionResponse<null>> {
   try {
-    const { userId } = await auth();
-    if (!userId) throw new Error("Unauthorized");
+    const supabase = await createClient();
 
-    const user = await db.user.findUnique({
-      where: { clerkUserId: userId },
-    });
+    const {
+      data: { user: authUser },
+      error: authError,
+    } = await supabase.auth.getUser();
+    if (authError || !authUser) throw new Error("Unauthorized");
 
-    if (!user) throw new Error("User not found");
+    const { data: user } = await supabase
+      .from("User")
+      .select("*")
+      .eq("supabaseAuthUserId", authUser.id)
+      .single();
+
+    if (!user || user.role !== "ADMIN") throw new Error("Unauthorized");
 
     // Create a unique folder name for this car's images
     const carId = uuidv4();
     const folderPath = `cars/${carId}`;
 
     // Initialize Supabase admin client (uses service role key)
-    const supabase = createAdminClient();
+    const supabaseAdmin = createAdminClient();
 
     // Upload all images to Supabase storage
     const imageUrls: string[] = [];
@@ -76,7 +82,7 @@ export async function addCar({
       const filePath = `${folderPath}/${fileName}`;
 
       // Upload the file buffer directly
-      const { data, error } = await supabase.storage
+      const { data, error } = await supabaseAdmin.storage
         .from("car-images")
         .upload(filePath, imageBuffer, {
           contentType: `image/${fileExtension}`,
@@ -88,7 +94,7 @@ export async function addCar({
       }
 
       // Get the public URL for the uploaded file
-      const publicUrl = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/car-images/${filePath}`; // disable cache in config
+      const publicUrl = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/car-images/${filePath}`;
 
       imageUrls.push(publicUrl);
     }
@@ -98,25 +104,25 @@ export async function addCar({
     }
 
     // Add the car to the database
-    await db.car.create({
-      data: {
-        id: carId, // Use the same ID we used for the folder
-        make: carData.make,
-        model: carData.model,
-        year: carData.year,
-        price: carData.price,
-        mileage: carData.mileage,
-        color: carData.color,
-        fuelType: carData.fuelType,
-        transmission: carData.transmission,
-        bodyType: carData.bodyType,
-        seats: carData.seats,
-        description: carData.description,
-        status: carData.status as CarStatus,
-        featured: carData.featured,
-        images: imageUrls, // Store the array of image URLs
-      },
+    const { error: insertError } = await supabase.from("Car").insert({
+      id: carId,
+      make: carData.make,
+      model: carData.model,
+      year: carData.year,
+      price: carData.price.toString(), // Convert to string for Postgres numeric
+      mileage: carData.mileage,
+      color: carData.color,
+      fuelType: carData.fuelType,
+      transmission: carData.transmission,
+      bodyType: carData.bodyType,
+      seats: carData.seats,
+      description: carData.description,
+      status: carData.status as CarStatus,
+      featured: carData.featured,
+      images: imageUrls,
     });
+
+    if (insertError) throw insertError;
 
     // Revalidate the cars list page
     revalidatePath("/admin/cars");
@@ -135,31 +141,26 @@ export async function getCars(
   search = ""
 ): Promise<ActionResponse<SerializedCar[]>> {
   try {
-    // Build where conditions
-    const where: {
-      OR?: Array<{
-        make?: { contains: string; mode: "insensitive" };
-        model?: { contains: string; mode: "insensitive" };
-        color?: { contains: string; mode: "insensitive" };
-      }>;
-    } = {};
+    const supabase = await createClient();
+
+    // Build query
+    let query = supabase
+      .from("Car")
+      .select("*")
+      .order("createdAt", { ascending: false });
 
     // Add search filter
     if (search) {
-      where.OR = [
-        { make: { contains: search, mode: "insensitive" } },
-        { model: { contains: search, mode: "insensitive" } },
-        { color: { contains: search, mode: "insensitive" } },
-      ];
+      query = query.or(
+        `make.ilike.%${search}%,model.ilike.%${search}%,color.ilike.%${search}%`
+      );
     }
 
-    // Execute main query
-    const cars = await db.car.findMany({
-      where,
-      orderBy: { createdAt: "desc" },
-    });
+    const { data: cars, error } = await query;
 
-    const serializedCars = cars.map((car) => serializeCarData(car));
+    if (error) throw error;
+
+    const serializedCars = (cars || []).map((car) => serializeCarData(car));
 
     return {
       success: true,
@@ -177,16 +178,22 @@ export async function getCars(
 // Delete a car by ID
 export async function deleteCar(id: string): Promise<ActionResponse<null>> {
   try {
-    const { userId } = await auth();
-    if (!userId) throw new Error("Unauthorized");
+    const supabase = await createClient();
+
+    const {
+      data: { user: authUser },
+      error: authError,
+    } = await supabase.auth.getUser();
+    if (authError || !authUser) throw new Error("Unauthorized");
 
     // First, fetch the car to get its images
-    const car = await db.car.findUnique({
-      where: { id },
-      select: { images: true },
-    });
+    const { data: car, error: fetchError } = await supabase
+      .from("Car")
+      .select("images")
+      .eq("id", id)
+      .single();
 
-    if (!car) {
+    if (fetchError || !car) {
       return {
         success: false,
         error: "Car not found",
@@ -194,26 +201,29 @@ export async function deleteCar(id: string): Promise<ActionResponse<null>> {
     }
 
     // Delete the car from the database
-    await db.car.delete({
-      where: { id },
-    });
+    const { error: deleteError } = await supabase
+      .from("Car")
+      .delete()
+      .eq("id", id);
+
+    if (deleteError) throw deleteError;
 
     // Delete the images from Supabase storage
     try {
-      const supabase = createAdminClient();
+      const supabaseAdmin = createAdminClient();
 
       // Extract file paths from image URLs
       const filePaths = car.images
-        .map((imageUrl) => {
+        .map((imageUrl: string) => {
           const url = new URL(imageUrl);
           const pathMatch = url.pathname.match(/\/car-images\/(.*)/);
           return pathMatch ? pathMatch[1] : null;
         })
-        .filter((path): path is string => path !== null);
+        .filter((path: string | null): path is string => path !== null);
 
       // Delete files from storage if paths were extracted
       if (filePaths.length > 0) {
-        const { error } = await supabase.storage
+        const { error } = await supabaseAdmin.storage
           .from("car-images")
           .remove(filePaths);
 
@@ -249,8 +259,13 @@ export async function updateCarStatus(
   { status, featured }: { status?: CarStatus; featured?: boolean }
 ): Promise<ActionResponse<null>> {
   try {
-    const { userId } = await auth();
-    if (!userId) throw new Error("Unauthorized");
+    const supabase = await createClient();
+
+    const {
+      data: { user: authUser },
+      error: authError,
+    } = await supabase.auth.getUser();
+    if (authError || !authUser) throw new Error("Unauthorized");
 
     const updateData: {
       status?: CarStatus;
@@ -266,10 +281,12 @@ export async function updateCarStatus(
     }
 
     // Update the car
-    await db.car.update({
-      where: { id },
-      data: updateData,
-    });
+    const { error } = await supabase
+      .from("Car")
+      .update(updateData)
+      .eq("id", id);
+
+    if (error) throw error;
 
     // Revalidate the cars list page
     revalidatePath("/admin/cars");
