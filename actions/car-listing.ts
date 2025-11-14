@@ -3,6 +3,7 @@
 import { serializeCarData } from "@/lib/helpers";
 import { createClient } from "@/lib/supabase";
 import { revalidatePath } from "next/cache";
+import type { SupabaseClient, User as SupabaseAuthUser } from "@supabase/supabase-js";
 import {
   ActionResponse,
   CarFiltersData,
@@ -11,7 +12,59 @@ import {
   PaginationInfo,
   UserTestDrive,
   SerializedDealershipInfo,
+  User as DbUser,
 } from "@/types";
+
+type DatabaseClient = SupabaseClient<any>;
+
+async function getOrCreateDbUser(
+  supabase: DatabaseClient,
+  authUser: SupabaseAuthUser
+): Promise<DbUser> {
+  const { data: user, error } = await supabase
+    .from("User")
+    .select("*")
+    .eq("supabaseAuthUserId", authUser.id)
+    .maybeSingle();
+
+  if (error && error.code !== "PGRST116") {
+    throw error;
+  }
+
+  if (user) {
+    return user as DbUser;
+  }
+
+  const name =
+    authUser.user_metadata?.full_name ||
+    authUser.user_metadata?.name ||
+    authUser.email?.split("@")[0] ||
+    "User";
+
+  const profilePayload = {
+    id: authUser.id,
+    supabaseAuthUserId: authUser.id,
+    email: authUser.email || "",
+    name,
+    imageUrl:
+      authUser.user_metadata?.avatar_url ||
+      authUser.user_metadata?.picture ||
+      null,
+    phone: authUser.user_metadata?.phone || null,
+  };
+
+  const { data: newUser, error: createError } = await supabase
+    .from("User")
+    .insert(profilePayload)
+    .select()
+    .single();
+
+  if (createError) {
+    throw createError;
+  }
+
+  return newUser as DbUser;
+}
 
 /**
  * Get simplified filters for the car marketplace
@@ -224,13 +277,7 @@ export async function toggleSavedCar(
     } = await supabase.auth.getUser();
     if (authError || !authUser) throw new Error("Unauthorized");
 
-    const { data: user } = await supabase
-      .from("User")
-      .select("*")
-      .eq("supabaseAuthUserId", authUser.id)
-      .single();
-
-    if (!user) throw new Error("User not found");
+    const user = await getOrCreateDbUser(supabase, authUser);
 
     // Check if car exists
     const { data: car } = await supabase
@@ -247,20 +294,28 @@ export async function toggleSavedCar(
     }
 
     // Check if car is already saved
-    const { data: existingSave } = await supabase
+    const { data: existingSave, error: existingSaveError } = await supabase
       .from("UserSavedCar")
       .select("*")
       .eq("userId", user.id)
       .eq("carId", carId)
-      .single();
+      .maybeSingle();
+
+    if (existingSaveError && existingSaveError.code !== "PGRST116") {
+      throw existingSaveError;
+    }
 
     // If car is already saved, remove it
     if (existingSave) {
-      await supabase
+      const { error: deleteError } = await supabase
         .from("UserSavedCar")
         .delete()
         .eq("userId", user.id)
         .eq("carId", carId);
+
+      if (deleteError) {
+        throw deleteError;
+      }
 
       revalidatePath(`/saved-cars`);
       return {
@@ -273,10 +328,16 @@ export async function toggleSavedCar(
     }
 
     // If car is not saved, add it
-    await supabase.from("UserSavedCar").insert({
-      userId: user.id,
-      carId,
-    });
+    const { error: insertError } = await supabase
+      .from("UserSavedCar")
+      .insert({
+        userId: user.id,
+        carId,
+      });
+
+    if (insertError) {
+      throw insertError;
+    }
 
     revalidatePath(`/saved-cars`);
     return {
@@ -416,19 +477,7 @@ export async function getSavedCars(): Promise<ActionResponse<SerializedCar[]>> {
       };
     }
 
-    // Get the user from our database
-    const { data: user } = await supabase
-      .from("User")
-      .select("*")
-      .eq("supabaseAuthUserId", authUser.id)
-      .single();
-
-    if (!user) {
-      return {
-        success: false,
-        error: "User not found",
-      };
-    }
+    const user = await getOrCreateDbUser(supabase, authUser);
 
     // Get saved cars with their details
     const { data: savedCars, error } = await supabase

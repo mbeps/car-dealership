@@ -2,8 +2,12 @@
 
 CREATE OR REPLACE FUNCTION public.set_updated_at()
 RETURNS trigger AS $$
+DECLARE
+  has_updated_at BOOLEAN := to_jsonb(NEW) ? 'updatedAt';
 BEGIN
-  NEW."updatedAt" = timezone('utc', now());
+  IF has_updated_at THEN
+    NEW."updatedAt" = timezone('utc', now());
+  END IF;
   RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
