@@ -72,6 +72,7 @@ export const AddCarForm = () => {
       fuelType: "",
       transmission: "",
       bodyType: "",
+      numberPlate: "",
       seats: "",
       description: "",
       status: "AVAILABLE",
@@ -356,7 +357,23 @@ export const AddCarForm = () => {
               )}
             </div>
 
-            {/* Seats */}
+            {/* Number Plate */}
+            <div className="space-y-2">
+              <Label htmlFor="numberPlate">Number Plate</Label>
+              <Input
+                id="numberPlate"
+                {...register("numberPlate")}
+                placeholder="e.g. AB12CDE"
+                className={errors.numberPlate ? "border-red-500" : ""}
+              />
+              {errors.numberPlate && (
+                <p className="text-xs text-red-500">
+                  {errors.numberPlate.message}
+                </p>
+              )}
+            </div>
+
+            {/* Seats */
             <div className="space-y-2">
               <Label htmlFor="seats">
                 Number of Seats{" "}

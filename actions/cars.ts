@@ -19,6 +19,7 @@ interface CarFormData {
   fuelType: string;
   transmission: string;
   bodyType: string;
+  numberPlate: string;
   seats?: number;
   description: string;
   status: string;
@@ -115,6 +116,7 @@ export async function addCar({
       fuelType: carData.fuelType,
       transmission: carData.transmission,
       bodyType: carData.bodyType,
+      numberPlate: carData.numberPlate,
       seats: carData.seats,
       description: carData.description,
       status: carData.status as CarStatus,

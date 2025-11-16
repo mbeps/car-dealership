@@ -39,6 +39,7 @@ CREATE TABLE public."Car" (
   "fuelType" TEXT NOT NULL,
   "transmission" TEXT NOT NULL,
   "bodyType" TEXT NOT NULL,
+  "numberPlate" TEXT NOT NULL,
   "seats" INTEGER,
   "description" TEXT NOT NULL,
   "status" "CarStatus" NOT NULL DEFAULT 'AVAILABLE',
@@ -127,6 +128,9 @@ CREATE INDEX "Car_year_idx" ON public."Car"("year");
 CREATE INDEX "Car_status_idx" ON public."Car"("status");
 CREATE INDEX "Car_fuelType_idx" ON public."Car"("fuelType");
 CREATE INDEX "Car_featured_idx" ON public."Car"("featured");
+
+-- Index for quick lookups by number plate
+CREATE INDEX "Car_numberPlate_idx" ON public."Car"("numberPlate");
 
 CREATE INDEX "UserSavedCar_userId_idx" ON public."UserSavedCar"("userId");
 CREATE INDEX "UserSavedCar_carId_idx" ON public."UserSavedCar"("carId");
