@@ -1,44 +1,50 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { LayoutDashboard, Car, Calendar, Cog, LogOut } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { createBrowserClient } from "@/lib/supabase-client";
+import { ROUTES } from "@/lib/routes";
+import { signOut } from "@/actions/auth";
 
 // Navigation items
 const routes = [
   {
     label: "Dashboard",
     icon: LayoutDashboard,
-    href: "/admin",
+    href: ROUTES.ADMIN,
   },
   {
     label: "Cars",
     icon: Car,
-    href: "/admin/cars",
+    href: ROUTES.ADMIN_CARS,
   },
   {
     label: "Test Drives",
     icon: Calendar,
-    href: "/admin/test-drives",
+    href: ROUTES.ADMIN_TEST_DRIVES,
   },
   {
     label: "Settings",
     icon: Cog,
-    href: "/admin/settings",
+    href: ROUTES.ADMIN_SETTINGS,
   },
 ];
 
+/**
+ * Admin navigation sidebar.
+ * Desktop: Fixed left sidebar.
+ * Mobile: Bottom tab bar.
+ * Highlights active route and provides sign-out button.
+ *
+ * @see ROUTES - Route constants for navigation
+ * @see signOut - Server action for logout
+ */
 export const Sidebar = () => {
   const pathname = usePathname();
-  const router = useRouter();
 
   const handleSignOut = async () => {
-    const supabase = createBrowserClient();
-    await supabase.auth.signOut();
-    router.push("/");
-    router.refresh();
+    await signOut();
   };
 
   return (
@@ -46,8 +52,8 @@ export const Sidebar = () => {
       {/* Desktop Sidebar */}
       <div className="hidden md:flex h-full flex-col overflow-y-auto bg-white shadow-sm border-r">
         <div className="p-6">
-          <Link href="/admin">
-            <h1 className="text-xl font-bold"> Admin</h1>
+          <Link href={ROUTES.ADMIN}>
+            <h1 className="text-2xl font-bold">Admin</h1>
           </Link>
         </div>
         <div className="flex flex-col w-full">

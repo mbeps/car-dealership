@@ -1,7 +1,5 @@
 "use client";
 
-import { useCallback, useState, useEffect } from "react";
-import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { Filter, X, Sliders } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -22,268 +20,31 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { CarFiltersData } from "@/types";
+import { useCarFilters } from "@/hooks/use-car-filters";
 
+/**
+ * Car inventory filter UI.
+ * Mobile: Sheet drawer with apply button.
+ * Desktop: Sticky sidebar with live filters.
+ * Manages filter state via useCarFilters hook.
+ *
+ * @param filters - Available filter options from server
+ * @see useCarFilters - Hook managing filter state
+ * @see CarFilterControls - Shared filter form controls
+ */
 export const CarFilters = ({ filters }: { filters: CarFiltersData }) => {
-  const router = useRouter();
-  const pathname = usePathname();
-  const searchParams = useSearchParams();
-
-  // Get current filter values from searchParams
-  const currentMake = searchParams.get("make") || "";
-  const currentBodyType = searchParams.get("bodyType") || "";
-  const currentColor = searchParams.get("color") || "";
-  const currentFuelType = searchParams.get("fuelType") || "";
-  const currentTransmission = searchParams.get("transmission") || "";
-  const currentMinPrice = searchParams.get("minPrice")
-    ? parseInt(searchParams.get("minPrice")!)
-    : filters.priceRange.min;
-  const currentMaxPrice = searchParams.get("maxPrice")
-    ? parseInt(searchParams.get("maxPrice")!)
-    : filters.priceRange.max;
-  const currentMinMileage = searchParams.get("minMileage")
-    ? parseInt(searchParams.get("minMileage")!)
-    : filters.mileageRange.min;
-  const currentMaxMileage = searchParams.get("maxMileage")
-    ? parseInt(searchParams.get("maxMileage")!)
-    : filters.mileageRange.max;
-  const currentMinAge = searchParams.get("minAge")
-    ? parseInt(searchParams.get("minAge")!)
-    : filters.ageRange.min;
-  const currentMaxAge = searchParams.get("maxAge")
-    ? parseInt(searchParams.get("maxAge")!)
-    : filters.ageRange.max;
-  const currentSortBy = searchParams.get("sortBy") || "newest";
-
-  // Local state for filters
-  const [make, setMake] = useState(currentMake);
-  const [bodyType, setBodyType] = useState(currentBodyType);
-  const [color, setColor] = useState(currentColor);
-  const [fuelType, setFuelType] = useState(currentFuelType);
-  const [transmission, setTransmission] = useState(currentTransmission);
-  const [priceRange, setPriceRange] = useState([
-    currentMinPrice,
-    currentMaxPrice,
-  ]);
-  const [mileageRange, setMileageRange] = useState([
-    currentMinMileage,
-    currentMaxMileage,
-  ]);
-  const [ageRange, setAgeRange] = useState([currentMinAge, currentMaxAge]);
-  const [sortBy, setSortBy] = useState(currentSortBy);
-  const [isSheetOpen, setIsSheetOpen] = useState(false);
-
-  // Update local state when URL parameters change
-  useEffect(() => {
-    setMake(currentMake);
-    setBodyType(currentBodyType);
-    setColor(currentColor);
-    setFuelType(currentFuelType);
-    setTransmission(currentTransmission);
-    setPriceRange([currentMinPrice, currentMaxPrice]);
-    setMileageRange([currentMinMileage, currentMaxMileage]);
-    setAgeRange([currentMinAge, currentMaxAge]);
-    setSortBy(currentSortBy);
-  }, [
-    currentMake,
-    currentBodyType,
-    currentColor,
-    currentFuelType,
-    currentTransmission,
-    currentMinPrice,
-    currentMaxPrice,
-    currentMinMileage,
-    currentMaxMileage,
-    currentMinAge,
-    currentMaxAge,
-    currentSortBy,
-  ]);
-
-  // Count active filters (including search)
-  const currentSearch = searchParams.get("search") || "";
-  const activeFilterCount = [
-    make,
-    bodyType,
-    color,
-    fuelType,
-    transmission,
-    currentSearch,
-    currentMinPrice > filters.priceRange.min ||
-      currentMaxPrice < filters.priceRange.max,
-    currentMinMileage > filters.mileageRange.min ||
-      currentMaxMileage < filters.mileageRange.max,
-    currentMinAge > filters.ageRange.min ||
-      currentMaxAge < filters.ageRange.max,
-  ].filter(Boolean).length;
-
-  // Update URL when filters change
-  const applyFilters = useCallback(() => {
-    const params = new URLSearchParams();
-
-    if (make) params.set("make", make);
-    if (bodyType) params.set("bodyType", bodyType);
-    if (color) params.set("color", color);
-    if (fuelType) params.set("fuelType", fuelType);
-    if (transmission) params.set("transmission", transmission);
-
-    // Validate and clamp price range
-    let validMinPrice = Math.max(
-      filters.priceRange.min,
-      Math.min(filters.priceRange.max, priceRange[0])
-    );
-    let validMaxPrice = Math.max(
-      filters.priceRange.min,
-      Math.min(filters.priceRange.max, priceRange[1])
-    );
-
-    // Ensure min doesn't exceed max
-    if (validMinPrice > validMaxPrice) {
-      [validMinPrice, validMaxPrice] = [validMaxPrice, validMinPrice];
-    }
-
-    if (validMinPrice > filters.priceRange.min)
-      params.set("minPrice", validMinPrice.toString());
-    if (validMaxPrice < filters.priceRange.max)
-      params.set("maxPrice", validMaxPrice.toString());
-
-    // Validate and clamp mileage range
-    let validMinMileage = Math.max(
-      filters.mileageRange.min,
-      Math.min(filters.mileageRange.max, mileageRange[0])
-    );
-    let validMaxMileage = Math.max(
-      filters.mileageRange.min,
-      Math.min(filters.mileageRange.max, mileageRange[1])
-    );
-
-    // Ensure min doesn't exceed max
-    if (validMinMileage > validMaxMileage) {
-      [validMinMileage, validMaxMileage] = [validMaxMileage, validMinMileage];
-    }
-
-    if (validMinMileage > filters.mileageRange.min)
-      params.set("minMileage", validMinMileage.toString());
-    if (validMaxMileage < filters.mileageRange.max)
-      params.set("maxMileage", validMaxMileage.toString());
-
-    // Validate and clamp age range
-    let validMinAge = Math.max(
-      filters.ageRange.min,
-      Math.min(filters.ageRange.max, ageRange[0])
-    );
-    let validMaxAge = Math.max(
-      filters.ageRange.min,
-      Math.min(filters.ageRange.max, ageRange[1])
-    );
-
-    // Ensure min doesn't exceed max
-    if (validMinAge > validMaxAge) {
-      [validMinAge, validMaxAge] = [validMaxAge, validMinAge];
-    }
-
-    if (validMinAge > filters.ageRange.min)
-      params.set("minAge", validMinAge.toString());
-    if (validMaxAge < filters.ageRange.max)
-      params.set("maxAge", validMaxAge.toString());
-
-    if (sortBy !== "newest") params.set("sortBy", sortBy);
-
-    // Preserve search and page params if they exist
-    const search = searchParams.get("search");
-    const page = searchParams.get("page");
-    if (search) params.set("search", search);
-    if (page && page !== "1") params.set("page", page);
-
-    const query = params.toString();
-    const url = query ? `${pathname}?${query}` : pathname;
-
-    router.push(url);
-    setIsSheetOpen(false);
-  }, [
-    make,
-    bodyType,
-    color,
-    fuelType,
-    transmission,
-    priceRange,
-    mileageRange,
-    ageRange,
+  const {
+    currentFilters,
+    activeFilterCount,
     sortBy,
-    pathname,
-    searchParams,
-    filters.priceRange.min,
-    filters.priceRange.max,
-    filters.mileageRange.min,
-    filters.mileageRange.max,
-    filters.ageRange.min,
-    filters.ageRange.max,
-    router,
-  ]);
-
-  // Handle filter changes
-  const handleFilterChange = (filterName: string, value: string | number[]) => {
-    switch (filterName) {
-      case "make":
-        setMake(value as string);
-        break;
-      case "bodyType":
-        setBodyType(value as string);
-        break;
-      case "color":
-        setColor(value as string);
-        break;
-      case "fuelType":
-        setFuelType(value as string);
-        break;
-      case "transmission":
-        setTransmission(value as string);
-        break;
-      case "priceRange":
-        setPriceRange(value as number[]);
-        break;
-      case "mileageRange":
-        setMileageRange(value as number[]);
-        break;
-      case "ageRange":
-        setAgeRange(value as number[]);
-        break;
-    }
-  };
-
-  // Handle clearing specific filter
-  const handleClearFilter = (filterName: string) => {
-    handleFilterChange(filterName, "");
-  };
-
-  // Clear all filters
-  const clearFilters = () => {
-    setMake("");
-    setBodyType("");
-    setColor("");
-    setFuelType("");
-    setTransmission("");
-    setPriceRange([filters.priceRange.min, filters.priceRange.max]);
-    setMileageRange([filters.mileageRange.min, filters.mileageRange.max]);
-    setAgeRange([filters.ageRange.min, filters.ageRange.max]);
-    setSortBy("newest");
-
-    // Clear all filters including search
-    router.push(pathname);
-    setIsSheetOpen(false);
-  };
-
-  // Current filters object for the controls component
-  const currentFilters = {
-    make,
-    bodyType,
-    color,
-    fuelType,
-    transmission,
-    priceRange,
-    priceRangeMin: filters.priceRange.min,
-    priceRangeMax: filters.priceRange.max,
-    mileageRange,
-    ageRange,
-  };
+    setSortBy,
+    isSheetOpen,
+    setIsSheetOpen,
+    applyFilters,
+    handleFilterChange,
+    handleClearFilter,
+    clearFilters,
+  } = useCarFilters(filters);
 
   return (
     <div className="flex lg:flex-col justify-between gap-4">

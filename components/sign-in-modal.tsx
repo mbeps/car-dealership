@@ -14,6 +14,8 @@ import {
 import Link from "next/link";
 import { Loader2 } from "lucide-react";
 import { useSignIn } from "@/hooks/use-sign-in";
+import { ROUTES } from "@/lib/routes";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 interface SignInModalProps {
   open: boolean;
@@ -29,14 +31,15 @@ export function SignInModal({
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const { loading, signInWithEmail, signInWithGoogle } = useSignIn({
-    onSuccess: () => {
-      onOpenChange(false);
-      setEmail("");
-      setPassword("");
-    },
-    redirectUrl,
-  });
+  const { loading, error, success, signInWithEmail, signInWithGoogle } =
+    useSignIn({
+      onSuccess: () => {
+        onOpenChange(false);
+        setEmail("");
+        setPassword("");
+      },
+      redirectUrl,
+    });
 
   const handleEmailSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -98,6 +101,18 @@ export function SignInModal({
               "Sign in"
             )}
           </Button>
+
+          {error && (
+            <Alert variant="destructive">
+              <AlertDescription>{error}</AlertDescription>
+            </Alert>
+          )}
+
+          {success && (
+            <Alert className="border-green-500 text-green-700">
+              <AlertDescription>{success}</AlertDescription>
+            </Alert>
+          )}
         </form>
 
         <div className="relative my-4">
@@ -142,7 +157,7 @@ export function SignInModal({
         <p className="text-center text-sm text-gray-600 mt-4">
           Don&apos;t have an account?{" "}
           <Link
-            href="/sign-up"
+            href={ROUTES.SIGN_UP}
             className="text-blue-600 hover:underline font-medium"
             onClick={() => onOpenChange(false)}
           >

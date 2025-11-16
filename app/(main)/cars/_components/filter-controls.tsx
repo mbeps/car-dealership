@@ -19,6 +19,18 @@ interface CurrentFilters {
   ageRange: number[];
 }
 
+/**
+ * Shared filter form controls.
+ * Renders make/color/type dropdowns and price/mileage/age range inputs.
+ * Manages local input state before applying to parent.
+ * Used in both mobile sheet and desktop sidebar.
+ *
+ * @param filters - Available filter metadata
+ * @param currentFilters - Current filter values
+ * @param onFilterChange - Callback for filter changes
+ * @param onClearFilter - Callback for clearing individual filter
+ * @see CarFilters - Parent component using this
+ */
 export const CarFilterControls = ({
   filters,
   currentFilters,

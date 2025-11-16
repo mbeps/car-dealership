@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { format, parseISO } from "date-fns";
 import { useForm, Controller } from "react-hook-form";
@@ -11,6 +11,7 @@ import {
   CheckCircle2,
   Loader2,
 } from "lucide-react";
+import { ROUTES } from "@/lib/routes";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { Card, CardContent } from "@/components/ui/card";
@@ -45,6 +46,7 @@ import {
 } from "@/types";
 import { testDriveSchema, TestDriveFormData } from "@/lib/schemas";
 import { formatCurrency } from "@/lib/helpers";
+import Image from "next/image";
 
 interface BookingDetails {
   carId: string;
@@ -66,6 +68,19 @@ interface TimeSlot {
   endTime: string;
 }
 
+/**
+ * Test drive booking form.
+ * Validates date against working hours and existing bookings.
+ * Generates time slots based on dealership schedule.
+ * Filters out unavailable slots.
+ * Shows confirmation dialog before submitting.
+ * Redirects to reservations on success.
+ *
+ * @param car - Car to book test drive for
+ * @param testDriveInfo - Existing booking, dealership, and booked slots
+ * @see testDriveSchema - Form validation schema
+ * @see bookTestDrive - Server action for booking
+ */
 export function TestDriveForm({
   car,
   testDriveInfo,
@@ -103,7 +118,11 @@ export function TestDriveForm({
 
   // Get dealership and booking information
   const dealership = testDriveInfo?.dealership;
-  const existingBookings = testDriveInfo?.existingBookings || [];
+  // Use useMemo to avoid changing existingBookings reference on every render
+  const existingBookings = useMemo(
+    () => testDriveInfo?.existingBookings || [],
+    [testDriveInfo?.existingBookings]
+  );
 
   // Watch date field to update available time slots
   const selectedDate = watch("date");
@@ -195,7 +214,7 @@ export function TestDriveForm({
 
     // Clear time slot selection when date changes
     setValue("timeSlot", "");
-  }, [selectedDate]);
+  }, [selectedDate, dealership?.workingHours, existingBookings, setValue]);
 
   // Create a function to determine which days should be disabled
   const isDayDisabled = (day: Date) => {
@@ -239,7 +258,7 @@ export function TestDriveForm({
   // Close confirmation handler
   const handleCloseConfirmation = () => {
     setShowConfirmation(false);
-    router.push(`/cars/${car.id}`);
+    router.push(ROUTES.CAR_DETAILS(car.id));
   };
 
   return (
@@ -252,10 +271,12 @@ export function TestDriveForm({
 
             <div className="aspect-video rounded-lg overflow-hidden relative mb-4">
               {car.images && car.images.length > 0 ? (
-                <img
+                <Image
                   src={car.images[0]}
                   alt={`${car.year} ${car.make} ${car.model}`}
                   className="object-cover w-full h-full"
+                  width={400}
+                  height={225}
                 />
               ) : (
                 <div className="w-full h-full bg-gray-200 flex items-center justify-center">

@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { ROUTES } from "@/lib/routes";
 import {
   Plus,
   Search,
@@ -51,6 +52,17 @@ import Image from "next/image";
 import { SerializedCar } from "@/types";
 import { CarStatusEnum as CarStatus } from "@/types";
 
+/**
+ * Admin car management table.
+ * Search, view, edit, delete, toggle featured/status.
+ * Desktop: Full table with inline actions.
+ * Mobile: Card grid with action menu.
+ * Refetches after mutations.
+ *
+ * @see getCars - Server action for admin car list
+ * @see useCarAdmin - Hook for delete/update actions
+ * @see ROUTES.ADMIN_CAR_EDIT - Edit page route
+ */
 export const CarsList = () => {
   const router = useRouter();
 
@@ -87,7 +99,7 @@ export const CarsList = () => {
   // Initial fetch and refetch on search changes
   useEffect(() => {
     fetchCars(search);
-  }, [search]);
+  }, [search, fetchCars]);
 
   // Handle errors
   useEffect(() => {
@@ -152,7 +164,7 @@ export const CarsList = () => {
       {/* Actions and Search */}
       <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
         <Button
-          onClick={() => router.push("/admin/cars/create")}
+          onClick={() => router.push(ROUTES.ADMIN_CAR_CREATE)}
           className="flex items-center"
         >
           <Plus className="h-4 w-4" />
@@ -251,14 +263,16 @@ export const CarsList = () => {
                           <DropdownMenuContent align="end">
                             <DropdownMenuLabel>Actions</DropdownMenuLabel>
                             <DropdownMenuItem
-                              onClick={() => router.push(`/cars/${car.id}`)}
+                              onClick={() =>
+                                router.push(ROUTES.CAR_DETAILS(car.id))
+                              }
                             >
                               <Eye className="mr-2 h-4 w-4" />
                               View
                             </DropdownMenuItem>
                             <DropdownMenuItem
                               onClick={() =>
-                                router.push(`/admin/cars/${car.id}/edit`)
+                                router.push(ROUTES.ADMIN_CAR_EDIT(car.id))
                               }
                             >
                               <Pencil className="mr-2 h-4 w-4" />
@@ -330,7 +344,7 @@ export const CarsList = () => {
                   ? "No cars match your search criteria"
                   : "Your inventory is empty. Add cars to get started."}
               </p>
-              <Button onClick={() => router.push("/admin/cars/create")}>
+              <Button onClick={() => router.push(ROUTES.ADMIN_CAR_CREATE)}>
                 Add Your First Car
               </Button>
             </div>

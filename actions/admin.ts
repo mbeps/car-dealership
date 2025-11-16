@@ -3,6 +3,7 @@
 import { serializeCarData } from "@/lib/helpers";
 import { createClient } from "@/lib/supabase";
 import { revalidatePath } from "next/cache";
+import { ROUTES } from "@/lib/routes";
 import {
   AdminAuthResult,
   ActionResponse,
@@ -10,12 +11,27 @@ import {
   DashboardData,
 } from "@/types";
 
-type BookingStatus = "PENDING" | "CONFIRMED" | "COMPLETED" | "CANCELLED" | "NO_SHOW";
+type BookingStatus =
+  | "PENDING"
+  | "CONFIRMED"
+  | "COMPLETED"
+  | "CANCELLED"
+  | "NO_SHOW";
 
+/**
+ * Verifies admin access for protected routes.
+ * Called by admin layout to enforce role-based access.
+ *
+ * @returns Authorization result with user data if admin, or reason if denied
+ * @see ROUTES.ADMIN - Protected admin routes
+ */
 export async function getAdmin(): Promise<AdminAuthResult> {
   const supabase = await createClient();
-  
-  const { data: { user: authUser }, error: authError } = await supabase.auth.getUser();
+
+  const {
+    data: { user: authUser },
+    error: authError,
+  } = await supabase.auth.getUser();
   if (authError || !authUser) throw new Error("Unauthorized");
 
   const { data: user } = await supabase
@@ -33,7 +49,14 @@ export async function getAdmin(): Promise<AdminAuthResult> {
 }
 
 /**
- * Get all test drives for admin with filters
+ * Retrieves filtered test drive bookings for admin dashboard.
+ * Includes user and car details via joins.
+ * Client-side search filters by car make/model or user name/email.
+ *
+ * @param search - Search term for make, model, user name, or email
+ * @param status - Filter by booking status (PENDING, CONFIRMED, etc.)
+ * @returns List of bookings with nested car and user data
+ * @see TestDriveBooking - Database table for bookings
  */
 export async function getAdminTestDrives({
   search = "",
@@ -44,8 +67,11 @@ export async function getAdminTestDrives({
 }): Promise<ActionResponse<TestDriveBookingWithUser[]>> {
   try {
     const supabase = await createClient();
-    
-    const { data: { user: authUser }, error: authError } = await supabase.auth.getUser();
+
+    const {
+      data: { user: authUser },
+      error: authError,
+    } = await supabase.auth.getUser();
     if (authError || !authUser) throw new Error("Unauthorized");
 
     // Verify admin status
@@ -62,7 +88,8 @@ export async function getAdminTestDrives({
     // Build query
     let query = supabase
       .from("TestDriveBooking")
-      .select(`
+      .select(
+        `
         *,
         car:Car(
           *,
@@ -70,7 +97,8 @@ export async function getAdminTestDrives({
           carColor:CarColor(id, name, slug)
         ),
         user:User(id, name, email, imageUrl, phone)
-      `)
+      `
+      )
       .order("bookingDate", { ascending: false })
       .order("startTime", { ascending: true });
 
@@ -105,11 +133,12 @@ export async function getAdminTestDrives({
     let filtered = formattedBookings;
     if (search) {
       const searchLower = search.toLowerCase();
-      filtered = formattedBookings.filter(booking => 
-        booking.car.make.toLowerCase().includes(searchLower) ||
-        booking.car.model.toLowerCase().includes(searchLower) ||
-        booking.user.name?.toLowerCase().includes(searchLower) ||
-        booking.user.email.toLowerCase().includes(searchLower)
+      filtered = formattedBookings.filter(
+        (booking) =>
+          booking.car.make.toLowerCase().includes(searchLower) ||
+          booking.car.model.toLowerCase().includes(searchLower) ||
+          booking.user.name?.toLowerCase().includes(searchLower) ||
+          booking.user.email.toLowerCase().includes(searchLower)
       );
     }
 
@@ -127,7 +156,14 @@ export async function getAdminTestDrives({
 }
 
 /**
- * Update test drive status
+ * Updates booking status from admin panel.
+ * Revalidates admin and user reservation pages.
+ *
+ * @param bookingId - Target booking ID
+ * @param newStatus - New status to apply
+ * @returns Success message or error
+ * @see ROUTES.ADMIN_TEST_DRIVES - Admin test drives page
+ * @see ROUTES.RESERVATIONS - User reservations page
  */
 export async function updateTestDriveStatus(
   bookingId: string,
@@ -135,8 +171,11 @@ export async function updateTestDriveStatus(
 ): Promise<ActionResponse<string>> {
   try {
     const supabase = await createClient();
-    
-    const { data: { user: authUser }, error: authError } = await supabase.auth.getUser();
+
+    const {
+      data: { user: authUser },
+      error: authError,
+    } = await supabase.auth.getUser();
     if (authError || !authUser) throw new Error("Unauthorized");
 
     // Verify admin status
@@ -185,8 +224,8 @@ export async function updateTestDriveStatus(
     if (updateError) throw updateError;
 
     // Revalidate paths
-    revalidatePath("/admin/test-drives");
-    revalidatePath("/reservations");
+    revalidatePath(ROUTES.ADMIN_TEST_DRIVES);
+    revalidatePath(ROUTES.RESERVATIONS);
 
     return {
       success: true,
@@ -199,13 +238,24 @@ export async function updateTestDriveStatus(
   }
 }
 
+/**
+ * Calculates KPIs for admin dashboard.
+ * Aggregates car inventory stats and test drive metrics.
+ * Computes conversion rate from completed test drives to sales.
+ *
+ * @returns Dashboard data with car and test drive statistics
+ * @see DashboardData - Type for dashboard metrics
+ */
 export async function getDashboardData(): Promise<
   ActionResponse<DashboardData>
 > {
   try {
     const supabase = await createClient();
-    
-    const { data: { user: authUser }, error: authError } = await supabase.auth.getUser();
+
+    const {
+      data: { user: authUser },
+      error: authError,
+    } = await supabase.auth.getUser();
     if (authError || !authUser) throw new Error("Unauthorized");
 
     // Get user
@@ -224,12 +274,8 @@ export async function getDashboardData(): Promise<
 
     // Fetch all necessary data in parallel
     const [carsResult, testDrivesResult] = await Promise.all([
-      supabase
-        .from("Car")
-        .select("id, status, featured"),
-      supabase
-        .from("TestDriveBooking")
-        .select("id, status, carId"),
+      supabase.from("Car").select("id, status, featured"),
+      supabase.from("TestDriveBooking").select("id, status, carId"),
     ]);
 
     const cars = carsResult.data || [];
@@ -237,18 +283,32 @@ export async function getDashboardData(): Promise<
 
     // Calculate car statistics
     const totalCars = cars.length;
-    const availableCars = cars.filter((car) => car.status === "AVAILABLE").length;
+    const availableCars = cars.filter(
+      (car) => car.status === "AVAILABLE"
+    ).length;
     const soldCars = cars.filter((car) => car.status === "SOLD").length;
-    const unavailableCars = cars.filter((car) => car.status === "UNAVAILABLE").length;
+    const unavailableCars = cars.filter(
+      (car) => car.status === "UNAVAILABLE"
+    ).length;
     const featuredCars = cars.filter((car) => car.featured === true).length;
 
     // Calculate test drive statistics
     const totalTestDrives = testDrives.length;
-    const pendingTestDrives = testDrives.filter((td) => td.status === "PENDING").length;
-    const confirmedTestDrives = testDrives.filter((td) => td.status === "CONFIRMED").length;
-    const completedTestDrives = testDrives.filter((td) => td.status === "COMPLETED").length;
-    const cancelledTestDrives = testDrives.filter((td) => td.status === "CANCELLED").length;
-    const noShowTestDrives = testDrives.filter((td) => td.status === "NO_SHOW").length;
+    const pendingTestDrives = testDrives.filter(
+      (td) => td.status === "PENDING"
+    ).length;
+    const confirmedTestDrives = testDrives.filter(
+      (td) => td.status === "CONFIRMED"
+    ).length;
+    const completedTestDrives = testDrives.filter(
+      (td) => td.status === "COMPLETED"
+    ).length;
+    const cancelledTestDrives = testDrives.filter(
+      (td) => td.status === "CANCELLED"
+    ).length;
+    const noShowTestDrives = testDrives.filter(
+      (td) => td.status === "NO_SHOW"
+    ).length;
 
     // Calculate test drive conversion rate
     const completedTestDriveCarIds = testDrives
@@ -256,7 +316,8 @@ export async function getDashboardData(): Promise<
       .map((td) => td.carId);
 
     const soldCarsAfterTestDrive = cars.filter(
-      (car) => car.status === "SOLD" && completedTestDriveCarIds.includes(car.id)
+      (car) =>
+        car.status === "SOLD" && completedTestDriveCarIds.includes(car.id)
     ).length;
 
     const conversionRate =

@@ -15,6 +15,16 @@ interface CarGalleryProps {
   carName: string;
 }
 
+/**
+ * Image carousel for car detail page.
+ * Main carousel with thumbnail navigation.
+ * Uses Embla carousel via Shadcn component.
+ * Highlights active thumbnail.
+ *
+ * @param images - Array of image URLs
+ * @param carName - Car name for alt text
+ * @see https://www.embla-carousel.com/
+ */
 export function CarGallery({ images, carName }: CarGalleryProps) {
   const [api, setApi] = useState<CarouselApi>();
   const [currentImageIndex, setCurrentImageIndex] = useState(0);

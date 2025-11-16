@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase";
+import { ROUTES } from "@/lib/routes";
 import { serializeCarData } from "@/lib/helpers";
 import {
   ActionResponse,
@@ -10,7 +11,16 @@ import {
 } from "@/types";
 
 /**
- * Books a test drive for a car
+ * Creates test drive booking from user form.
+ * Blocks admin users from booking via public form.
+ * Validates car availability and slot uniqueness.
+ * Sets initial status to PENDING.
+ * Revalidates test drive and detail pages.
+ *
+ * @param formData - Validated booking details
+ * @returns Created booking or error
+ * @see TestDriveFormData - Zod-validated input
+ * @see TestDriveBooking - Database table
  */
 export async function bookTestDrive(
   formData: TestDriveFormData
@@ -89,8 +99,8 @@ export async function bookTestDrive(
     if (insertError) throw insertError;
 
     // Revalidate relevant paths
-    revalidatePath(`/test-drive/${carId}`);
-    revalidatePath(`/cars/${carId}`);
+    revalidatePath(ROUTES.TEST_DRIVE(carId));
+    revalidatePath(ROUTES.CAR_DETAILS(carId));
 
     return {
       success: true,
@@ -106,7 +116,13 @@ export async function bookTestDrive(
 }
 
 /**
- * Get user's test drive bookings - reservations page
+ * Retrieves user's test drive bookings for reservations page.
+ * Includes full car details with make/color joins.
+ * Sorted by booking date descending.
+ *
+ * @returns User's bookings with nested car data
+ * @see ROUTES.RESERVATIONS - Reservations page
+ * @see TestDriveBookingWithCar - Type with nested car
  */
 export async function getUserTestDrives(): Promise<
   ActionResponse<TestDriveBookingWithCar[]>
@@ -188,7 +204,14 @@ export async function getUserTestDrives(): Promise<
 }
 
 /**
- * Cancel a test drive booking
+ * Cancels test drive booking.
+ * Validates ownership (user owns booking or is admin).
+ * Prevents cancelling already cancelled or completed bookings.
+ * Revalidates reservations and admin pages.
+ *
+ * @param bookingId - Booking to cancel
+ * @returns Success message or error
+ * @see TestDriveBooking.status - Status enum
  */
 export async function cancelTestDrive(
   bookingId: string
@@ -267,8 +290,8 @@ export async function cancelTestDrive(
     if (updateError) throw updateError;
 
     // Revalidate paths
-    revalidatePath("/reservations");
-    revalidatePath("/admin/test-drives");
+    revalidatePath(ROUTES.RESERVATIONS);
+    revalidatePath(ROUTES.ADMIN_TEST_DRIVES);
 
     return {
       success: true,

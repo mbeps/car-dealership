@@ -1,12 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
-
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -15,11 +9,9 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { addCar } from "@/actions/cars";
-import useFetch from "@/hooks/use-fetch";
-import { carFormSchema, CarFormData } from "@/lib/schemas";
 import { CarColorOption, CarMakeOption } from "@/types";
 import { CarFormFields } from "@/components/car-form";
+import { useAddCarForm } from "@/hooks/use-add-car-form";
 
 interface AddCarFormProps {
   carMakes: CarMakeOption[];
@@ -27,69 +19,15 @@ interface AddCarFormProps {
 }
 
 export const AddCarForm = ({ carMakes, carColors }: AddCarFormProps) => {
-  const router = useRouter();
-  const [uploadedImages, setUploadedImages] = useState<string[]>([]);
-  const [imageError, setImageError] = useState("");
-
-  // Initialize form with react-hook-form and zod
-  const form = useForm({
-    resolver: zodResolver(carFormSchema),
-    defaultValues: {
-      carMakeId: "",
-      carColorId: "",
-      model: "",
-      year: "",
-      price: "",
-      mileage: "",
-      fuelType: "",
-      transmission: "",
-      bodyType: "",
-      numberPlate: "",
-      seats: "",
-      description: "",
-      status: "AVAILABLE",
-      featured: false,
-      features: [],
-    },
-  });
-
-  // Custom hooks for API calls
   const {
-    loading: addCarLoading,
-    fn: addCarFn,
-    data: addCarResult,
-  } = useFetch(addCar);
-
-  // Handle successful car addition
-  useEffect(() => {
-    if (addCarResult?.success) {
-      toast.success("Car added successfully");
-      router.push("/admin/cars");
-    }
-  }, [addCarResult, router]);
-
-  const onSubmit = async (data: CarFormData) => {
-    // Check if images are uploaded
-    if (uploadedImages.length === 0) {
-      setImageError("Please upload at least one image");
-      return;
-    }
-
-    // Prepare data for server action
-    const carData = {
-      ...data,
-      year: parseInt(data.year),
-      price: parseFloat(data.price),
-      mileage: parseInt(data.mileage),
-      seats: data.seats ? parseInt(data.seats) : undefined,
-    };
-
-    // Call the addCar function with our useFetch hook
-    await addCarFn({
-      carData,
-      images: uploadedImages,
-    });
-  };
+    form,
+    uploadedImages,
+    setUploadedImages,
+    imageError,
+    setImageError,
+    addCarLoading,
+    onSubmit,
+  } = useAddCarForm();
 
   return (
     <Card className="mt-6">

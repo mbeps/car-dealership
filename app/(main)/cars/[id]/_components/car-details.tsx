@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { useAuth } from "@/lib/auth-context";
+import { ROUTES } from "@/lib/routes";
 import { AlertCircle, Calendar, Trash2, Settings, Pencil } from "lucide-react";
 import {
   Car,
@@ -49,6 +50,19 @@ import {
   SerializedWorkingHour,
 } from "@/types";
 
+/**
+ * Car detail page content.
+ * Displays car specs, images, wishlist toggle, share, test drive CTA.
+ * Admins see status selector, featured toggle, edit/delete actions.
+ * Shows existing test drive booking if user has one.
+ * Includes dealership contact info for inquiries.
+ *
+ * @param car - Full car details with wishlist status
+ * @param testDriveInfo - User's booking and dealership data
+ * @param isAdmin - Whether current user is admin
+ * @see CarGallery - Image carousel component
+ * @see toggleSavedCar - Server action for wishlist
+ */
 export function CarDetails({
   car,
   testDriveInfo,
@@ -81,7 +95,7 @@ export function CarDetails({
   } = useCarAdmin({
     onDeleteSuccess: () => {
       setShowDeleteDialog(false);
-      router.push("/admin/cars");
+      router.push(ROUTES.ADMIN_CARS);
     },
     onUpdateSuccess: () => {
       router.refresh();
@@ -144,20 +158,20 @@ export function CarDetails({
   const handleBookTestDrive = () => {
     if (!isSignedIn) {
       toast.error("Please sign in to book a test drive");
-      openSignInModal(`/test-drive/${car.id}`);
+      openSignInModal(ROUTES.TEST_DRIVE(car.id));
       return;
     }
-    router.push(`/test-drive/${car.id}`);
+    router.push(ROUTES.TEST_DRIVE(car.id));
   };
 
   // Handle admin redirect to test-drives page
   const handleAdminTestDrives = () => {
-    router.push("/admin/test-drives");
+    router.push(ROUTES.ADMIN_TEST_DRIVES);
   };
 
   // Handle edit car
   const handleEditCar = () => {
-    router.push(`/admin/cars/${car.id}/edit`);
+    router.push(ROUTES.ADMIN_CAR_EDIT(car.id));
   };
 
   // Handle delete car

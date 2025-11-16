@@ -7,7 +7,19 @@ import { TestDriveCard } from "@/components/test-drive-card";
 import useFetch from "@/hooks/use-fetch";
 import { cancelTestDrive } from "@/actions/test-drive";
 import { ActionResponse, TestDriveBookingWithCar } from "@/types";
+import { ROUTES } from "@/lib/routes";
 
+/**
+ * User's test drive reservations page.
+ * Groups bookings into upcoming and past.
+ * Allows cancelling PENDING/CONFIRMED bookings.
+ * Shows empty state with CTA to browse cars.
+ *
+ * @param initialData - Server-fetched bookings
+ * @see getUserTestDrives - Server action fetching bookings
+ * @see TestDriveCard - Individual booking card
+ * @see cancelTestDrive - Server action for cancellation
+ */
 export function ReservationsList({
   initialData,
 }: {
@@ -52,7 +64,7 @@ export function ReservationsList({
           book a test drive to get started.
         </p>
         <Button variant="default" asChild>
-          <Link href="/cars">Browse Cars</Link>
+          <Link href={ROUTES.CARS}>Browse Cars</Link>
         </Button>
       </div>
     );

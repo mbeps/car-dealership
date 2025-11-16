@@ -6,6 +6,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
+import { ROUTES } from "@/lib/routes";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -27,6 +28,19 @@ interface EditCarFormProps {
   carColors: CarColorOption[];
 }
 
+/**
+ * Car edit form for admin.
+ * Prepopulates form with existing car data.
+ * Manages three image states: existing, new, removed.
+ * Validates at least one image remains.
+ * Redirects to admin cars list on success.
+ *
+ * @param car - Existing car data to edit
+ * @param carMakes - Available makes for dropdown
+ * @param carColors - Available colors for dropdown
+ * @see updateCar - Server action handling updates
+ * @see CarFormFields - Shared form component
+ */
 export const EditCarForm = ({ car, carMakes, carColors }: EditCarFormProps) => {
   const router = useRouter();
   const [existingImages, setExistingImages] = useState<string[]>(
@@ -69,7 +83,7 @@ export const EditCarForm = ({ car, carMakes, carColors }: EditCarFormProps) => {
   useEffect(() => {
     if (updateCarResult?.success) {
       toast.success("Car updated successfully");
-      router.push("/admin/cars");
+      router.push(ROUTES.ADMIN_CARS);
     }
   }, [updateCarResult, router]);
 
@@ -143,7 +157,7 @@ export const EditCarForm = ({ car, carMakes, carColors }: EditCarFormProps) => {
             <Button
               type="button"
               variant="outline"
-              onClick={() => router.push("/admin/cars")}
+              onClick={() => router.push(ROUTES.ADMIN_CARS)}
               disabled={updateCarLoading}
             >
               Cancel

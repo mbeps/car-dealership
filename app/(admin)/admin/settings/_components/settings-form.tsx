@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
+import Image from "next/image";
 import {
   Save,
   Clock,
@@ -68,6 +69,19 @@ const DAYS: Array<{ value: DayOfWeekEnum; label: string }> = [
   { value: DayOfWeekEnum.SUNDAY, label: "Sunday" },
 ];
 
+/**
+ * Admin settings page with tabs.
+ * Dealership Info: Contact details form.
+ * Working Hours: Weekly schedule editor.
+ * User Management: Admin role assignment table.
+ * Prevents admins from changing own role.
+ *
+ * @see getDealershipInfo - Fetches dealership data
+ * @see updateDealershipInfo - Updates contact info
+ * @see saveWorkingHours - Replaces weekly schedule
+ * @see getUsers - Fetches all users
+ * @see updateUserRole - Changes user role
+ */
 export const SettingsForm = () => {
   const { user: authUser } = useAuth();
   const [workingHours, setWorkingHours] = useState<WorkingHourInput[]>(
@@ -142,7 +156,7 @@ export const SettingsForm = () => {
   useEffect(() => {
     fetchDealershipInfo();
     fetchUsers();
-  }, []);
+  }, [fetchDealershipInfo, fetchUsers]);
 
   // Set working hours when settings data is fetched
   useEffect(() => {
@@ -187,7 +201,7 @@ export const SettingsForm = () => {
         setWorkingHours(mappedHours);
       }
     }
-  }, [settingsData]);
+  }, [settingsData, reset]);
 
   // Handle errors
   useEffect(() => {
@@ -238,7 +252,13 @@ export const SettingsForm = () => {
       toast.success("Dealership information updated successfully");
       fetchDealershipInfo();
     }
-  }, [saveResult, updateRoleResult, updateDealershipResult]);
+  }, [
+    saveResult,
+    updateRoleResult,
+    updateDealershipResult,
+    fetchDealershipInfo,
+    fetchUsers,
+  ]);
 
   // Handle working hours change
   const handleWorkingHourChange = (
@@ -560,9 +580,11 @@ export const SettingsForm = () => {
                               <div className="flex items-center gap-2">
                                 <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden">
                                   {user.imageUrl ? (
-                                    <img
+                                    <Image
                                       src={user.imageUrl}
                                       alt={user.name || "User"}
+                                      width={32}
+                                      height={32}
                                       className="w-full h-full object-cover"
                                     />
                                   ) : (

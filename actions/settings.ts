@@ -4,7 +4,17 @@ import { createClient } from "@/lib/supabase";
 import { revalidatePath } from "next/cache";
 import { ActionResponse, DealershipInfo, WorkingHour, User } from "@/types";
 import { dealershipInfoSchema } from "@/lib/schemas";
+import { ROUTES } from "@/lib/routes";
 
+/**
+ * Fetches dealership contact info and working hours.
+ * Returns singleton record with nested hours.
+ * Used for test drive forms and contact CTAs.
+ *
+ * @returns Dealership info with working hours or null
+ * @see DealershipInfo - Singleton table
+ * @see WorkingHour - Related hours table
+ */
 export async function getDealershipInfo(): Promise<
   ActionResponse<DealershipInfo | null>
 > {
@@ -44,6 +54,16 @@ type WorkingHourInput = Omit<
   "id" | "dealershipId" | "createdAt" | "updatedAt"
 >;
 
+/**
+ * Replaces all working hours for dealership.
+ * Deletes existing hours then inserts new set.
+ * Revalidates admin settings and test drive pages.
+ *
+ * @param dealershipId - Target dealership
+ * @param workingHours - New hours to save
+ * @returns Success message or error
+ * @see WorkingHour - Hours table
+ */
 export async function saveWorkingHours(
   dealershipId: string,
   workingHours: WorkingHourInput[]
@@ -90,7 +110,8 @@ export async function saveWorkingHours(
       if (insertError) throw insertError;
     }
 
-    revalidatePath("/admin/settings");
+    revalidatePath(ROUTES.ADMIN_SETTINGS);
+    // Revalidate test-drive pages as working hours affect availability
     revalidatePath("/test-drive");
 
     return {
@@ -106,6 +127,14 @@ export async function saveWorkingHours(
   }
 }
 
+/**
+ * Fetches all users for admin user management.
+ * Requires admin role.
+ * Sorted by newest first.
+ *
+ * @returns All user records
+ * @see User - Database user table
+ */
 export async function getUsers(): Promise<ActionResponse<User[]>> {
   try {
     const supabase = await createClient();
@@ -148,6 +177,15 @@ export async function getUsers(): Promise<ActionResponse<User[]>> {
   }
 }
 
+/**
+ * Updates user role from admin settings.
+ * Prevents self-role changes.
+ * Revalidates admin settings page.
+ *
+ * @param userId - User to update
+ * @param newRole - ADMIN or USER
+ * @returns Success message or error
+ */
 export async function updateUserRole(
   userId: string,
   newRole: "ADMIN" | "USER"
@@ -188,7 +226,7 @@ export async function updateUserRole(
 
     if (updateError) throw updateError;
 
-    revalidatePath("/admin/settings");
+    revalidatePath(ROUTES.ADMIN_SETTINGS);
 
     return {
       success: true,
@@ -203,6 +241,16 @@ export async function updateUserRole(
   }
 }
 
+/**
+ * Updates dealership contact information.
+ * Validates input with zod schema.
+ * Revalidates settings and test drive pages.
+ *
+ * @param dealershipId - Dealership to update
+ * @param data - New contact info
+ * @returns Success message or error
+ * @see dealershipInfoSchema - Validation schema
+ */
 export async function updateDealershipInfo(
   dealershipId: string,
   data: {
@@ -250,7 +298,8 @@ export async function updateDealershipInfo(
 
     if (updateError) throw updateError;
 
-    revalidatePath("/admin/settings");
+    revalidatePath(ROUTES.ADMIN_SETTINGS);
+    // Revalidate test-drive pages as dealership info is shown there
     revalidatePath("/test-drive");
 
     return {

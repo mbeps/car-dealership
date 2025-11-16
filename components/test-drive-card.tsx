@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/dialog";
 import { TestDriveBookingWithCar, TestDriveBookingWithUser } from "@/types";
 import { BookingStatusEnum as BookingStatus } from "@/types";
+import { ROUTES } from "@/lib/routes";
 
 // Helper function to format time
 const formatTime = (timeString: string): string => {
@@ -160,7 +161,7 @@ export function TestDriveCard({
                 asChild
               >
                 <Link
-                  href={`/cars/${booking.carId}`}
+                  href={ROUTES.CAR_DETAILS(booking.carId)}
                   className="flex items-center justify-center"
                 >
                   View Car

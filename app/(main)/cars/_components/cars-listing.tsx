@@ -11,6 +11,7 @@ import { CarCard } from "@/components/car-card";
 import useFetch from "@/hooks/use-fetch";
 import { getCars } from "@/actions/car-listing";
 import CarListingsLoading from "./car-listing-loading";
+import { ROUTES } from "@/lib/routes";
 
 import {
   Pagination,
@@ -22,6 +23,15 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 
+/**
+ * Main car inventory listing with search and pagination.
+ * Syncs filters from URL params and fetches cars via getCars action.
+ * Displays search bar, car grid, and pagination controls.
+ * Shows loading skeleton during fetches.
+ *
+ * @see getCars - Server action for filtered car query
+ * @see CarCard - Individual car display component
+ */
 export function CarListings() {
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -82,6 +92,7 @@ export function CarListings() {
     maxPrice,
     sortBy,
     page,
+    fetchCars,
   ]);
 
   // Update URL when page changes
@@ -156,7 +167,7 @@ export function CarListings() {
           your filters or search term.
         </p>
         <Button variant="outline" asChild>
-          <Link href="/cars">Clear all filters</Link>
+          <Link href={ROUTES.CARS}>Clear all filters</Link>
         </Button>
       </div>
     );

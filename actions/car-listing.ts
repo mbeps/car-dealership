@@ -3,6 +3,7 @@
 import { serializeCarData } from "@/lib/helpers";
 import { createClient } from "@/lib/supabase";
 import { revalidatePath } from "next/cache";
+import { ROUTES } from "@/lib/routes";
 import type {
   SupabaseClient,
   User as SupabaseAuthUser,
@@ -22,6 +23,14 @@ import {
 
 type DatabaseClient = SupabaseClient<any>;
 
+/**
+ * Resolves make slug to database ID.
+ * Used for translating URL params to database filters.
+ *
+ * @param supabase - Supabase client instance
+ * @param slug - Make slug from URL
+ * @returns Make ID or null if not found
+ */
 async function getMakeIdBySlug(
   supabase: DatabaseClient,
   slug: string
@@ -41,6 +50,14 @@ async function getMakeIdBySlug(
   return data?.id ?? null;
 }
 
+/**
+ * Resolves color slug to database ID.
+ * Used for translating URL params to database filters.
+ *
+ * @param supabase - Supabase client instance
+ * @param slug - Color slug from URL
+ * @returns Color ID or null if not found
+ */
 async function getColorIdBySlug(
   supabase: DatabaseClient,
   slug: string
@@ -60,6 +77,14 @@ async function getColorIdBySlug(
   return data?.id ?? null;
 }
 
+/**
+ * Searches makes by name for search queries.
+ * Enables searching cars by make name.
+ *
+ * @param supabase - Supabase client instance
+ * @param search - Search term
+ * @returns Array of matching make IDs
+ */
 async function getMakeIdsForSearch(
   supabase: DatabaseClient,
   search: string
@@ -78,6 +103,14 @@ async function getMakeIdsForSearch(
   return data?.map((item) => item.id) ?? [];
 }
 
+/**
+ * Searches colors by name for search queries.
+ * Enables searching cars by color name.
+ *
+ * @param supabase - Supabase client instance
+ * @param search - Search term
+ * @returns Array of matching color IDs
+ */
 async function getColorIdsForSearch(
   supabase: DatabaseClient,
   search: string
@@ -96,6 +129,16 @@ async function getColorIdsForSearch(
   return data?.map((item) => item.id) ?? [];
 }
 
+/**
+ * Ensures auth user has database profile.
+ * Similar to ensureProfile but for action context.
+ * Creates profile from OAuth metadata if needed.
+ *
+ * @param supabase - Supabase client instance
+ * @param authUser - Authenticated Supabase user
+ * @returns Database user record
+ * @throws Error if profile creation fails
+ */
 async function getOrCreateDbUser(
   supabase: DatabaseClient,
   authUser: SupabaseAuthUser
@@ -146,7 +189,14 @@ async function getOrCreateDbUser(
 }
 
 /**
- * Get simplified filters for the car marketplace
+ * Computes available filter options from current inventory.
+ * Only returns makes/colors/types present in AVAILABLE cars.
+ * Calculates price/mileage/age ranges dynamically.
+ * Called server-side to hydrate filter UI.
+ *
+ * @returns Filter metadata with all available options and ranges
+ * @see CarFiltersData - Type for filter options
+ * @see useCarFilters - Client hook that uses this data
  */
 export async function getCarFilters(): Promise<ActionResponse<CarFiltersData>> {
   try {
@@ -293,7 +343,14 @@ export async function getCarFilters(): Promise<ActionResponse<CarFiltersData>> {
 }
 
 /**
- * Get cars with simplified filters
+ * Main inventory query with filtering, sorting, and pagination.
+ * Checks user wishlist status for each car if authenticated.
+ * Translates slug-based filters to IDs and builds complex query.
+ *
+ * @param filters - Filter params from URL (make, color, price, etc.)
+ * @returns Paginated car list with wishlist flags
+ * @see CarFilters - Type for filter params
+ * @see serializeCarData - Normalizes car data for client
  */
 export async function getCars(
   filters: CarFilters = {}
@@ -489,7 +546,14 @@ export async function getCars(
 }
 
 /**
- * Toggle car in user's wishlist
+ * Toggles car in user's wishlist.
+ * Creates UserSavedCar record or deletes existing.
+ * Revalidates saved cars page.
+ *
+ * @param carId - Car to save/unsave
+ * @returns Result with saved status and message for toast
+ * @see UserSavedCar - Join table for wishlists
+ * @see ROUTES.SAVED_CARS - Page that displays wishlist
  */
 export async function toggleSavedCar(
   carId: string
@@ -543,7 +607,7 @@ export async function toggleSavedCar(
         throw deleteError;
       }
 
-      revalidatePath(`/saved-cars`);
+      revalidatePath(ROUTES.SAVED_CARS);
       return {
         success: true,
         data: {
@@ -577,7 +641,14 @@ export async function toggleSavedCar(
 }
 
 /**
- * Get car details by ID
+ * Fetches car details with test drive metadata.
+ * Includes dealership info, working hours, existing bookings, user's active booking.
+ * Powers both detail page and test drive form.
+ *
+ * @param carId - Target car ID
+ * @returns Car with nested test drive context
+ * @see ROUTES.CAR_DETAILS - Detail page
+ * @see ROUTES.TEST_DRIVE - Test drive booking page
  */
 export async function getCarById(carId: string): Promise<
   ActionResponse<
@@ -708,7 +779,13 @@ export async function getCarById(carId: string): Promise<
 }
 
 /**
- * Get user's saved cars
+ * Retrieves user's wishlist with car details.
+ * Joins UserSavedCar with full car data and relations.
+ * Sorted by most recently saved.
+ *
+ * @returns User's saved cars with make/color data
+ * @see UserSavedCar - Wishlist join table
+ * @see ROUTES.SAVED_CARS - Page displaying wishlist
  */
 export async function getSavedCars(): Promise<ActionResponse<SerializedCar[]>> {
   try {

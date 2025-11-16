@@ -2,6 +2,7 @@ import { getCarById } from "@/actions/car-listing";
 import { notFound, redirect } from "next/navigation";
 import { TestDriveForm } from "./_components/test-drive-form";
 import { isCurrentUserAdmin } from "@/actions/auth";
+import { ROUTES } from "@/lib/routes";
 
 export async function generateMetadata() {
   return {
@@ -18,7 +19,7 @@ export default async function TestDrivePage({
   // Check if user is admin and redirect to admin panel
   const isAdmin = await isCurrentUserAdmin();
   if (isAdmin) {
-    redirect("/admin/test-drives");
+    redirect(ROUTES.ADMIN_TEST_DRIVES);
   }
 
   // Fetch car details

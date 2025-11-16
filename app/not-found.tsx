@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { ROUTES } from "@/lib/routes";
 
 export default function NotFound() {
   return (
@@ -10,7 +11,7 @@ export default function NotFound() {
         Oops! The page you&apos;re looking for doesn&apos;t exist or has been
         moved.
       </p>
-      <Link href="/">
+      <Link href={ROUTES.HOME}>
         <Button>Return Home</Button>
       </Link>
     </div>

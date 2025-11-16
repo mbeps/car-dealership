@@ -14,8 +14,14 @@ interface UseCarAdminOptions {
 }
 
 /**
- * Hook for managing car admin operations (delete, update status)
- * Handles loading states, success/error toasts, and callbacks
+ * Hook for car admin operations.
+ * Wraps deleteCar and updateCarStatus actions with useFetch.
+ * Shows success/error toasts and triggers callbacks.
+ *
+ * @param options - Callbacks for success events
+ * @returns Loading states and operation handlers
+ * @see deleteCar - Server action for deletion
+ * @see updateCarStatus - Server action for status updates
  */
 export function useCarAdmin(options: UseCarAdminOptions = {}) {
   const router = useRouter();
