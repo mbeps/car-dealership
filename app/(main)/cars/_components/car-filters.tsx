@@ -98,13 +98,15 @@ export const CarFilters = ({ filters }: { filters: CarFiltersData }) => {
     currentSortBy,
   ]);
 
-  // Count active filters
+  // Count active filters (including search)
+  const currentSearch = searchParams.get("search") || "";
   const activeFilterCount = [
     make,
     bodyType,
     color,
     fuelType,
     transmission,
+    currentSearch,
     currentMinPrice > filters.priceRange.min ||
       currentMaxPrice < filters.priceRange.max,
     currentMinMileage > filters.mileageRange.min ||
@@ -264,15 +266,8 @@ export const CarFilters = ({ filters }: { filters: CarFiltersData }) => {
     setAgeRange([filters.ageRange.min, filters.ageRange.max]);
     setSortBy("newest");
 
-    // Keep search term if exists
-    const params = new URLSearchParams();
-    const search = searchParams.get("search");
-    if (search) params.set("search", search);
-
-    const query = params.toString();
-    const url = query ? `${pathname}?${query}` : pathname;
-
-    router.push(url);
+    // Clear all filters including search
+    router.push(pathname);
     setIsSheetOpen(false);
   };
 
