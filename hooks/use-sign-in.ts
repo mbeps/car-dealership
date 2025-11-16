@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createBrowserClient } from "@/lib/supabase-client";
-import { toast } from "sonner";
 
 interface UseSignInOptions {
   onSuccess?: () => void;
@@ -12,11 +11,15 @@ interface UseSignInOptions {
 
 export function useSignIn(options?: UseSignInOptions) {
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
   const router = useRouter();
   const supabase = createBrowserClient();
 
   const signInWithEmail = async (email: string, password: string) => {
     setLoading(true);
+    setError("");
+    setSuccess("");
 
     try {
       const { error } = await supabase.auth.signInWithPassword({
@@ -25,11 +28,11 @@ export function useSignIn(options?: UseSignInOptions) {
       });
 
       if (error) {
-        toast.error(error.message);
+        setError(error.message);
         return { success: false, error };
       }
 
-      toast.success("Signed in successfully!");
+      setSuccess("Signed in successfully!");
 
       if (options?.onSuccess) {
         options.onSuccess();
@@ -42,7 +45,7 @@ export function useSignIn(options?: UseSignInOptions) {
       router.refresh();
       return { success: true };
     } catch (error) {
-      toast.error("An unexpected error occurred");
+      setError("An unexpected error occurred");
       console.error(error);
       return { success: false, error };
     } finally {
@@ -51,6 +54,8 @@ export function useSignIn(options?: UseSignInOptions) {
   };
 
   const signInWithGoogle = async () => {
+    setError("");
+    setSuccess("");
     try {
       const redirectTo = options?.redirectUrl || window.location.pathname;
       const { error } = await supabase.auth.signInWithOAuth({
@@ -65,13 +70,13 @@ export function useSignIn(options?: UseSignInOptions) {
       });
 
       if (error) {
-        toast.error(error.message);
+        setError(error.message);
         return { success: false, error };
       }
 
       return { success: true };
     } catch (error) {
-      toast.error("An unexpected error occurred");
+      setError("An unexpected error occurred");
       console.error(error);
       return { success: false, error };
     }
@@ -79,6 +84,8 @@ export function useSignIn(options?: UseSignInOptions) {
 
   return {
     loading,
+    error,
+    success,
     signInWithEmail,
     signInWithGoogle,
   };

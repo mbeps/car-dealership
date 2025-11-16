@@ -14,14 +14,16 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import Link from "next/link";
-import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 import { ROUTES } from "@/lib/routes";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 export default function SignInPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
   const router = useRouter();
   const searchParams = useSearchParams();
   const redirect = searchParams.get("redirect") || "/";
@@ -30,6 +32,8 @@ export default function SignInPage() {
   const handleEmailSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
+    setError("");
+    setSuccess("");
 
     try {
       const { error } = await supabase.auth.signInWithPassword({
@@ -38,14 +42,14 @@ export default function SignInPage() {
       });
 
       if (error) {
-        toast.error(error.message);
+        setError(error.message);
         return;
       }
 
-      toast.success("Signed in successfully!");
+      setSuccess("Signed in successfully!");
       window.location.href = redirect;
     } catch (error) {
-      toast.error("An unexpected error occurred");
+      setError("An unexpected error occurred");
       console.error(error);
     } finally {
       setLoading(false);
@@ -53,6 +57,8 @@ export default function SignInPage() {
   };
 
   const handleGoogleSignIn = async () => {
+    setError("");
+    setSuccess("");
     try {
       const { error } = await supabase.auth.signInWithOAuth({
         provider: "google",
@@ -66,10 +72,10 @@ export default function SignInPage() {
       });
 
       if (error) {
-        toast.error(error.message);
+        setError(error.message);
       }
     } catch (error) {
-      toast.error("An unexpected error occurred");
+      setError("An unexpected error occurred");
       console.error(error);
     }
   };
@@ -129,6 +135,18 @@ export default function SignInPage() {
                 "Sign in"
               )}
             </Button>
+
+            {error && (
+              <Alert variant="destructive">
+                <AlertDescription>{error}</AlertDescription>
+              </Alert>
+            )}
+
+            {success && (
+              <Alert className="border-green-500 text-green-700">
+                <AlertDescription>{success}</AlertDescription>
+              </Alert>
+            )}
           </form>
 
           <div className="relative my-6">

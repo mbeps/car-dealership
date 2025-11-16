@@ -14,9 +14,9 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import Link from "next/link";
-import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 import { ROUTES } from "@/lib/routes";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 export default function SignUpPage() {
   const [email, setEmail] = useState("");
@@ -24,6 +24,8 @@ export default function SignUpPage() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [fullName, setFullName] = useState("");
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
   const router = useRouter();
   const searchParams = useSearchParams();
   const redirect = searchParams.get("redirect") || "/";
@@ -31,14 +33,16 @@ export default function SignUpPage() {
 
   const handleEmailSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError("");
+    setSuccess("");
 
     if (password !== confirmPassword) {
-      toast.error("Passwords do not match");
+      setError("Passwords do not match");
       return;
     }
 
     if (password.length < 6) {
-      toast.error("Password must be at least 6 characters");
+      setError("Password must be at least 6 characters");
       return;
     }
 
@@ -57,14 +61,16 @@ export default function SignUpPage() {
       });
 
       if (error) {
-        toast.error(error.message);
+        setError(error.message);
         return;
       }
 
-      toast.success("Account created! Please check your email to verify.");
-      router.push(ROUTES.SIGN_IN);
+      setSuccess("Account created! Please check your email to verify.");
+      setTimeout(() => {
+        router.push(ROUTES.SIGN_IN);
+      }, 2000);
     } catch (error) {
-      toast.error("An unexpected error occurred");
+      setError("An unexpected error occurred");
       console.error(error);
     } finally {
       setLoading(false);
@@ -72,6 +78,8 @@ export default function SignUpPage() {
   };
 
   const handleGoogleSignUp = async () => {
+    setError("");
+    setSuccess("");
     try {
       const { error } = await supabase.auth.signInWithOAuth({
         provider: "google",
@@ -85,10 +93,10 @@ export default function SignUpPage() {
       });
 
       if (error) {
-        toast.error(error.message);
+        setError(error.message);
       }
     } catch (error) {
-      toast.error("An unexpected error occurred");
+      setError("An unexpected error occurred");
       console.error(error);
     }
   };
@@ -174,6 +182,18 @@ export default function SignUpPage() {
                 "Sign up"
               )}
             </Button>
+
+            {error && (
+              <Alert variant="destructive">
+                <AlertDescription>{error}</AlertDescription>
+              </Alert>
+            )}
+
+            {success && (
+              <Alert className="border-green-500 text-green-700">
+                <AlertDescription>{success}</AlertDescription>
+              </Alert>
+            )}
           </form>
 
           <div className="relative my-6">
