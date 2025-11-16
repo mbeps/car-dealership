@@ -34,8 +34,8 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { toggleSavedCar } from "@/actions/car-listing";
-import { deleteCar, updateCarStatus } from "@/actions/cars";
 import useFetch from "@/hooks/use-fetch";
+import { useCarAdmin } from "@/hooks/use-car-admin";
 import { formatCurrency } from "@/lib/helpers";
 import { format } from "date-fns";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
@@ -72,18 +72,19 @@ export function CarDetails({
   } = useFetch(toggleSavedCar);
 
   const {
-    loading: deletingCar,
-    fn: deleteCarFn,
-    data: deleteResult,
-    error: deleteError,
-  } = useFetch(deleteCar);
-
-  const {
-    loading: updatingStatus,
-    fn: updateCarStatusFn,
-    data: updateResult,
-    error: updateError,
-  } = useFetch(updateCarStatus);
+    deletingCar,
+    updatingStatus,
+    handleDeleteCar: deleteCarAction,
+    handleUpdateStatus,
+  } = useCarAdmin({
+    onDeleteSuccess: () => {
+      setShowDeleteDialog(false);
+      router.push("/admin/cars");
+    },
+    onUpdateSuccess: () => {
+      router.refresh();
+    },
+  });
 
   // Handle toggle result with useEffect
   useEffect(() => {
@@ -99,36 +100,6 @@ export function CarDetails({
       toast.error("Failed to update favorites");
     }
   }, [toggleError]);
-
-  // Handle delete success
-  useEffect(() => {
-    if (deleteResult?.success) {
-      toast.success("Car deleted successfully");
-      router.push("/admin/cars");
-    }
-  }, [deleteResult, router]);
-
-  // Handle delete error
-  useEffect(() => {
-    if (deleteError) {
-      toast.error("Failed to delete car");
-    }
-  }, [deleteError]);
-
-  // Handle status update success
-  useEffect(() => {
-    if (updateResult?.success) {
-      toast.success("Car status updated");
-      router.refresh();
-    }
-  }, [updateResult, router]);
-
-  // Handle status update error
-  useEffect(() => {
-    if (updateError) {
-      toast.error("Failed to update car status");
-    }
-  }, [updateError]);
 
   // Handle save car
   const handleSaveCar = async () => {
@@ -184,15 +155,15 @@ export function CarDetails({
 
   // Handle delete car
   const handleDeleteCar = async () => {
-    await deleteCarFn(car.id);
-    setShowDeleteDialog(false);
+    await deleteCarAction(car.id);
   };
 
   // Handle status change
   const handleStatusChange = async (newStatus: string) => {
-    await updateCarStatusFn(car.id, {
-      status: newStatus as "AVAILABLE" | "SOLD" | "UNAVAILABLE",
-    });
+    await handleUpdateStatus(
+      car.id,
+      newStatus as "AVAILABLE" | "SOLD" | "UNAVAILABLE"
+    );
   };
 
   return (
