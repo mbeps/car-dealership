@@ -58,6 +58,24 @@ async function getMakeIdsForSearch(
   return data?.map((item) => item.id) ?? [];
 }
 
+async function getColorIdsForSearch(
+  supabase: DatabaseClient,
+  search: string
+): Promise<string[]> {
+  if (!search) return [];
+
+  const { data, error } = await supabase
+    .from("CarColor")
+    .select("id")
+    .ilike("name", `%${search}%`);
+
+  if (error) {
+    throw error;
+  }
+
+  return data?.map((item) => item.id) ?? [];
+}
+
 async function getOrCreateDbUser(
   supabase: DatabaseClient,
   authUser: SupabaseAuthUser
@@ -300,6 +318,9 @@ export async function getCars(
     const makeSearchIds = search
       ? await getMakeIdsForSearch(supabase, search)
       : [];
+    const colorSearchIds = search
+      ? await getColorIdsForSearch(supabase, search)
+      : [];
 
     // Build query
     let query = supabase
@@ -307,7 +328,8 @@ export async function getCars(
       .select(
         `
         *,
-        carMake:CarMake(id, name, slug)
+        carMake:CarMake(id, name, slug),
+        carColor:CarColor(id, name, slug)
       `,
         { count: "exact" }
       )
@@ -319,13 +341,18 @@ export async function getCars(
         `model.ilike.%${search}%`,
         `description.ilike.%${search}%`,
         `bodyType.ilike.%${search}%`,
-        `color.ilike.%${search}%`,
         `numberPlate.ilike.%${search}%`,
       ];
 
       if (makeSearchIds.length) {
         makeSearchIds.forEach((id) => {
           searchClauses.push(`carMakeId.eq.${id}`);
+        });
+      }
+
+      if (colorSearchIds.length) {
+        colorSearchIds.forEach((id) => {
+          searchClauses.push(`carColorId.eq.${id}`);
         });
       }
 
@@ -549,7 +576,8 @@ export async function getCarById(carId: string): Promise<
       .select(
         `
         *,
-        carMake:CarMake(id, name, slug)
+        carMake:CarMake(id, name, slug),
+        carColor:CarColor(id, name, slug)
       `
       )
       .eq("id", carId)
@@ -665,7 +693,8 @@ export async function getSavedCars(): Promise<ActionResponse<SerializedCar[]>> {
         *,
         car:Car(
           *,
-          carMake:CarMake(id, name, slug)
+          carMake:CarMake(id, name, slug),
+          carColor:CarColor(id, name, slug)
         )
       `
       )

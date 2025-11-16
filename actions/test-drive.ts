@@ -147,7 +147,8 @@ export async function getUserTestDrives(): Promise<
         *,
         car:Car(
           *,
-          carMake:CarMake(id, name, slug)
+          carMake:CarMake(id, name, slug),
+          carColor:CarColor(id, name, slug)
         )
       `
       )

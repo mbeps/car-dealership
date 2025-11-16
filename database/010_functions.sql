@@ -24,6 +24,12 @@ BEFORE INSERT OR UPDATE ON public."CarMake"
 FOR EACH ROW
 EXECUTE FUNCTION public.set_updated_at();
 
+DROP TRIGGER IF EXISTS set_updated_at_CarColor ON public."CarColor";
+CREATE TRIGGER set_updated_at_CarColor
+BEFORE INSERT OR UPDATE ON public."CarColor"
+FOR EACH ROW
+EXECUTE FUNCTION public.set_updated_at();
+
 DROP TRIGGER IF EXISTS set_updated_at_Car ON public."Car";
 CREATE TRIGGER set_updated_at_Car
 BEFORE INSERT OR UPDATE ON public."Car"

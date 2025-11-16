@@ -12,6 +12,7 @@ ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT SELECT, INSERT, UPDATE, DELETE O
 ALTER TABLE public."User" ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public."Car" ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public."CarMake" ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public."CarColor" ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public."UserSavedCar" ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public."TestDriveBooking" ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public."DealershipInfo" ENABLE ROW LEVEL SECURITY;
@@ -104,6 +105,32 @@ CREATE POLICY "car_makes_admin_update" ON public."CarMake"
   USING (public.is_admin());
 
 CREATE POLICY "car_makes_admin_delete" ON public."CarMake"
+  FOR DELETE
+  TO authenticated
+  USING (public.is_admin());
+
+-- CarColor table policies --------------------------------------------------
+DROP POLICY IF EXISTS "car_colors_public_read" ON public."CarColor";
+DROP POLICY IF EXISTS "car_colors_admin_insert" ON public."CarColor";
+DROP POLICY IF EXISTS "car_colors_admin_update" ON public."CarColor";
+DROP POLICY IF EXISTS "car_colors_admin_delete" ON public."CarColor";
+
+CREATE POLICY "car_colors_public_read" ON public."CarColor"
+  FOR SELECT
+  TO anon, authenticated
+  USING (TRUE);
+
+CREATE POLICY "car_colors_admin_insert" ON public."CarColor"
+  FOR INSERT
+  TO authenticated
+  WITH CHECK (public.is_admin());
+
+CREATE POLICY "car_colors_admin_update" ON public."CarColor"
+  FOR UPDATE
+  TO authenticated
+  USING (public.is_admin());
+
+CREATE POLICY "car_colors_admin_delete" ON public."CarColor"
   FOR DELETE
   TO authenticated
   USING (public.is_admin());

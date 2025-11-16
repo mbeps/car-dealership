@@ -39,14 +39,24 @@ CREATE TABLE public."CarMake" (
   CONSTRAINT "CarMake_slug_key" UNIQUE ("slug")
 );
 
+CREATE TABLE public."CarColor" (
+  "id" TEXT PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  "name" TEXT NOT NULL,
+  "slug" TEXT NOT NULL,
+  "createdAt" TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  "updatedAt" TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT timezone('utc', now()),
+  CONSTRAINT "CarColor_name_key" UNIQUE ("name"),
+  CONSTRAINT "CarColor_slug_key" UNIQUE ("slug")
+);
+
 CREATE TABLE public."Car" (
   "id" TEXT PRIMARY KEY,
   "carMakeId" TEXT NOT NULL,
+  "carColorId" TEXT NOT NULL,
   "model" TEXT NOT NULL,
   "year" INTEGER NOT NULL,
   "price" NUMERIC(10, 2) NOT NULL,
   "mileage" INTEGER NOT NULL,
-  "color" TEXT NOT NULL,
   "fuelType" TEXT NOT NULL,
   "transmission" TEXT NOT NULL,
   "bodyType" TEXT NOT NULL,
@@ -61,6 +71,12 @@ CREATE TABLE public."Car" (
   CONSTRAINT "Car_carMakeId_fkey"
     FOREIGN KEY ("carMakeId")
     REFERENCES public."CarMake"("id")
+    ON DELETE RESTRICT
+    ON UPDATE CASCADE
+    ,
+  CONSTRAINT "Car_carColorId_fkey"
+    FOREIGN KEY ("carColorId")
+    REFERENCES public."CarColor"("id")
     ON DELETE RESTRICT
     ON UPDATE CASCADE
 );
@@ -146,6 +162,7 @@ CREATE INDEX "Car_status_idx" ON public."Car"("status");
 CREATE INDEX "Car_fuelType_idx" ON public."Car"("fuelType");
 CREATE INDEX "Car_featured_idx" ON public."Car"("featured");
 CREATE INDEX "Car_carMakeId_idx" ON public."Car"("carMakeId");
+CREATE INDEX "Car_carColorId_idx" ON public."Car"("carColorId");
 
 -- Index for quick lookups by number plate
 CREATE INDEX "Car_numberPlate_idx" ON public."Car"("numberPlate");
@@ -216,4 +233,23 @@ VALUES
   ('Vauxhall', 'vauxhall', 'United Kingdom'),
   ('Volkswagen', 'volkswagen', 'Germany'),
   ('Volvo', 'volvo', 'Sweden')
+ON CONFLICT ("slug") DO NOTHING;
+
+INSERT INTO public."CarColor" ("name", "slug")
+VALUES
+  ('Black', 'black'),
+  ('White', 'white'),
+  ('Silver', 'silver'),
+  ('Gray', 'gray'),
+  ('Red', 'red'),
+  ('Blue', 'blue'),
+  ('Green', 'green'),
+  ('Yellow', 'yellow'),
+  ('Orange', 'orange'),
+  ('Brown', 'brown'),
+  ('Beige', 'beige'),
+  ('Gold', 'gold'),
+  ('Purple', 'purple'),
+  ('Pink', 'pink'),
+  ('Gunmetal', 'gunmetal'),
 ON CONFLICT ("slug") DO NOTHING;

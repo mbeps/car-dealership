@@ -16,7 +16,8 @@ export async function getFeaturedCars(limit = 3): Promise<SerializedCar[]> {
       .select(
         `
         *,
-        carMake:CarMake(id, name, slug)
+        carMake:CarMake(id, name, slug),
+        carColor:CarColor(id, name, slug)
       `
       )
       .eq("featured", true)

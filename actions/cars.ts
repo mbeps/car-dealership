@@ -24,14 +24,30 @@ async function getMakeIdsForTerm(
   return data?.map((item) => item.id) ?? [];
 }
 
+async function getColorIdsForTerm(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  term: string
+): Promise<string[]> {
+  if (!term) return [];
+
+  const { data, error } = await supabase
+    .from("CarColor")
+    .select("id")
+    .ilike("name", `%${term}%`);
+
+  if (error) throw error;
+
+  return data?.map((item) => item.id) ?? [];
+}
+
 // Car form data type
 interface CarFormData {
   carMakeId: string;
+  carColorId: string;
   model: string;
   year: number;
   price: number;
   mileage: number;
-  color: string;
   fuelType: string;
   transmission: string;
   bodyType: string;
@@ -124,11 +140,11 @@ export async function addCar({
     const { error: insertError } = await supabase.from("Car").insert({
       id: carId,
       carMakeId: carData.carMakeId,
+      carColorId: carData.carColorId,
       model: carData.model,
       year: carData.year,
       price: carData.price.toString(), // Convert to string for Postgres numeric
       mileage: carData.mileage,
-      color: carData.color,
       fuelType: carData.fuelType,
       transmission: carData.transmission,
       bodyType: carData.bodyType,
@@ -167,7 +183,8 @@ export async function getCars(
       .select(
         `
         *,
-        carMake:CarMake(id, name, slug)
+        carMake:CarMake(id, name, slug),
+        carColor:CarColor(id, name, slug)
       `
       )
       .order("createdAt", { ascending: false });
@@ -175,15 +192,18 @@ export async function getCars(
     // Add search filter
     if (search) {
       const matchingMakeIds = await getMakeIdsForTerm(supabase, search);
+       const matchingColorIds = await getColorIdsForTerm(supabase, search);
       const clauses = [
         `model.ilike.%${search}%`,
-        `color.ilike.%${search}%`,
         `description.ilike.%${search}%`,
         `numberPlate.ilike.%${search}%`,
       ];
 
       matchingMakeIds.forEach((id) => {
         clauses.push(`carMakeId.eq.${id}`);
+      });
+      matchingColorIds.forEach((id) => {
+        clauses.push(`carColorId.eq.${id}`);
       });
 
       query = query.or(clauses.join(","));

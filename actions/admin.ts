@@ -66,7 +66,8 @@ export async function getAdminTestDrives({
         *,
         car:Car(
           *,
-          carMake:CarMake(id, name, slug)
+          carMake:CarMake(id, name, slug),
+          carColor:CarColor(id, name, slug)
         ),
         user:User(id, name, email, imageUrl, phone)
       `)
