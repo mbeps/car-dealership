@@ -13,7 +13,9 @@ import {
   LocateFixed,
   Share2,
   Heart,
-  MessageSquare,
+  Mail,
+  Phone,
+  MessageCircle,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -271,22 +273,54 @@ export function CarDetails({
             </div>
           </div>
 
-          {/* Request More Info */}
+          {/* Contact Information */}
           <Card className="my-6">
             <CardContent className="p-4">
-              <div className="flex items-center gap-2 text-lg font-medium mb-2">
-                <MessageSquare className="h-5 w-5 text-blue-600" />
-                <h3>Have Questions?</h3>
+              <h3 className="text-lg font-semibold mb-4">Have Questions?</h3>
+              <div className="grid grid-cols-3 gap-3">
+                {/* Email Button */}
+                <a
+                  href={`mailto:${testDriveInfo.dealership?.email || ""}`}
+                  className="flex flex-col items-center gap-2 p-3 rounded-lg border hover:bg-gray-50 transition-colors"
+                >
+                  <Mail className="h-5 w-5 text-blue-600" />
+                  <span className="text-xs font-medium">Email</span>
+                  <span className="text-xs text-gray-600 text-center break-all">
+                    {testDriveInfo.dealership?.email || "N/A"}
+                  </span>
+                </a>
+
+                {/* Phone Button */}
+                <a
+                  href={`tel:${testDriveInfo.dealership?.phone || ""}`}
+                  className="flex flex-col items-center gap-2 p-3 rounded-lg border hover:bg-gray-50 transition-colors"
+                >
+                  <Phone className="h-5 w-5 text-blue-600" />
+                  <span className="text-xs font-medium">Phone</span>
+                  <span className="text-xs text-gray-600 text-center">
+                    {testDriveInfo.dealership?.phone || "N/A"}
+                  </span>
+                </a>
+
+                {/* WhatsApp Button */}
+                <a
+                  href={`https://wa.me/${
+                    testDriveInfo.dealership?.whatsappPhone?.replace(
+                      /[^0-9]/g,
+                      ""
+                    ) || ""
+                  }`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex flex-col items-center gap-2 p-3 rounded-lg border hover:bg-gray-50 transition-colors"
+                >
+                  <MessageCircle className="h-5 w-5 text-blue-600" />
+                  <span className="text-xs font-medium">WhatsApp</span>
+                  <span className="text-xs text-gray-600 text-center">
+                    {testDriveInfo.dealership?.whatsappPhone || "N/A"}
+                  </span>
+                </a>
               </div>
-              <p className="text-sm text-gray-600 mb-3">
-                Our representatives are available to answer all your queries
-                about this vehicle.
-              </p>
-              <a href="bepary71@gmail.com">
-                <Button variant="outline" className="w-full">
-                  Request Info
-                </Button>
-              </a>
             </CardContent>
           </Card>
 
