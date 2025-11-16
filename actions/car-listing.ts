@@ -16,6 +16,7 @@ import {
   UserTestDrive,
   SerializedDealershipInfo,
   User as DbUser,
+  CarMakeOption,
 } from "@/types";
 
 type DatabaseClient = SupabaseClient<any>;
@@ -113,11 +114,15 @@ export async function getCarFilters(): Promise<ActionResponse<CarFiltersData>> {
   try {
     const supabase = await createClient();
 
-    // Get available makes from lookup table
+    // Get makes that currently have available cars
     const { data: makes } = await supabase
-      .from("CarMake")
-      .select("id, name, slug, country")
-      .order("name", { ascending: true });
+      .from("Car")
+      .select(
+        `
+        carMake:CarMake(id, name, slug, country)
+      `
+      )
+      .eq("status", "AVAILABLE");
 
     // Get unique body types
     const { data: bodyTypes } = await supabase
@@ -174,13 +179,23 @@ export async function getCarFilters(): Promise<ActionResponse<CarFiltersData>> {
     const maxAge = ages.length > 0 ? Math.max(...ages) : 20;
 
     // Remove duplicates
-    const uniqueMakes =
-      makes?.map((make) => ({
-        id: make.id,
-        name: make.name,
-        slug: make.slug,
-        country: make.country,
-      })) || [];
+    const uniqueMakesMap = new Map<string, CarMakeOption>();
+
+    (makes || []).forEach((entry) => {
+      const make = entry.carMake;
+      if (make && !uniqueMakesMap.has(make.id)) {
+        uniqueMakesMap.set(make.id, {
+          id: make.id,
+          name: make.name,
+          slug: make.slug,
+          country: make.country,
+        });
+      }
+    });
+
+    const uniqueMakes = Array.from(uniqueMakesMap.values()).sort((a, b) =>
+      a.name.localeCompare(b.name)
+    );
     const uniqueBodyTypes = [
       ...new Set(bodyTypes?.map((b) => b.bodyType) || []),
     ];
