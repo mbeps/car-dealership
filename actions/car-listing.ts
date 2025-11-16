@@ -16,9 +16,47 @@ import {
   UserTestDrive,
   SerializedDealershipInfo,
   User as DbUser,
+  CarMakeOption,
 } from "@/types";
 
 type DatabaseClient = SupabaseClient<any>;
+
+async function getMakeIdBySlug(
+  supabase: DatabaseClient,
+  slug: string
+): Promise<string | null> {
+  if (!slug) return null;
+
+  const { data, error } = await supabase
+    .from("CarMake")
+    .select("id")
+    .eq("slug", slug)
+    .maybeSingle();
+
+  if (error && error.code !== "PGRST116") {
+    throw error;
+  }
+
+  return data?.id ?? null;
+}
+
+async function getMakeIdsForSearch(
+  supabase: DatabaseClient,
+  search: string
+): Promise<string[]> {
+  if (!search) return [];
+
+  const { data, error } = await supabase
+    .from("CarMake")
+    .select("id")
+    .ilike("name", `%${search}%`);
+
+  if (error) {
+    throw error;
+  }
+
+  return data?.map((item) => item.id) ?? [];
+}
 
 async function getOrCreateDbUser(
   supabase: DatabaseClient,
@@ -76,12 +114,15 @@ export async function getCarFilters(): Promise<ActionResponse<CarFiltersData>> {
   try {
     const supabase = await createClient();
 
-    // Get unique makes
+    // Get makes that currently have available cars
     const { data: makes } = await supabase
       .from("Car")
-      .select("make")
-      .eq("status", "AVAILABLE")
-      .order("make", { ascending: true });
+      .select(
+        `
+        carMake:CarMake(id, name, slug, country)
+      `
+      )
+      .eq("status", "AVAILABLE");
 
     // Get unique body types
     const { data: bodyTypes } = await supabase
@@ -138,7 +179,28 @@ export async function getCarFilters(): Promise<ActionResponse<CarFiltersData>> {
     const maxAge = ages.length > 0 ? Math.max(...ages) : 20;
 
     // Remove duplicates
-    const uniqueMakes = [...new Set(makes?.map((m) => m.make) || [])];
+    const uniqueMakesMap = new Map<string, CarMakeOption>();
+
+    type CarWithMake = {
+      carMake?: CarMakeOption | CarMakeOption[] | null;
+    };
+
+    (makes as CarWithMake[] | null)?.forEach((entry) => {
+      const makeRaw = entry.carMake;
+      const make = Array.isArray(makeRaw) ? makeRaw[0] : makeRaw;
+      if (make && !uniqueMakesMap.has(make.id)) {
+        uniqueMakesMap.set(make.id, {
+          id: make.id,
+          name: make.name,
+          slug: make.slug,
+          country: make.country,
+        });
+      }
+    });
+
+    const uniqueMakes = Array.from(uniqueMakesMap.values()).sort((a, b) =>
+      a.name.localeCompare(b.name)
+    );
     const uniqueBodyTypes = [
       ...new Set(bodyTypes?.map((b) => b.bodyType) || []),
     ];
@@ -218,21 +280,60 @@ export async function getCars(
       dbUser = data;
     }
 
+    const makeFilterId = make ? await getMakeIdBySlug(supabase, make) : null;
+
+    if (make && !makeFilterId) {
+      return {
+        success: true,
+        data: {
+          cars: [],
+          pagination: {
+            total: 0,
+            page,
+            limit,
+            pages: 0,
+          },
+        },
+      };
+    }
+
+    const makeSearchIds = search
+      ? await getMakeIdsForSearch(supabase, search)
+      : [];
+
     // Build query
     let query = supabase
       .from("Car")
-      .select("*", { count: "exact" })
+      .select(
+        `
+        *,
+        carMake:CarMake(id, name, slug)
+      `,
+        { count: "exact" }
+      )
       .eq("status", "AVAILABLE");
 
     // Add search filter
     if (search) {
-      query = query.or(
-        `make.ilike.%${search}%,model.ilike.%${search}%,description.ilike.%${search}%`
-      );
+      const searchClauses = [
+        `model.ilike.%${search}%`,
+        `description.ilike.%${search}%`,
+        `bodyType.ilike.%${search}%`,
+        `color.ilike.%${search}%`,
+        `numberPlate.ilike.%${search}%`,
+      ];
+
+      if (makeSearchIds.length) {
+        makeSearchIds.forEach((id) => {
+          searchClauses.push(`carMakeId.eq.${id}`);
+        });
+      }
+
+      query = query.or(searchClauses.join(","));
     }
 
     // Add filters
-    if (make) query = query.ilike("make", make);
+    if (makeFilterId) query = query.eq("carMakeId", makeFilterId);
     if (bodyType) query = query.ilike("bodyType", bodyType);
     if (fuelType) query = query.ilike("fuelType", fuelType);
     if (transmission) query = query.ilike("transmission", transmission);
@@ -445,7 +546,12 @@ export async function getCarById(carId: string): Promise<
     // Get car details
     const { data: car, error } = await supabase
       .from("Car")
-      .select("*")
+      .select(
+        `
+        *,
+        carMake:CarMake(id, name, slug)
+      `
+      )
       .eq("id", carId)
       .single();
 
@@ -557,7 +663,10 @@ export async function getSavedCars(): Promise<ActionResponse<SerializedCar[]>> {
       .select(
         `
         *,
-        car:Car(*)
+        car:Car(
+          *,
+          carMake:CarMake(id, name, slug)
+        )
       `
       )
       .eq("userId", user.id)

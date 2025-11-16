@@ -19,7 +19,7 @@ export type TestDriveFormData = z.infer<typeof testDriveSchema>;
  * Schema for car creation/edit form validation
  */
 export const carFormSchema = z.object({
-  make: z.string().min(1, "Make is required"),
+  carMakeId: z.string().min(1, "Make is required"),
   model: z.string().min(1, "Model is required"),
   year: z.string().refine((val) => {
     const year = parseInt(val);

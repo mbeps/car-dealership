@@ -18,6 +18,12 @@ BEFORE INSERT OR UPDATE ON public."User"
 FOR EACH ROW
 EXECUTE FUNCTION public.set_updated_at();
 
+DROP TRIGGER IF EXISTS set_updated_at_CarMake ON public."CarMake";
+CREATE TRIGGER set_updated_at_CarMake
+BEFORE INSERT OR UPDATE ON public."CarMake"
+FOR EACH ROW
+EXECUTE FUNCTION public.set_updated_at();
+
 DROP TRIGGER IF EXISTS set_updated_at_Car ON public."Car";
 CREATE TRIGGER set_updated_at_Car
 BEFORE INSERT OR UPDATE ON public."Car"
