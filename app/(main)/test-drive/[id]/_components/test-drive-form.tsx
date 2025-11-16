@@ -44,6 +44,7 @@ import {
   UserTestDrive,
 } from "@/types";
 import { testDriveSchema, TestDriveFormData } from "@/lib/schemas";
+import { formatCurrency } from "@/lib/helpers";
 
 interface BookingDetails {
   carId: string;
@@ -269,7 +270,7 @@ export function TestDriveForm({
             </h3>
 
             <div className="mt-2 text-xl font-bold text-blue-600">
-              ${car.price.toLocaleString()}
+              {formatCurrency(car.price)}
             </div>
 
             <div className="mt-4 text-sm text-gray-500">
