@@ -1,4 +1,4 @@
-import { ensureProfile } from "@/lib/ensure-profile";
+import { ensureProfile } from "@/actions/auth";
 import HeaderClient from "./header-client";
 
 interface HeaderProps {

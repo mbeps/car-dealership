@@ -1,6 +1,6 @@
 import { getSavedCars } from "@/actions/car-listing";
 import { SavedCarsList } from "./_components/saved-cars-list";
-import { createClient } from "@/lib/supabase";
+import { ensureProfile } from "@/actions/auth";
 import { redirect } from "next/navigation";
 import { createSignInRedirect, ROUTES } from "@/lib/routes";
 
@@ -11,10 +11,7 @@ export const metadata = {
 
 export default async function SavedCarsPage() {
   // Check authentication on server
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await ensureProfile();
 
   if (!user) {
     redirect(createSignInRedirect(ROUTES.SAVED_CARS));

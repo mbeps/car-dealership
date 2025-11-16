@@ -1,11 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { LayoutDashboard, Car, Calendar, Cog, LogOut } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { createBrowserClient } from "@/lib/supabase-client";
 import { ROUTES } from "@/lib/routes";
+import { signOut } from "@/actions/auth";
 
 // Navigation items
 const routes = [
@@ -33,13 +33,9 @@ const routes = [
 
 export const Sidebar = () => {
   const pathname = usePathname();
-  const router = useRouter();
 
   const handleSignOut = async () => {
-    const supabase = createBrowserClient();
-    await supabase.auth.signOut();
-    router.push(ROUTES.HOME);
-    router.refresh();
+    await signOut();
   };
 
   return (

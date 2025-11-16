@@ -1,5 +1,5 @@
 import { getUserTestDrives } from "@/actions/test-drive";
-import { createClient } from "@/lib/supabase";
+import { ensureProfile } from "@/actions/auth";
 import { redirect } from "next/navigation";
 import { ReservationsList } from "./_components/reservations-list";
 import { createSignInRedirect, ROUTES } from "@/lib/routes";
@@ -11,10 +11,7 @@ export const metadata = {
 
 export default async function ReservationsPage() {
   // Check authentication on server
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await ensureProfile();
 
   if (!user) {
     redirect(createSignInRedirect(ROUTES.RESERVATIONS));
