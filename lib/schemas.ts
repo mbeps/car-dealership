@@ -20,6 +20,7 @@ export type TestDriveFormData = z.infer<typeof testDriveSchema>;
  */
 export const carFormSchema = z.object({
   carMakeId: z.string().min(1, "Make is required"),
+  carColorId: z.string().min(1, "Color is required"),
   model: z.string().min(1, "Model is required"),
   year: z.string().refine((val) => {
     const year = parseInt(val);
@@ -27,7 +28,6 @@ export const carFormSchema = z.object({
   }, "Valid year required"),
   price: z.string().min(1, "Price is required"),
   mileage: z.string().min(1, "Mileage is required"),
-  color: z.string().min(1, "Color is required"),
   fuelType: z.string().min(1, "Fuel type is required"),
   transmission: z.string().min(1, "Transmission is required"),
   bodyType: z.string().min(1, "Body type is required"),

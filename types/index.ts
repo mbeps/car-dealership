@@ -53,6 +53,7 @@ type UserSelection = Pick<User, "id" | "name" | "email" | "imageUrl" | "phone">;
 export interface Car {
   id: string;
   carMakeId: string;
+  carColorId: string;
   make: string;
   model: string;
   year: number;
@@ -84,6 +85,16 @@ export interface CarMake {
 export type CarMakeOption = Pick<CarMake, "id" | "name" | "slug"> & {
   country?: string | null;
 };
+
+export interface CarColor {
+  id: string;
+  name: string;
+  slug: string;
+  createdAt: Date | string;
+  updatedAt: Date | string;
+}
+
+export type CarColorOption = Pick<CarColor, "id" | "name" | "slug">;
 
 // TestDriveBooking type
 export interface TestDriveBooking {
@@ -158,6 +169,7 @@ export type SerializedDealershipInfo = DateToString<DealershipInfo> & {
 export interface CarFilters {
   search?: string;
   make?: string;
+  color?: string;
   bodyType?: string;
   fuelType?: string;
   transmission?: string;
@@ -186,6 +198,7 @@ export interface PaginationInfo {
 
 export interface CarFiltersData {
   makes: CarMakeOption[];
+  colors: CarColorOption[];
   bodyTypes: string[];
   fuelTypes: string[];
   transmissions: string[];

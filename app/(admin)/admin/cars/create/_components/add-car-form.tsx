@@ -41,7 +41,7 @@ import {
   CommandList,
 } from "@/components/ui/command";
 import { cn } from "@/lib/utils";
-import { CarMakeOption } from "@/types";
+import { CarColorOption, CarMakeOption } from "@/types";
 
 // Predefined options
 const fuelTypes = ["Petrol", "Diesel", "Electric", "Hybrid", "Plug-in Hybrid"];
@@ -59,14 +59,16 @@ const carStatuses = ["AVAILABLE", "UNAVAILABLE", "SOLD"];
 
 interface AddCarFormProps {
   carMakes: CarMakeOption[];
+  carColors: CarColorOption[];
 }
 
-export const AddCarForm = ({ carMakes }: AddCarFormProps) => {
+export const AddCarForm = ({ carMakes, carColors }: AddCarFormProps) => {
   const router = useRouter();
   const [uploadedImages, setUploadedImages] = useState<string[]>([]);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [imageError, setImageError] = useState("");
   const [makePopoverOpen, setMakePopoverOpen] = useState(false);
+  const [colorPopoverOpen, setColorPopoverOpen] = useState(false);
 
   // Initialize form with react-hook-form and zod
   const {
@@ -80,11 +82,11 @@ export const AddCarForm = ({ carMakes }: AddCarFormProps) => {
     resolver: zodResolver(carFormSchema),
     defaultValues: {
       carMakeId: "",
+      carColorId: "",
       model: "",
       year: "",
       price: "",
       mileage: "",
-      color: "",
       fuelType: "",
       transmission: "",
       bodyType: "",
@@ -97,8 +99,11 @@ export const AddCarForm = ({ carMakes }: AddCarFormProps) => {
   });
 
   const selectedMakeId = watch("carMakeId");
+  const selectedColorId = watch("carColorId");
   const selectedMake = carMakes.find((make) => make.id === selectedMakeId);
+  const selectedColor = carColors.find((color) => color.id === selectedColorId);
   const carMakeIdField = register("carMakeId");
+  const carColorIdField = register("carColorId");
 
   // Custom hooks for API calls
   const {
@@ -334,15 +339,69 @@ export const AddCarForm = ({ carMakes }: AddCarFormProps) => {
 
             {/* Color */}
             <div className="space-y-2">
-              <Label htmlFor="color">Color</Label>
-              <Input
-                id="color"
-                {...register("color")}
-                placeholder="e.g. Blue"
-                className={errors.color ? "border-red-500" : ""}
+              <Label htmlFor="carColorId">Color</Label>
+              <Popover
+                open={colorPopoverOpen}
+                onOpenChange={setColorPopoverOpen}
+              >
+                <PopoverTrigger asChild>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    role="combobox"
+                    aria-expanded={colorPopoverOpen}
+                    className={cn(
+                      "w-full justify-between",
+                      errors.carColorId ? "border-red-500" : ""
+                    )}
+                  >
+                    {selectedColor ? selectedColor.name : "Select color"}
+                    <ChevronsUpDown className="ml-1 h-4 w-4 shrink-0 opacity-50" />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-[280px] p-0">
+                  <Command>
+                    <CommandInput placeholder="Search color..." />
+                    <CommandList>
+                      <CommandEmpty>No color found.</CommandEmpty>
+                      <CommandGroup>
+                        {carColors.map((color) => (
+                          <CommandItem
+                            key={color.id}
+                            value={color.name}
+                            onSelect={() => {
+                              setValue("carColorId", color.id, {
+                                shouldValidate: true,
+                              });
+                              setColorPopoverOpen(false);
+                            }}
+                            className="text-sm"
+                          >
+                            <Check
+                              className={cn(
+                                "mr-2 h-4 w-4",
+                                color.id === selectedColorId
+                                  ? "opacity-100"
+                                  : "opacity-0"
+                              )}
+                            />
+                            {color.name}
+                          </CommandItem>
+                        ))}
+                      </CommandGroup>
+                    </CommandList>
+                  </Command>
+                </PopoverContent>
+              </Popover>
+              <input
+                type="hidden"
+                {...carColorIdField}
+                value={selectedColorId || ""}
               />
-              {errors.color && (
-                <p className="text-xs text-red-500">{errors.color.message}</p>
+              {errors.carColorId && (
+                <p className="text-xs text-red-500">
+                  {errors.carColorId.message}
+                </p>
               )}
             </div>
 

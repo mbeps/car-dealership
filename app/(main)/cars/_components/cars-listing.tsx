@@ -31,6 +31,7 @@ export function CarListings() {
   const search = searchParams.get("search") || "";
   const make = searchParams.get("make") || "";
   const bodyType = searchParams.get("bodyType") || "";
+  const color = searchParams.get("color") || "";
   const fuelType = searchParams.get("fuelType") || "";
   const transmission = searchParams.get("transmission") || "";
   const minPrice = searchParams.get("minPrice")
@@ -53,6 +54,7 @@ export function CarListings() {
     fetchCars({
       search,
       make,
+      color,
       bodyType,
       fuelType,
       transmission,
@@ -65,6 +67,7 @@ export function CarListings() {
   }, [
     search,
     make,
+    color,
     bodyType,
     fuelType,
     transmission,

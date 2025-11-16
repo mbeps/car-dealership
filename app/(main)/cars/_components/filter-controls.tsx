@@ -11,6 +11,7 @@ import { formatCurrency } from "@/lib/helpers";
 interface CurrentFilters {
   make: string;
   bodyType: string;
+  color: string;
   fuelType: string;
   transmission: string;
   priceRange: number[];
@@ -32,6 +33,7 @@ export const CarFilterControls = ({
   const {
     make,
     bodyType,
+    color,
     fuelType,
     transmission,
     priceRange,
@@ -97,6 +99,16 @@ export const CarFilterControls = ({
       })),
       currentValue: make,
       onChange: (value: string) => onFilterChange("make", value),
+    },
+    {
+      id: "color",
+      title: "Color",
+      options: filters.colors.map((color) => ({
+        value: color.slug,
+        label: color.name,
+      })),
+      currentValue: color,
+      onChange: (value: string) => onFilterChange("color", value),
     },
     {
       id: "bodyType",

@@ -17,6 +17,7 @@ import {
   SerializedDealershipInfo,
   User as DbUser,
   CarMakeOption,
+  CarColorOption,
 } from "@/types";
 
 type DatabaseClient = SupabaseClient<any>;
@@ -40,6 +41,25 @@ async function getMakeIdBySlug(
   return data?.id ?? null;
 }
 
+async function getColorIdBySlug(
+  supabase: DatabaseClient,
+  slug: string
+): Promise<string | null> {
+  if (!slug) return null;
+
+  const { data, error } = await supabase
+    .from("CarColor")
+    .select("id")
+    .eq("slug", slug)
+    .maybeSingle();
+
+  if (error && error.code !== "PGRST116") {
+    throw error;
+  }
+
+  return data?.id ?? null;
+}
+
 async function getMakeIdsForSearch(
   supabase: DatabaseClient,
   search: string
@@ -48,6 +68,24 @@ async function getMakeIdsForSearch(
 
   const { data, error } = await supabase
     .from("CarMake")
+    .select("id")
+    .ilike("name", `%${search}%`);
+
+  if (error) {
+    throw error;
+  }
+
+  return data?.map((item) => item.id) ?? [];
+}
+
+async function getColorIdsForSearch(
+  supabase: DatabaseClient,
+  search: string
+): Promise<string[]> {
+  if (!search) return [];
+
+  const { data, error } = await supabase
+    .from("CarColor")
     .select("id")
     .ilike("name", `%${search}%`);
 
@@ -114,12 +152,13 @@ export async function getCarFilters(): Promise<ActionResponse<CarFiltersData>> {
   try {
     const supabase = await createClient();
 
-    // Get makes that currently have available cars
-    const { data: makes } = await supabase
+    // Get makes and colors that currently have available cars
+    const { data: makeAndColorRows } = await supabase
       .from("Car")
       .select(
         `
-        carMake:CarMake(id, name, slug, country)
+        carMake:CarMake(id, name, slug, country),
+        carColor:CarColor(id, name, slug)
       `
       )
       .eq("status", "AVAILABLE");
@@ -180,12 +219,14 @@ export async function getCarFilters(): Promise<ActionResponse<CarFiltersData>> {
 
     // Remove duplicates
     const uniqueMakesMap = new Map<string, CarMakeOption>();
+    const uniqueColorsMap = new Map<string, CarColorOption>();
 
-    type CarWithMake = {
+    type CarWithRelations = {
       carMake?: CarMakeOption | CarMakeOption[] | null;
+      carColor?: CarColorOption | CarColorOption[] | null;
     };
 
-    (makes as CarWithMake[] | null)?.forEach((entry) => {
+    (makeAndColorRows as CarWithRelations[] | null)?.forEach((entry) => {
       const makeRaw = entry.carMake;
       const make = Array.isArray(makeRaw) ? makeRaw[0] : makeRaw;
       if (make && !uniqueMakesMap.has(make.id)) {
@@ -196,9 +237,22 @@ export async function getCarFilters(): Promise<ActionResponse<CarFiltersData>> {
           country: make.country,
         });
       }
+
+      const colorRaw = entry.carColor;
+      const color = Array.isArray(colorRaw) ? colorRaw[0] : colorRaw;
+      if (color && !uniqueColorsMap.has(color.id)) {
+        uniqueColorsMap.set(color.id, {
+          id: color.id,
+          name: color.name,
+          slug: color.slug,
+        });
+      }
     });
 
     const uniqueMakes = Array.from(uniqueMakesMap.values()).sort((a, b) =>
+      a.name.localeCompare(b.name)
+    );
+    const uniqueColors = Array.from(uniqueColorsMap.values()).sort((a, b) =>
       a.name.localeCompare(b.name)
     );
     const uniqueBodyTypes = [
@@ -215,6 +269,7 @@ export async function getCarFilters(): Promise<ActionResponse<CarFiltersData>> {
       success: true,
       data: {
         makes: uniqueMakes,
+        colors: uniqueColors,
         bodyTypes: uniqueBodyTypes,
         fuelTypes: uniqueFuelTypes,
         transmissions: uniqueTransmissions,
@@ -249,6 +304,7 @@ export async function getCars(
     const {
       search = "",
       make = "",
+      color = "",
       bodyType = "",
       fuelType = "",
       transmission = "",
@@ -281,8 +337,11 @@ export async function getCars(
     }
 
     const makeFilterId = make ? await getMakeIdBySlug(supabase, make) : null;
+    const colorFilterId = color
+      ? await getColorIdBySlug(supabase, color)
+      : null;
 
-    if (make && !makeFilterId) {
+    if ((make && !makeFilterId) || (color && !colorFilterId)) {
       return {
         success: true,
         data: {
@@ -300,6 +359,9 @@ export async function getCars(
     const makeSearchIds = search
       ? await getMakeIdsForSearch(supabase, search)
       : [];
+    const colorSearchIds = search
+      ? await getColorIdsForSearch(supabase, search)
+      : [];
 
     // Build query
     let query = supabase
@@ -307,7 +369,8 @@ export async function getCars(
       .select(
         `
         *,
-        carMake:CarMake(id, name, slug)
+        carMake:CarMake(id, name, slug),
+        carColor:CarColor(id, name, slug)
       `,
         { count: "exact" }
       )
@@ -319,7 +382,6 @@ export async function getCars(
         `model.ilike.%${search}%`,
         `description.ilike.%${search}%`,
         `bodyType.ilike.%${search}%`,
-        `color.ilike.%${search}%`,
         `numberPlate.ilike.%${search}%`,
       ];
 
@@ -329,11 +391,18 @@ export async function getCars(
         });
       }
 
+      if (colorSearchIds.length) {
+        colorSearchIds.forEach((id) => {
+          searchClauses.push(`carColorId.eq.${id}`);
+        });
+      }
+
       query = query.or(searchClauses.join(","));
     }
 
     // Add filters
     if (makeFilterId) query = query.eq("carMakeId", makeFilterId);
+    if (colorFilterId) query = query.eq("carColorId", colorFilterId);
     if (bodyType) query = query.ilike("bodyType", bodyType);
     if (fuelType) query = query.ilike("fuelType", fuelType);
     if (transmission) query = query.ilike("transmission", transmission);
@@ -549,7 +618,8 @@ export async function getCarById(carId: string): Promise<
       .select(
         `
         *,
-        carMake:CarMake(id, name, slug)
+        carMake:CarMake(id, name, slug),
+        carColor:CarColor(id, name, slug)
       `
       )
       .eq("id", carId)
@@ -665,7 +735,8 @@ export async function getSavedCars(): Promise<ActionResponse<SerializedCar[]>> {
         *,
         car:Car(
           *,
-          carMake:CarMake(id, name, slug)
+          carMake:CarMake(id, name, slug),
+          carColor:CarColor(id, name, slug)
         )
       `
       )

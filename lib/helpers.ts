@@ -9,12 +9,15 @@ export function serializeCarData(
   wishlisted?: boolean
 ): SerializedCar {
   const carMakeRelation = car.carMake || car.CarMake || null;
+  const carColorRelation = car.carColor || car.CarColor || null;
   const normalizedCar = {
     ...car,
     carMakeId: car.carMakeId ?? carMakeRelation?.id ?? "",
     make: car.make ?? carMakeRelation?.name ?? "",
+    carColorId: car.carColorId ?? carColorRelation?.id ?? "",
+    color: car.color ?? carColorRelation?.name ?? "",
   };
-  const { carMake, CarMake, ...rest } = normalizedCar;
+  const { carMake, CarMake, carColor, CarColor, ...rest } = normalizedCar;
 
   return {
     ...rest,
