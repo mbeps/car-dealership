@@ -181,8 +181,13 @@ export async function getCarFilters(): Promise<ActionResponse<CarFiltersData>> {
     // Remove duplicates
     const uniqueMakesMap = new Map<string, CarMakeOption>();
 
-    (makes || []).forEach((entry) => {
-      const make = entry.carMake;
+    type CarWithMake = {
+      carMake?: CarMakeOption | CarMakeOption[] | null;
+    };
+
+    (makes as CarWithMake[] | null)?.forEach((entry) => {
+      const makeRaw = entry.carMake;
+      const make = Array.isArray(makeRaw) ? makeRaw[0] : makeRaw;
       if (make && !uniqueMakesMap.has(make.id)) {
         uniqueMakesMap.set(make.id, {
           id: make.id,
