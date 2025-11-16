@@ -88,7 +88,7 @@ export const CarsList = () => {
   // Initial fetch and refetch on search changes
   useEffect(() => {
     fetchCars(search);
-  }, [search]);
+  }, [search, fetchCars]);
 
   // Handle errors
   useEffect(() => {

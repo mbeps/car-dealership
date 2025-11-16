@@ -143,7 +143,7 @@ export const SettingsForm = () => {
   useEffect(() => {
     fetchDealershipInfo();
     fetchUsers();
-  }, []);
+  }, [fetchDealershipInfo, fetchUsers]);
 
   // Set working hours when settings data is fetched
   useEffect(() => {
@@ -188,7 +188,7 @@ export const SettingsForm = () => {
         setWorkingHours(mappedHours);
       }
     }
-  }, [settingsData]);
+  }, [settingsData, reset]);
 
   // Handle errors
   useEffect(() => {
@@ -239,7 +239,13 @@ export const SettingsForm = () => {
       toast.success("Dealership information updated successfully");
       fetchDealershipInfo();
     }
-  }, [saveResult, updateRoleResult, updateDealershipResult]);
+  }, [
+    saveResult,
+    updateRoleResult,
+    updateDealershipResult,
+    fetchDealershipInfo,
+    fetchUsers,
+  ]);
 
   // Handle working hours change
   const handleWorkingHourChange = (

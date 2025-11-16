@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { format, parseISO } from "date-fns";
 import { useForm, Controller } from "react-hook-form";
@@ -46,6 +46,7 @@ import {
 } from "@/types";
 import { testDriveSchema, TestDriveFormData } from "@/lib/schemas";
 import { formatCurrency } from "@/lib/helpers";
+import Image from "next/image";
 
 interface BookingDetails {
   carId: string;
@@ -104,7 +105,11 @@ export function TestDriveForm({
 
   // Get dealership and booking information
   const dealership = testDriveInfo?.dealership;
-  const existingBookings = testDriveInfo?.existingBookings || [];
+  // Use useMemo to avoid changing existingBookings reference on every render
+  const existingBookings = useMemo(
+    () => testDriveInfo?.existingBookings || [],
+    [testDriveInfo?.existingBookings]
+  );
 
   // Watch date field to update available time slots
   const selectedDate = watch("date");
@@ -196,7 +201,7 @@ export function TestDriveForm({
 
     // Clear time slot selection when date changes
     setValue("timeSlot", "");
-  }, [selectedDate]);
+  }, [selectedDate, dealership?.workingHours, existingBookings, setValue]);
 
   // Create a function to determine which days should be disabled
   const isDayDisabled = (day: Date) => {
@@ -253,10 +258,12 @@ export function TestDriveForm({
 
             <div className="aspect-video rounded-lg overflow-hidden relative mb-4">
               {car.images && car.images.length > 0 ? (
-                <img
+                <Image
                   src={car.images[0]}
                   alt={`${car.year} ${car.make} ${car.model}`}
                   className="object-cover w-full h-full"
+                  width={400}
+                  height={225}
                 />
               ) : (
                 <div className="w-full h-full bg-gray-200 flex items-center justify-center">

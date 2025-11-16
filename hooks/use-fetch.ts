@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { toast } from "sonner";
 
 type UseFetchResult<T, Args extends unknown[]> = {
@@ -16,22 +16,25 @@ const useFetch = <T, Args extends unknown[] = []>(
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<Error | null>(null);
 
-  const fn = async (...args: Args) => {
-    setLoading(true);
-    setError(null);
-
-    try {
-      const response = await cb(...args);
-      setData(response);
+  const fn = useCallback(
+    async (...args: Args) => {
+      setLoading(true);
       setError(null);
-    } catch (error) {
-      const err = error as Error;
-      setError(err);
-      toast.error(err.message);
-    } finally {
-      setLoading(false);
-    }
-  };
+
+      try {
+        const response = await cb(...args);
+        setData(response);
+        setError(null);
+      } catch (error) {
+        const err = error as Error;
+        setError(err);
+        toast.error(err.message);
+      } finally {
+        setLoading(false);
+      }
+    },
+    [cb]
+  );
 
   return { data, loading, error, fn, setData };
 };

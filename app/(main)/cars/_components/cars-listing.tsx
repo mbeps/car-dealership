@@ -83,6 +83,7 @@ export function CarListings() {
     maxPrice,
     sortBy,
     page,
+    fetchCars,
   ]);
 
   // Update URL when page changes
