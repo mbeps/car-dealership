@@ -9,6 +9,16 @@ interface UseSignInOptions {
   redirectUrl?: string;
 }
 
+/**
+ * Hook for email and Google OAuth sign-in.
+ * Manages Supabase auth flows with loading/error states.
+ * Handles redirects and success callbacks.
+ *
+ * @param options - Success callback and redirect URL
+ * @returns Sign-in methods, loading, error, and success states
+ * @see SignInModal - Component using this hook
+ * @see https://supabase.com/docs/reference/javascript/auth-signinwithpassword
+ */
 export function useSignIn(options?: UseSignInOptions) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");

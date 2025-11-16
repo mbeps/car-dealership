@@ -18,6 +18,13 @@ type BookingStatus =
   | "CANCELLED"
   | "NO_SHOW";
 
+/**
+ * Verifies admin access for protected routes.
+ * Called by admin layout to enforce role-based access.
+ *
+ * @returns Authorization result with user data if admin, or reason if denied
+ * @see ROUTES.ADMIN - Protected admin routes
+ */
 export async function getAdmin(): Promise<AdminAuthResult> {
   const supabase = await createClient();
 
@@ -42,7 +49,14 @@ export async function getAdmin(): Promise<AdminAuthResult> {
 }
 
 /**
- * Get all test drives for admin with filters
+ * Retrieves filtered test drive bookings for admin dashboard.
+ * Includes user and car details via joins.
+ * Client-side search filters by car make/model or user name/email.
+ *
+ * @param search - Search term for make, model, user name, or email
+ * @param status - Filter by booking status (PENDING, CONFIRMED, etc.)
+ * @returns List of bookings with nested car and user data
+ * @see TestDriveBooking - Database table for bookings
  */
 export async function getAdminTestDrives({
   search = "",
@@ -142,7 +156,14 @@ export async function getAdminTestDrives({
 }
 
 /**
- * Update test drive status
+ * Updates booking status from admin panel.
+ * Revalidates admin and user reservation pages.
+ *
+ * @param bookingId - Target booking ID
+ * @param newStatus - New status to apply
+ * @returns Success message or error
+ * @see ROUTES.ADMIN_TEST_DRIVES - Admin test drives page
+ * @see ROUTES.RESERVATIONS - User reservations page
  */
 export async function updateTestDriveStatus(
   bookingId: string,
@@ -217,6 +238,14 @@ export async function updateTestDriveStatus(
   }
 }
 
+/**
+ * Calculates KPIs for admin dashboard.
+ * Aggregates car inventory stats and test drive metrics.
+ * Computes conversion rate from completed test drives to sales.
+ *
+ * @returns Dashboard data with car and test drive statistics
+ * @see DashboardData - Type for dashboard metrics
+ */
 export async function getDashboardData(): Promise<
   ActionResponse<DashboardData>
 > {

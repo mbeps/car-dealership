@@ -31,6 +31,15 @@ const routes = [
   },
 ];
 
+/**
+ * Admin navigation sidebar.
+ * Desktop: Fixed left sidebar.
+ * Mobile: Bottom tab bar.
+ * Highlights active route and provides sign-out button.
+ *
+ * @see ROUTES - Route constants for navigation
+ * @see signOut - Server action for logout
+ */
 export const Sidebar = () => {
   const pathname = usePathname();
 

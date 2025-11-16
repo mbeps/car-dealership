@@ -3,6 +3,14 @@
 import { createClient } from "@/lib/supabase";
 import { ActionResponse, CarMakeOption } from "@/types";
 
+/**
+ * Fetches all car makes for form comboboxes.
+ * Sorted alphabetically by name.
+ * Includes country metadata for display.
+ *
+ * @returns All makes with id, name, slug, country
+ * @see CarFormFields - Component using this data
+ */
 export async function getCarMakes(): Promise<ActionResponse<CarMakeOption[]>> {
   try {
     const supabase = await createClient();

@@ -9,6 +9,17 @@ type UseFetchResult<T, Args extends unknown[]> = {
   setData: React.Dispatch<React.SetStateAction<T | undefined>>;
 };
 
+/**
+ * Generic hook for async server actions.
+ * Manages loading/error states and shows toast on errors.
+ * Exposes manual trigger function and data setter.
+ *
+ * @param cb - Async function to execute (typically server action)
+ * @returns Object with data, loading, error, fn trigger, and setData
+ * @example
+ * const { fn: deleteFn, loading } = useFetch(deleteCar);
+ * await deleteFn(carId);
+ */
 const useFetch = <T, Args extends unknown[] = []>(
   cb: (...args: Args) => Promise<T>
 ): UseFetchResult<T, Args> => {

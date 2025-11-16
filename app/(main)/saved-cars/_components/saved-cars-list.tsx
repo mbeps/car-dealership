@@ -7,6 +7,16 @@ import { Heart } from "lucide-react";
 import { ActionResponse, SerializedCar } from "@/types";
 import { ROUTES } from "@/lib/routes";
 
+/**
+ * User's wishlist page.
+ * Displays grid of saved cars.
+ * Shows empty state with CTA to browse inventory.
+ * All cars marked as wishlisted for CarCard.
+ *
+ * @param initialData - Server-fetched saved cars
+ * @see getSavedCars - Server action fetching wishlist
+ * @see CarCard - Reused car display component
+ */
 export function SavedCarsList({
   initialData,
 }: {

@@ -5,7 +5,13 @@ import { getCurrentUserRole } from "@/actions/auth";
 import { useAuth } from "@/lib/auth-context";
 
 /**
- * Hook to check if the current user is an admin
+ * Hook to fetch and track user role.
+ * Refetches when auth state changes.
+ * Used for conditional admin UI rendering.
+ *
+ * @returns Role (USER/ADMIN/null), loading, and boolean helpers
+ * @see getCurrentUserRole - Server action fetching role
+ * @see useAuth - Auth context this depends on
  */
 export function useUserRole() {
   const { user, isSignedIn } = useAuth();

@@ -6,7 +6,11 @@ import { redirect } from "next/navigation";
 import { ROUTES } from "@/lib/routes";
 
 /**
- * Check if the current user is an admin
+ * Quick admin role check for conditional rendering.
+ * Used by client components via useUserRole hook.
+ *
+ * @returns True if user is admin, false otherwise
+ * @see useUserRole - Client hook that calls this
  */
 export async function isCurrentUserAdmin(): Promise<boolean> {
   try {
@@ -31,7 +35,11 @@ export async function isCurrentUserAdmin(): Promise<boolean> {
 }
 
 /**
- * Get the current user's role
+ * Fetches user role from database.
+ * Returns null if not authenticated.
+ *
+ * @returns ActionResponse with user role or null
+ * @see User.role - Database enum for roles
  */
 export async function getCurrentUserRole(): Promise<
   ActionResponse<{ role: "USER" | "ADMIN" | null }>
@@ -69,7 +77,11 @@ export async function getCurrentUserRole(): Promise<
 }
 
 /**
- * Get current user from database
+ * Retrieves full user profile from database.
+ * Joins Supabase auth user with public User table.
+ *
+ * @returns Complete user profile or null if not signed in
+ * @see User - Database user table
  */
 export async function getCurrentUser(): Promise<ActionResponse<User | null>> {
   try {
@@ -107,9 +119,14 @@ export async function getCurrentUser(): Promise<ActionResponse<User | null>> {
 }
 
 /**
- * Ensures a Supabase auth user has a corresponding profile in the public.User table.
- * Creates a new profile if one doesn't exist.
- * Returns null if user is not authenticated.
+ * Ensures auth user has corresponding database profile.
+ * Called by server Header component on every request.
+ * Creates profile from OAuth metadata if missing.
+ * Handles race conditions with unique constraint conflicts.
+ *
+ * @returns User profile or null if not authenticated
+ * @see header.tsx - Server component that calls this
+ * @see https://supabase.com/docs/reference/javascript/auth-getuser
  */
 export async function ensureProfile(): Promise<User | null> {
   const supabase = await createClient();
@@ -191,7 +208,11 @@ export async function ensureProfile(): Promise<User | null> {
 }
 
 /**
- * Sign out the current user
+ * Signs out user and redirects to home.
+ * Called by AuthProvider's signOut method.
+ *
+ * @see AuthProvider.signOut - Client wrapper that calls this
+ * @see https://supabase.com/docs/reference/javascript/auth-signout
  */
 export async function signOut(): Promise<void> {
   const supabase = await createClient();

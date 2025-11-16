@@ -9,6 +9,17 @@ import { cancelTestDrive } from "@/actions/test-drive";
 import { ActionResponse, TestDriveBookingWithCar } from "@/types";
 import { ROUTES } from "@/lib/routes";
 
+/**
+ * User's test drive reservations page.
+ * Groups bookings into upcoming and past.
+ * Allows cancelling PENDING/CONFIRMED bookings.
+ * Shows empty state with CTA to browse cars.
+ *
+ * @param initialData - Server-fetched bookings
+ * @see getUserTestDrives - Server action fetching bookings
+ * @see TestDriveCard - Individual booking card
+ * @see cancelTestDrive - Server action for cancellation
+ */
 export function ReservationsList({
   initialData,
 }: {

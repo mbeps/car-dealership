@@ -1,7 +1,11 @@
 import * as z from "zod";
 
 /**
- * Schema for test drive booking form validation
+ * Validation schema for test drive booking form.
+ * Date must be selected, time slot required.
+ * Notes are optional.
+ *
+ * @see TestDriveForm - Component using this
  */
 export const testDriveSchema = z.object({
   date: z.date({
@@ -16,7 +20,12 @@ export const testDriveSchema = z.object({
 export type TestDriveFormData = z.infer<typeof testDriveSchema>;
 
 /**
- * Schema for car creation/edit form validation
+ * Validation schema for car creation/edit forms.
+ * Validates year range, price positivity, number plate format.
+ * Features array and images handled separately.
+ *
+ * @see CarFormFields - Component using this
+ * @see useAddCarForm - Hook wrapping form logic
  */
 export const carFormSchema = z.object({
   carMakeId: z.string().min(1, "Make is required"),
@@ -68,7 +77,10 @@ export const carFormSchema = z.object({
 export type CarFormData = z.infer<typeof carFormSchema>;
 
 /**
- * Schema for dealership information form validation
+ * Validation schema for dealership info form.
+ * All fields required including WhatsApp number.
+ *
+ * @see updateDealershipInfo - Action using this
  */
 export const dealershipInfoSchema = z.object({
   name: z.string().min(1, "Dealership name is required"),

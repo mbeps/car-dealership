@@ -23,6 +23,16 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+/**
+ * Root auth provider wrapping entire app.
+ * Initializes Supabase browser client and manages session state.
+ * Listens to auth changes and triggers router refresh.
+ * Provides SignInModal for gated features.
+ *
+ * @param children - App tree to wrap
+ * @see useAuth - Hook to access context
+ * @see SignInModal - Modal for prompting sign-in
+ */
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
@@ -83,8 +93,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 }
 
 /**
- * Hook to access Supabase auth state in Client Components.
- * Returns { user, loading, signOut }.
+ * Hook to access auth state in Client Components.
+ * Provides user, loading state, signOut, and modal opener.
+ *
+ * @returns Auth context with user and methods
+ * @throws Error if used outside AuthProvider
+ * @see AuthProvider - Must wrap components using this
  */
 export function useAuth() {
   const context = useContext(AuthContext);
@@ -95,7 +109,11 @@ export function useAuth() {
 }
 
 /**
- * Client component that renders children only when user is signed in.
+ * Renders children only when user is authenticated.
+ * Hides during loading state.
+ *
+ * @param children - Content to show when signed in
+ * @see SignedOut - Opposite component
  */
 export function SignedIn({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
@@ -108,7 +126,11 @@ export function SignedIn({ children }: { children: React.ReactNode }) {
 }
 
 /**
- * Client component that renders children only when user is signed out.
+ * Renders children only when user is NOT authenticated.
+ * Hides during loading state.
+ *
+ * @param children - Content to show when signed out
+ * @see SignedIn - Opposite component
  */
 export function SignedOut({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();

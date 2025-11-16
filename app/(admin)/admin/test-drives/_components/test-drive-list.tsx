@@ -26,6 +26,18 @@ import useFetch from "@/hooks/use-fetch";
 import { getAdminTestDrives, updateTestDriveStatus } from "@/actions/admin";
 import { cancelTestDrive } from "@/actions/test-drive";
 
+/**
+ * Admin test drive management page.
+ * Search by car/user, filter by status.
+ * Inline status selector for each booking.
+ * Cancel button for non-cancelled bookings.
+ * Refetches after mutations.
+ *
+ * @see getAdminTestDrives - Server action with filters
+ * @see updateTestDriveStatus - Admin status updates
+ * @see cancelTestDrive - Cancellation action
+ * @see TestDriveCard - Reused booking card
+ */
 export const TestDrivesList = () => {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");

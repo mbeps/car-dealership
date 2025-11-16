@@ -3,7 +3,16 @@
 import { createClient } from "@/lib/supabase";
 import { ActionResponse, CarColorOption } from "@/types";
 
-export async function getCarColors(): Promise<ActionResponse<CarColorOption[]>> {
+/**
+ * Fetches all car colors for form comboboxes.
+ * Sorted alphabetically by name.
+ *
+ * @returns All colors with id, name, slug
+ * @see CarFormFields - Component using this data
+ */
+export async function getCarColors(): Promise<
+  ActionResponse<CarColorOption[]>
+> {
   try {
     const supabase = await createClient();
 

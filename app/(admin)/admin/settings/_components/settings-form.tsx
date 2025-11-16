@@ -69,6 +69,19 @@ const DAYS: Array<{ value: DayOfWeekEnum; label: string }> = [
   { value: DayOfWeekEnum.SUNDAY, label: "Sunday" },
 ];
 
+/**
+ * Admin settings page with tabs.
+ * Dealership Info: Contact details form.
+ * Working Hours: Weekly schedule editor.
+ * User Management: Admin role assignment table.
+ * Prevents admins from changing own role.
+ *
+ * @see getDealershipInfo - Fetches dealership data
+ * @see updateDealershipInfo - Updates contact info
+ * @see saveWorkingHours - Replaces weekly schedule
+ * @see getUsers - Fetches all users
+ * @see updateUserRole - Changes user role
+ */
 export const SettingsForm = () => {
   const { user: authUser } = useAuth();
   const [workingHours, setWorkingHours] = useState<WorkingHourInput[]>(

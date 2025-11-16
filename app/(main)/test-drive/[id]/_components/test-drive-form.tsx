@@ -68,6 +68,19 @@ interface TimeSlot {
   endTime: string;
 }
 
+/**
+ * Test drive booking form.
+ * Validates date against working hours and existing bookings.
+ * Generates time slots based on dealership schedule.
+ * Filters out unavailable slots.
+ * Shows confirmation dialog before submitting.
+ * Redirects to reservations on success.
+ *
+ * @param car - Car to book test drive for
+ * @param testDriveInfo - Existing booking, dealership, and booked slots
+ * @see testDriveSchema - Form validation schema
+ * @see bookTestDrive - Server action for booking
+ */
 export function TestDriveForm({
   car,
   testDriveInfo,

@@ -23,6 +23,15 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 
+/**
+ * Main car inventory listing with search and pagination.
+ * Syncs filters from URL params and fetches cars via getCars action.
+ * Displays search bar, car grid, and pagination controls.
+ * Shows loading skeleton during fetches.
+ *
+ * @see getCars - Server action for filtered car query
+ * @see CarCard - Individual car display component
+ */
 export function CarListings() {
   const searchParams = useSearchParams();
   const router = useRouter();

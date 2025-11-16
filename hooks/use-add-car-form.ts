@@ -11,6 +11,16 @@ import { addCar } from "@/actions/cars";
 import useFetch from "@/hooks/use-fetch";
 import { carFormSchema, CarFormData } from "@/lib/schemas";
 
+/**
+ * Hook for car creation form.
+ * Manages react-hook-form with zod validation.
+ * Handles image state and submission with useFetch.
+ * Redirects to admin cars list on success.
+ *
+ * @returns Form instance, image state, loading, and submit handler
+ * @see carFormSchema - Validation schema
+ * @see addCar - Server action
+ */
 export const useAddCarForm = () => {
   const router = useRouter();
   const [uploadedImages, setUploadedImages] = useState<string[]>([]);

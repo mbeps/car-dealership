@@ -17,6 +17,15 @@ import {
 } from "lucide-react";
 import { ActionResponse, DashboardData } from "@/types";
 
+/**
+ * Admin dashboard with KPI cards and charts.
+ * Displays car inventory stats and test drive metrics.
+ * Tabbed interface for overview and test drive breakdowns.
+ *
+ * @param initialData - Dashboard data from server
+ * @see getDashboardData - Server action fetching metrics
+ * @see DashboardData - Type for dashboard metrics
+ */
 export function Dashboard({
   initialData,
 }: {

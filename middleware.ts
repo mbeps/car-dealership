@@ -8,11 +8,24 @@ import { PROTECTED_ROUTES, ROUTES, createSignInRedirect } from "./lib/routes";
 // Protected routes that require authentication
 const protectedRoutes = PROTECTED_ROUTES;
 
+/**
+ * Checks if pathname requires authentication.
+ *
+ * @param pathname - Request pathname
+ * @returns True if route is protected
+ * @see PROTECTED_ROUTES - List of protected routes
+ */
 const isProtectedRoute = (pathname: string): boolean => {
   return protectedRoutes.some((route) => pathname.startsWith(route));
 };
 
-// Create Arcjet middleware
+/**
+ * Arcjet security middleware.
+ * Enables shield protection and bot detection.
+ * Allows search engine crawlers.
+ *
+ * @see https://arcjet.com/bot-list
+ */
 const aj = arcjet({
   key: process.env.ARCJET_KEY!,
   rules: [
@@ -30,7 +43,16 @@ const aj = arcjet({
   ],
 });
 
-// Supabase middleware for session management
+/**
+ * Supabase session management middleware.
+ * Refreshes expired sessions via cookies.
+ * Redirects authenticated users away from auth pages.
+ * Enforces protection on PROTECTED_ROUTES.
+ *
+ * @param request - Incoming request
+ * @returns Response with updated cookies or redirect
+ * @see createSignInRedirect - Builds sign-in URL with return path
+ */
 async function supabaseMiddleware(request: NextRequest) {
   let response = NextResponse.next({
     request: {
@@ -83,7 +105,12 @@ async function supabaseMiddleware(request: NextRequest) {
   return response;
 }
 
-// Chain middlewares - ArcJet runs first, then Supabase
+/**
+ * Chained middleware pipeline.
+ * Arcjet runs first for security, then Supabase for auth.
+ *
+ * @see https://arcjet.com/docs/nextjs/reference/middleware
+ */
 export default createMiddleware(aj, supabaseMiddleware);
 
 export const config = {

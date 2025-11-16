@@ -31,6 +31,11 @@ interface FAQItem {
   answer: string;
 }
 
+/**
+ * Static car make data for homepage.
+ * Displayed as logo grid on marketing page.
+ * Links to filtered car searches.
+ */
 export const carMakes: CarMake[] = [
   { id: 1, name: "Hyundai", slug: "hyundai", image: "/make/hyundai.webp" },
   { id: 2, name: "Honda", slug: "honda", image: "/make/honda.webp" },
@@ -40,6 +45,11 @@ export const carMakes: CarMake[] = [
   { id: 6, name: "Ford", slug: "ford", image: "/make/ford.webp" },
 ];
 
+/**
+ * Static body type data for homepage.
+ * Displayed as image grid on marketing page.
+ * Links to filtered car searches.
+ */
 export const bodyTypes: BodyType[] = [
   { id: 1, name: "SUV", image: "/body/suv.webp" },
   { id: 2, name: "Sedan", image: "/body/sedan.webp" },
@@ -47,6 +57,10 @@ export const bodyTypes: BodyType[] = [
   { id: 4, name: "Coupe", image: "/body/coupe.webp" },
 ];
 
+/**
+ * FAQ data for homepage accordion.
+ * Common questions about test drives and car search.
+ */
 export const faqItems: FAQItem[] = [
   {
     question: "How does the test drive booking work?",

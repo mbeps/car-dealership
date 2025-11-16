@@ -4,6 +4,17 @@ import { useCallback, useState, useEffect } from "react";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { CarFiltersData } from "@/types";
 
+/**
+ * Manages car listing filters with URL sync.
+ * Reads/writes filter state to query params.
+ * Tracks active filter count for badge display.
+ * Handles mobile filter sheet state.
+ *
+ * @param filters - Initial filter metadata from server
+ * @returns Filter state, handlers, and apply/clear functions
+ * @see CarFilters - Component using this hook
+ * @see getCarFilters - Server action providing initial data
+ */
 export const useCarFilters = (filters: CarFiltersData) => {
   const router = useRouter();
   const pathname = usePathname();

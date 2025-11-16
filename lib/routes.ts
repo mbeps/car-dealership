@@ -17,7 +17,14 @@ const ADMIN_PATHS = {
   SETTINGS: `${BASE_PATHS.ADMIN}/settings`,
 } as const;
 
-// Public routes
+/**
+ * Centralized route constants.
+ * Used across server/client code for navigation and redirects.
+ * Dynamic routes are functions to ensure type safety.
+ *
+ * @see middleware.ts - Uses PROTECTED_ROUTES
+ * @see createSignInRedirect - Helper for auth redirects
+ */
 export const ROUTES = {
   HOME: "/",
   CARS: BASE_PATHS.CARS,
@@ -43,7 +50,10 @@ export const ROUTES = {
 } as const;
 
 /**
- * Routes that require authentication
+ * Routes requiring authentication.
+ * Middleware redirects unauthenticated users to sign-in.
+ *
+ * @see middleware.ts - Enforces these protections
  */
 export const PROTECTED_ROUTES = [
   ROUTES.ADMIN,
@@ -52,14 +62,24 @@ export const PROTECTED_ROUTES = [
 ] as const;
 
 /**
- * Helper function to create a sign-in redirect URL
+ * Builds sign-in URL with return path.
+ * Preserves original destination after auth.
+ *
+ * @param redirectPath - Where to redirect after sign-in
+ * @returns Sign-in URL with redirect param
+ * @see middleware.ts - Creates these redirects
  */
 export function createSignInRedirect(redirectPath: string): string {
   return `${ROUTES.SIGN_IN}?redirect=${encodeURIComponent(redirectPath)}`;
 }
 
 /**
- * Helper function to create a car search URL with query parameters
+ * Builds car listing URL with query params.
+ * Filters out empty values for clean URLs.
+ *
+ * @param params - Filter params (make, bodyType, etc.)
+ * @returns Cars URL with query string
+ * @see ROUTES.CARS - Base car listing route
  */
 export function createCarSearchUrl(params: {
   search?: string;

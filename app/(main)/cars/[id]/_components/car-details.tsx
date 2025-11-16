@@ -50,6 +50,19 @@ import {
   SerializedWorkingHour,
 } from "@/types";
 
+/**
+ * Car detail page content.
+ * Displays car specs, images, wishlist toggle, share, test drive CTA.
+ * Admins see status selector, featured toggle, edit/delete actions.
+ * Shows existing test drive booking if user has one.
+ * Includes dealership contact info for inquiries.
+ *
+ * @param car - Full car details with wishlist status
+ * @param testDriveInfo - User's booking and dealership data
+ * @param isAdmin - Whether current user is admin
+ * @see CarGallery - Image carousel component
+ * @see toggleSavedCar - Server action for wishlist
+ */
 export function CarDetails({
   car,
   testDriveInfo,

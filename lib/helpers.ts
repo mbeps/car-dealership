@@ -1,8 +1,14 @@
 import { SerializedCar } from "@/types";
 
 /**
- * Serializes car data from Supabase to ensure compatibility with client components
- * Converts numeric strings and dates to proper types
+ * Normalizes car data from Supabase for client components.
+ * Converts numeric strings to numbers, handles date serialization.
+ * Flattens nested make/color relations into top-level fields.
+ *
+ * @param car - Raw car data from Supabase query
+ * @param wishlisted - Whether user has saved this car
+ * @returns Serialized car with proper types
+ * @see SerializedCar - Return type
  */
 export function serializeCarData(
   car: any,
@@ -21,8 +27,7 @@ export function serializeCarData(
 
   return {
     ...rest,
-    price:
-      typeof rest.price === "string" ? parseFloat(rest.price) : rest.price,
+    price: typeof rest.price === "string" ? parseFloat(rest.price) : rest.price,
     mileage:
       typeof rest.mileage === "string" ? parseInt(rest.mileage) : rest.mileage,
     year: typeof rest.year === "string" ? parseInt(rest.year) : rest.year,
@@ -40,7 +45,11 @@ export function serializeCarData(
 }
 
 /**
- * Formats a number as currency
+ * Formats number as GBP currency.
+ * No decimal places for car prices.
+ *
+ * @param amount - Numeric amount
+ * @returns Formatted currency string (e.g., £25,000)
  */
 export function formatCurrency(amount: number): string {
   return new Intl.NumberFormat("en-GB", {

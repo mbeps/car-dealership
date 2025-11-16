@@ -9,6 +9,14 @@ import { ActionResponse, SerializedCar } from "@/types";
 
 type CarStatus = "AVAILABLE" | "UNAVAILABLE" | "SOLD";
 
+/**
+ * Searches makes for admin car list filtering.
+ * Case-insensitive partial match on make name.
+ *
+ * @param supabase - Supabase client instance
+ * @param term - Search term
+ * @returns Array of matching make IDs
+ */
 async function getMakeIdsForTerm(
   supabase: Awaited<ReturnType<typeof createClient>>,
   term: string
@@ -25,6 +33,14 @@ async function getMakeIdsForTerm(
   return data?.map((item) => item.id) ?? [];
 }
 
+/**
+ * Searches colors for admin car list filtering.
+ * Case-insensitive partial match on color name.
+ *
+ * @param supabase - Supabase client instance
+ * @param term - Search term
+ * @returns Array of matching color IDs
+ */
 async function getColorIdsForTerm(
   supabase: Awaited<ReturnType<typeof createClient>>,
   term: string
@@ -60,7 +76,18 @@ interface CarFormData {
   features: string[];
 }
 
-// Add a car to the database with images
+/**
+ * Creates new car listing with image uploads.
+ * Uploads images to Supabase Storage using admin client.
+ * Generates unique folder per car for organization.
+ * Base64 images converted to buffers before upload.
+ *
+ * @param carData - Car details from form
+ * @param images - Base64 encoded images
+ * @returns Success result or error
+ * @see createAdminClient - Service role client for storage
+ * @see https://supabase.com/docs/reference/javascript/storage-from-upload
+ */
 export async function addCar({
   carData,
   images,
@@ -173,7 +200,14 @@ export async function addCar({
   }
 }
 
-// Fetch all cars with simple search
+/**
+ * Fetches all cars for admin management.
+ * Supports search across make, color, model, plate.
+ * No pagination - returns full list sorted by newest.
+ *
+ * @param search - Search term for filtering
+ * @returns All cars with nested make/color data
+ */
 export async function getCars(
   search = ""
 ): Promise<ActionResponse<SerializedCar[]>> {
@@ -231,7 +265,17 @@ export async function getCars(
   }
 }
 
-// Delete a car by ID
+/**
+ * Deletes car and associated images from storage.
+ * Extracts file paths from URLs to remove storage objects.
+ * Best-effort storage cleanup - proceeds even if fails.
+ * Revalidates admin car list.
+ *
+ * @param id - Car ID to delete
+ * @returns Success result or error
+ * @see createAdminClient - Service role client for storage deletion
+ * @see https://supabase.com/docs/reference/javascript/storage-from-remove
+ */
 export async function deleteCar(id: string): Promise<ActionResponse<null>> {
   try {
     const supabase = await createClient();
@@ -309,7 +353,16 @@ export async function deleteCar(id: string): Promise<ActionResponse<null>> {
   }
 }
 
-// Update car status or featured status
+/**
+ * Updates car status or featured flag from admin table.
+ * Allows toggling AVAILABLE/SOLD/UNAVAILABLE and featured.
+ * Revalidates admin car list.
+ *
+ * @param id - Car ID to update
+ * @param status - New status if changing
+ * @param featured - New featured flag if changing
+ * @returns Success result or error
+ */
 export async function updateCarStatus(
   id: string,
   { status, featured }: { status?: CarStatus; featured?: boolean }
@@ -360,7 +413,20 @@ export async function updateCarStatus(
   }
 }
 
-// Update car with new data and images
+/**
+ * Updates existing car with data and image changes.
+ * Handles three image operations: keep existing, remove, add new.
+ * Validates at least one image remains after removals.
+ * Revalidates admin list and public detail page.
+ *
+ * @param carId - Car ID to update
+ * @param carData - Updated car details
+ * @param newImages - Base64 images to add
+ * @param imagesToRemove - URLs of images to delete
+ * @returns Success result or error
+ * @see ROUTES.CAR_DETAILS - Public detail page
+ * @see ROUTES.ADMIN_CARS - Admin car list
+ */
 export async function updateCar({
   carId,
   carData,

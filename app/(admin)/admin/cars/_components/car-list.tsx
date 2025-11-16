@@ -52,6 +52,17 @@ import Image from "next/image";
 import { SerializedCar } from "@/types";
 import { CarStatusEnum as CarStatus } from "@/types";
 
+/**
+ * Admin car management table.
+ * Search, view, edit, delete, toggle featured/status.
+ * Desktop: Full table with inline actions.
+ * Mobile: Card grid with action menu.
+ * Refetches after mutations.
+ *
+ * @see getCars - Server action for admin car list
+ * @see useCarAdmin - Hook for delete/update actions
+ * @see ROUTES.ADMIN_CAR_EDIT - Edit page route
+ */
 export const CarsList = () => {
   const router = useRouter();
 
