@@ -26,8 +26,20 @@ export const carFormSchema = z.object({
     const year = parseInt(val);
     return !isNaN(year) && year >= 1900 && year <= new Date().getFullYear() + 1;
   }, "Valid year required"),
-  price: z.string().min(1, "Price is required"),
-  mileage: z.string().min(1, "Mileage is required"),
+  price: z
+    .string()
+    .min(1, "Price is required")
+    .refine((val) => {
+      const price = parseFloat(val);
+      return !isNaN(price) && price > 0;
+    }, "Price must be a valid number greater than 0"),
+  mileage: z
+    .string()
+    .min(1, "Mileage is required")
+    .refine((val) => {
+      const mileage = parseInt(val);
+      return !isNaN(mileage) && mileage >= 0;
+    }, "Mileage must be a valid number"),
   fuelType: z.string().min(1, "Fuel type is required"),
   transmission: z.string().min(1, "Transmission is required"),
   bodyType: z.string().min(1, "Body type is required"),
@@ -38,7 +50,14 @@ export const carFormSchema = z.object({
       /^[A-Z0-9]{2,10}$/,
       "Number plate must be 2-10 uppercase letters/numbers"
     ),
-  seats: z.string().optional(),
+  seats: z
+    .string()
+    .optional()
+    .refine((val) => {
+      if (!val || val === "") return true;
+      const seats = parseInt(val);
+      return !isNaN(seats) && seats > 0;
+    }, "Number of seats must be a valid number"),
   description: z.string().min(10, "Description must be at least 10 characters"),
   status: z.enum(["AVAILABLE", "UNAVAILABLE", "SOLD"]),
   featured: z.boolean().default(false),

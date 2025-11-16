@@ -31,7 +31,11 @@ import { addCar } from "@/actions/cars";
 import useFetch from "@/hooks/use-fetch";
 import Image from "next/image";
 import { carFormSchema, CarFormData } from "@/lib/schemas";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import {
   Command,
   CommandEmpty,
@@ -220,10 +224,7 @@ export const AddCarForm = ({ carMakes, carColors }: AddCarFormProps) => {
             {/* Make */}
             <div className="space-y-2">
               <Label htmlFor="carMakeId">Make</Label>
-              <Popover
-                open={makePopoverOpen}
-                onOpenChange={setMakePopoverOpen}
-              >
+              <Popover open={makePopoverOpen} onOpenChange={setMakePopoverOpen}>
                 <PopoverTrigger asChild>
                   <Button
                     type="button"
@@ -273,7 +274,11 @@ export const AddCarForm = ({ carMakes, carColors }: AddCarFormProps) => {
                   </Command>
                 </PopoverContent>
               </Popover>
-              <input type="hidden" {...carMakeIdField} value={selectedMakeId || ""} />
+              <input
+                type="hidden"
+                {...carMakeIdField}
+                value={selectedMakeId || ""}
+              />
               {errors.carMakeId && (
                 <p className="text-xs text-red-500">
                   {errors.carMakeId.message}
@@ -508,7 +513,15 @@ export const AddCarForm = ({ carMakes, carColors }: AddCarFormProps) => {
                 Number of Seats{" "}
                 <span className="text-sm text-gray-500">(Optional)</span>
               </Label>
-              <Input id="seats" {...register("seats")} placeholder="e.g. 5" />
+              <Input
+                id="seats"
+                {...register("seats")}
+                placeholder="e.g. 5"
+                className={errors.seats ? "border-red-500" : ""}
+              />
+              {errors.seats && (
+                <p className="text-xs text-red-500">{errors.seats.message}</p>
+              )}
             </div>
 
             {/* Status */}
