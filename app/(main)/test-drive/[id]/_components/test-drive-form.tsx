@@ -175,10 +175,9 @@ export function TestDriveForm({
 
       // Check if this slot is already booked
       const isBooked = existingBookings.some((booking) => {
-        const bookingDate = booking.date;
         return (
-          bookingDate === format(selectedDate, "yyyy-MM-dd") &&
-          (booking.startTime === startTime || booking.endTime === endTime)
+          booking.date === format(selectedDate, "yyyy-MM-dd") &&
+          booking.startTime === startTime
         );
       });
 

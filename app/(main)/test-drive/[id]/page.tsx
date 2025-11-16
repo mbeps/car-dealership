@@ -35,10 +35,7 @@ export default async function TestDrivePage({
       <h1 className="text-6xl mb-6 gradient-title">Book a Test Drive</h1>
       <TestDriveForm
         car={result.data}
-        testDriveInfo={{
-          ...result.data.testDriveInfo,
-          existingBookings: [],
-        }}
+        testDriveInfo={result.data.testDriveInfo}
       />
     </div>
   );
