@@ -4,7 +4,7 @@ import { TestDriveForm } from "./_components/test-drive-form";
 
 export async function generateMetadata() {
   return {
-    title: `Book Test Drive | Name`,
+    title: `Book Test Drive | Maruf Motors`,
     description: `Schedule a test drive in few seconds`,
   };
 }

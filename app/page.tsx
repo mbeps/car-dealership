@@ -146,12 +146,12 @@ export default async function Home() {
                 href={`/cars?bodyType=${type.name}`}
                 className="relative group cursor-pointer"
               >
-                <div className="overflow-hidden rounded-lg flex justify-end h-28 mb-4 relative">
+                <div className="overflow-hidden rounded-lg flex justify-end h-36 mb-4 relative">
                   <Image
                     src={type.image || `/body/${type.name.toLowerCase()}.webp`}
                     alt={type.name}
                     fill
-                    className="object-cover group-hover:scale-105 transition duration-300"
+                    className="object-cover group-hover:scale-105 transition duration-300 p-2"
                   />
                 </div>
                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent rounded-lg flex items-end">

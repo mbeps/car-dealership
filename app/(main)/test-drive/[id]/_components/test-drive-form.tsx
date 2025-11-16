@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import { format, parseISO } from "date-fns";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
 import {
   Calendar as CalendarIcon,
   Car,
@@ -44,19 +43,7 @@ import {
   SerializedDealershipInfo,
   UserTestDrive,
 } from "@/types";
-
-// Define Zod schema for form validation
-const testDriveSchema = z.object({
-  date: z.date({
-    required_error: "Please select a date for your test drive",
-  }),
-  timeSlot: z.string({
-    required_error: "Please select a time slot",
-  }),
-  notes: z.string().optional(),
-});
-
-type TestDriveFormData = z.infer<typeof testDriveSchema>;
+import { testDriveSchema, TestDriveFormData } from "@/lib/schemas";
 
 interface BookingDetails {
   carId: string;

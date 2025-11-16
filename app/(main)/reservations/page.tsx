@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 import { ReservationsList } from "./_components/reservations-list";
 
 export const metadata = {
-  title: "My Reservations | Name",
+  title: "My Reservations | Maruf Motors",
   description: "Manage your test drive reservations",
 };
 

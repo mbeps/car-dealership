@@ -1,7 +1,7 @@
 import { SettingsForm } from "./_components/settings-form";
 
 export const metadata = {
-  title: "Settings |  Admin",
+  title: "Settings | Maruf Motors Admin",
   description: "Manage dealership working hours and admin users",
 };
 
