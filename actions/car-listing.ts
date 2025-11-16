@@ -3,7 +3,10 @@
 import { serializeCarData } from "@/lib/helpers";
 import { createClient } from "@/lib/supabase";
 import { revalidatePath } from "next/cache";
-import type { SupabaseClient, User as SupabaseAuthUser } from "@supabase/supabase-js";
+import type {
+  SupabaseClient,
+  User as SupabaseAuthUser,
+} from "@supabase/supabase-js";
 import {
   ActionResponse,
   CarFiltersData,
@@ -112,6 +115,28 @@ export async function getCarFilters(): Promise<ActionResponse<CarFiltersData>> {
     const minPrice = prices.length > 0 ? Math.min(...prices) : 0;
     const maxPrice = prices.length > 0 ? Math.max(...prices) : 100000;
 
+    // Get min and max mileage
+    const { data: mileageData } = await supabase
+      .from("Car")
+      .select("mileage")
+      .eq("status", "AVAILABLE");
+
+    const mileages = mileageData?.map((car) => car.mileage) || [];
+    const minMileage = mileages.length > 0 ? Math.min(...mileages) : 0;
+    const maxMileage = mileages.length > 0 ? Math.max(...mileages) : 200000;
+
+    // Get min and max age based on year
+    const { data: yearData } = await supabase
+      .from("Car")
+      .select("year")
+      .eq("status", "AVAILABLE");
+
+    const currentYear = new Date().getFullYear();
+    const years = yearData?.map((car) => car.year) || [];
+    const ages = years.map((year) => currentYear - year);
+    const minAge = ages.length > 0 ? Math.min(...ages) : 0;
+    const maxAge = ages.length > 0 ? Math.max(...ages) : 20;
+
     // Remove duplicates
     const uniqueMakes = [...new Set(makes?.map((m) => m.make) || [])];
     const uniqueBodyTypes = [
@@ -134,6 +159,14 @@ export async function getCarFilters(): Promise<ActionResponse<CarFiltersData>> {
         priceRange: {
           min: minPrice,
           max: maxPrice,
+        },
+        mileageRange: {
+          min: minMileage,
+          max: maxMileage,
+        },
+        ageRange: {
+          min: minAge,
+          max: maxAge,
         },
       },
     };
@@ -159,6 +192,10 @@ export async function getCars(
       transmission = "",
       minPrice = 0,
       maxPrice = Number.MAX_SAFE_INTEGER,
+      minMileage = 0,
+      maxMileage = Number.MAX_SAFE_INTEGER,
+      minAge = 0,
+      maxAge = Number.MAX_SAFE_INTEGER,
       sortBy = "newest",
       page = 1,
       limit = 6,
@@ -204,6 +241,25 @@ export async function getCars(
     query = query.gte("price", minPrice);
     if (maxPrice && maxPrice < Number.MAX_SAFE_INTEGER) {
       query = query.lte("price", maxPrice);
+    }
+
+    // Add mileage range
+    query = query.gte("mileage", minMileage);
+    if (maxMileage && maxMileage < Number.MAX_SAFE_INTEGER) {
+      query = query.lte("mileage", maxMileage);
+    }
+
+    // Add age range (filter by year)
+    if (minAge > 0 || maxAge < Number.MAX_SAFE_INTEGER) {
+      const currentYear = new Date().getFullYear();
+      const maxYear = currentYear - minAge;
+      const minYear =
+        maxAge < Number.MAX_SAFE_INTEGER ? currentYear - maxAge : 0;
+
+      query = query.lte("year", maxYear);
+      if (minYear > 0) {
+        query = query.gte("year", minYear);
+      }
     }
 
     // Add sorting
@@ -328,12 +384,10 @@ export async function toggleSavedCar(
     }
 
     // If car is not saved, add it
-    const { error: insertError } = await supabase
-      .from("UserSavedCar")
-      .insert({
-        userId: user.id,
-        carId,
-      });
+    const { error: insertError } = await supabase.from("UserSavedCar").insert({
+      userId: user.id,
+      carId,
+    });
 
     if (insertError) {
       throw insertError;

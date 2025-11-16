@@ -39,6 +39,18 @@ export const CarFilters = ({ filters }: { filters: CarFiltersData }) => {
   const currentMaxPrice = searchParams.get("maxPrice")
     ? parseInt(searchParams.get("maxPrice")!)
     : filters.priceRange.max;
+  const currentMinMileage = searchParams.get("minMileage")
+    ? parseInt(searchParams.get("minMileage")!)
+    : filters.mileageRange.min;
+  const currentMaxMileage = searchParams.get("maxMileage")
+    ? parseInt(searchParams.get("maxMileage")!)
+    : filters.mileageRange.max;
+  const currentMinAge = searchParams.get("minAge")
+    ? parseInt(searchParams.get("minAge")!)
+    : filters.ageRange.min;
+  const currentMaxAge = searchParams.get("maxAge")
+    ? parseInt(searchParams.get("maxAge")!)
+    : filters.ageRange.max;
   const currentSortBy = searchParams.get("sortBy") || "newest";
 
   // Local state for filters
@@ -50,6 +62,11 @@ export const CarFilters = ({ filters }: { filters: CarFiltersData }) => {
     currentMinPrice,
     currentMaxPrice,
   ]);
+  const [mileageRange, setMileageRange] = useState([
+    currentMinMileage,
+    currentMaxMileage,
+  ]);
+  const [ageRange, setAgeRange] = useState([currentMinAge, currentMaxAge]);
   const [sortBy, setSortBy] = useState(currentSortBy);
   const [isSheetOpen, setIsSheetOpen] = useState(false);
 
@@ -60,6 +77,8 @@ export const CarFilters = ({ filters }: { filters: CarFiltersData }) => {
     setFuelType(currentFuelType);
     setTransmission(currentTransmission);
     setPriceRange([currentMinPrice, currentMaxPrice]);
+    setMileageRange([currentMinMileage, currentMaxMileage]);
+    setAgeRange([currentMinAge, currentMaxAge]);
     setSortBy(currentSortBy);
   }, [
     currentMake,
@@ -68,6 +87,10 @@ export const CarFilters = ({ filters }: { filters: CarFiltersData }) => {
     currentTransmission,
     currentMinPrice,
     currentMaxPrice,
+    currentMinMileage,
+    currentMaxMileage,
+    currentMinAge,
+    currentMaxAge,
     currentSortBy,
   ]);
 
@@ -79,6 +102,10 @@ export const CarFilters = ({ filters }: { filters: CarFiltersData }) => {
     transmission,
     currentMinPrice > filters.priceRange.min ||
       currentMaxPrice < filters.priceRange.max,
+    currentMinMileage > filters.mileageRange.min ||
+      currentMaxMileage < filters.mileageRange.max,
+    currentMinAge > filters.ageRange.min ||
+      currentMaxAge < filters.ageRange.max,
   ].filter(Boolean).length;
 
   // Update URL when filters change
@@ -89,10 +116,67 @@ export const CarFilters = ({ filters }: { filters: CarFiltersData }) => {
     if (bodyType) params.set("bodyType", bodyType);
     if (fuelType) params.set("fuelType", fuelType);
     if (transmission) params.set("transmission", transmission);
-    if (priceRange[0] > filters.priceRange.min)
-      params.set("minPrice", priceRange[0].toString());
-    if (priceRange[1] < filters.priceRange.max)
-      params.set("maxPrice", priceRange[1].toString());
+
+    // Validate and clamp price range
+    let validMinPrice = Math.max(
+      filters.priceRange.min,
+      Math.min(filters.priceRange.max, priceRange[0])
+    );
+    let validMaxPrice = Math.max(
+      filters.priceRange.min,
+      Math.min(filters.priceRange.max, priceRange[1])
+    );
+
+    // Ensure min doesn't exceed max
+    if (validMinPrice > validMaxPrice) {
+      [validMinPrice, validMaxPrice] = [validMaxPrice, validMinPrice];
+    }
+
+    if (validMinPrice > filters.priceRange.min)
+      params.set("minPrice", validMinPrice.toString());
+    if (validMaxPrice < filters.priceRange.max)
+      params.set("maxPrice", validMaxPrice.toString());
+
+    // Validate and clamp mileage range
+    let validMinMileage = Math.max(
+      filters.mileageRange.min,
+      Math.min(filters.mileageRange.max, mileageRange[0])
+    );
+    let validMaxMileage = Math.max(
+      filters.mileageRange.min,
+      Math.min(filters.mileageRange.max, mileageRange[1])
+    );
+
+    // Ensure min doesn't exceed max
+    if (validMinMileage > validMaxMileage) {
+      [validMinMileage, validMaxMileage] = [validMaxMileage, validMinMileage];
+    }
+
+    if (validMinMileage > filters.mileageRange.min)
+      params.set("minMileage", validMinMileage.toString());
+    if (validMaxMileage < filters.mileageRange.max)
+      params.set("maxMileage", validMaxMileage.toString());
+
+    // Validate and clamp age range
+    let validMinAge = Math.max(
+      filters.ageRange.min,
+      Math.min(filters.ageRange.max, ageRange[0])
+    );
+    let validMaxAge = Math.max(
+      filters.ageRange.min,
+      Math.min(filters.ageRange.max, ageRange[1])
+    );
+
+    // Ensure min doesn't exceed max
+    if (validMinAge > validMaxAge) {
+      [validMinAge, validMaxAge] = [validMaxAge, validMinAge];
+    }
+
+    if (validMinAge > filters.ageRange.min)
+      params.set("minAge", validMinAge.toString());
+    if (validMaxAge < filters.ageRange.max)
+      params.set("maxAge", validMaxAge.toString());
+
     if (sortBy !== "newest") params.set("sortBy", sortBy);
 
     // Preserve search and page params if they exist
@@ -112,11 +196,18 @@ export const CarFilters = ({ filters }: { filters: CarFiltersData }) => {
     fuelType,
     transmission,
     priceRange,
+    mileageRange,
+    ageRange,
     sortBy,
     pathname,
     searchParams,
     filters.priceRange.min,
     filters.priceRange.max,
+    filters.mileageRange.min,
+    filters.mileageRange.max,
+    filters.ageRange.min,
+    filters.ageRange.max,
+    router,
   ]);
 
   // Handle filter changes
@@ -137,6 +228,12 @@ export const CarFilters = ({ filters }: { filters: CarFiltersData }) => {
       case "priceRange":
         setPriceRange(value as number[]);
         break;
+      case "mileageRange":
+        setMileageRange(value as number[]);
+        break;
+      case "ageRange":
+        setAgeRange(value as number[]);
+        break;
     }
   };
 
@@ -152,6 +249,8 @@ export const CarFilters = ({ filters }: { filters: CarFiltersData }) => {
     setFuelType("");
     setTransmission("");
     setPriceRange([filters.priceRange.min, filters.priceRange.max]);
+    setMileageRange([filters.mileageRange.min, filters.mileageRange.max]);
+    setAgeRange([filters.ageRange.min, filters.ageRange.max]);
     setSortBy("newest");
 
     // Keep search term if exists
@@ -175,6 +274,8 @@ export const CarFilters = ({ filters }: { filters: CarFiltersData }) => {
     priceRange,
     priceRangeMin: filters.priceRange.min,
     priceRangeMax: filters.priceRange.max,
+    mileageRange,
+    ageRange,
   };
 
   return (
