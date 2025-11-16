@@ -4,8 +4,9 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useSearchParams, useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Info } from "lucide-react";
+import { Info, Search } from "lucide-react";
 import { CarCard } from "@/components/car-card";
 import useFetch from "@/hooks/use-fetch";
 import { getCars } from "@/actions/car-listing";
@@ -25,6 +26,7 @@ export function CarListings() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const [currentPage, setCurrentPage] = useState(1);
+  const [searchInput, setSearchInput] = useState("");
   const limit = 6;
 
   // Extract filter values from searchParams
@@ -48,6 +50,11 @@ export function CarListings() {
 
   // Use the useFetch hook
   const { loading, fn: fetchCars, data: result, error } = useFetch(getCars);
+
+  // Sync local search input with URL param
+  useEffect(() => {
+    setSearchInput(search);
+  }, [search]);
 
   // Fetch cars when filters change
   useEffect(() => {
@@ -89,6 +96,19 @@ export function CarListings() {
   // Handle pagination clicks
   const handlePageChange = (pageNum: number) => {
     setCurrentPage(pageNum);
+  };
+
+  // Handle search submit
+  const handleSearchSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const params = new URLSearchParams(searchParams);
+    if (searchInput) {
+      params.set("search", searchInput);
+    } else {
+      params.delete("search");
+    }
+    params.set("page", "1"); // Reset to first page on search
+    router.push(`?${params.toString()}`);
   };
 
   // Generate pagination URL
@@ -202,8 +222,8 @@ export function CarListings() {
 
   return (
     <div>
-      {/* Results count and current page */}
-      <div className="flex justify-between items-center mb-6">
+      {/* Search Bar and Results count on same row */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
         <p className="text-gray-600">
           Showing{" "}
           <span className="font-medium">
@@ -211,6 +231,19 @@ export function CarListings() {
           </span>{" "}
           of <span className="font-medium">{pagination.total}</span> cars
         </p>
+
+        <form onSubmit={handleSearchSubmit} className="w-full sm:w-auto">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
+            <Input
+              type="search"
+              placeholder="Search cars..."
+              className="pl-9 w-full sm:w-60"
+              value={searchInput}
+              onChange={(e) => setSearchInput(e.target.value)}
+            />
+          </div>
+        </form>
       </div>
 
       {/* Car grid */}
