@@ -10,12 +10,14 @@ import React, {
 import { User } from "@supabase/supabase-js";
 import { createBrowserClient } from "@/lib/supabase-client";
 import { useRouter } from "next/navigation";
+import { SignInModal } from "@/components/sign-in-modal";
 
 interface AuthContextType {
   user: User | null;
   isSignedIn: boolean;
   loading: boolean;
   signOut: () => Promise<void>;
+  openSignInModal: (redirectUrl?: string) => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -23,6 +25,10 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const [signInModalOpen, setSignInModalOpen] = useState(false);
+  const [signInRedirectUrl, setSignInRedirectUrl] = useState<
+    string | undefined
+  >();
   const router = useRouter();
   const supabase = useMemo(() => createBrowserClient(), []);
 
@@ -57,11 +63,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     router.refresh();
   };
 
+  const openSignInModal = (redirectUrl?: string) => {
+    setSignInRedirectUrl(redirectUrl);
+    setSignInModalOpen(true);
+  };
+
   return (
     <AuthContext.Provider
-      value={{ user, isSignedIn: !!user, loading, signOut }}
+      value={{ user, isSignedIn: !!user, loading, signOut, openSignInModal }}
     >
       {children}
+      <SignInModal
+        open={signInModalOpen}
+        onOpenChange={setSignInModalOpen}
+        redirectUrl={signInRedirectUrl}
+      />
     </AuthContext.Provider>
   );
 }

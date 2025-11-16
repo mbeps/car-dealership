@@ -61,7 +61,7 @@ export function CarDetails({
   isAdmin?: boolean;
 }) {
   const router = useRouter();
-  const { isSignedIn } = useAuth();
+  const { isSignedIn, openSignInModal } = useAuth();
   const [isWishlisted, setIsWishlisted] = useState(car.wishlisted);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
@@ -106,7 +106,7 @@ export function CarDetails({
   const handleSaveCar = async () => {
     if (!isSignedIn) {
       toast.error("Please sign in to save cars");
-      router.push("/sign-in");
+      openSignInModal();
       return;
     }
 
@@ -143,7 +143,7 @@ export function CarDetails({
   const handleBookTestDrive = () => {
     if (!isSignedIn) {
       toast.error("Please sign in to book a test drive");
-      router.push("/sign-in");
+      openSignInModal(`/test-drive/${car.id}`);
       return;
     }
     router.push(`/test-drive/${car.id}`);
