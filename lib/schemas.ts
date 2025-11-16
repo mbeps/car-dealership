@@ -31,6 +31,13 @@ export const carFormSchema = z.object({
   fuelType: z.string().min(1, "Fuel type is required"),
   transmission: z.string().min(1, "Transmission is required"),
   bodyType: z.string().min(1, "Body type is required"),
+  numberPlate: z
+    .string()
+    .min(1, "Number plate is required")
+    .regex(
+      /^[A-Z0-9]{2,10}$/,
+      "Number plate must be 2-10 uppercase letters/numbers"
+    ),
   seats: z.string().optional(),
   description: z.string().min(10, "Description must be at least 10 characters"),
   status: z.enum(["AVAILABLE", "UNAVAILABLE", "SOLD"]),

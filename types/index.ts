@@ -61,6 +61,7 @@ export interface Car {
   fuelType: string;
   transmission: string;
   bodyType: string;
+  numberPlate: string;
   seats: number | null;
   description: string;
   status: CarStatus;

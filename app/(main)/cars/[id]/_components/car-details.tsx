@@ -199,7 +199,9 @@ export function CarDetails({
         {/* Car Details */}
         <div className="w-full lg:w-5/12">
           <div className="flex items-center justify-between">
-            <Badge className="mb-2">{car.bodyType}</Badge>
+            <Badge className="mb-2 text-lg px-3 py-1.5 font-mono tracking-wider">
+              {car.numberPlate}
+            </Badge>
           </div>
 
           <h1 className="text-4xl font-bold mb-1">
