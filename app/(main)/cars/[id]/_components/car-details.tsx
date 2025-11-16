@@ -5,7 +5,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { useAuth } from "@/lib/auth-context";
-import { AlertCircle, Calendar } from "lucide-react";
+import { AlertCircle, Calendar, Trash2, Settings } from "lucide-react";
 import {
   Car,
   Fuel,
@@ -18,7 +18,23 @@ import {
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { toggleSavedCar } from "@/actions/car-listing";
+import { deleteCar, updateCarStatus } from "@/actions/cars";
 import useFetch from "@/hooks/use-fetch";
 import { formatCurrency } from "@/lib/helpers";
 import { format } from "date-fns";
@@ -46,6 +62,7 @@ export function CarDetails({
   const { isSignedIn } = useAuth();
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isWishlisted, setIsWishlisted] = useState(car.wishlisted);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
   const {
     loading: savingCar,
@@ -53,6 +70,20 @@ export function CarDetails({
     data: toggleResult,
     error: toggleError,
   } = useFetch(toggleSavedCar);
+
+  const {
+    loading: deletingCar,
+    fn: deleteCarFn,
+    data: deleteResult,
+    error: deleteError,
+  } = useFetch(deleteCar);
+
+  const {
+    loading: updatingStatus,
+    fn: updateCarStatusFn,
+    data: updateResult,
+    error: updateError,
+  } = useFetch(updateCarStatus);
 
   // Handle toggle result with useEffect
   useEffect(() => {
@@ -68,6 +99,36 @@ export function CarDetails({
       toast.error("Failed to update favorites");
     }
   }, [toggleError]);
+
+  // Handle delete success
+  useEffect(() => {
+    if (deleteResult?.success) {
+      toast.success("Car deleted successfully");
+      router.push("/admin/cars");
+    }
+  }, [deleteResult, router]);
+
+  // Handle delete error
+  useEffect(() => {
+    if (deleteError) {
+      toast.error("Failed to delete car");
+    }
+  }, [deleteError]);
+
+  // Handle status update success
+  useEffect(() => {
+    if (updateResult?.success) {
+      toast.success("Car status updated");
+      router.refresh();
+    }
+  }, [updateResult, router]);
+
+  // Handle status update error
+  useEffect(() => {
+    if (updateError) {
+      toast.error("Failed to update car status");
+    }
+  }, [updateError]);
 
   // Handle save car
   const handleSaveCar = async () => {
@@ -119,6 +180,19 @@ export function CarDetails({
   // Handle admin redirect to test-drives page
   const handleAdminTestDrives = () => {
     router.push("/admin/test-drives");
+  };
+
+  // Handle delete car
+  const handleDeleteCar = async () => {
+    await deleteCarFn(car.id);
+    setShowDeleteDialog(false);
+  };
+
+  // Handle status change
+  const handleStatusChange = async (newStatus: string) => {
+    await updateCarStatusFn(car.id, {
+      status: newStatus as "AVAILABLE" | "SOLD" | "UNAVAILABLE",
+    });
   };
 
   return (
@@ -258,13 +332,42 @@ export function CarDetails({
           {car.status !== "SOLD" && car.status !== "UNAVAILABLE" && (
             <>
               {isAdmin ? (
-                <Button
-                  className="w-full py-6 text-lg"
-                  onClick={handleAdminTestDrives}
-                >
-                  <Calendar className="mr-2 h-5 w-5" />
-                  Manage Test Drives
-                </Button>
+                <div className="space-y-3">
+                  <Button
+                    className="w-full py-6 text-lg"
+                    onClick={handleAdminTestDrives}
+                  >
+                    <Calendar className="mr-2 h-5 w-5" />
+                    Manage Test Drives
+                  </Button>
+
+                  {/* Admin Controls */}
+                  <div className="flex gap-2">
+                    <Select
+                      value={car.status}
+                      onValueChange={handleStatusChange}
+                      disabled={updatingStatus}
+                    >
+                      <SelectTrigger className="flex-1">
+                        <SelectValue placeholder="Status" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="AVAILABLE">Available</SelectItem>
+                        <SelectItem value="SOLD">Sold</SelectItem>
+                        <SelectItem value="UNAVAILABLE">Unavailable</SelectItem>
+                      </SelectContent>
+                    </Select>
+
+                    <Button
+                      variant="destructive"
+                      size="icon"
+                      onClick={() => setShowDeleteDialog(true)}
+                      disabled={deletingCar}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
               ) : (
                 <Button
                   className="w-full py-6 text-lg"
@@ -284,6 +387,35 @@ export function CarDetails({
           )}
         </div>
       </div>
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Delete Car</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to delete this car? This action cannot be
+              undone.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setShowDeleteDialog(false)}
+              disabled={deletingCar}
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={handleDeleteCar}
+              disabled={deletingCar}
+            >
+              {deletingCar ? "Deleting..." : "Delete"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       {/* Details & Features Section */}
       <div className="mt-12 p-6 bg-white rounded-lg shadow-sm">
