@@ -148,6 +148,10 @@ export interface CarFilters {
   transmission?: string;
   minPrice?: number;
   maxPrice?: number;
+  minMileage?: number;
+  maxMileage?: number;
+  minAge?: number;
+  maxAge?: number;
   sortBy?: "newest" | "priceAsc" | "priceDesc";
   page?: number;
   limit?: number;
@@ -171,6 +175,14 @@ export interface CarFiltersData {
   fuelTypes: string[];
   transmissions: string[];
   priceRange: {
+    min: number;
+    max: number;
+  };
+  mileageRange: {
+    min: number;
+    max: number;
+  };
+  ageRange: {
     min: number;
     max: number;
   };
