@@ -91,3 +91,35 @@ export const dealershipInfoSchema = z.object({
 });
 
 export type DealershipInfoFormData = z.infer<typeof dealershipInfoSchema>;
+
+/**
+ * Validation schema for forgot password form.
+ * Requires valid email address.
+ *
+ * @see ForgotPasswordPage - Component using this
+ */
+export const forgotPasswordSchema = z.object({
+  email: z.string().email("Valid email is required"),
+});
+
+export type ForgotPasswordFormData = z.infer<typeof forgotPasswordSchema>;
+
+/**
+ * Validation schema for update password form.
+ * Password must be at least 6 characters and confirmed.
+ *
+ * @see UpdatePasswordPage - Component using this
+ */
+export const updatePasswordSchema = z
+  .object({
+    password: z.string().min(6, "Password must be at least 6 characters"),
+    confirmPassword: z
+      .string()
+      .min(6, "Password must be at least 6 characters"),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords do not match",
+    path: ["confirmPassword"],
+  });
+
+export type UpdatePasswordFormData = z.infer<typeof updatePasswordSchema>;

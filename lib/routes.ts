@@ -34,6 +34,8 @@ export const ROUTES = {
   SIGN_IN: "/sign-in",
   SIGN_UP: "/sign-up",
   AUTH_CALLBACK: "/auth/callback",
+  FORGOT_PASSWORD: "/forgot-password",
+  UPDATE_PASSWORD: "/update-password",
 
   // Main app routes (authenticated users)
   SAVED_CARS: "/saved-cars",
