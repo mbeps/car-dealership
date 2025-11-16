@@ -30,7 +30,10 @@ const HeaderClient = ({
   return (
     <header className="fixed top-0 w-full bg-white/80 backdrop-blur-md z-50 border-b">
       <nav className="mx-auto px-4 py-4 flex items-center justify-between">
-        <Link href={isAdminPage ? ROUTES.ADMIN : ROUTES.HOME} className="flex">
+        <Link
+          href={isAdminPage ? ROUTES.ADMIN : ROUTES.HOME}
+          className="flex items-center gap-2"
+        >
           <Image
             src={"/logo.png"}
             alt="Site Logo"
@@ -38,9 +41,7 @@ const HeaderClient = ({
             height={60}
             className="h-12 w-auto object-contain"
           />
-          {isAdminPage && (
-            <span className="text-xs font-extralight">admin</span>
-          )}
+          {isAdminPage && <span className="text-lg font-bold">Admin</span>}
         </Link>
 
         {/* Action Buttons */}

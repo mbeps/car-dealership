@@ -48,7 +48,7 @@ export const Sidebar = () => {
       <div className="hidden md:flex h-full flex-col overflow-y-auto bg-white shadow-sm border-r">
         <div className="p-6">
           <Link href={ROUTES.ADMIN}>
-            <h1 className="text-xl font-bold"> Admin</h1>
+            <h1 className="text-2xl font-bold">Admin</h1>
           </Link>
         </div>
         <div className="flex flex-col w-full">
