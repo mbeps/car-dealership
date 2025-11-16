@@ -50,6 +50,7 @@ import {
   updateUserRole,
 } from "@/actions/settings";
 import { WorkingHourInput, User, DayOfWeekEnum } from "@/types";
+import { useAuth } from "@/lib/auth-context";
 
 // Day names for display
 const DAYS: Array<{ value: DayOfWeekEnum; label: string }> = [
@@ -63,6 +64,7 @@ const DAYS: Array<{ value: DayOfWeekEnum; label: string }> = [
 ];
 
 export const SettingsForm = () => {
+  const { user: authUser } = useAuth();
   const [workingHours, setWorkingHours] = useState<WorkingHourInput[]>(
     DAYS.map((day) => ({
       dayOfWeek: day.value,
@@ -379,68 +381,76 @@ export const SettingsForm = () => {
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {filteredUsers.map((user) => (
-                        <TableRow key={user.id}>
-                          <TableCell className="font-medium">
-                            <div className="flex items-center gap-2">
-                              <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden">
-                                {user.imageUrl ? (
-                                  <img
-                                    src={user.imageUrl}
-                                    alt={user.name || "User"}
-                                    className="w-full h-full object-cover"
-                                  />
-                                ) : (
-                                  <Users className="h-4 w-4 text-gray-500" />
-                                )}
+                      {filteredUsers.map((user) => {
+                        const isCurrentUser = authUser?.email === user.email;
+                        return (
+                          <TableRow key={user.id}>
+                            <TableCell className="font-medium">
+                              <div className="flex items-center gap-2">
+                                <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden">
+                                  {user.imageUrl ? (
+                                    <img
+                                      src={user.imageUrl}
+                                      alt={user.name || "User"}
+                                      className="w-full h-full object-cover"
+                                    />
+                                  ) : (
+                                    <Users className="h-4 w-4 text-gray-500" />
+                                  )}
+                                </div>
+                                <span>{user.name || "Unnamed User"}</span>
                               </div>
-                              <span>{user.name || "Unnamed User"}</span>
-                            </div>
-                          </TableCell>
-                          <TableCell>{user.email}</TableCell>
-                          <TableCell>
-                            <Badge
-                              className={
-                                user.role === "ADMIN"
-                                  ? "bg-green-800"
-                                  : "bg-gray-800"
-                              }
-                            >
-                              {user.role}
-                            </Badge>
-                          </TableCell>
-                          <TableCell className="text-right">
-                            {user.role === "ADMIN" ? (
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                className="text-red-600"
-                                onClick={() => {
-                                  setUserToDemote(user);
-                                  setConfirmRemoveDialog(true);
-                                }}
-                                disabled={updatingRole}
+                            </TableCell>
+                            <TableCell>{user.email}</TableCell>
+                            <TableCell>
+                              <Badge
+                                className={
+                                  user.role === "ADMIN"
+                                    ? "bg-green-800"
+                                    : "bg-gray-800"
+                                }
                               >
-                                <UserX className="h-4 w-4 mr-2" />
-                                Remove Admin
-                              </Button>
-                            ) : (
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => {
-                                  setUserToPromote(user);
-                                  setConfirmAdminDialog(true);
-                                }}
-                                disabled={updatingRole}
-                              >
-                                <Shield className="h-4 w-4 mr-2" />
-                                Make Admin
-                              </Button>
-                            )}
-                          </TableCell>
-                        </TableRow>
-                      ))}
+                                {user.role}
+                              </Badge>
+                            </TableCell>
+                            <TableCell className="text-right">
+                              {user.role === "ADMIN" ? (
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  className="text-red-600"
+                                  onClick={() => {
+                                    setUserToDemote(user);
+                                    setConfirmRemoveDialog(true);
+                                  }}
+                                  disabled={updatingRole || isCurrentUser}
+                                  title={
+                                    isCurrentUser
+                                      ? "You cannot remove yourself as admin"
+                                      : ""
+                                  }
+                                >
+                                  <UserX className="h-4 w-4 mr-2" />
+                                  Remove Admin
+                                </Button>
+                              ) : (
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => {
+                                    setUserToPromote(user);
+                                    setConfirmAdminDialog(true);
+                                  }}
+                                  disabled={updatingRole}
+                                >
+                                  <Shield className="h-4 w-4 mr-2" />
+                                  Make Admin
+                                </Button>
+                              )}
+                            </TableCell>
+                          </TableRow>
+                        );
+                      })}
                     </TableBody>
                   </Table>
                 </div>
