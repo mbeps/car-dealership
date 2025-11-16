@@ -192,7 +192,7 @@ export async function getCars(
     // Add search filter
     if (search) {
       const matchingMakeIds = await getMakeIdsForTerm(supabase, search);
-       const matchingColorIds = await getColorIdsForTerm(supabase, search);
+      const matchingColorIds = await getColorIdsForTerm(supabase, search);
       const clauses = [
         `model.ilike.%${search}%`,
         `description.ilike.%${search}%`,
@@ -354,5 +354,162 @@ export async function updateCarStatus(
       success: false,
       error: (error as Error).message,
     };
+  }
+}
+
+// Update car with new data and images
+export async function updateCar({
+  carId,
+  carData,
+  newImages = [],
+  imagesToRemove = [],
+}: {
+  carId: string;
+  carData: CarFormData;
+  newImages?: string[];
+  imagesToRemove?: string[];
+}): Promise<ActionResponse<null>> {
+  try {
+    const supabase = await createClient();
+
+    const {
+      data: { user: authUser },
+      error: authError,
+    } = await supabase.auth.getUser();
+    if (authError || !authUser) throw new Error("Unauthorized");
+
+    const { data: user } = await supabase
+      .from("User")
+      .select("*")
+      .eq("supabaseAuthUserId", authUser.id)
+      .single();
+
+    if (!user || user.role !== "ADMIN") throw new Error("Unauthorized");
+
+    // Get current car data
+    const { data: existingCar, error: fetchError } = await supabase
+      .from("Car")
+      .select("images")
+      .eq("id", carId)
+      .single();
+
+    if (fetchError || !existingCar) {
+      return {
+        success: false,
+        error: "Car not found",
+      };
+    }
+
+    // Handle image operations
+    let finalImages = [...existingCar.images];
+    const supabaseAdmin = createAdminClient();
+
+    // Remove images if requested
+    if (imagesToRemove.length > 0) {
+      const filePaths = imagesToRemove
+        .map((imageUrl: string) => {
+          const url = new URL(imageUrl);
+          const pathMatch = url.pathname.match(/\/car-images\/(.*)/);
+          return pathMatch ? pathMatch[1] : null;
+        })
+        .filter((path: string | null): path is string => path !== null);
+
+      if (filePaths.length > 0) {
+        const { error } = await supabaseAdmin.storage
+          .from("car-images")
+          .remove(filePaths);
+
+        if (error) {
+          console.error("Error deleting images:", error);
+        }
+      }
+
+      finalImages = finalImages.filter(
+        (img: string) => !imagesToRemove.includes(img)
+      );
+    }
+
+    // Upload new images if provided
+    if (newImages.length > 0) {
+      const folderPath = `cars/${carId}`;
+      const newImageUrls: string[] = [];
+
+      for (let i = 0; i < newImages.length; i++) {
+        const base64Data = newImages[i];
+
+        if (!base64Data || !base64Data.startsWith("data:image/")) {
+          console.warn("Skipping invalid image data");
+          continue;
+        }
+
+        const base64 = base64Data.split(",")[1];
+        const imageBuffer = Buffer.from(base64, "base64");
+
+        const mimeMatch = base64Data.match(/data:image\/([a-zA-Z0-9]+);/);
+        const fileExtension = mimeMatch ? mimeMatch[1] : "jpeg";
+
+        const fileName = `image-${Date.now()}-${i}.${fileExtension}`;
+        const filePath = `${folderPath}/${fileName}`;
+
+        const { error } = await supabaseAdmin.storage
+          .from("car-images")
+          .upload(filePath, imageBuffer, {
+            contentType: `image/${fileExtension}`,
+          });
+
+        if (error) {
+          console.error("Error uploading image:", error);
+          throw new Error(`Failed to upload image: ${error.message}`);
+        }
+
+        const publicUrl = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/car-images/${filePath}`;
+        newImageUrls.push(publicUrl);
+      }
+
+      finalImages = [...finalImages, ...newImageUrls];
+    }
+
+    // Ensure at least one image remains
+    if (finalImages.length === 0) {
+      return {
+        success: false,
+        error: "At least one image is required",
+      };
+    }
+
+    // Update the car in the database
+    const { error: updateError } = await supabase
+      .from("Car")
+      .update({
+        carMakeId: carData.carMakeId,
+        carColorId: carData.carColorId,
+        model: carData.model,
+        year: carData.year,
+        price: carData.price.toString(),
+        mileage: carData.mileage,
+        fuelType: carData.fuelType,
+        transmission: carData.transmission,
+        bodyType: carData.bodyType,
+        numberPlate: carData.numberPlate,
+        seats: carData.seats,
+        description: carData.description,
+        status: carData.status as CarStatus,
+        featured: carData.featured,
+        images: finalImages,
+      })
+      .eq("id", carId);
+
+    if (updateError) throw updateError;
+
+    // Revalidate pages
+    revalidatePath("/admin/cars");
+    revalidatePath(`/cars/${carId}`);
+
+    return {
+      success: true,
+      data: null,
+    };
+  } catch (error) {
+    throw new Error("Error updating car: " + (error as Error).message);
   }
 }
