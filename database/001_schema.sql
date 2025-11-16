@@ -65,6 +65,7 @@ CREATE TABLE public."Car" (
   "description" TEXT NOT NULL,
   "status" "CarStatus" NOT NULL DEFAULT 'AVAILABLE',
   "featured" BOOLEAN NOT NULL DEFAULT FALSE,
+  "features" TEXT[],
   "createdAt" TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
   "updatedAt" TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT timezone('utc', now()),
   "images" TEXT[],

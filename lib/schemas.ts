@@ -61,6 +61,7 @@ export const carFormSchema = z.object({
   description: z.string().min(10, "Description must be at least 10 characters"),
   status: z.enum(["AVAILABLE", "UNAVAILABLE", "SOLD"]),
   featured: z.boolean().default(false),
+  features: z.array(z.string()).default([]),
   // Images are handled separately
 });
 

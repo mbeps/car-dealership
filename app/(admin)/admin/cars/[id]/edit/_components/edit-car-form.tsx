@@ -54,6 +54,7 @@ export const EditCarForm = ({ car, carMakes, carColors }: EditCarFormProps) => {
       description: car.description,
       status: car.status,
       featured: car.featured,
+      features: car.features || [],
     },
   });
 

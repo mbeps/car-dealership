@@ -56,6 +56,7 @@ interface CarFormData {
   description: string;
   status: string;
   featured: boolean;
+  features: string[];
 }
 
 // Add a car to the database with images
@@ -153,6 +154,7 @@ export async function addCar({
       description: carData.description,
       status: carData.status as CarStatus,
       featured: carData.featured,
+      features: carData.features || [],
       images: imageUrls,
     });
 
@@ -495,6 +497,7 @@ export async function updateCar({
         description: carData.description,
         status: carData.status as CarStatus,
         featured: carData.featured,
+        features: carData.features || [],
         images: finalImages,
       })
       .eq("id", carId);
