@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { useAuth } from "@/lib/auth-context";
-import { AlertCircle, Calendar, Trash2, Settings } from "lucide-react";
+import { AlertCircle, Calendar, Trash2, Settings, Pencil } from "lucide-react";
 import {
   Car,
   Fuel,
@@ -153,6 +153,11 @@ export function CarDetails({
   // Handle admin redirect to test-drives page
   const handleAdminTestDrives = () => {
     router.push("/admin/test-drives");
+  };
+
+  // Handle edit car
+  const handleEditCar = () => {
+    router.push(`/admin/cars/${car.id}/edit`);
   };
 
   // Handle delete car
@@ -313,6 +318,15 @@ export function CarDetails({
 
                   {/* Admin Controls */}
                   <div className="flex gap-2">
+                    <Button
+                      variant="outline"
+                      className="flex-1"
+                      onClick={handleEditCar}
+                    >
+                      <Pencil className="mr-2 h-4 w-4" />
+                      Edit Car
+                    </Button>
+
                     <Select
                       value={car.status}
                       onValueChange={handleStatusChange}
