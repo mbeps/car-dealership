@@ -23,7 +23,7 @@ const HeaderClient = ({
   isAdminPage = false,
   userRole = null,
 }: HeaderClientProps) => {
-  const { user, signOut } = useAuth();
+  const { user, signOut, openSignInModal } = useAuth();
   const isAdmin = userRole === "ADMIN";
 
   return (
@@ -85,9 +85,9 @@ const HeaderClient = ({
 
           <SignedOut>
             {!isAdminPage && (
-              <Link href="/sign-in">
-                <Button variant="outline">Login</Button>
-              </Link>
+              <Button variant="outline" onClick={() => openSignInModal()}>
+                Login
+              </Button>
             )}
           </SignedOut>
 

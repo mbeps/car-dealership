@@ -20,7 +20,7 @@ interface CarCardProps {
 }
 
 export const CarCard = ({ car }: CarCardProps) => {
-  const { isSignedIn } = useAuth();
+  const { isSignedIn, openSignInModal } = useAuth();
   const router = useRouter();
   const [isSaved, setIsSaved] = useState(car.wishlisted || false);
 
@@ -54,7 +54,7 @@ export const CarCard = ({ car }: CarCardProps) => {
 
     if (!isSignedIn) {
       toast.error("Please sign in to save cars");
-      router.push("/sign-in");
+      openSignInModal();
       return;
     }
 
