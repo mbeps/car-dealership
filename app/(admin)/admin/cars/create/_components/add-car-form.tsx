@@ -49,6 +49,7 @@ export const AddCarForm = ({ carMakes, carColors }: AddCarFormProps) => {
       description: "",
       status: "AVAILABLE",
       featured: false,
+      features: [],
     },
   });
 

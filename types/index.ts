@@ -68,6 +68,7 @@ export interface Car {
   description: string;
   status: CarStatus;
   featured: boolean;
+  features: string[];
   images: string[];
   createdAt: Date | string;
   updatedAt: Date | string;

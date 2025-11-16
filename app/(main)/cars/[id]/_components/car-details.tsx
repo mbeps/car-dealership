@@ -398,30 +398,18 @@ export function CarDetails({
           </div>
           <div>
             <h3 className="text-2xl font-bold mb-6">Features</h3>
-            <ul className="grid grid-cols-1 gap-2">
-              <li className="flex items-center gap-2">
-                <span className="h-2 w-2 bg-blue-600 rounded-full"></span>
-                {car.transmission} Transmission
-              </li>
-              <li className="flex items-center gap-2">
-                <span className="h-2 w-2 bg-blue-600 rounded-full"></span>
-                {car.fuelType} Engine
-              </li>
-              <li className="flex items-center gap-2">
-                <span className="h-2 w-2 bg-blue-600 rounded-full"></span>
-                {car.bodyType} Body Style
-              </li>
-              {car.seats && (
-                <li className="flex items-center gap-2">
-                  <span className="h-2 w-2 bg-blue-600 rounded-full"></span>
-                  {car.seats} Seats
-                </li>
-              )}
-              <li className="flex items-center gap-2">
-                <span className="h-2 w-2 bg-blue-600 rounded-full"></span>
-                {car.color} Exterior
-              </li>
-            </ul>
+            {car.features && car.features.length > 0 ? (
+              <ul className="grid grid-cols-1 gap-2">
+                {car.features.map((feature, index) => (
+                  <li key={index} className="flex items-center gap-2">
+                    <span className="h-2 w-2 bg-blue-600 rounded-full"></span>
+                    {feature}
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="text-gray-500">No features listed for this car.</p>
+            )}
           </div>
         </div>
       </div>
