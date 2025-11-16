@@ -43,8 +43,7 @@ export default function SignInPage() {
       }
 
       toast.success("Signed in successfully!");
-      router.push(redirect);
-      router.refresh();
+      window.location.href = redirect;
     } catch (error) {
       toast.error("An unexpected error occurred");
       console.error(error);

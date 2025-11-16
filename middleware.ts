@@ -67,12 +67,16 @@ async function supabaseMiddleware(request: NextRequest) {
   } = await supabase.auth.getSession();
   const user = session?.user ?? null;
 
+  const pathname = request.nextUrl.pathname;
+
+  // Redirect authenticated users away from auth pages
+  if (user && (pathname === ROUTES.SIGN_IN || pathname === ROUTES.SIGN_UP)) {
+    return NextResponse.redirect(new URL(ROUTES.HOME, request.url));
+  }
+
   // Redirect to sign-in if accessing protected route without auth
-  if (isProtectedRoute(request.nextUrl.pathname) && !user) {
-    const redirectUrl = new URL(
-      createSignInRedirect(request.nextUrl.pathname),
-      request.url
-    );
+  if (isProtectedRoute(pathname) && !user) {
+    const redirectUrl = new URL(createSignInRedirect(pathname), request.url);
     return NextResponse.redirect(redirectUrl);
   }
 
