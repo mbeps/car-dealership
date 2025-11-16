@@ -15,6 +15,7 @@ import {
   Mail,
   Phone,
   MessageCircle,
+  MapPin,
 } from "lucide-react";
 import { CarGallery } from "./car-gallery";
 import { Button } from "@/components/ui/button";
@@ -480,25 +481,63 @@ export function CarDetails({
         <div className="bg-gray-50 rounded-lg p-6">
           <div className="flex flex-col md:flex-row gap-6 justify-between">
             {/* Dealership Name and Address */}
-            <div className="flex items-start gap-3">
-              <LocateFixed className="h-5 w-5 text-blue-600 mt-1 flex-shrink-0" />
-              <div>
-                <h4 className="font-medium">Name Motors</h4>
-                <p className="text-gray-600">
-                  {testDriveInfo.dealership?.address || "Not Available"}
-                </p>
-                <p className="text-gray-600 mt-1">
-                  Phone: {testDriveInfo.dealership?.phone || "Not Available"}
-                </p>
-                <p className="text-gray-600">
-                  Email: {testDriveInfo.dealership?.email || "Not Available"}
-                </p>
+            <div className="flex items-start gap-3 w-full">
+              <div className="flex flex-col gap-5 flex-1 text-lg">
+                <div className="flex items-start gap-3">
+                  <LocateFixed className="h-5 w-5 text-blue-600 mt-0.5 flex-shrink-0" />
+                  <h4 className="font-medium">
+                    {testDriveInfo.dealership?.name}
+                  </h4>
+                </div>
+                <div className="flex items-start gap-3">
+                  <MapPin className="h-5 w-5 text-gray-500 mt-0.5 flex-shrink-0" />
+                  {testDriveInfo.dealership?.address ? (
+                    <a
+                      href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+                        testDriveInfo.dealership.address
+                      )}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-gray-600 hover:text-blue-600 hover:underline transition-colors"
+                    >
+                      {testDriveInfo.dealership.address}
+                    </a>
+                  ) : (
+                    <p className="text-gray-600">Not Available</p>
+                  )}
+                </div>
+                <div className="flex items-center gap-3">
+                  <Phone className="h-5 w-5 text-gray-500 flex-shrink-0" />
+                  {testDriveInfo.dealership?.phone ? (
+                    <a
+                      href={`tel:${testDriveInfo.dealership.phone}`}
+                      className="text-gray-600 hover:text-blue-600 hover:underline transition-colors"
+                    >
+                      {testDriveInfo.dealership.phone}
+                    </a>
+                  ) : (
+                    <p className="text-gray-600">Not Available</p>
+                  )}
+                </div>
+                <div className="flex items-center gap-3">
+                  <Mail className="h-5 w-5 text-gray-500 flex-shrink-0" />
+                  {testDriveInfo.dealership?.email ? (
+                    <a
+                      href={`mailto:${testDriveInfo.dealership.email}`}
+                      className="text-gray-600 hover:text-blue-600 hover:underline transition-colors"
+                    >
+                      {testDriveInfo.dealership.email}
+                    </a>
+                  ) : (
+                    <p className="text-gray-600">Not Available</p>
+                  )}
+                </div>
               </div>
             </div>
 
             {/* Working Hours */}
             <div className="md:w-1/2 lg:w-1/3">
-              <h4 className="font-medium mb-2">Working Hours</h4>
+              <h4 className="font-medium text-lg mb-2">Working Hours</h4>
               <div className="space-y-2">
                 {testDriveInfo.dealership?.workingHours
                   ? testDriveInfo.dealership.workingHours
@@ -525,7 +564,7 @@ export function CarDetails({
                       .map((day: SerializedWorkingHour) => (
                         <div
                           key={day.dayOfWeek}
-                          className="flex justify-between text-sm"
+                          className="flex justify-between text-md"
                         >
                           <span className="text-gray-600">
                             {day.dayOfWeek.charAt(0) +
