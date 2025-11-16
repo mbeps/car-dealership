@@ -1,6 +1,7 @@
 import { getCarById } from "@/actions/car-listing";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { TestDriveForm } from "./_components/test-drive-form";
+import { isCurrentUserAdmin } from "@/actions/auth";
 
 export async function generateMetadata() {
   return {
@@ -14,6 +15,12 @@ export default async function TestDrivePage({
 }: {
   params: Promise<{ id: string }>;
 }) {
+  // Check if user is admin and redirect to admin panel
+  const isAdmin = await isCurrentUserAdmin();
+  if (isAdmin) {
+    redirect("/admin/test-drives");
+  }
+
   // Fetch car details
   const { id } = await params;
   const result = await getCarById(id);

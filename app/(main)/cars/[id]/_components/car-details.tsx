@@ -33,12 +33,14 @@ import {
 export function CarDetails({
   car,
   testDriveInfo,
+  isAdmin = false,
 }: {
   car: SerializedCar & { wishlisted: boolean };
   testDriveInfo: {
     userTestDrive: UserTestDrive | null;
     dealership: SerializedDealershipInfo | null;
   };
+  isAdmin?: boolean;
 }) {
   const router = useRouter();
   const { isSignedIn } = useAuth();
@@ -112,6 +114,11 @@ export function CarDetails({
       return;
     }
     router.push(`/test-drive/${car.id}`);
+  };
+
+  // Handle admin redirect to test-drives page
+  const handleAdminTestDrives = () => {
+    router.push("/admin/test-drives");
   };
 
   return (
@@ -249,19 +256,31 @@ export function CarDetails({
 
           {/* Book Test Drive Button */}
           {car.status !== "SOLD" && car.status !== "UNAVAILABLE" && (
-            <Button
-              className="w-full py-6 text-lg"
-              onClick={handleBookTestDrive}
-              disabled={!!testDriveInfo.userTestDrive}
-            >
-              <Calendar className="mr-2 h-5 w-5" />
-              {testDriveInfo.userTestDrive
-                ? `Booked for ${format(
-                    new Date(testDriveInfo.userTestDrive.bookingDate),
-                    "EEEE, MMMM d, yyyy"
-                  )}`
-                : "Book Test Drive"}
-            </Button>
+            <>
+              {isAdmin ? (
+                <Button
+                  className="w-full py-6 text-lg"
+                  onClick={handleAdminTestDrives}
+                >
+                  <Calendar className="mr-2 h-5 w-5" />
+                  Manage Test Drives
+                </Button>
+              ) : (
+                <Button
+                  className="w-full py-6 text-lg"
+                  onClick={handleBookTestDrive}
+                  disabled={!!testDriveInfo.userTestDrive}
+                >
+                  <Calendar className="mr-2 h-5 w-5" />
+                  {testDriveInfo.userTestDrive
+                    ? `Booked for ${format(
+                        new Date(testDriveInfo.userTestDrive.bookingDate),
+                        "EEEE, MMMM d, yyyy"
+                      )}`
+                    : "Book Test Drive"}
+                </Button>
+              )}
+            </>
           )}
         </div>
       </div>

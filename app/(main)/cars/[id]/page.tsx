@@ -1,6 +1,7 @@
 import { getCarById } from "@/actions/car-listing";
 import { CarDetails } from "./_components/car-details";
 import { notFound } from "next/navigation";
+import { isCurrentUserAdmin } from "@/actions/auth";
 
 export async function generateMetadata({
   params,
@@ -42,6 +43,9 @@ export default async function CarDetailsPage({
     notFound();
   }
 
+  // Check if user is admin
+  const isAdmin = await isCurrentUserAdmin();
+
   return (
     <div className="container mx-auto px-4 py-12">
       <CarDetails
@@ -50,6 +54,7 @@ export default async function CarDetailsPage({
           wishlisted: result.data.wishlisted ?? false,
         }}
         testDriveInfo={result.data.testDriveInfo}
+        isAdmin={isAdmin}
       />
     </div>
   );
