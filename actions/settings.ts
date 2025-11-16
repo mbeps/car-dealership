@@ -3,6 +3,7 @@
 import { createClient } from "@/lib/supabase";
 import { revalidatePath } from "next/cache";
 import { ActionResponse, DealershipInfo, WorkingHour, User } from "@/types";
+import { dealershipInfoSchema } from "@/lib/schemas";
 
 export async function getDealershipInfo(): Promise<
   ActionResponse<DealershipInfo | null>
@@ -195,6 +196,69 @@ export async function updateUserRole(
     };
   } catch (error) {
     console.error("Error updating user role:", error);
+    return {
+      success: false,
+      error: (error as Error).message,
+    };
+  }
+}
+
+export async function updateDealershipInfo(
+  dealershipId: string,
+  data: {
+    name: string;
+    address: string;
+    email: string;
+    phone: string;
+    whatsappPhone: string;
+  }
+): Promise<ActionResponse<string>> {
+  try {
+    const supabase = await createClient();
+
+    const {
+      data: { user: authUser },
+      error: authError,
+    } = await supabase.auth.getUser();
+    if (authError || !authUser) throw new Error("Unauthorized");
+
+    // Verify admin status
+    const { data: user } = await supabase
+      .from("User")
+      .select("*")
+      .eq("supabaseAuthUserId", authUser.id)
+      .single();
+
+    if (!user || user.role !== "ADMIN") {
+      throw new Error("Unauthorized access");
+    }
+
+    // Validate input data
+    const validatedData = dealershipInfoSchema.parse(data);
+
+    // Update dealership info
+    const { error: updateError } = await supabase
+      .from("DealershipInfo")
+      .update({
+        name: validatedData.name,
+        address: validatedData.address,
+        email: validatedData.email,
+        phone: validatedData.phone,
+        whatsappPhone: validatedData.whatsappPhone,
+      })
+      .eq("id", dealershipId);
+
+    if (updateError) throw updateError;
+
+    revalidatePath("/admin/settings");
+    revalidatePath("/test-drive");
+
+    return {
+      success: true,
+      data: "Dealership information updated successfully",
+    };
+  } catch (error) {
+    console.error("Error updating dealership info:", error);
     return {
       success: false,
       error: (error as Error).message,

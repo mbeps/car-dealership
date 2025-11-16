@@ -1,6 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import {
   Save,
@@ -11,6 +13,7 @@ import {
   UserX,
   CheckCircle,
   Search,
+  Building2,
 } from "lucide-react";
 
 import { Input } from "@/components/ui/input";
@@ -48,9 +51,11 @@ import {
   saveWorkingHours,
   getUsers,
   updateUserRole,
+  updateDealershipInfo,
 } from "@/actions/settings";
 import { WorkingHourInput, User, DayOfWeekEnum } from "@/types";
 import { useAuth } from "@/lib/auth-context";
+import { dealershipInfoSchema, DealershipInfoFormData } from "@/lib/schemas";
 
 // Day names for display
 const DAYS: Array<{ value: DayOfWeekEnum; label: string }> = [
@@ -109,6 +114,30 @@ export const SettingsForm = () => {
     error: updateRoleError,
   } = useFetch(updateUserRole);
 
+  const {
+    loading: updatingDealership,
+    fn: updateDealership,
+    data: updateDealershipResult,
+    error: updateDealershipError,
+  } = useFetch(updateDealershipInfo);
+
+  // React Hook Form for dealership info
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm<DealershipInfoFormData>({
+    resolver: zodResolver(dealershipInfoSchema),
+    defaultValues: {
+      name: "",
+      address: "",
+      email: "",
+      phone: "",
+      whatsappPhone: "",
+    },
+  });
+
   // Fetch settings and users on component mount
   useEffect(() => {
     fetchDealershipInfo();
@@ -119,6 +148,15 @@ export const SettingsForm = () => {
   useEffect(() => {
     if (settingsData?.success && settingsData.data) {
       const dealership = settingsData.data;
+
+      // Reset form with dealership info
+      reset({
+        name: dealership.name || "",
+        address: dealership.address || "",
+        email: dealership.email || "",
+        phone: dealership.phone || "",
+        whatsappPhone: dealership.whatsappPhone || "",
+      });
 
       // Map the working hours
       if (dealership.workingHours && dealership.workingHours.length > 0) {
@@ -168,7 +206,19 @@ export const SettingsForm = () => {
     if (updateRoleError) {
       toast.error(`Failed to update user role: ${updateRoleError.message}`);
     }
-  }, [settingsError, saveError, usersError, updateRoleError]);
+
+    if (updateDealershipError) {
+      toast.error(
+        `Failed to update dealership info: ${updateDealershipError.message}`
+      );
+    }
+  }, [
+    settingsError,
+    saveError,
+    usersError,
+    updateRoleError,
+    updateDealershipError,
+  ]);
 
   // Handle successful operations
   useEffect(() => {
@@ -183,7 +233,12 @@ export const SettingsForm = () => {
       setConfirmAdminDialog(false);
       setConfirmRemoveDialog(false);
     }
-  }, [saveResult, updateRoleResult]);
+
+    if (updateDealershipResult?.success) {
+      toast.success("Dealership information updated successfully");
+      fetchDealershipInfo();
+    }
+  }, [saveResult, updateRoleResult, updateDealershipResult]);
 
   // Handle working hours change
   const handleWorkingHourChange = (
@@ -206,6 +261,15 @@ export const SettingsForm = () => {
       return;
     }
     await saveHours(settingsData.data.id, workingHours);
+  };
+
+  // Save dealership info
+  const onSubmitDealershipInfo = async (data: DealershipInfoFormData) => {
+    if (!settingsData?.success || !settingsData.data?.id) {
+      toast.error("No dealership found.");
+      return;
+    }
+    await updateDealership(settingsData.data.id, data);
   };
 
   // Make user admin
@@ -231,8 +295,12 @@ export const SettingsForm = () => {
 
   return (
     <div className="space-y-6">
-      <Tabs defaultValue="hours">
+      <Tabs defaultValue="info">
         <TabsList>
+          <TabsTrigger value="info">
+            <Building2 className="h-4 w-4 mr-2" />
+            Dealership Info
+          </TabsTrigger>
           <TabsTrigger value="hours">
             <Clock className="h-4 w-4 mr-2" />
             Working Hours
@@ -242,6 +310,109 @@ export const SettingsForm = () => {
             Admin Users
           </TabsTrigger>
         </TabsList>
+
+        <TabsContent value="info" className="space-y-6 mt-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Dealership Information</CardTitle>
+              <CardDescription>
+                Update your dealership's contact information and details.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <form onSubmit={handleSubmit(onSubmitDealershipInfo)}>
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="name">Dealership Name</Label>
+                    <Input
+                      id="name"
+                      placeholder="Vehiql Motors"
+                      {...register("name")}
+                    />
+                    {errors.name && (
+                      <p className="text-sm text-red-600">
+                        {errors.name.message}
+                      </p>
+                    )}
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="address">Address</Label>
+                    <Input
+                      id="address"
+                      placeholder="69 Car Street, Autoville, CA 69420"
+                      {...register("address")}
+                    />
+                    {errors.address && (
+                      <p className="text-sm text-red-600">
+                        {errors.address.message}
+                      </p>
+                    )}
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="email">Email</Label>
+                    <Input
+                      id="email"
+                      type="email"
+                      placeholder="contact@vehiql.com"
+                      {...register("email")}
+                    />
+                    {errors.email && (
+                      <p className="text-sm text-red-600">
+                        {errors.email.message}
+                      </p>
+                    )}
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="phone">Phone Number</Label>
+                    <Input
+                      id="phone"
+                      placeholder="+1 (555) 123-4567"
+                      {...register("phone")}
+                    />
+                    {errors.phone && (
+                      <p className="text-sm text-red-600">
+                        {errors.phone.message}
+                      </p>
+                    )}
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="whatsappPhone">WhatsApp Number</Label>
+                    <Input
+                      id="whatsappPhone"
+                      placeholder="+1 (555) 123-4567"
+                      {...register("whatsappPhone")}
+                    />
+                    {errors.whatsappPhone && (
+                      <p className="text-sm text-red-600">
+                        {errors.whatsappPhone.message}
+                      </p>
+                    )}
+                  </div>
+                </div>
+
+                <div className="mt-6 flex justify-end">
+                  <Button type="submit" disabled={updatingDealership}>
+                    {updatingDealership ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Saving...
+                      </>
+                    ) : (
+                      <>
+                        <Save className="mr-2 h-4 w-4" />
+                        Save Dealership Info
+                      </>
+                    )}
+                  </Button>
+                </div>
+              </form>
+            </CardContent>
+          </Card>
+        </TabsContent>
 
         <TabsContent value="hours" className="space-y-6 mt-6">
           <Card>
