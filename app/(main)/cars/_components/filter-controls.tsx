@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { CarFiltersData } from "@/types";
+import { formatCurrency } from "@/lib/helpers";
 
 interface CurrentFilters {
   make: string;
@@ -189,7 +190,7 @@ export const CarFilterControls = ({
             </Label>
             <div className="relative">
               <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-gray-500">
-                $
+                £
               </span>
               <Input
                 id="minPrice"
@@ -203,7 +204,7 @@ export const CarFilterControls = ({
               />
             </div>
             <p className="text-xs text-gray-500">
-              Min: ${filters.priceRange.min.toLocaleString()}
+              Min: {formatCurrency(filters.priceRange.min)}
             </p>
           </div>
           <div className="space-y-2">
@@ -212,7 +213,7 @@ export const CarFilterControls = ({
             </Label>
             <div className="relative">
               <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-gray-500">
-                $
+                £
               </span>
               <Input
                 id="maxPrice"
@@ -226,7 +227,7 @@ export const CarFilterControls = ({
               />
             </div>
             <p className="text-xs text-gray-500">
-              Max: ${filters.priceRange.max.toLocaleString()}
+              Max: {formatCurrency(filters.priceRange.max)}
             </p>
           </div>
         </div>

@@ -13,6 +13,7 @@ import { useAuth } from "@/lib/auth-context";
 import { useRouter } from "next/navigation";
 import useFetch from "@/hooks/use-fetch";
 import { SerializedCar } from "@/types";
+import { formatCurrency } from "@/lib/helpers";
 
 interface CarCardProps {
   car: SerializedCar;
@@ -106,7 +107,7 @@ export const CarCard = ({ car }: CarCardProps) => {
             {car.make} {car.model}
           </h3>
           <span className="text-xl font-bold text-blue-600">
-            ${car.price.toLocaleString()}
+            {formatCurrency(car.price)}
           </span>
         </div>
 
