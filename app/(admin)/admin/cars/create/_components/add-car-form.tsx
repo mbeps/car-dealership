@@ -373,7 +373,7 @@ export const AddCarForm = () => {
               )}
             </div>
 
-            {/* Seats */
+            {/* Seats */}
             <div className="space-y-2">
               <Label htmlFor="seats">
                 Number of Seats{" "}
