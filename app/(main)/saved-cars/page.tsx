@@ -4,7 +4,7 @@ import { createClient } from "@/lib/supabase";
 import { redirect } from "next/navigation";
 
 export const metadata = {
-  title: "Saved Cars | Name",
+  title: "Saved Cars | Maruf Motors",
   description: "View your saved cars and favorites",
 };
 
