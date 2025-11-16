@@ -8,22 +8,31 @@ export function serializeCarData(
   car: any,
   wishlisted?: boolean
 ): SerializedCar {
-  return {
+  const carMakeRelation = car.carMake || car.CarMake || null;
+  const normalizedCar = {
     ...car,
-    price: typeof car.price === "string" ? parseFloat(car.price) : car.price,
+    carMakeId: car.carMakeId ?? carMakeRelation?.id ?? "",
+    make: car.make ?? carMakeRelation?.name ?? "",
+  };
+  const { carMake, CarMake, ...rest } = normalizedCar;
+
+  return {
+    ...rest,
+    price:
+      typeof rest.price === "string" ? parseFloat(rest.price) : rest.price,
     mileage:
-      typeof car.mileage === "string" ? parseInt(car.mileage) : car.mileage,
-    year: typeof car.year === "string" ? parseInt(car.year) : car.year,
-    seats: typeof car.seats === "string" ? parseInt(car.seats) : car.seats,
+      typeof rest.mileage === "string" ? parseInt(rest.mileage) : rest.mileage,
+    year: typeof rest.year === "string" ? parseInt(rest.year) : rest.year,
+    seats: typeof rest.seats === "string" ? parseInt(rest.seats) : rest.seats,
     createdAt:
-      typeof car.createdAt === "string"
-        ? car.createdAt
-        : car.createdAt.toISOString(),
+      typeof rest.createdAt === "string"
+        ? rest.createdAt
+        : rest.createdAt.toISOString(),
     updatedAt:
-      typeof car.updatedAt === "string"
-        ? car.updatedAt
-        : car.updatedAt.toISOString(),
-    wishlisted: wishlisted ?? car.wishlisted ?? false,
+      typeof rest.updatedAt === "string"
+        ? rest.updatedAt
+        : rest.updatedAt.toISOString(),
+    wishlisted: wishlisted ?? rest.wishlisted ?? false,
   };
 }
 

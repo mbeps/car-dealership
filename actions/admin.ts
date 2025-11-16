@@ -64,7 +64,10 @@ export async function getAdminTestDrives({
       .from("TestDriveBooking")
       .select(`
         *,
-        car:Car(*),
+        car:Car(
+          *,
+          carMake:CarMake(id, name, slug)
+        ),
         user:User(id, name, email, imageUrl, phone)
       `)
       .order("bookingDate", { ascending: false })

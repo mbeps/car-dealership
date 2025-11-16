@@ -91,7 +91,10 @@ export const CarFilterControls = ({
     {
       id: "make",
       title: "Make",
-      options: filters.makes.map((make) => ({ value: make, label: make })),
+      options: filters.makes.map((make) => ({
+        value: make.slug,
+        label: make.name,
+      })),
       currentValue: make,
       onChange: (value: string) => onFilterChange("make", value),
     },

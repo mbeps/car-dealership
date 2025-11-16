@@ -28,9 +28,20 @@ CREATE TABLE public."User" (
     ON DELETE CASCADE
 );
 
+CREATE TABLE public."CarMake" (
+  "id" TEXT PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  "name" TEXT NOT NULL,
+  "slug" TEXT NOT NULL,
+  "country" TEXT,
+  "createdAt" TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  "updatedAt" TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT timezone('utc', now()),
+  CONSTRAINT "CarMake_name_key" UNIQUE ("name"),
+  CONSTRAINT "CarMake_slug_key" UNIQUE ("slug")
+);
+
 CREATE TABLE public."Car" (
   "id" TEXT PRIMARY KEY,
-  "make" TEXT NOT NULL,
+  "carMakeId" TEXT NOT NULL,
   "model" TEXT NOT NULL,
   "year" INTEGER NOT NULL,
   "price" NUMERIC(10, 2) NOT NULL,
@@ -46,7 +57,12 @@ CREATE TABLE public."Car" (
   "featured" BOOLEAN NOT NULL DEFAULT FALSE,
   "createdAt" TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
   "updatedAt" TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT timezone('utc', now()),
-  "images" TEXT[]
+  "images" TEXT[],
+  CONSTRAINT "Car_carMakeId_fkey"
+    FOREIGN KEY ("carMakeId")
+    REFERENCES public."CarMake"("id")
+    ON DELETE RESTRICT
+    ON UPDATE CASCADE
 );
 
 CREATE TABLE public."DealershipInfo" (
@@ -122,13 +138,14 @@ CREATE TABLE public."TestDriveBooking" (
 );
 
 -- Indexes ------------------------------------------------------------------
-CREATE INDEX "Car_make_model_idx" ON public."Car"("make", "model");
+CREATE INDEX "Car_carMakeId_model_idx" ON public."Car"("carMakeId", "model");
 CREATE INDEX "Car_bodyType_idx" ON public."Car"("bodyType");
 CREATE INDEX "Car_price_idx" ON public."Car"("price");
 CREATE INDEX "Car_year_idx" ON public."Car"("year");
 CREATE INDEX "Car_status_idx" ON public."Car"("status");
 CREATE INDEX "Car_fuelType_idx" ON public."Car"("fuelType");
 CREATE INDEX "Car_featured_idx" ON public."Car"("featured");
+CREATE INDEX "Car_carMakeId_idx" ON public."Car"("carMakeId");
 
 -- Index for quick lookups by number plate
 CREATE INDEX "Car_numberPlate_idx" ON public."Car"("numberPlate");
@@ -147,3 +164,56 @@ CREATE UNIQUE INDEX "TestDriveBooking_unique_slot"
 CREATE INDEX "WorkingHour_dealershipId_idx" ON public."WorkingHour"("dealershipId");
 CREATE INDEX "WorkingHour_dayOfWeek_idx" ON public."WorkingHour"("dayOfWeek");
 CREATE INDEX "WorkingHour_isOpen_idx" ON public."WorkingHour"("isOpen");
+
+INSERT INTO public."CarMake" ("name", "slug", "country")
+VALUES
+  ('Abarth', 'abarth', 'Italy'),
+  ('Alfa Romeo', 'alfa-romeo', 'Italy'),
+  ('Aston Martin', 'aston-martin', 'United Kingdom'),
+  ('Audi', 'audi', 'Germany'),
+  ('Bentley', 'bentley', 'United Kingdom'),
+  ('BMW', 'bmw', 'Germany'),
+  ('BYD', 'byd', 'China'),
+  ('Citroen', 'citroen', 'France'),
+  ('Cupra', 'cupra', 'Spain'),
+  ('Dacia', 'dacia', 'Romania'),
+  ('DS Automobiles', 'ds-automobiles', 'France'),
+  ('Ferrari', 'ferrari', 'Italy'),
+  ('Fiat', 'fiat', 'Italy'),
+  ('Ford', 'ford', 'United States'),
+  ('Genesis', 'genesis', 'South Korea'),
+  ('GWM Ora', 'gwm-ora', 'China'),
+  ('Honda', 'honda', 'Japan'),
+  ('Hyundai', 'hyundai', 'South Korea'),
+  ('Jaguar', 'jaguar', 'United Kingdom'),
+  ('Jeep', 'jeep', 'United States'),
+  ('Kia', 'kia', 'South Korea'),
+  ('Lamborghini', 'lamborghini', 'Italy'),
+  ('Land Rover', 'land-rover', 'United Kingdom'),
+  ('Lexus', 'lexus', 'Japan'),
+  ('Lotus', 'lotus', 'United Kingdom'),
+  ('Maserati', 'maserati', 'Italy'),
+  ('Mazda', 'mazda', 'Japan'),
+  ('McLaren', 'mclaren', 'United Kingdom'),
+  ('Mercedes-Benz', 'mercedes-benz', 'Germany'),
+  ('MG', 'mg', 'China'),
+  ('Mini', 'mini', 'United Kingdom'),
+  ('Mitsubishi', 'mitsubishi', 'Japan'),
+  ('Nissan', 'nissan', 'Japan'),
+  ('Peugeot', 'peugeot', 'France'),
+  ('Polestar', 'polestar', 'Sweden'),
+  ('Porsche', 'porsche', 'Germany'),
+  ('Renault', 'renault', 'France'),
+  ('Rolls-Royce', 'rolls-royce', 'United Kingdom'),
+  ('Seat', 'seat', 'Spain'),
+  ('Skoda', 'skoda', 'Czech Republic'),
+  ('Smart', 'smart', 'Germany'),
+  ('SsangYong', 'ssangyong', 'South Korea'),
+  ('Subaru', 'subaru', 'Japan'),
+  ('Suzuki', 'suzuki', 'Japan'),
+  ('Tesla', 'tesla', 'United States'),
+  ('Toyota', 'toyota', 'Japan'),
+  ('Vauxhall', 'vauxhall', 'United Kingdom'),
+  ('Volkswagen', 'volkswagen', 'Germany'),
+  ('Volvo', 'volvo', 'Sweden')
+ON CONFLICT ("slug") DO NOTHING;

@@ -52,6 +52,7 @@ type UserSelection = Pick<User, "id" | "name" | "email" | "imageUrl" | "phone">;
 // Car type (extended from Prisma Car)
 export interface Car {
   id: string;
+  carMakeId: string;
   make: string;
   model: string;
   year: number;
@@ -70,6 +71,19 @@ export interface Car {
   createdAt: Date | string;
   updatedAt: Date | string;
 }
+
+export interface CarMake {
+  id: string;
+  name: string;
+  slug: string;
+  country: string | null;
+  createdAt: Date | string;
+  updatedAt: Date | string;
+}
+
+export type CarMakeOption = Pick<CarMake, "id" | "name" | "slug"> & {
+  country?: string | null;
+};
 
 // TestDriveBooking type
 export interface TestDriveBooking {
@@ -171,7 +185,7 @@ export interface PaginationInfo {
 }
 
 export interface CarFiltersData {
-  makes: string[];
+  makes: CarMakeOption[];
   bodyTypes: string[];
   fuelTypes: string[];
   transmissions: string[];

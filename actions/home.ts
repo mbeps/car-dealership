@@ -1,6 +1,7 @@
 "use server";
 
 import { createClient } from "@/lib/supabase";
+import { serializeCarData } from "@/lib/helpers";
 import { SerializedCar } from "@/types";
 
 /**
@@ -12,7 +13,12 @@ export async function getFeaturedCars(limit = 3): Promise<SerializedCar[]> {
     
     const { data: cars, error } = await supabase
       .from("Car")
-      .select("*")
+      .select(
+        `
+        *,
+        carMake:CarMake(id, name, slug)
+      `
+      )
       .eq("featured", true)
       .eq("status", "AVAILABLE")
       .order("createdAt", { ascending: false })
@@ -20,12 +26,7 @@ export async function getFeaturedCars(limit = 3): Promise<SerializedCar[]> {
 
     if (error) throw error;
 
-    return (cars || []).map(car => ({
-      ...car,
-      price: parseFloat(car.price.toString()),
-      createdAt: car.createdAt,
-      updatedAt: car.updatedAt,
-    }));
+    return (cars || []).map((car) => serializeCarData(car));
   } catch (error) {
     throw new Error("Error fetching featured cars:" + (error as Error).message);
   }

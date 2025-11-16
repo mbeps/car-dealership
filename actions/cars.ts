@@ -8,9 +8,25 @@ import { ActionResponse, SerializedCar } from "@/types";
 
 type CarStatus = "AVAILABLE" | "UNAVAILABLE" | "SOLD";
 
+async function getMakeIdsForTerm(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  term: string
+): Promise<string[]> {
+  if (!term) return [];
+
+  const { data, error } = await supabase
+    .from("CarMake")
+    .select("id")
+    .ilike("name", `%${term}%`);
+
+  if (error) throw error;
+
+  return data?.map((item) => item.id) ?? [];
+}
+
 // Car form data type
 interface CarFormData {
-  make: string;
+  carMakeId: string;
   model: string;
   year: number;
   price: number;
@@ -107,7 +123,7 @@ export async function addCar({
     // Add the car to the database
     const { error: insertError } = await supabase.from("Car").insert({
       id: carId,
-      make: carData.make,
+      carMakeId: carData.carMakeId,
       model: carData.model,
       year: carData.year,
       price: carData.price.toString(), // Convert to string for Postgres numeric
@@ -148,14 +164,29 @@ export async function getCars(
     // Build query
     let query = supabase
       .from("Car")
-      .select("*")
+      .select(
+        `
+        *,
+        carMake:CarMake(id, name, slug)
+      `
+      )
       .order("createdAt", { ascending: false });
 
     // Add search filter
     if (search) {
-      query = query.or(
-        `make.ilike.%${search}%,model.ilike.%${search}%,color.ilike.%${search}%`
-      );
+      const matchingMakeIds = await getMakeIdsForTerm(supabase, search);
+      const clauses = [
+        `model.ilike.%${search}%`,
+        `color.ilike.%${search}%`,
+        `description.ilike.%${search}%`,
+        `numberPlate.ilike.%${search}%`,
+      ];
+
+      matchingMakeIds.forEach((id) => {
+        clauses.push(`carMakeId.eq.${id}`);
+      });
+
+      query = query.or(clauses.join(","));
     }
 
     const { data: cars, error } = await query;

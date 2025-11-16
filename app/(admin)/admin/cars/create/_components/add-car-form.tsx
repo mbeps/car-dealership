@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
-import { Loader2, X, Upload } from "lucide-react";
+import { Loader2, X, Upload, Check, ChevronsUpDown } from "lucide-react";
 import { useDropzone } from "react-dropzone";
 
 import { Input } from "@/components/ui/input";
@@ -31,6 +31,17 @@ import { addCar } from "@/actions/cars";
 import useFetch from "@/hooks/use-fetch";
 import Image from "next/image";
 import { carFormSchema, CarFormData } from "@/lib/schemas";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command";
+import { cn } from "@/lib/utils";
+import { CarMakeOption } from "@/types";
 
 // Predefined options
 const fuelTypes = ["Petrol", "Diesel", "Electric", "Hybrid", "Plug-in Hybrid"];
@@ -46,11 +57,16 @@ const bodyTypes = [
 ];
 const carStatuses = ["AVAILABLE", "UNAVAILABLE", "SOLD"];
 
-export const AddCarForm = () => {
+interface AddCarFormProps {
+  carMakes: CarMakeOption[];
+}
+
+export const AddCarForm = ({ carMakes }: AddCarFormProps) => {
   const router = useRouter();
   const [uploadedImages, setUploadedImages] = useState<string[]>([]);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [imageError, setImageError] = useState("");
+  const [makePopoverOpen, setMakePopoverOpen] = useState(false);
 
   // Initialize form with react-hook-form and zod
   const {
@@ -63,7 +79,7 @@ export const AddCarForm = () => {
   } = useForm({
     resolver: zodResolver(carFormSchema),
     defaultValues: {
-      make: "",
+      carMakeId: "",
       model: "",
       year: "",
       price: "",
@@ -79,6 +95,10 @@ export const AddCarForm = () => {
       featured: false,
     },
   });
+
+  const selectedMakeId = watch("carMakeId");
+  const selectedMake = carMakes.find((make) => make.id === selectedMakeId);
+  const carMakeIdField = register("carMakeId");
 
   // Custom hooks for API calls
   const {
@@ -194,15 +214,65 @@ export const AddCarForm = () => {
           <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
             {/* Make */}
             <div className="space-y-2">
-              <Label htmlFor="make">Make</Label>
-              <Input
-                id="make"
-                {...register("make")}
-                placeholder="e.g. Toyota"
-                className={errors.make ? "border-red-500" : ""}
-              />
-              {errors.make && (
-                <p className="text-xs text-red-500">{errors.make.message}</p>
+              <Label htmlFor="carMakeId">Make</Label>
+              <Popover
+                open={makePopoverOpen}
+                onOpenChange={setMakePopoverOpen}
+              >
+                <PopoverTrigger asChild>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    role="combobox"
+                    aria-expanded={makePopoverOpen}
+                    className={cn(
+                      "w-full justify-between",
+                      errors.carMakeId ? "border-red-500" : ""
+                    )}
+                  >
+                    {selectedMake ? selectedMake.name : "Select make"}
+                    <ChevronsUpDown className="ml-1 h-4 w-4 shrink-0 opacity-50" />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-[280px] p-0">
+                  <Command>
+                    <CommandInput placeholder="Search make..." />
+                    <CommandList>
+                      <CommandEmpty>No make found.</CommandEmpty>
+                      <CommandGroup>
+                        {carMakes.map((make) => (
+                          <CommandItem
+                            key={make.id}
+                            value={make.name}
+                            onSelect={() => {
+                              setValue("carMakeId", make.id, {
+                                shouldValidate: true,
+                              });
+                              setMakePopoverOpen(false);
+                            }}
+                            className="text-sm"
+                          >
+                            <Check
+                              className={cn(
+                                "mr-2 h-4 w-4",
+                                make.id === selectedMakeId
+                                  ? "opacity-100"
+                                  : "opacity-0"
+                              )}
+                            />
+                            {make.name}
+                          </CommandItem>
+                        ))}
+                      </CommandGroup>
+                    </CommandList>
+                  </Command>
+                </PopoverContent>
+              </Popover>
+              <input type="hidden" {...carMakeIdField} value={selectedMakeId || ""} />
+              {errors.carMakeId && (
+                <p className="text-xs text-red-500">
+                  {errors.carMakeId.message}
+                </p>
               )}
             </div>
 

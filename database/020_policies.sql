@@ -11,6 +11,7 @@ ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT SELECT, INSERT, UPDATE, DELETE O
 -- Enable RLS on all application tables.
 ALTER TABLE public."User" ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public."Car" ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public."CarMake" ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public."UserSavedCar" ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public."TestDriveBooking" ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public."DealershipInfo" ENABLE ROW LEVEL SECURITY;
@@ -77,6 +78,32 @@ CREATE POLICY "cars_admin_update" ON public."Car"
   USING (public.is_admin());
 
 CREATE POLICY "cars_admin_delete" ON public."Car"
+  FOR DELETE
+  TO authenticated
+  USING (public.is_admin());
+
+-- CarMake table policies ---------------------------------------------------
+DROP POLICY IF EXISTS "car_makes_public_read" ON public."CarMake";
+DROP POLICY IF EXISTS "car_makes_admin_insert" ON public."CarMake";
+DROP POLICY IF EXISTS "car_makes_admin_update" ON public."CarMake";
+DROP POLICY IF EXISTS "car_makes_admin_delete" ON public."CarMake";
+
+CREATE POLICY "car_makes_public_read" ON public."CarMake"
+  FOR SELECT
+  TO anon, authenticated
+  USING (TRUE);
+
+CREATE POLICY "car_makes_admin_insert" ON public."CarMake"
+  FOR INSERT
+  TO authenticated
+  WITH CHECK (public.is_admin());
+
+CREATE POLICY "car_makes_admin_update" ON public."CarMake"
+  FOR UPDATE
+  TO authenticated
+  USING (public.is_admin());
+
+CREATE POLICY "car_makes_admin_delete" ON public."CarMake"
   FOR DELETE
   TO authenticated
   USING (public.is_admin());

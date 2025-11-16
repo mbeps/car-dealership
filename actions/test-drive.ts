@@ -145,7 +145,10 @@ export async function getUserTestDrives(): Promise<
       .select(
         `
         *,
-        car:Car(*)
+        car:Car(
+          *,
+          carMake:CarMake(id, name, slug)
+        )
       `
       )
       .eq("userId", user.id)
