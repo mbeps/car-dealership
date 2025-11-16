@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
+import Image from "next/image";
 import {
   Save,
   Clock,
@@ -560,9 +561,11 @@ export const SettingsForm = () => {
                               <div className="flex items-center gap-2">
                                 <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden">
                                   {user.imageUrl ? (
-                                    <img
+                                    <Image
                                       src={user.imageUrl}
                                       alt={user.name || "User"}
+                                      width={32}
+                                      height={32}
                                       className="w-full h-full object-cover"
                                     />
                                   ) : (
