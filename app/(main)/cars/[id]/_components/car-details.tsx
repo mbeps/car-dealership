@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { useAuth } from "@/lib/auth-context";
@@ -17,6 +16,7 @@ import {
   Phone,
   MessageCircle,
 } from "lucide-react";
+import { CarGallery } from "./car-gallery";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -62,7 +62,6 @@ export function CarDetails({
 }) {
   const router = useRouter();
   const { isSignedIn } = useAuth();
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isWishlisted, setIsWishlisted] = useState(car.wishlisted);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
@@ -173,47 +172,10 @@ export function CarDetails({
       <div className="flex flex-col lg:flex-row gap-8">
         {/* Image Gallery */}
         <div className="w-full lg:w-7/12">
-          <div className="aspect-video rounded-lg overflow-hidden relative mb-4">
-            {car.images && car.images.length > 0 ? (
-              <Image
-                src={car.images[currentImageIndex]}
-                alt={`${car.year} ${car.make} ${car.model}`}
-                fill
-                className="object-cover"
-                priority
-              />
-            ) : (
-              <div className="w-full h-full bg-gray-200 flex items-center justify-center">
-                <Car className="h-24 w-24 text-gray-400" />
-              </div>
-            )}
-          </div>
-
-          {/* Thumbnails */}
-          {car.images && car.images.length > 1 && (
-            <div className="flex gap-2 overflow-x-auto pb-2">
-              {car.images.map((image, index) => (
-                <div
-                  key={index}
-                  className={`relative cursor-pointer rounded-md h-20 w-24 flex-shrink-0 transition ${
-                    index === currentImageIndex
-                      ? "border-2 border-blue-600"
-                      : "opacity-70 hover:opacity-100"
-                  }`}
-                  onClick={() => setCurrentImageIndex(index)}
-                >
-                  <Image
-                    src={image}
-                    alt={`${car.year} ${car.make} ${car.model} - view ${
-                      index + 1
-                    }`}
-                    fill
-                    className="object-cover"
-                  />
-                </div>
-              ))}
-            </div>
-          )}
+          <CarGallery
+            images={car.images || []}
+            carName={`${car.year} ${car.make} ${car.model}`}
+          />
 
           {/* Secondary Actions */}
           <div className="flex mt-4 gap-4">
