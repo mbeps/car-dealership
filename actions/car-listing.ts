@@ -415,6 +415,11 @@ export async function getCarById(carId: string): Promise<
       testDriveInfo: {
         userTestDrive: UserTestDrive | null;
         dealership: SerializedDealershipInfo | null;
+        existingBookings: Array<{
+          date: string;
+          startTime: string;
+          endTime: string;
+        }>;
       };
     }
   >
@@ -498,6 +503,14 @@ export async function getCarById(carId: string): Promise<
       )
       .single();
 
+    // Get existing bookings for this car to show unavailable slots
+    const { data: existingBookings } = await supabase
+      .from("TestDriveBooking")
+      .select("bookingDate, startTime, endTime")
+      .eq("carId", carId)
+      .in("status", ["PENDING", "CONFIRMED"])
+      .gte("bookingDate", new Date().toISOString().split("T")[0]);
+
     return {
       success: true,
       data: {
@@ -505,6 +518,11 @@ export async function getCarById(carId: string): Promise<
         testDriveInfo: {
           userTestDrive,
           dealership: dealership || null,
+          existingBookings: (existingBookings || []).map((booking) => ({
+            date: booking.bookingDate,
+            startTime: booking.startTime,
+            endTime: booking.endTime,
+          })),
         },
       },
     };

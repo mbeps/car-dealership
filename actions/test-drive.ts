@@ -65,9 +65,10 @@ export async function bookTestDrive(
       .single();
 
     if (existingBooking) {
-      throw new Error(
-        "This time slot is already booked. Please select another time."
-      );
+      return {
+        success: false,
+        error: "This time slot is already booked. Please select another time.",
+      };
     }
 
     // Create the booking
