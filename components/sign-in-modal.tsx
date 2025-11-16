@@ -14,6 +14,7 @@ import {
 import Link from "next/link";
 import { Loader2 } from "lucide-react";
 import { useSignIn } from "@/hooks/use-sign-in";
+import { ROUTES } from "@/lib/routes";
 
 interface SignInModalProps {
   open: boolean;
@@ -142,7 +143,7 @@ export function SignInModal({
         <p className="text-center text-sm text-gray-600 mt-4">
           Don&apos;t have an account?{" "}
           <Link
-            href="/sign-up"
+            href={ROUTES.SIGN_UP}
             className="text-blue-600 hover:underline font-medium"
             onClick={() => onOpenChange(false)}
           >

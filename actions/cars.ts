@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { v4 as uuidv4 } from "uuid";
+import { ROUTES } from "@/lib/routes";
 import { createClient, createAdminClient } from "@/lib/supabase";
 import { serializeCarData } from "@/lib/helpers";
 import { ActionResponse, SerializedCar } from "@/types";
@@ -505,8 +506,8 @@ export async function updateCar({
     if (updateError) throw updateError;
 
     // Revalidate pages
-    revalidatePath("/admin/cars");
-    revalidatePath(`/cars/${carId}`);
+    revalidatePath(ROUTES.ADMIN_CARS);
+    revalidatePath(ROUTES.CAR_DETAILS(carId));
 
     return {
       success: true,

@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { CarCard } from "@/components/car-card";
 import { Heart } from "lucide-react";
 import { ActionResponse, SerializedCar } from "@/types";
+import { ROUTES } from "@/lib/routes";
 
 export function SavedCarsList({
   initialData,
@@ -24,7 +25,7 @@ export function SavedCarsList({
           heart icon to save cars for later.
         </p>
         <Button variant="default" asChild>
-          <Link href="/cars">Browse Cars</Link>
+          <Link href={ROUTES.CARS}>Browse Cars</Link>
         </Button>
       </div>
     );

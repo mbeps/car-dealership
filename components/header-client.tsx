@@ -5,6 +5,7 @@ import { Button } from "./ui/button";
 import { Heart, CarFront, Layout, ArrowLeft, LogOut } from "lucide-react";
 import Link from "next/link";
 import { useAuth, SignedIn, SignedOut } from "@/lib/auth-context";
+import { ROUTES } from "@/lib/routes";
 import Image from "next/image";
 import {
   DropdownMenu,
@@ -29,7 +30,7 @@ const HeaderClient = ({
   return (
     <header className="fixed top-0 w-full bg-white/80 backdrop-blur-md z-50 border-b">
       <nav className="mx-auto px-4 py-4 flex items-center justify-between">
-        <Link href={isAdminPage ? "/admin" : "/"} className="flex">
+        <Link href={isAdminPage ? ROUTES.ADMIN : ROUTES.HOME} className="flex">
           <Image
             src={"/logo.png"}
             alt="Site Logo"
@@ -46,7 +47,7 @@ const HeaderClient = ({
         <div className="flex items-center space-x-4">
           {isAdminPage ? (
             <>
-              <Link href="/">
+              <Link href={ROUTES.HOME}>
                 <Button variant="outline" className="flex items-center gap-2">
                   <ArrowLeft size={18} />
                   <span>Back to App</span>
@@ -57,7 +58,7 @@ const HeaderClient = ({
             <SignedIn>
               {!isAdmin && (
                 <Link
-                  href="/reservations"
+                  href={ROUTES.RESERVATIONS}
                   className="text-gray-600 hover:text-blue-600 flex items-center gap-2"
                 >
                   <Button variant="outline">
@@ -66,14 +67,14 @@ const HeaderClient = ({
                   </Button>
                 </Link>
               )}
-              <Link href="/saved-cars">
+              <Link href={ROUTES.SAVED_CARS}>
                 <Button className="flex items-center gap-2">
                   <Heart size={18} />
                   <span className="hidden md:inline">Saved Cars</span>
                 </Button>
               </Link>
               {isAdmin && (
-                <Link href="/admin">
+                <Link href={ROUTES.ADMIN}>
                   <Button variant="outline" className="flex items-center gap-2">
                     <Layout size={18} />
                     <span className="hidden md:inline">Admin Portal</span>

@@ -16,6 +16,7 @@ import {
 import Link from "next/link";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
+import { ROUTES } from "@/lib/routes";
 
 export default function SignUpPage() {
   const [email, setEmail] = useState("");
@@ -61,7 +62,7 @@ export default function SignUpPage() {
       }
 
       toast.success("Account created! Please check your email to verify.");
-      router.push("/sign-in");
+      router.push(ROUTES.SIGN_IN);
     } catch (error) {
       toast.error("An unexpected error occurred");
       console.error(error);
@@ -101,7 +102,10 @@ export default function SignUpPage() {
           </CardTitle>
           <CardDescription>
             Or{" "}
-            <Link href="/sign-in" className="text-blue-600 hover:underline">
+            <Link
+              href={ROUTES.SIGN_IN}
+              className="text-blue-600 hover:underline"
+            >
               sign in to your account
             </Link>
           </CardDescription>

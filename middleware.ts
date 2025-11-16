@@ -2,13 +2,11 @@ import arcjet, { createMiddleware, detectBot, shield } from "@arcjet/next";
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
-import {
-  getSupabasePublishableKey,
-  getSupabaseUrl,
-} from "./lib/supabase-env";
+import { getSupabasePublishableKey, getSupabaseUrl } from "./lib/supabase-env";
+import { PROTECTED_ROUTES, ROUTES, createSignInRedirect } from "./lib/routes";
 
 // Protected routes that require authentication
-const protectedRoutes = ["/admin", "/saved-cars", "/reservations"];
+const protectedRoutes = PROTECTED_ROUTES;
 
 const isProtectedRoute = (pathname: string): boolean => {
   return protectedRoutes.some((route) => pathname.startsWith(route));
@@ -71,8 +69,10 @@ async function supabaseMiddleware(request: NextRequest) {
 
   // Redirect to sign-in if accessing protected route without auth
   if (isProtectedRoute(request.nextUrl.pathname) && !user) {
-    const redirectUrl = new URL("/sign-in", request.url);
-    redirectUrl.searchParams.set("redirect", request.nextUrl.pathname);
+    const redirectUrl = new URL(
+      createSignInRedirect(request.nextUrl.pathname),
+      request.url
+    );
     return NextResponse.redirect(redirectUrl);
   }
 

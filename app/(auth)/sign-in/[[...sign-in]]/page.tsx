@@ -16,6 +16,7 @@ import {
 import Link from "next/link";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
+import { ROUTES } from "@/lib/routes";
 
 export default function SignInPage() {
   const [email, setEmail] = useState("");
@@ -83,7 +84,10 @@ export default function SignInPage() {
           </CardTitle>
           <CardDescription>
             Or{" "}
-            <Link href="/sign-up" className="text-blue-600 hover:underline">
+            <Link
+              href={ROUTES.SIGN_UP}
+              className="text-blue-600 hover:underline"
+            >
               create a new account
             </Link>
           </CardDescription>

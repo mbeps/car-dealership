@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase";
 import { revalidatePath } from "next/cache";
 import { ActionResponse, DealershipInfo, WorkingHour, User } from "@/types";
 import { dealershipInfoSchema } from "@/lib/schemas";
+import { ROUTES } from "@/lib/routes";
 
 export async function getDealershipInfo(): Promise<
   ActionResponse<DealershipInfo | null>
@@ -90,7 +91,8 @@ export async function saveWorkingHours(
       if (insertError) throw insertError;
     }
 
-    revalidatePath("/admin/settings");
+    revalidatePath(ROUTES.ADMIN_SETTINGS);
+    // Revalidate test-drive pages as working hours affect availability
     revalidatePath("/test-drive");
 
     return {
@@ -188,7 +190,7 @@ export async function updateUserRole(
 
     if (updateError) throw updateError;
 
-    revalidatePath("/admin/settings");
+    revalidatePath(ROUTES.ADMIN_SETTINGS);
 
     return {
       success: true,
@@ -250,7 +252,8 @@ export async function updateDealershipInfo(
 
     if (updateError) throw updateError;
 
-    revalidatePath("/admin/settings");
+    revalidatePath(ROUTES.ADMIN_SETTINGS);
+    // Revalidate test-drive pages as dealership info is shown there
     revalidatePath("/test-drive");
 
     return {

@@ -5,28 +5,29 @@ import { usePathname, useRouter } from "next/navigation";
 import { LayoutDashboard, Car, Calendar, Cog, LogOut } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { createBrowserClient } from "@/lib/supabase-client";
+import { ROUTES } from "@/lib/routes";
 
 // Navigation items
 const routes = [
   {
     label: "Dashboard",
     icon: LayoutDashboard,
-    href: "/admin",
+    href: ROUTES.ADMIN,
   },
   {
     label: "Cars",
     icon: Car,
-    href: "/admin/cars",
+    href: ROUTES.ADMIN_CARS,
   },
   {
     label: "Test Drives",
     icon: Calendar,
-    href: "/admin/test-drives",
+    href: ROUTES.ADMIN_TEST_DRIVES,
   },
   {
     label: "Settings",
     icon: Cog,
-    href: "/admin/settings",
+    href: ROUTES.ADMIN_SETTINGS,
   },
 ];
 
@@ -37,7 +38,7 @@ export const Sidebar = () => {
   const handleSignOut = async () => {
     const supabase = createBrowserClient();
     await supabase.auth.signOut();
-    router.push("/");
+    router.push(ROUTES.HOME);
     router.refresh();
   };
 
@@ -46,7 +47,7 @@ export const Sidebar = () => {
       {/* Desktop Sidebar */}
       <div className="hidden md:flex h-full flex-col overflow-y-auto bg-white shadow-sm border-r">
         <div className="p-6">
-          <Link href="/admin">
+          <Link href={ROUTES.ADMIN}>
             <h1 className="text-xl font-bold"> Admin</h1>
           </Link>
         </div>

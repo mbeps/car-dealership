@@ -13,6 +13,7 @@ import { HomeSearch } from "@/components/home-search";
 import Link from "next/link";
 import Image from "next/image";
 import { bodyTypes, carMakes, faqItems } from "@/lib/data";
+import { ROUTES, createCarSearchUrl } from "@/lib/routes";
 
 export default async function Home() {
   const featuredCars = await getFeaturedCars();
@@ -42,7 +43,7 @@ export default async function Home() {
           <div className="flex justify-between items-center mb-8">
             <h2 className="text-2xl font-bold">Featured Cars</h2>
             <Button variant="ghost" className="flex items-center" asChild>
-              <Link href="/cars">
+              <Link href={ROUTES.CARS}>
                 View All <ChevronRight className="ml-1 h-4 w-4" />
               </Link>
             </Button>
@@ -61,7 +62,7 @@ export default async function Home() {
           <div className="flex justify-between items-center mb-8">
             <h2 className="text-2xl font-bold">Browse by Make</h2>
             <Button variant="ghost" className="flex items-center" asChild>
-              <Link href="/cars">
+              <Link href={ROUTES.CARS}>
                 View All <ChevronRight className="ml-1 h-4 w-4" />
               </Link>
             </Button>
@@ -70,7 +71,7 @@ export default async function Home() {
             {carMakes.map((make) => (
               <Link
                 key={make.slug}
-                href={`/cars?make=${make.slug}`}
+                href={createCarSearchUrl({ make: make.slug })}
                 className="bg-white rounded-lg shadow p-4 text-center hover:shadow-md transition cursor-pointer"
               >
                 <div className="h-16 w-auto mx-auto mb-2 relative">
@@ -134,7 +135,7 @@ export default async function Home() {
           <div className="flex justify-between items-center mb-8">
             <h2 className="text-2xl font-bold">Browse by Body Type</h2>
             <Button variant="ghost" className="flex items-center" asChild>
-              <Link href="/cars">
+              <Link href={ROUTES.CARS}>
                 View All <ChevronRight className="ml-1 h-4 w-4" />
               </Link>
             </Button>
@@ -143,7 +144,7 @@ export default async function Home() {
             {bodyTypes.map((type) => (
               <Link
                 key={type.name}
-                href={`/cars?bodyType=${type.name}`}
+                href={createCarSearchUrl({ bodyType: type.name })}
                 className="relative group cursor-pointer"
               >
                 <div className="overflow-hidden rounded-lg flex justify-end h-36 mb-4 relative">
@@ -194,11 +195,11 @@ export default async function Home() {
           </p>
           <div className="flex flex-col sm:flex-row justify-center gap-4">
             <Button size="lg" variant="secondary" asChild>
-              <Link href="/cars">View All Cars</Link>
+              <Link href={ROUTES.CARS}>View All Cars</Link>
             </Button>
             <SignedOut>
               <Button size="lg" asChild>
-                <Link href="/sign-up">Sign Up Now</Link>
+                <Link href={ROUTES.SIGN_UP}>Sign Up Now</Link>
               </Button>
             </SignedOut>
           </div>

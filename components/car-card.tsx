@@ -14,6 +14,7 @@ import { useRouter } from "next/navigation";
 import useFetch from "@/hooks/use-fetch";
 import { SerializedCar } from "@/types";
 import { formatCurrency } from "@/lib/helpers";
+import { ROUTES } from "@/lib/routes";
 
 interface CarCardProps {
   car: SerializedCar;
@@ -135,7 +136,7 @@ export const CarCard = ({ car }: CarCardProps) => {
           <Button
             className="flex-1"
             onClick={() => {
-              router.push(`/cars/${car.id}`);
+              router.push(ROUTES.CAR_DETAILS(car.id));
             }}
           >
             View Car

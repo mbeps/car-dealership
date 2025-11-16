@@ -6,6 +6,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
+import { ROUTES } from "@/lib/routes";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -69,7 +70,7 @@ export const EditCarForm = ({ car, carMakes, carColors }: EditCarFormProps) => {
   useEffect(() => {
     if (updateCarResult?.success) {
       toast.success("Car updated successfully");
-      router.push("/admin/cars");
+      router.push(ROUTES.ADMIN_CARS);
     }
   }, [updateCarResult, router]);
 
@@ -143,7 +144,7 @@ export const EditCarForm = ({ car, carMakes, carColors }: EditCarFormProps) => {
             <Button
               type="button"
               variant="outline"
-              onClick={() => router.push("/admin/cars")}
+              onClick={() => router.push(ROUTES.ADMIN_CARS)}
               disabled={updateCarLoading}
             >
               Cancel

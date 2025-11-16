@@ -11,6 +11,7 @@ import { CarCard } from "@/components/car-card";
 import useFetch from "@/hooks/use-fetch";
 import { getCars } from "@/actions/car-listing";
 import CarListingsLoading from "./car-listing-loading";
+import { ROUTES } from "@/lib/routes";
 
 import {
   Pagination,
@@ -156,7 +157,7 @@ export function CarListings() {
           your filters or search term.
         </p>
         <Button variant="outline" asChild>
-          <Link href="/cars">Clear all filters</Link>
+          <Link href={ROUTES.CARS}>Clear all filters</Link>
         </Button>
       </div>
     );

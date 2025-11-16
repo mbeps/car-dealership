@@ -2,6 +2,7 @@ import { getSavedCars } from "@/actions/car-listing";
 import { SavedCarsList } from "./_components/saved-cars-list";
 import { createClient } from "@/lib/supabase";
 import { redirect } from "next/navigation";
+import { createSignInRedirect, ROUTES } from "@/lib/routes";
 
 export const metadata = {
   title: "Saved Cars | Maruf Motors",
@@ -16,7 +17,7 @@ export default async function SavedCarsPage() {
   } = await supabase.auth.getUser();
 
   if (!user) {
-    redirect("/sign-in?redirect=/saved-cars");
+    redirect(createSignInRedirect(ROUTES.SAVED_CARS));
   }
 
   // Fetch saved cars on the server

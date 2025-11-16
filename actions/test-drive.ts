@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase";
+import { ROUTES } from "@/lib/routes";
 import { serializeCarData } from "@/lib/helpers";
 import {
   ActionResponse,
@@ -89,8 +90,8 @@ export async function bookTestDrive(
     if (insertError) throw insertError;
 
     // Revalidate relevant paths
-    revalidatePath(`/test-drive/${carId}`);
-    revalidatePath(`/cars/${carId}`);
+    revalidatePath(ROUTES.TEST_DRIVE(carId));
+    revalidatePath(ROUTES.CAR_DETAILS(carId));
 
     return {
       success: true,
@@ -267,8 +268,8 @@ export async function cancelTestDrive(
     if (updateError) throw updateError;
 
     // Revalidate paths
-    revalidatePath("/reservations");
-    revalidatePath("/admin/test-drives");
+    revalidatePath(ROUTES.RESERVATIONS);
+    revalidatePath(ROUTES.ADMIN_TEST_DRIVES);
 
     return {
       success: true,

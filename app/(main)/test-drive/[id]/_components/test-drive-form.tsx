@@ -11,6 +11,7 @@ import {
   CheckCircle2,
   Loader2,
 } from "lucide-react";
+import { ROUTES } from "@/lib/routes";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { Card, CardContent } from "@/components/ui/card";
@@ -239,7 +240,7 @@ export function TestDriveForm({
   // Close confirmation handler
   const handleCloseConfirmation = () => {
     setShowConfirmation(false);
-    router.push(`/cars/${car.id}`);
+    router.push(ROUTES.CAR_DETAILS(car.id));
   };
 
   return (

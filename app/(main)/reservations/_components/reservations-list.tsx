@@ -7,6 +7,7 @@ import { TestDriveCard } from "@/components/test-drive-card";
 import useFetch from "@/hooks/use-fetch";
 import { cancelTestDrive } from "@/actions/test-drive";
 import { ActionResponse, TestDriveBookingWithCar } from "@/types";
+import { ROUTES } from "@/lib/routes";
 
 export function ReservationsList({
   initialData,
@@ -52,7 +53,7 @@ export function ReservationsList({
           book a test drive to get started.
         </p>
         <Button variant="default" asChild>
-          <Link href="/cars">Browse Cars</Link>
+          <Link href={ROUTES.CARS}>Browse Cars</Link>
         </Button>
       </div>
     );

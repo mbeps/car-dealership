@@ -2,6 +2,7 @@ import { getUserTestDrives } from "@/actions/test-drive";
 import { createClient } from "@/lib/supabase";
 import { redirect } from "next/navigation";
 import { ReservationsList } from "./_components/reservations-list";
+import { createSignInRedirect, ROUTES } from "@/lib/routes";
 
 export const metadata = {
   title: "My Reservations | Maruf Motors",
@@ -16,7 +17,7 @@ export default async function ReservationsPage() {
   } = await supabase.auth.getUser();
 
   if (!user) {
-    redirect("/sign-in?redirect=/reservations");
+    redirect(createSignInRedirect(ROUTES.RESERVATIONS));
   }
 
   // Fetch reservations on the server

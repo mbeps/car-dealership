@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { createCarSearchUrl } from "@/lib/routes";
 
 export function HomeSearch() {
   const router = useRouter();
@@ -17,7 +18,7 @@ export function HomeSearch() {
       toast.error("Please enter a search term");
       return;
     }
-    router.push(`/cars?search=${encodeURIComponent(searchTerm)}`);
+    router.push(createCarSearchUrl({ search: searchTerm }));
   };
 
   return (

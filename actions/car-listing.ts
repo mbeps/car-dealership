@@ -3,6 +3,7 @@
 import { serializeCarData } from "@/lib/helpers";
 import { createClient } from "@/lib/supabase";
 import { revalidatePath } from "next/cache";
+import { ROUTES } from "@/lib/routes";
 import type {
   SupabaseClient,
   User as SupabaseAuthUser,
@@ -543,7 +544,7 @@ export async function toggleSavedCar(
         throw deleteError;
       }
 
-      revalidatePath(`/saved-cars`);
+      revalidatePath(ROUTES.SAVED_CARS);
       return {
         success: true,
         data: {
