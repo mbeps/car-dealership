@@ -31,6 +31,7 @@ export const CarFilters = ({ filters }: { filters: CarFiltersData }) => {
   // Get current filter values from searchParams
   const currentMake = searchParams.get("make") || "";
   const currentBodyType = searchParams.get("bodyType") || "";
+  const currentColor = searchParams.get("color") || "";
   const currentFuelType = searchParams.get("fuelType") || "";
   const currentTransmission = searchParams.get("transmission") || "";
   const currentMinPrice = searchParams.get("minPrice")
@@ -56,6 +57,7 @@ export const CarFilters = ({ filters }: { filters: CarFiltersData }) => {
   // Local state for filters
   const [make, setMake] = useState(currentMake);
   const [bodyType, setBodyType] = useState(currentBodyType);
+  const [color, setColor] = useState(currentColor);
   const [fuelType, setFuelType] = useState(currentFuelType);
   const [transmission, setTransmission] = useState(currentTransmission);
   const [priceRange, setPriceRange] = useState([
@@ -74,6 +76,7 @@ export const CarFilters = ({ filters }: { filters: CarFiltersData }) => {
   useEffect(() => {
     setMake(currentMake);
     setBodyType(currentBodyType);
+    setColor(currentColor);
     setFuelType(currentFuelType);
     setTransmission(currentTransmission);
     setPriceRange([currentMinPrice, currentMaxPrice]);
@@ -83,6 +86,7 @@ export const CarFilters = ({ filters }: { filters: CarFiltersData }) => {
   }, [
     currentMake,
     currentBodyType,
+    currentColor,
     currentFuelType,
     currentTransmission,
     currentMinPrice,
@@ -98,6 +102,7 @@ export const CarFilters = ({ filters }: { filters: CarFiltersData }) => {
   const activeFilterCount = [
     make,
     bodyType,
+    color,
     fuelType,
     transmission,
     currentMinPrice > filters.priceRange.min ||
@@ -114,6 +119,7 @@ export const CarFilters = ({ filters }: { filters: CarFiltersData }) => {
 
     if (make) params.set("make", make);
     if (bodyType) params.set("bodyType", bodyType);
+    if (color) params.set("color", color);
     if (fuelType) params.set("fuelType", fuelType);
     if (transmission) params.set("transmission", transmission);
 
@@ -193,6 +199,7 @@ export const CarFilters = ({ filters }: { filters: CarFiltersData }) => {
   }, [
     make,
     bodyType,
+    color,
     fuelType,
     transmission,
     priceRange,
@@ -218,6 +225,9 @@ export const CarFilters = ({ filters }: { filters: CarFiltersData }) => {
         break;
       case "bodyType":
         setBodyType(value as string);
+        break;
+      case "color":
+        setColor(value as string);
         break;
       case "fuelType":
         setFuelType(value as string);
@@ -246,6 +256,7 @@ export const CarFilters = ({ filters }: { filters: CarFiltersData }) => {
   const clearFilters = () => {
     setMake("");
     setBodyType("");
+    setColor("");
     setFuelType("");
     setTransmission("");
     setPriceRange([filters.priceRange.min, filters.priceRange.max]);
@@ -269,6 +280,7 @@ export const CarFilters = ({ filters }: { filters: CarFiltersData }) => {
   const currentFilters = {
     make,
     bodyType,
+    color,
     fuelType,
     transmission,
     priceRange,

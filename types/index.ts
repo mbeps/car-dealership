@@ -169,6 +169,7 @@ export type SerializedDealershipInfo = DateToString<DealershipInfo> & {
 export interface CarFilters {
   search?: string;
   make?: string;
+  color?: string;
   bodyType?: string;
   fuelType?: string;
   transmission?: string;
@@ -197,6 +198,7 @@ export interface PaginationInfo {
 
 export interface CarFiltersData {
   makes: CarMakeOption[];
+  colors: CarColorOption[];
   bodyTypes: string[];
   fuelTypes: string[];
   transmissions: string[];
