@@ -5,7 +5,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { useAuth } from "@/lib/auth-context";
-import { AlertCircle, Calendar } from "lucide-react";
+import { AlertCircle, Calendar, Trash2, Settings } from "lucide-react";
 import {
   Car,
   Fuel,
@@ -18,8 +18,24 @@ import {
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { toggleSavedCar } from "@/actions/car-listing";
 import useFetch from "@/hooks/use-fetch";
+import { useCarAdmin } from "@/hooks/use-car-admin";
 import { formatCurrency } from "@/lib/helpers";
 import { format } from "date-fns";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
@@ -33,17 +49,20 @@ import {
 export function CarDetails({
   car,
   testDriveInfo,
+  isAdmin = false,
 }: {
   car: SerializedCar & { wishlisted: boolean };
   testDriveInfo: {
     userTestDrive: UserTestDrive | null;
     dealership: SerializedDealershipInfo | null;
   };
+  isAdmin?: boolean;
 }) {
   const router = useRouter();
   const { isSignedIn } = useAuth();
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isWishlisted, setIsWishlisted] = useState(car.wishlisted);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
   const {
     loading: savingCar,
@@ -51,6 +70,21 @@ export function CarDetails({
     data: toggleResult,
     error: toggleError,
   } = useFetch(toggleSavedCar);
+
+  const {
+    deletingCar,
+    updatingStatus,
+    handleDeleteCar: deleteCarAction,
+    handleUpdateStatus,
+  } = useCarAdmin({
+    onDeleteSuccess: () => {
+      setShowDeleteDialog(false);
+      router.push("/admin/cars");
+    },
+    onUpdateSuccess: () => {
+      router.refresh();
+    },
+  });
 
   // Handle toggle result with useEffect
   useEffect(() => {
@@ -112,6 +146,24 @@ export function CarDetails({
       return;
     }
     router.push(`/test-drive/${car.id}`);
+  };
+
+  // Handle admin redirect to test-drives page
+  const handleAdminTestDrives = () => {
+    router.push("/admin/test-drives");
+  };
+
+  // Handle delete car
+  const handleDeleteCar = async () => {
+    await deleteCarAction(car.id);
+  };
+
+  // Handle status change
+  const handleStatusChange = async (newStatus: string) => {
+    await handleUpdateStatus(
+      car.id,
+      newStatus as "AVAILABLE" | "SOLD" | "UNAVAILABLE"
+    );
   };
 
   return (
@@ -249,22 +301,92 @@ export function CarDetails({
 
           {/* Book Test Drive Button */}
           {car.status !== "SOLD" && car.status !== "UNAVAILABLE" && (
-            <Button
-              className="w-full py-6 text-lg"
-              onClick={handleBookTestDrive}
-              disabled={!!testDriveInfo.userTestDrive}
-            >
-              <Calendar className="mr-2 h-5 w-5" />
-              {testDriveInfo.userTestDrive
-                ? `Booked for ${format(
-                    new Date(testDriveInfo.userTestDrive.bookingDate),
-                    "EEEE, MMMM d, yyyy"
-                  )}`
-                : "Book Test Drive"}
-            </Button>
+            <>
+              {isAdmin ? (
+                <div className="space-y-3">
+                  <Button
+                    className="w-full py-6 text-lg"
+                    onClick={handleAdminTestDrives}
+                  >
+                    <Calendar className="mr-2 h-5 w-5" />
+                    Manage Test Drives
+                  </Button>
+
+                  {/* Admin Controls */}
+                  <div className="flex gap-2">
+                    <Select
+                      value={car.status}
+                      onValueChange={handleStatusChange}
+                      disabled={updatingStatus}
+                    >
+                      <SelectTrigger className="flex-1">
+                        <SelectValue placeholder="Status" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="AVAILABLE">Available</SelectItem>
+                        <SelectItem value="SOLD">Sold</SelectItem>
+                        <SelectItem value="UNAVAILABLE">Unavailable</SelectItem>
+                      </SelectContent>
+                    </Select>
+
+                    <Button
+                      variant="destructive"
+                      size="icon"
+                      onClick={() => setShowDeleteDialog(true)}
+                      disabled={deletingCar}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+              ) : (
+                <Button
+                  className="w-full py-6 text-lg"
+                  onClick={handleBookTestDrive}
+                  disabled={!!testDriveInfo.userTestDrive}
+                >
+                  <Calendar className="mr-2 h-5 w-5" />
+                  {testDriveInfo.userTestDrive
+                    ? `Booked for ${format(
+                        new Date(testDriveInfo.userTestDrive.bookingDate),
+                        "EEEE, MMMM d, yyyy"
+                      )}`
+                    : "Book Test Drive"}
+                </Button>
+              )}
+            </>
           )}
         </div>
       </div>
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Delete Car</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to delete this car? This action cannot be
+              undone.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setShowDeleteDialog(false)}
+              disabled={deletingCar}
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={handleDeleteCar}
+              disabled={deletingCar}
+            >
+              {deletingCar ? "Deleting..." : "Delete"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       {/* Details & Features Section */}
       <div className="mt-12 p-6 bg-white rounded-lg shadow-sm">

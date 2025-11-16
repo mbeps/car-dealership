@@ -43,7 +43,8 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import useFetch from "@/hooks/use-fetch";
-import { getCars, deleteCar, updateCarStatus } from "@/actions/cars";
+import { useCarAdmin } from "@/hooks/use-car-admin";
+import { getCars } from "@/actions/cars";
 import { formatCurrency } from "@/lib/helpers";
 import Image from "next/image";
 import { SerializedCar } from "@/types";
@@ -66,18 +67,21 @@ export const CarsList = () => {
   } = useFetch(getCars);
 
   const {
-    loading: deletingCar,
-    fn: deleteCarFn,
-    data: deleteResult,
-    error: deleteError,
-  } = useFetch(deleteCar);
-
-  const {
-    loading: updatingCar,
-    fn: updateCarStatusFn,
-    data: updateResult,
-    error: updateError,
-  } = useFetch(updateCarStatus);
+    deletingCar,
+    updatingStatus,
+    handleDeleteCar: deleteCarAction,
+    handleUpdateStatus,
+    handleToggleFeatured,
+  } = useCarAdmin({
+    onDeleteSuccess: () => {
+      setDeleteDialogOpen(false);
+      setCarToDelete(null);
+      fetchCars(search);
+    },
+    onUpdateSuccess: () => {
+      fetchCars(search);
+    },
+  });
 
   // Initial fetch and refetch on search changes
   useEffect(() => {
@@ -89,28 +93,7 @@ export const CarsList = () => {
     if (carsError) {
       toast.error("Failed to load cars");
     }
-
-    if (deleteError) {
-      toast.error("Failed to delete car");
-    }
-
-    if (updateError) {
-      toast.error("Failed to update car");
-    }
-  }, [carsError, deleteError, updateError]);
-
-  // Handle successful operations
-  useEffect(() => {
-    if (deleteResult?.success) {
-      toast.success("Car deleted successfully");
-      fetchCars(search);
-    }
-
-    if (updateResult?.success) {
-      toast.success("Car updated successfully");
-      fetchCars(search);
-    }
-  }, [deleteResult, updateResult, search]);
+  }, [carsError]);
 
   // Handle search submit
   const handleSearchSubmit = (e: React.FormEvent) => {
@@ -119,25 +102,22 @@ export const CarsList = () => {
   };
 
   // Handle delete car
-  const handleDeleteCar = async () => {
+  const handleDeleteCarClick = async () => {
     if (!carToDelete) return;
-
-    await deleteCarFn(carToDelete.id);
-    setDeleteDialogOpen(false);
-    setCarToDelete(null);
+    await deleteCarAction(carToDelete.id);
   };
 
   // Handle toggle featured status
-  const handleToggleFeatured = async (car: SerializedCar) => {
-    await updateCarStatusFn(car.id, { featured: !car.featured });
+  const handleToggleFeaturedClick = async (car: SerializedCar) => {
+    await handleToggleFeatured(car.id, car.featured);
   };
 
   // Handle status change
-  const handleStatusUpdate = async (
+  const handleStatusUpdateClick = async (
     car: SerializedCar,
     newStatus: CarStatus
   ) => {
-    await updateCarStatusFn(car.id, { status: newStatus });
+    await handleUpdateStatus(car.id, newStatus);
   };
 
   // Get status badge color
@@ -246,8 +226,8 @@ export const CarsList = () => {
                           variant="ghost"
                           size="sm"
                           className="p-0 h-9 w-9"
-                          onClick={() => handleToggleFeatured(car)}
-                          disabled={updatingCar}
+                          onClick={() => handleToggleFeaturedClick(car)}
+                          disabled={updatingStatus}
                         >
                           {car.featured ? (
                             <Star className="h-5 w-5 text-amber-500 fill-amber-500" />
@@ -279,29 +259,35 @@ export const CarsList = () => {
                             <DropdownMenuLabel>Status</DropdownMenuLabel>
                             <DropdownMenuItem
                               onClick={() =>
-                                handleStatusUpdate(car, CarStatus.AVAILABLE)
+                                handleStatusUpdateClick(
+                                  car,
+                                  CarStatus.AVAILABLE
+                                )
                               }
                               disabled={
-                                car.status === "AVAILABLE" || updatingCar
+                                car.status === "AVAILABLE" || updatingStatus
                               }
                             >
                               Set Available
                             </DropdownMenuItem>
                             <DropdownMenuItem
                               onClick={() =>
-                                handleStatusUpdate(car, CarStatus.UNAVAILABLE)
+                                handleStatusUpdateClick(
+                                  car,
+                                  CarStatus.UNAVAILABLE
+                                )
                               }
                               disabled={
-                                car.status === "UNAVAILABLE" || updatingCar
+                                car.status === "UNAVAILABLE" || updatingStatus
                               }
                             >
                               Set Unavailable
                             </DropdownMenuItem>
                             <DropdownMenuItem
                               onClick={() =>
-                                handleStatusUpdate(car, CarStatus.SOLD)
+                                handleStatusUpdateClick(car, CarStatus.SOLD)
                               }
-                              disabled={car.status === "SOLD" || updatingCar}
+                              disabled={car.status === "SOLD" || updatingStatus}
                             >
                               Mark as Sold
                             </DropdownMenuItem>
@@ -364,7 +350,7 @@ export const CarsList = () => {
             </Button>
             <Button
               variant="destructive"
-              onClick={handleDeleteCar}
+              onClick={handleDeleteCarClick}
               disabled={deletingCar}
             >
               {deletingCar ? (

@@ -21,8 +21,12 @@ export async function bookTestDrive(
     const supabase = await createClient();
 
     // Authenticate user
-    const { data: { user: authUser }, error: authError } = await supabase.auth.getUser();
-    if (authError || !authUser) throw new Error("You must be logged in to book a test drive");
+    const {
+      data: { user: authUser },
+      error: authError,
+    } = await supabase.auth.getUser();
+    if (authError || !authUser)
+      throw new Error("You must be logged in to book a test drive");
 
     // Find user in our database
     const { data: user } = await supabase
@@ -32,6 +36,13 @@ export async function bookTestDrive(
       .single();
 
     if (!user) throw new Error("User not found in database");
+
+    // Prevent admins from making bookings through the regular form
+    if (user.role === "ADMIN") {
+      throw new Error(
+        "Admins cannot book test drives. Please use the admin panel to manage bookings."
+      );
+    }
 
     // Check if car exists and is available
     const { data: car } = await supabase
@@ -101,8 +112,11 @@ export async function getUserTestDrives(): Promise<
 > {
   try {
     const supabase = await createClient();
-    
-    const { data: { user: authUser }, error: authError } = await supabase.auth.getUser();
+
+    const {
+      data: { user: authUser },
+      error: authError,
+    } = await supabase.auth.getUser();
     if (authError || !authUser) {
       return {
         success: false,
@@ -127,10 +141,12 @@ export async function getUserTestDrives(): Promise<
     // Get user's test drive bookings
     const { data: bookings, error } = await supabase
       .from("TestDriveBooking")
-      .select(`
+      .select(
+        `
         *,
         car:Car(*)
-      `)
+      `
+      )
       .eq("userId", user.id)
       .order("bookingDate", { ascending: false });
 
@@ -174,8 +190,11 @@ export async function cancelTestDrive(
 ): Promise<ActionResponse<string>> {
   try {
     const supabase = await createClient();
-    
-    const { data: { user: authUser }, error: authError } = await supabase.auth.getUser();
+
+    const {
+      data: { user: authUser },
+      error: authError,
+    } = await supabase.auth.getUser();
     if (authError || !authUser) {
       return {
         success: false,
