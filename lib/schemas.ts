@@ -1,0 +1,41 @@
+import * as z from "zod";
+
+/**
+ * Schema for test drive booking form validation
+ */
+export const testDriveSchema = z.object({
+  date: z.date({
+    required_error: "Please select a date for your test drive",
+  }),
+  timeSlot: z.string({
+    required_error: "Please select a time slot",
+  }),
+  notes: z.string().optional(),
+});
+
+export type TestDriveFormData = z.infer<typeof testDriveSchema>;
+
+/**
+ * Schema for car creation/edit form validation
+ */
+export const carFormSchema = z.object({
+  make: z.string().min(1, "Make is required"),
+  model: z.string().min(1, "Model is required"),
+  year: z.string().refine((val) => {
+    const year = parseInt(val);
+    return !isNaN(year) && year >= 1900 && year <= new Date().getFullYear() + 1;
+  }, "Valid year required"),
+  price: z.string().min(1, "Price is required"),
+  mileage: z.string().min(1, "Mileage is required"),
+  color: z.string().min(1, "Color is required"),
+  fuelType: z.string().min(1, "Fuel type is required"),
+  transmission: z.string().min(1, "Transmission is required"),
+  bodyType: z.string().min(1, "Body type is required"),
+  seats: z.string().optional(),
+  description: z.string().min(10, "Description must be at least 10 characters"),
+  status: z.enum(["AVAILABLE", "UNAVAILABLE", "SOLD"]),
+  featured: z.boolean().default(false),
+  // Images are handled separately
+});
+
+export type CarFormData = z.infer<typeof carFormSchema>;
