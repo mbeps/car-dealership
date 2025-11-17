@@ -1,36 +1,29 @@
 "use server";
 
-import { createClient } from "@/lib/supabase";
 import { ActionResponse, CarMakeOption } from "@/types";
+import { AdminCarService } from "@/db/services";
 
 /**
  * Fetches all car makes for form comboboxes.
  * Sorted alphabetically by name.
  * Includes country metadata for display.
+ * Now uses TypeORM for database access.
  *
  * @returns All makes with id, name, slug, country
  * @see CarFormFields - Component using this data
  */
 export async function getCarMakes(): Promise<ActionResponse<CarMakeOption[]>> {
   try {
-    const supabase = await createClient();
-
-    const { data, error } = await supabase
-      .from("CarMake")
-      .select("id, name, slug, country")
-      .order("name", { ascending: true });
-
-    if (error) throw error;
+    const makes = await AdminCarService.getAllMakes();
 
     return {
       success: true,
-      data:
-        data?.map((make) => ({
-          id: make.id,
-          name: make.name,
-          slug: make.slug,
-          country: make.country,
-        })) || [],
+      data: makes.map((make) => ({
+        id: make.id,
+        name: make.name,
+        slug: make.slug,
+        country: make.country,
+      })),
     };
   } catch (error) {
     return {

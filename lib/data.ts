@@ -1,26 +1,15 @@
-interface FeaturedCar {
-  id: number;
-  make: string;
-  model: string;
-  year: number;
-  price: number;
-  images: string[];
-  transmission: string;
-  fuelType: string;
-  bodyType: string;
-  mileage: number;
-  color: string;
-  wishlisted: boolean;
-}
-
-interface CarMake {
+/**
+ * Marketing data types - these are NOT database entities.
+ * Used only for static homepage content (logos, images, FAQs).
+ */
+interface MarketingCarMake {
   id: number;
   name: string;
   slug: string;
   image: string;
 }
 
-interface BodyType {
+interface MarketingBodyType {
   id: number;
   name: string;
   image: string;
@@ -35,8 +24,9 @@ interface FAQItem {
  * Static car make data for homepage.
  * Displayed as logo grid on marketing page.
  * Links to filtered car searches.
+ * NOTE: This is NOT the database CarMake entity - it's marketing content only.
  */
-export const carMakes: CarMake[] = [
+export const carMakes: MarketingCarMake[] = [
   { id: 1, name: "Hyundai", slug: "hyundai", image: "/make/hyundai.webp" },
   { id: 2, name: "Honda", slug: "honda", image: "/make/honda.webp" },
   { id: 5, name: "Lexus", slug: "lexus", image: "/make/lexus.webp" },
@@ -50,7 +40,7 @@ export const carMakes: CarMake[] = [
  * Displayed as image grid on marketing page.
  * Links to filtered car searches.
  */
-export const bodyTypes: BodyType[] = [
+export const bodyTypes: MarketingBodyType[] = [
   { id: 1, name: "SUV", image: "/body/suv.webp" },
   { id: 2, name: "Sedan", image: "/body/sedan.webp" },
   { id: 3, name: "Hatchback", image: "/body/hatchback.webp" },

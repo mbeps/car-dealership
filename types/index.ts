@@ -1,5 +1,6 @@
-// Re-export Prisma enums for now (will be replaced with custom enums later)
-// Custom enums (previously from Prisma)
+/**
+ * ENUMS - Shared between TypeORM entities and TypeScript types
+ */
 export enum BookingStatusEnum {
   PENDING = "PENDING",
   CONFIRMED = "CONFIRMED",
@@ -29,128 +30,81 @@ export enum CarStatusEnum {
   UNAVAILABLE = "UNAVAILABLE",
 }
 
-// Utility types
+/**
+ * TYPE ALIASES - Export enums for backward compatibility
+ */
+export type BookingStatus = BookingStatusEnum;
+export type DayOfWeek = DayOfWeekEnum;
+export type UserRole = UserRoleEnum;
+export type CarStatus = CarStatusEnum;
+
+/**
+ * UTILITY TYPES
+ */
 type DateToString<T> = {
   [K in keyof T]: T[K] extends Date ? string : T[K];
 };
 
-// User type (extended from Prisma User)
-export interface User {
-  id: string;
-  supabaseAuthUserId: string;
-  email: string;
-  name: string | null;
-  imageUrl: string | null;
-  phone: string | null;
-  createdAt: Date | string;
-  updatedAt: Date | string;
-  role: UserRole;
-}
+/**
+ * ENTITY TYPE IMPORTS - Import types from TypeORM entities
+ * These replace the old interface definitions with entity-based types
+ */
+import type {
+  User as UserEntity,
+  Car as CarEntity,
+  CarMake as CarMakeEntity,
+  CarColor as CarColorEntity,
+  TestDriveBooking as TestDriveBookingEntity,
+  DealershipInfo as DealershipInfoEntity,
+  WorkingHour as WorkingHourEntity,
+} from "@/db/entities";
 
+/**
+ * EXPORTED TYPES - Serializable versions for API responses
+ * Converts Date fields to strings for JSON serialization
+ */
+export type User = DateToString<UserEntity>;
+export type Car = DateToString<CarEntity> & {
+  make: string; // Flattened from relation
+  color: string; // Flattened from relation
+};
+export type CarMake = DateToString<CarMakeEntity>;
+export type CarColor = DateToString<CarColorEntity>;
+export type TestDriveBooking = DateToString<TestDriveBookingEntity>;
+export type DealershipInfo = DateToString<DealershipInfoEntity> & {
+  workingHours?: WorkingHour[];
+};
+export type WorkingHour = DateToString<WorkingHourEntity>;
+
+/**
+ * DERIVED TYPES
+ */
 type UserSelection = Pick<User, "id" | "name" | "email" | "imageUrl" | "phone">;
-
-// Car type (extended from Prisma Car)
-export interface Car {
-  id: string;
-  carMakeId: string;
-  carColorId: string;
-  make: string;
-  model: string;
-  year: number;
-  price: number; // Will be decimal/string from Supabase
-  mileage: number;
-  color: string;
-  fuelType: string;
-  transmission: string;
-  bodyType: string;
-  numberPlate: string;
-  seats: number | null;
-  description: string;
-  status: CarStatus;
-  featured: boolean;
-  features: string[];
-  images: string[];
-  createdAt: Date | string;
-  updatedAt: Date | string;
-}
-
-export interface CarMake {
-  id: string;
-  name: string;
-  slug: string;
-  country: string | null;
-  createdAt: Date | string;
-  updatedAt: Date | string;
-}
 
 export type CarMakeOption = Pick<CarMake, "id" | "name" | "slug"> & {
   country?: string | null;
 };
 
-export interface CarColor {
-  id: string;
-  name: string;
-  slug: string;
-  createdAt: Date | string;
-  updatedAt: Date | string;
-}
-
 export type CarColorOption = Pick<CarColor, "id" | "name" | "slug">;
 
-// TestDriveBooking type
-export interface TestDriveBooking {
-  id: string;
-  carId: string;
-  userId: string;
-  bookingDate: Date | string;
-  startTime: string;
-  endTime: string;
-  status: BookingStatus;
-  notes: string | null;
-  createdAt: Date | string;
-  updatedAt: Date | string;
-}
-
-// DealershipInfo type
-export interface DealershipInfo {
-  id: string;
-  name: string;
-  address: string;
-  phone: string;
-  email: string;
-  whatsappPhone: string;
-  workingHours?: WorkingHour[];
-  createdAt: Date | string;
-  updatedAt: Date | string;
-}
-
-// WorkingHour type
-export interface WorkingHour {
-  id: string;
-  dealershipId: string;
-  dayOfWeek: DayOfWeek;
-  openTime: string;
-  closeTime: string;
-  isOpen: boolean;
-  createdAt: Date | string;
-  updatedAt: Date | string;
-}
-
-// Car related types
-export type SerializedCar = DateToString<
-  Omit<Car, "price"> & { price: number }
-> & {
+/**
+ * SERIALIZED TYPES - For API responses with additional computed fields
+ */
+export type SerializedCar = Car & {
   wishlisted?: boolean;
 };
 
-// Test drive related types
-type SerializedTestDriveBooking = DateToString<TestDriveBooking>;
+export type SerializedTestDriveBooking = TestDriveBooking;
 
-export type TestDriveBookingWithCar = SerializedTestDriveBooking & {
+export type TestDriveBookingWithCar = Omit<TestDriveBooking, "car" | "user"> & {
   car: SerializedCar;
 };
 
-export type TestDriveBookingWithUser = TestDriveBookingWithCar & {
+export type TestDriveBookingWithUser = Omit<
+  TestDriveBooking,
+  "car" | "user"
+> & {
+  car: SerializedCar;
   user: UserSelection;
 };
 
@@ -159,12 +113,9 @@ export type UserTestDrive = Pick<
   "id" | "status" | "bookingDate"
 >;
 
-// Dealership related types
-export type SerializedWorkingHour = DateToString<WorkingHour>;
-
-export type SerializedDealershipInfo = DateToString<DealershipInfo> & {
-  workingHours: SerializedWorkingHour[];
-};
+// Dealership related types (already serialized via DateToString)
+export type SerializedWorkingHour = WorkingHour;
+export type SerializedDealershipInfo = DealershipInfo;
 
 // Filter types
 export interface CarFilters {
@@ -258,9 +209,3 @@ export interface WorkingHourInput {
   closeTime: string;
   isOpen: boolean;
 }
-
-// Re-export enums for convenience (aliases for the custom enums defined above)
-export type BookingStatus = BookingStatusEnum;
-export type DayOfWeek = DayOfWeekEnum;
-export type UserRole = UserRoleEnum;
-export type CarStatus = CarStatusEnum;

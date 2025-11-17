@@ -1,11 +1,11 @@
 import { SerializedCar } from "@/types";
 
 /**
- * Normalizes car data from Supabase for client components.
+ * Normalizes car data from Supabase or TypeORM for client components.
  * Converts numeric strings to numbers, handles date serialization.
  * Flattens nested make/color relations into top-level fields.
  *
- * @param car - Raw car data from Supabase query
+ * @param car - Raw car data from Supabase query or TypeORM entity
  * @param wishlisted - Whether user has saved this car
  * @returns Serialized car with proper types
  * @see SerializedCar - Return type
@@ -31,15 +31,26 @@ export function serializeCarData(
     mileage:
       typeof rest.mileage === "string" ? parseInt(rest.mileage) : rest.mileage,
     year: typeof rest.year === "string" ? parseInt(rest.year) : rest.year,
-    seats: typeof rest.seats === "string" ? parseInt(rest.seats) : rest.seats,
+    seats:
+      rest.seats === null
+        ? null
+        : typeof rest.seats === "string"
+        ? parseInt(rest.seats)
+        : rest.seats,
+    features: rest.features || [],
+    images: rest.images || [],
     createdAt:
       typeof rest.createdAt === "string"
         ? rest.createdAt
-        : rest.createdAt.toISOString(),
+        : rest.createdAt instanceof Date
+        ? rest.createdAt.toISOString()
+        : rest.createdAt,
     updatedAt:
       typeof rest.updatedAt === "string"
         ? rest.updatedAt
-        : rest.updatedAt.toISOString(),
+        : rest.updatedAt instanceof Date
+        ? rest.updatedAt.toISOString()
+        : rest.updatedAt,
     wishlisted: wishlisted ?? rest.wishlisted ?? false,
   };
 }

@@ -1,11 +1,12 @@
 "use server";
 
-import { createClient } from "@/lib/supabase";
 import { ActionResponse, CarColorOption } from "@/types";
+import { AdminCarService } from "@/db/services";
 
 /**
  * Fetches all car colors for form comboboxes.
  * Sorted alphabetically by name.
+ * Now uses TypeORM for database access.
  *
  * @returns All colors with id, name, slug
  * @see CarFormFields - Component using this data
@@ -14,23 +15,15 @@ export async function getCarColors(): Promise<
   ActionResponse<CarColorOption[]>
 > {
   try {
-    const supabase = await createClient();
-
-    const { data, error } = await supabase
-      .from("CarColor")
-      .select("id, name, slug")
-      .order("name", { ascending: true });
-
-    if (error) throw error;
+    const colors = await AdminCarService.getAllColors();
 
     return {
       success: true,
-      data:
-        data?.map((color) => ({
-          id: color.id,
-          name: color.name,
-          slug: color.slug,
-        })) || [],
+      data: colors.map((color) => ({
+        id: color.id,
+        name: color.name,
+        slug: color.slug,
+      })),
     };
   } catch (error) {
     return {
