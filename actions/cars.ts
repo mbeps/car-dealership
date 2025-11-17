@@ -267,7 +267,7 @@ export async function getCars(
 
 /**
  * Deletes car and associated images from storage.
- * Extracts file paths from URLs to remove storage objects.
+ * Removes the entire car folder from storage.
  * Best-effort storage cleanup - proceeds even if fails.
  * Revalidates admin car list.
  *
@@ -286,20 +286,6 @@ export async function deleteCar(id: string): Promise<ActionResponse<null>> {
     } = await supabase.auth.getUser();
     if (authError || !authUser) throw new Error("Unauthorized");
 
-    // First, fetch the car to get its images
-    const { data: car, error: fetchError } = await supabase
-      .from("Car")
-      .select("images")
-      .eq("id", id)
-      .single();
-
-    if (fetchError || !car) {
-      return {
-        success: false,
-        error: "Car not found",
-      };
-    }
-
     // Delete the car from the database
     const { error: deleteError } = await supabase
       .from("Car")
@@ -308,28 +294,29 @@ export async function deleteCar(id: string): Promise<ActionResponse<null>> {
 
     if (deleteError) throw deleteError;
 
-    // Delete the images from Supabase storage
+    // Delete the car's image folder from Supabase storage
     try {
       const supabaseAdmin = createAdminClient();
+      const folderPath = `cars/${id}`;
 
-      // Extract file paths from image URLs
-      const filePaths = car.images
-        .map((imageUrl: string) => {
-          const url = new URL(imageUrl);
-          const pathMatch = url.pathname.match(/\/car-images\/(.*)/);
-          return pathMatch ? pathMatch[1] : null;
-        })
-        .filter((path: string | null): path is string => path !== null);
+      // List all files in the car's folder
+      const { data: files, error: listError } = await supabaseAdmin.storage
+        .from("car-images")
+        .list(folderPath);
 
-      // Delete files from storage if paths were extracted
-      if (filePaths.length > 0) {
-        const { error } = await supabaseAdmin.storage
+      if (listError) {
+        console.error("Error listing car images:", listError);
+      } else if (files && files.length > 0) {
+        // Build paths to all files in the folder
+        const filePaths = files.map((file) => `${folderPath}/${file.name}`);
+
+        // Delete all files
+        const { error: removeError } = await supabaseAdmin.storage
           .from("car-images")
           .remove(filePaths);
 
-        if (error) {
-          console.error("Error deleting images:", error);
-          // We continue even if image deletion fails
+        if (removeError) {
+          console.error("Error deleting car images:", removeError);
         }
       }
     } catch (storageError) {
