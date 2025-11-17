@@ -9,6 +9,48 @@ import { ActionResponse, SerializedCar } from "@/types";
 
 type CarStatus = "AVAILABLE" | "UNAVAILABLE" | "SOLD";
 
+const MAX_IMAGE_SIZE_MB = 1;
+const MAX_IMAGE_SIZE_BYTES = MAX_IMAGE_SIZE_MB * 1024 * 1024;
+
+/**
+ * Calculates the size of a base64 image in bytes.
+ * Base64 encoding increases size by ~33%, so we decode to get actual size.
+ *
+ * @param base64String - Base64 encoded image string
+ * @returns Size in bytes
+ */
+function getBase64SizeInBytes(base64String: string): number {
+  // Remove the data URL prefix if present
+  const base64Data = base64String.includes(",")
+    ? base64String.split(",")[1]
+    : base64String;
+
+  // Calculate the actual size: (base64 length * 3) / 4
+  // Account for padding characters
+  const padding = (base64Data.match(/=/g) || []).length;
+  return (base64Data.length * 3) / 4 - padding;
+}
+
+/**
+ * Validates that all images are under the size limit.
+ *
+ * @param images - Array of base64 encoded images
+ * @throws Error if any image exceeds the limit
+ */
+function validateImageSizes(images: string[]): void {
+  for (let i = 0; i < images.length; i++) {
+    const sizeInBytes = getBase64SizeInBytes(images[i]);
+    if (sizeInBytes > MAX_IMAGE_SIZE_BYTES) {
+      const sizeInMB = (sizeInBytes / (1024 * 1024)).toFixed(2);
+      throw new Error(
+        `Image ${
+          i + 1
+        } is too large (${sizeInMB}MB). Images must be less than ${MAX_IMAGE_SIZE_MB}MB.`
+      );
+    }
+  }
+}
+
 /**
  * Searches makes for admin car list filtering.
  * Case-insensitive partial match on make name.
@@ -111,6 +153,9 @@ export async function addCar({
       .single();
 
     if (!user || user.role !== "ADMIN") throw new Error("Unauthorized");
+
+    // Validate image sizes
+    validateImageSizes(images);
 
     // Create a unique folder name for this car's images
     const carId = uuidv4();
@@ -487,6 +532,9 @@ export async function updateCar({
 
     // Upload new images if provided
     if (newImages.length > 0) {
+      // Validate new image sizes
+      validateImageSizes(newImages);
+
       const folderPath = `cars/${carId}`;
       const newImageUrls: string[] = [];
 

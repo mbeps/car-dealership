@@ -100,9 +100,9 @@ export function CarFormFields({
     (acceptedFiles: File[]) => {
       const processFiles = async () => {
         const validFiles = acceptedFiles.filter((file) => {
-          if (file.size > 5 * 1024 * 1024) {
+          if (file.size > 1024 * 1024) {
             toast.error(
-              `${file.name} exceeds the 5MB limit and will be skipped`
+              `${file.name} exceeds the 1MB limit and will be skipped`
             );
             return false;
           }
@@ -645,7 +645,7 @@ export function CarFormFields({
                 {existingImages.length > 0 ? "new " : ""}images
               </span>
               <span className="mt-1 text-xs text-gray-500">
-                (JPG, PNG, WebP, max 5MB each)
+                (JPG, PNG, WebP, max 1MB each)
               </span>
             </div>
           </div>
