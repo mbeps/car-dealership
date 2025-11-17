@@ -1,3 +1,5 @@
+// Import reflect-metadata first to ensure decorators work correctly
+import "reflect-metadata";
 import { DataSource } from "typeorm";
 import { User } from "./entities/user.entity";
 import { Car } from "./entities/car.entity";
@@ -7,11 +9,6 @@ import { DealershipInfo } from "./entities/dealership-info.entity";
 import { WorkingHour } from "./entities/working-hour.entity";
 import { UserSavedCar } from "./entities/user-saved-car.entity";
 import { TestDriveBooking } from "./entities/test-drive-booking.entity";
-
-// Ensure reflect-metadata is loaded
-if (typeof Reflect === "undefined" || !Reflect.getMetadata) {
-  require("reflect-metadata");
-}
 
 // List of all entities
 const entities = [
@@ -27,13 +24,29 @@ const entities = [
 
 // Environment check
 function getConnectionUrl(): string {
-  const url = process.env.DIRECT_URL || process.env.DATABASE_URL;
-  if (!url) {
-    throw new Error(
-      "DIRECT_URL or DATABASE_URL environment variable is not set. Please check your .env file."
-    );
+  // DIRECT_URL is strongly recommended for TypeORM to avoid PgBouncer issues
+  // (prepared statements, transactions, etc. may not work correctly with DATABASE_URL)
+  const directUrl = process.env.DIRECT_URL;
+  const databaseUrl = process.env.DATABASE_URL;
+
+  if (directUrl) {
+    return directUrl;
   }
-  return url;
+
+  if (databaseUrl) {
+    console.warn(
+      "WARNING: Using DATABASE_URL instead of DIRECT_URL for TypeORM. " +
+        "This may cause issues with PgBouncer. " +
+        "For best results, set DIRECT_URL to a direct connection (port 5432)."
+    );
+    return databaseUrl;
+  }
+
+  throw new Error(
+    "Database connection string not found. " +
+      "Please set DIRECT_URL (recommended) or DATABASE_URL in your .env file. " +
+      "DIRECT_URL should be a direct connection (port 5432), not pooled."
+  );
 }
 
 // Singleton pattern for Next.js
@@ -96,7 +109,17 @@ export async function getDataSource(): Promise<DataSource> {
   const dataSource = cachedDataSource || createDataSource();
 
   if (!dataSource.isInitialized) {
-    await dataSource.initialize();
+    try {
+      await dataSource.initialize();
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : String(error);
+      console.error("Failed to initialize TypeORM DataSource:", error);
+      throw new Error(
+        `Database connection failed: ${errorMessage}. ` +
+          "Please check your database credentials and connection string."
+      );
+    }
   }
 
   // Cache the instance

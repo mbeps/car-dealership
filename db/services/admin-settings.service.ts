@@ -8,13 +8,14 @@ import {
   getUserRepository,
 } from "@/db/repositories";
 import { DealershipInfo, WorkingHour, User } from "@/db/entities";
+import { DealershipInfoWithHours } from "@/db/types";
 import { DayOfWeekEnum, UserRoleEnum } from "@/types";
 
 export class AdminSettingsService {
   /**
    * Gets dealership info with working hours.
    */
-  static async getDealershipInfo(): Promise<DealershipInfo | null> {
+  static async getDealershipInfo(): Promise<DealershipInfoWithHours | null> {
     const dealershipRepo = await getDealershipInfoRepository();
 
     // Assuming there's only one dealership info record
@@ -31,7 +32,7 @@ export class AdminSettingsService {
   static async updateDealershipInfo(
     id: string,
     updates: Partial<DealershipInfo>
-  ): Promise<DealershipInfo | null> {
+  ): Promise<DealershipInfoWithHours | null> {
     const dealershipRepo = await getDealershipInfoRepository();
     await dealershipRepo.update(id, updates);
 
@@ -44,7 +45,7 @@ export class AdminSettingsService {
 
   private static async addWorkingHours(
     dealership: DealershipInfo | null
-  ): Promise<DealershipInfo | null> {
+  ): Promise<DealershipInfoWithHours | null> {
     if (!dealership) {
       return null;
     }
@@ -55,7 +56,7 @@ export class AdminSettingsService {
       order: { dayOfWeek: "ASC" },
     });
 
-    return Object.assign(dealership, { workingHours });
+    return { ...dealership, workingHours };
   }
 
   /**

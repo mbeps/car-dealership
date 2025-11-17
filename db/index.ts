@@ -14,5 +14,8 @@ export * from "./services";
 // Export utilities
 export * from "./utils";
 
+// Export TypeORM-specific types
+export * from "./types";
+
 // DO NOT export data-source, repositories, or entities directly
 // to avoid circular dependency issues during Next.js build

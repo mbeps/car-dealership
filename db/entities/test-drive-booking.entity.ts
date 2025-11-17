@@ -12,6 +12,21 @@ import { BookingStatusEnum } from "@/types";
 import { User } from "./user.entity";
 import { Car } from "./car.entity";
 
+/**
+ * TestDriveBooking entity
+ *
+ * IMPORTANT: There is a partial unique index in the database that cannot be
+ * expressed via TypeORM decorators:
+ *
+ * CREATE UNIQUE INDEX "TestDriveBooking_unique_slot"
+ *   ON public."TestDriveBooking" ("carId", "bookingDate", "startTime")
+ *   WHERE "status" IN ('PENDING', 'CONFIRMED');
+ *
+ * This constraint prevents double-booking of time slots but allows multiple
+ * cancelled/completed bookings for the same slot. The constraint is maintained
+ * in SQL migrations (database/001_schema.sql) and must be preserved manually
+ * when generating TypeORM migrations.
+ */
 @Entity({ name: "TestDriveBooking", schema: "public" })
 @Index("TestDriveBooking_carId_idx", ["carId"])
 @Index("TestDriveBooking_userId_idx", ["userId"])
