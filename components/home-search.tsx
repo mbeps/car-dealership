@@ -37,6 +37,7 @@ export function HomeSearch() {
         />
       </div>
       <Button type="submit" className="rounded-full px-8 py-6">
+        <Search className="mr-2 h-4 w-4" />
         Search
       </Button>
     </form>
