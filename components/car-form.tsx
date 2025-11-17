@@ -36,6 +36,7 @@ import {
 import { cn } from "@/lib/utils";
 import { CarColorOption, CarMakeOption } from "@/types";
 import { CarFormData } from "@/lib/schemas";
+import { compressImageFile } from "@/lib/image-utils";
 
 // Predefined options
 const fuelTypes = ["Petrol", "Diesel", "Electric", "Hybrid", "Plug-in Hybrid"];
@@ -97,51 +98,54 @@ export function CarFormFields({
   // Handle multiple image uploads with Dropzone
   const onMultiImagesDrop = useCallback(
     (acceptedFiles: File[]) => {
-      const validFiles = acceptedFiles.filter((file) => {
-        if (file.size > 5 * 1024 * 1024) {
-          toast.error(`${file.name} exceeds 5MB limit and will be skipped`);
-          return false;
+      const processFiles = async () => {
+        const validFiles = acceptedFiles.filter((file) => {
+          if (file.size > 5 * 1024 * 1024) {
+            toast.error(
+              `${file.name} exceeds the 5MB limit and will be skipped`
+            );
+            return false;
+          }
+          return true;
+        });
+
+        if (validFiles.length === 0) return;
+
+        setUploadProgress(5);
+        const compressedImages: string[] = [];
+
+        for (let i = 0; i < validFiles.length; i++) {
+          const file = validFiles[i];
+          try {
+            const compressedDataUrl = await compressImageFile(file);
+            compressedImages.push(compressedDataUrl);
+          } catch (error) {
+            console.error("Failed to process image", error);
+            toast.error(`Failed to process ${file.name}`);
+          } finally {
+            const progress = Math.round(((i + 1) / validFiles.length) * 100);
+            setUploadProgress(progress);
+          }
         }
-        return true;
-      });
 
-      if (validFiles.length === 0) return;
-
-      // Simulate upload progress
-      let progress = 0;
-      const interval = setInterval(() => {
-        progress += 10;
-        setUploadProgress(progress);
-
-        if (progress >= 100) {
-          clearInterval(interval);
-
-          // Process the images
-          const processedImages: string[] = [];
-          validFiles.forEach((file) => {
-            const reader = new FileReader();
-            reader.onload = (e) => {
-              const result = e.target?.result;
-              if (typeof result === "string") {
-                processedImages.push(result);
-              }
-
-              // When all images are processed
-              if (processedImages.length === validFiles.length) {
-                onNewImagesChange([...newImages, ...processedImages]);
-                setUploadProgress(0);
-                onImageErrorChange("");
-                toast.success(
-                  `Successfully uploaded ${validFiles.length} images`
-                );
-              }
-            };
-            reader.readAsDataURL(file);
-          });
+        if (compressedImages.length > 0) {
+          onNewImagesChange([...newImages, ...compressedImages]);
+          onImageErrorChange("");
+          toast.success(
+            `Compressed and added ${compressedImages.length} image${
+              compressedImages.length > 1 ? "s" : ""
+            }`
+          );
+        } else {
+          toast.error("No images were added");
         }
-      }, 200);
+
+        setTimeout(() => setUploadProgress(0), 300);
+      };
+
+      void processFiles();
     },
-    [newImages, onNewImagesChange, onImageErrorChange]
+    [newImages, onImageErrorChange, onNewImagesChange]
   );
 
   const {
