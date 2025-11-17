@@ -24,7 +24,7 @@ export function HomeSearch() {
   return (
     <form
       onSubmit={handleTextSearch}
-      className="flex flex-col gap-3 sm:flex-row sm:items-center"
+      className="flex flex-col gap-3 sm:flex-row sm:items-center px-2"
     >
       <div className="relative flex-1">
         <Search className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-500" />
@@ -33,13 +33,15 @@ export function HomeSearch() {
           placeholder="Search by make, model, or keyword..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-full rounded-full border-gray-300 bg-white/95 py-6 pl-10 pr-4 text-base backdrop-blur-sm"
+          className="w-full rounded-full border-gray-300 bg-white/95 py-6 pl-10 pr-20 text-base backdrop-blur-sm"
         />
+        <Button
+          type="submit"
+          className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full px-3 py-3 h-auto"
+        >
+          <Search className="h-4 w-4" />
+        </Button>
       </div>
-      <Button type="submit" className="rounded-full px-8 py-6">
-        <Search className="mr-2 h-4 w-4" />
-        Search
-      </Button>
     </form>
   );
 }
