@@ -18,12 +18,11 @@ export class AdminSettingsService {
     const dealershipRepo = await getDealershipInfoRepository();
 
     // Assuming there's only one dealership info record
-    const dealerships = await dealershipRepo.find({
-      relations: ["workingHours"],
-      take: 1,
+    const dealership = await dealershipRepo.findOne({
+      order: { createdAt: "ASC" },
     });
 
-    return dealerships[0] || null;
+    return await this.addWorkingHours(dealership);
   }
 
   /**
@@ -36,10 +35,27 @@ export class AdminSettingsService {
     const dealershipRepo = await getDealershipInfoRepository();
     await dealershipRepo.update(id, updates);
 
-    return await dealershipRepo.findOne({
+    const updatedDealership = await dealershipRepo.findOne({
       where: { id },
-      relations: ["workingHours"],
     });
+
+    return await this.addWorkingHours(updatedDealership);
+  }
+
+  private static async addWorkingHours(
+    dealership: DealershipInfo | null
+  ): Promise<DealershipInfo | null> {
+    if (!dealership) {
+      return null;
+    }
+
+    const workingHourRepo = await getWorkingHourRepository();
+    const workingHours = await workingHourRepo.find({
+      where: { dealershipId: dealership.id },
+      order: { dayOfWeek: "ASC" },
+    });
+
+    return Object.assign(dealership, { workingHours });
   }
 
   /**

@@ -5,8 +5,6 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
 } from "typeorm";
-import { WorkingHour } from "./working-hour.entity";
-
 @Entity({ name: "DealershipInfo", schema: "public" })
 export class DealershipInfo {
   @PrimaryColumn("text")
