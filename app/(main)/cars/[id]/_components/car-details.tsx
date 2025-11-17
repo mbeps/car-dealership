@@ -1,34 +1,10 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
-import { toast } from "sonner";
-import { useAuth } from "@/lib/auth-context";
-import { ROUTES } from "@/lib/routes";
-import { AlertCircle, Calendar, Trash2, Settings, Pencil } from "lucide-react";
-import {
-  Car,
-  Fuel,
-  Gauge,
-  LocateFixed,
-  Share2,
-  Heart,
-  Mail,
-  Phone,
-  MessageCircle,
-  MapPin,
-} from "lucide-react";
-import { CarGallery } from "./car-gallery";
+import { toggleSavedCar } from "@/actions/car-listing";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import {
   Dialog,
   DialogContent,
@@ -37,18 +13,45 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { toggleSavedCar } from "@/actions/car-listing";
-import useFetch from "@/hooks/use-fetch";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useCarAdmin } from "@/hooks/use-car-admin";
+import useFetch from "@/hooks/use-fetch";
+import { useAuth } from "@/lib/auth-context";
 import { formatCurrency } from "@/lib/helpers";
-import { format } from "date-fns";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { ROUTES } from "@/lib/routes";
 import {
   SerializedCar,
-  UserTestDrive,
   SerializedDealershipInfo,
   SerializedWorkingHour,
+  UserTestDrive,
 } from "@/types";
+import { format } from "date-fns";
+import {
+  Calendar,
+  Car,
+  Fuel,
+  Gauge,
+  Heart,
+  LocateFixed,
+  Mail,
+  MapPin,
+  MessageCircle,
+  Pencil,
+  Phone,
+  Share2,
+  Trash2,
+} from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
+import { CarGallery } from "./car-gallery";
+import Link from "next/link";
 
 /**
  * Car detail page content.
@@ -199,6 +202,7 @@ export function CarDetails({
 
           {/* Secondary Actions */}
           <div className="flex mt-4 gap-4">
+            {/* Save Button */}
             <Button
               variant="outline"
               className={`flex items-center gap-2 flex-1 ${
@@ -212,6 +216,7 @@ export function CarDetails({
               />
               {isWishlisted ? "Saved" : "Save"}
             </Button>
+            {/* Share Button */}
             <Button
               variant="outline"
               className="flex items-center gap-2 flex-1"
@@ -219,6 +224,21 @@ export function CarDetails({
             >
               <Share2 className="h-5 w-5" />
               Share
+            </Button>
+            {/* View MOT Button */}
+            <Button
+              variant="outline"
+              className="flex items-center gap-2 flex-1"
+              asChild
+            >
+              <Link
+                href={`https://www.check-mot.service.gov.uk/results?registration=${car.numberPlate}`}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <Car className="h-5 w-5" />
+                View MOT
+              </Link>
             </Button>
           </div>
         </div>
