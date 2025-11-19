@@ -331,6 +331,17 @@ export async function deleteCar(id: string): Promise<ActionResponse<null>> {
     } = await supabase.auth.getUser();
     if (authError || !authUser) throw new Error("Unauthorized");
 
+    // Delete associated test drive bookings first to avoid FK constraint violation
+    const { error: bookingsError } = await supabase
+      .from("TestDriveBooking")
+      .delete()
+      .eq("carId", id);
+
+    if (bookingsError) {
+      console.error("Error deleting test drive bookings:", bookingsError);
+      throw bookingsError;
+    }
+
     // Delete the car from the database
     const { error: deleteError } = await supabase
       .from("Car")
