@@ -36,7 +36,7 @@ import {
 import { cn } from "@/lib/utils";
 import { CarColorOption, CarMakeOption } from "@/types";
 import { CarFormData } from "@/lib/schemas";
-import { compressImageFile } from "@/lib/image-utils";
+import { readAsDataUrl } from "@/lib/image-utils";
 
 // Predefined options
 const fuelTypes = ["Petrol", "Diesel", "Electric", "Hybrid", "Plug-in Hybrid"];
@@ -112,13 +112,13 @@ export function CarFormFields({
         if (validFiles.length === 0) return;
 
         setUploadProgress(5);
-        const compressedImages: string[] = [];
+        const processedImages: string[] = [];
 
         for (let i = 0; i < validFiles.length; i++) {
           const file = validFiles[i];
           try {
-            const compressedDataUrl = await compressImageFile(file);
-            compressedImages.push(compressedDataUrl);
+            const dataUrl = await readAsDataUrl(file);
+            processedImages.push(dataUrl);
           } catch (error) {
             console.error("Failed to process image", error);
             toast.error(`Failed to process ${file.name}`);
@@ -128,12 +128,12 @@ export function CarFormFields({
           }
         }
 
-        if (compressedImages.length > 0) {
-          onNewImagesChange([...newImages, ...compressedImages]);
+        if (processedImages.length > 0) {
+          onNewImagesChange([...newImages, ...processedImages]);
           onImageErrorChange("");
           toast.success(
-            `Compressed and added ${compressedImages.length} image${
-              compressedImages.length > 1 ? "s" : ""
+            `Added ${processedImages.length} image${
+              processedImages.length > 1 ? "s" : ""
             }`
           );
         } else {

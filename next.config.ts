@@ -32,6 +32,9 @@ SUPABASE_REMOTE_PATTERNS.push({
 const nextConfig: NextConfig = {
   experimental: {
     serverComponentsHmrCache: false, // defaults to true
+    serverActions: {
+      bodySizeLimit: "50mb",
+    },
   },
   images: {
     remotePatterns: [
