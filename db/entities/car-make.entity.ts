@@ -6,7 +6,6 @@ import {
   UpdateDateColumn,
   Index,
 } from "typeorm";
-import { Car } from "./car.entity";
 
 @Entity({ name: "CarMake", schema: "public" })
 @Index("CarMake_name_key", ["name"], { unique: true })

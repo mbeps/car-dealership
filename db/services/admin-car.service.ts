@@ -16,6 +16,12 @@ import {
 import { Car, CarMake, CarColor } from "@/db/entities";
 import { serializeCarData } from "@/lib/helpers";
 import { SerializedCar, CarFilters, CarStatusEnum } from "@/types";
+import {
+  validateSearchParams,
+  validateId,
+  validateCarStatus,
+  validateNumberPlate,
+} from "@/db/validation";
 
 /**
  * Admin car service - uses TypeORM for complex queries and transactions.
@@ -28,10 +34,13 @@ export class AdminCarService {
   static async searchCars(search?: string): Promise<SerializedCar[]> {
     const carRepo = await getCarRepository();
 
+    // Validate and sanitize search input
+    const validatedSearch = validateSearchParams(search);
+
     const where: FindOptionsWhere<Car> | FindOptionsWhere<Car>[] = [];
 
-    if (search && search.trim()) {
-      const searchTerm = search.trim();
+    if (validatedSearch && validatedSearch.trim()) {
+      const searchTerm = validatedSearch.trim();
 
       // Search in multiple fields
       where.push(
@@ -71,6 +80,7 @@ export class AdminCarService {
    * Gets a single car by ID with relations.
    */
   static async getCarById(id: string): Promise<Car | null> {
+    const validatedId = validateId(id);
     const carRepo = await getCarRepository();
     return await carRepo.findOne({
       where: { id },
@@ -94,8 +104,9 @@ export class AdminCarService {
     id: string,
     updates: Partial<Car>
   ): Promise<Car | null> {
+    const validatedId = validateId(id);
     const carRepo = await getCarRepository();
-    await carRepo.update(id, updates);
+    await carRepo.update(validatedId, updates);
     return await this.getCarById(id);
   }
 
@@ -103,8 +114,9 @@ export class AdminCarService {
    * Deletes a car by ID.
    */
   static async deleteCar(id: string): Promise<boolean> {
+    const validatedId = validateId(id);
     const carRepo = await getCarRepository();
-    const result = await carRepo.delete(id);
+    const result = await carRepo.delete(validatedId);
     return (result.affected ?? 0) > 0;
   }
 
@@ -115,8 +127,12 @@ export class AdminCarService {
     id: string,
     status: CarStatusEnum
   ): Promise<boolean> {
+    const validatedId = validateId(id);
+    const validatedStatus = validateCarStatus(status);
     const carRepo = await getCarRepository();
-    const result = await carRepo.update(id, { status });
+    const result = await carRepo.update(validatedId, {
+      status: validatedStatus,
+    });
     return (result.affected ?? 0) > 0;
   }
 
@@ -124,8 +140,9 @@ export class AdminCarService {
    * Toggles car featured status.
    */
   static async toggleFeatured(id: string, featured: boolean): Promise<boolean> {
+    const validatedId = validateId(id);
     const carRepo = await getCarRepository();
-    const result = await carRepo.update(id, { featured });
+    const result = await carRepo.update(validatedId, { featured });
     return (result.affected ?? 0) > 0;
   }
 
@@ -168,8 +185,9 @@ export class AdminCarService {
     numberPlate: string,
     excludeId?: string
   ): Promise<boolean> {
+    const validated = validateNumberPlate(numberPlate, excludeId);
     const carRepo = await getCarRepository();
-    const where: FindOptionsWhere<Car> = { numberPlate };
+    const where: FindOptionsWhere<Car> = { numberPlate: validated.numberPlate };
 
     const car = await carRepo.findOne({ where });
 

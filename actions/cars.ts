@@ -7,6 +7,7 @@ import { serializeCarData } from "@/lib/helpers";
 import { ActionResponse, SerializedCar } from "@/types";
 import { AdminCarService } from "@/db/services";
 import { generateId } from "@/db/utils";
+import { getAdmin } from "./admin";
 
 type CarStatus = "AVAILABLE" | "UNAVAILABLE" | "SOLD";
 
@@ -91,21 +92,10 @@ export async function addCar({
   images: string[];
 }): Promise<ActionResponse<null>> {
   try {
-    const supabase = await createClient();
-
-    const {
-      data: { user: authUser },
-      error: authError,
-    } = await supabase.auth.getUser();
-    if (authError || !authUser) throw new Error("Unauthorized");
-
-    const { data: user } = await supabase
-      .from("User")
-      .select("*")
-      .eq("supabaseAuthUserId", authUser.id)
-      .single();
-
-    if (!user || user.role !== "ADMIN") throw new Error("Unauthorized");
+    const auth = await getAdmin();
+    if (!auth.authorized) {
+      throw new Error("Unauthorized");
+    }
 
     // Validate image sizes
     validateImageSizes(images);
@@ -208,14 +198,10 @@ export async function getCars(
   search = ""
 ): Promise<ActionResponse<SerializedCar[]>> {
   try {
-    const supabase = await createClient();
-
-    // Verify admin auth
-    const {
-      data: { user: authUser },
-      error: authError,
-    } = await supabase.auth.getUser();
-    if (authError || !authUser) throw new Error("Unauthorized");
+    const auth = await getAdmin();
+    if (!auth.authorized) {
+      throw new Error("Unauthorized");
+    }
 
     const cars = await AdminCarService.searchCars(search);
 
@@ -245,13 +231,10 @@ export async function getCars(
  */
 export async function deleteCar(id: string): Promise<ActionResponse<null>> {
   try {
-    const supabase = await createClient();
-
-    const {
-      data: { user: authUser },
-      error: authError,
-    } = await supabase.auth.getUser();
-    if (authError || !authUser) throw new Error("Unauthorized");
+    const auth = await getAdmin();
+    if (!auth.authorized) {
+      throw new Error("Unauthorized");
+    }
 
     const deleted = await AdminCarService.deleteCar(id);
 
@@ -320,13 +303,10 @@ export async function updateCarStatus(
   { status, featured }: { status?: CarStatus; featured?: boolean }
 ): Promise<ActionResponse<null>> {
   try {
-    const supabase = await createClient();
-
-    const {
-      data: { user: authUser },
-      error: authError,
-    } = await supabase.auth.getUser();
-    if (authError || !authUser) throw new Error("Unauthorized");
+    const auth = await getAdmin();
+    if (!auth.authorized) {
+      throw new Error("Unauthorized");
+    }
 
     let success = false;
 
@@ -384,21 +364,10 @@ export async function updateCar({
   imagesToRemove?: string[];
 }): Promise<ActionResponse<null>> {
   try {
-    const supabase = await createClient();
-
-    const {
-      data: { user: authUser },
-      error: authError,
-    } = await supabase.auth.getUser();
-    if (authError || !authUser) throw new Error("Unauthorized");
-
-    const { data: user } = await supabase
-      .from("User")
-      .select("*")
-      .eq("supabaseAuthUserId", authUser.id)
-      .single();
-
-    if (!user || user.role !== "ADMIN") throw new Error("Unauthorized");
+    const auth = await getAdmin();
+    if (!auth.authorized) {
+      throw new Error("Unauthorized");
+    }
 
     const existingCar = await AdminCarService.getCarById(carId);
 

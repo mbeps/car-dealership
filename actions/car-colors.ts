@@ -1,7 +1,8 @@
 "use server";
 
 import { ActionResponse, CarColorOption } from "@/types";
-import { AdminCarService } from "@/db/services";
+import { withRLS } from "@/db/rls-manager";
+import { UserCarService } from "@/db/services/user-car.service";
 
 /**
  * Fetches all car colors for form comboboxes.
@@ -15,16 +16,19 @@ export async function getCarColors(): Promise<
   ActionResponse<CarColorOption[]>
 > {
   try {
-    const colors = await AdminCarService.getAllColors();
+    return await withRLS(null, async (manager) => {
+      const service = new UserCarService(manager);
+      const colors = await service.getAllColors();
 
-    return {
-      success: true,
-      data: colors.map((color) => ({
-        id: color.id,
-        name: color.name,
-        slug: color.slug,
-      })),
-    };
+      return {
+        success: true,
+        data: colors.map((color) => ({
+          id: color.id,
+          name: color.name,
+          slug: color.slug,
+        })),
+      };
+    });
   } catch (error) {
     return {
       success: false,

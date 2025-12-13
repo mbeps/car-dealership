@@ -1,7 +1,8 @@
 "use server";
 
 import { ActionResponse, CarMakeOption } from "@/types";
-import { AdminCarService } from "@/db/services";
+import { withRLS } from "@/db/rls-manager";
+import { UserCarService } from "@/db/services/user-car.service";
 
 /**
  * Fetches all car makes for form comboboxes.
@@ -14,17 +15,20 @@ import { AdminCarService } from "@/db/services";
  */
 export async function getCarMakes(): Promise<ActionResponse<CarMakeOption[]>> {
   try {
-    const makes = await AdminCarService.getAllMakes();
+    return await withRLS(null, async (manager) => {
+      const service = new UserCarService(manager);
+      const makes = await service.getAllMakes();
 
-    return {
-      success: true,
-      data: makes.map((make) => ({
-        id: make.id,
-        name: make.name,
-        slug: make.slug,
-        country: make.country,
-      })),
-    };
+      return {
+        success: true,
+        data: makes.map((make) => ({
+          id: make.id,
+          name: make.name,
+          slug: make.slug,
+          country: make.country,
+        })),
+      };
+    });
   } catch (error) {
     return {
       success: false,

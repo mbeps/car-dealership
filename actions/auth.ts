@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase";
 import { ActionResponse, User } from "@/types";
 import { redirect } from "next/navigation";
 import { ROUTES } from "@/lib/routes";
+import { UserService } from "@/db/services";
 
 /**
  * Quick admin role check for conditional rendering.
@@ -21,12 +22,7 @@ export async function isCurrentUserAdmin(): Promise<boolean> {
 
     if (!authUser) return false;
 
-    const { data: user } = await supabase
-      .from("User")
-      .select("role")
-      .eq("supabaseAuthUserId", authUser.id)
-      .single();
-
+    const user = await UserService.getUserByAuthId(authUser.id);
     return user?.role === "ADMIN";
   } catch (error) {
     console.error("Error checking admin status:", error);
@@ -57,11 +53,7 @@ export async function getCurrentUserRole(): Promise<
       };
     }
 
-    const { data: user } = await supabase
-      .from("User")
-      .select("role")
-      .eq("supabaseAuthUserId", authUser.id)
-      .single();
+    const user = await UserService.getUserByAuthId(authUser.id);
 
     return {
       success: true,
@@ -97,17 +89,22 @@ export async function getCurrentUser(): Promise<ActionResponse<User | null>> {
       };
     }
 
-    const { data: user, error } = await supabase
-      .from("User")
-      .select("*")
-      .eq("supabaseAuthUserId", authUser.id)
-      .single();
+    const user = await UserService.getUserByAuthId(authUser.id);
 
-    if (error) throw error;
+    if (!user) {
+      return {
+        success: false,
+        error: "User profile not found",
+      };
+    }
 
     return {
       success: true,
-      data: user as User,
+      data: {
+        ...user,
+        createdAt: user.createdAt.toISOString(),
+        updatedAt: user.updatedAt.toISOString(),
+      },
     };
   } catch (error) {
     console.error("Error getting current user:", error);
@@ -142,65 +139,19 @@ export async function ensureProfile(): Promise<User | null> {
   }
 
   try {
-    // Check if profile exists
-    const { data: existingUser, error: fetchError } = await supabase
-      .from("User")
-      .select("*")
-      .eq("supabaseAuthUserId", authUser.id)
-      .single();
+    const user = await UserService.ensureProfile(
+      authUser.id,
+      authUser.email!,
+      authUser.user_metadata
+    );
 
-    if (fetchError && fetchError.code !== "PGRST116") {
-      // PGRST116 = no rows returned, which is expected for new users
-      console.error("Error fetching user profile:", fetchError);
-      return null;
-    }
+    if (!user) return null;
 
-    if (existingUser) {
-      return existingUser as User;
-    }
-
-    // Create new profile from auth metadata
-    const name =
-      authUser.user_metadata?.full_name ||
-      authUser.user_metadata?.name ||
-      authUser.email?.split("@")[0] ||
-      "User";
-
-    const profilePayload = {
-      id: authUser.id,
-      supabaseAuthUserId: authUser.id,
-      email: authUser.email!,
-      name,
-      imageUrl:
-        authUser.user_metadata?.avatar_url || authUser.user_metadata?.picture,
-      phone: authUser.user_metadata?.phone,
+    return {
+      ...user,
+      createdAt: user.createdAt.toISOString(),
+      updatedAt: user.updatedAt.toISOString(),
     };
-
-    const { data: newUser, error: createError } = await supabase
-      .from("User")
-      .insert(profilePayload)
-      .select()
-      .single();
-
-    if (createError) {
-      // 23505 = unique violation, which can happen if parallel requests insert the same user
-      if (createError.code === "23505") {
-        const { data: userAfterConflict } = await supabase
-          .from("User")
-          .select("*")
-          .eq("supabaseAuthUserId", authUser.id)
-          .single();
-
-        if (userAfterConflict) {
-          return userAfterConflict as User;
-        }
-      }
-
-      console.error("Error creating user profile:", createError);
-      return null;
-    }
-
-    return newUser as User;
   } catch (error) {
     console.error("Unexpected error in ensureProfile:", error);
     return null;

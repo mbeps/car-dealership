@@ -17,5 +17,8 @@ export * from "./utils";
 // Export TypeORM-specific types
 export * from "./types";
 
+// Export validation (for advanced use cases)
+export * from "./validation";
+
 // DO NOT export data-source, repositories, or entities directly
 // to avoid circular dependency issues during Next.js build

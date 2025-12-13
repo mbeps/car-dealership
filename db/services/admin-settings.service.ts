@@ -9,7 +9,10 @@ import {
 } from "@/db/repositories";
 import { DealershipInfo, WorkingHour, User } from "@/db/entities";
 import { DealershipInfoWithHours } from "@/db/types";
-import { DayOfWeekEnum, UserRoleEnum } from "@/types";
+import { DayOfWeekEnum, UserRoleEnum, WorkingHourInput } from "@/types";
+import { validateId, validateUserRole, uuidSchema } from "@/db/validation";
+import { getDataSource } from "@/db/data-source";
+import { EntityManager } from "typeorm";
 
 export class AdminSettingsService {
   /**
@@ -33,8 +36,9 @@ export class AdminSettingsService {
     id: string,
     updates: Partial<DealershipInfo>
   ): Promise<DealershipInfoWithHours | null> {
+    const validatedId = validateId(id);
     const dealershipRepo = await getDealershipInfoRepository();
-    await dealershipRepo.update(id, updates);
+    await dealershipRepo.update(validatedId, updates);
 
     const updatedDealership = await dealershipRepo.findOne({
       where: { id },
@@ -70,14 +74,47 @@ export class AdminSettingsService {
   }
 
   /**
+   * Replaces all working hours for a dealership.
+   */
+  static async saveWorkingHours(
+    dealershipId: string,
+    workingHours: WorkingHourInput[]
+  ): Promise<void> {
+    const validatedId = validateId(dealershipId);
+    const dataSource = await getDataSource();
+
+    await dataSource.transaction(
+      async (transactionalEntityManager: EntityManager) => {
+        const workingHourRepo =
+          transactionalEntityManager.getRepository(WorkingHour);
+
+        // Delete existing
+        await workingHourRepo.delete({ dealershipId: validatedId });
+
+        // Insert new
+        if (workingHours.length > 0) {
+          const newHours = workingHours.map((wh) =>
+            workingHourRepo.create({
+              ...wh,
+              dealershipId: validatedId,
+            })
+          );
+          await workingHourRepo.save(newHours);
+        }
+      }
+    );
+  }
+
+  /**
    * Updates working hours for a specific day.
    */
   static async updateWorkingHour(
     id: string,
     updates: Partial<WorkingHour>
   ): Promise<WorkingHour | null> {
+    const validatedId = validateId(id);
     const workingHourRepo = await getWorkingHourRepository();
-    await workingHourRepo.update(id, updates);
+    await workingHourRepo.update(validatedId, updates);
 
     return await workingHourRepo.findOne({ where: { id } });
   }
@@ -95,12 +132,23 @@ export class AdminSettingsService {
   }
 
   /**
+   * Gets all users (for admin management).
+   */
+  static async getAllUsers(): Promise<User[]> {
+    const userRepo = await getUserRepository();
+    return await userRepo.find({
+      order: { createdAt: "DESC" },
+    });
+  }
+
+  /**
    * Gets a user by their Supabase auth ID.
    */
   static async getUserByAuthId(authId: string): Promise<User | null> {
+    const validatedAuthId = uuidSchema.parse(authId);
     const userRepo = await getUserRepository();
     return await userRepo.findOne({
-      where: { supabaseAuthUserId: authId },
+      where: { supabaseAuthUserId: validatedAuthId },
     });
   }
 
@@ -108,8 +156,9 @@ export class AdminSettingsService {
    * Gets a user by ID.
    */
   static async getUserById(id: string): Promise<User | null> {
+    const validatedId = validateId(id);
     const userRepo = await getUserRepository();
-    return await userRepo.findOne({ where: { id } });
+    return await userRepo.findOne({ where: { id: validatedId } });
   }
 
   /**
@@ -119,8 +168,10 @@ export class AdminSettingsService {
     id: string,
     role: UserRoleEnum
   ): Promise<boolean> {
+    const validatedId = validateId(id);
+    const validatedRole = validateUserRole(role);
     const userRepo = await getUserRepository();
-    const result = await userRepo.update(id, { role });
+    const result = await userRepo.update(validatedId, { role: validatedRole });
     return (result.affected ?? 0) > 0;
   }
 
@@ -128,8 +179,9 @@ export class AdminSettingsService {
    * Deletes a user.
    */
   static async deleteUser(id: string): Promise<boolean> {
+    const validatedId = validateId(id);
     const userRepo = await getUserRepository();
-    const result = await userRepo.delete(id);
+    const result = await userRepo.delete(validatedId);
     return (result.affected ?? 0) > 0;
   }
 
@@ -138,6 +190,13 @@ export class AdminSettingsService {
    */
   static async upsertUser(userData: Partial<User>): Promise<User> {
     const userRepo = await getUserRepository();
+
+    // Validate auth ID if provided
+    if (userData.supabaseAuthUserId) {
+      userData.supabaseAuthUserId = uuidSchema.parse(
+        userData.supabaseAuthUserId
+      );
+    }
 
     // Check if user exists by auth ID
     if (userData.supabaseAuthUserId) {

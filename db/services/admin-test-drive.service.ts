@@ -2,10 +2,15 @@
  * Admin service for managing test drive bookings.
  */
 
-import { Between, In, FindOptionsWhere } from "typeorm";
+import { Between, In, FindOptionsWhere, ILike, Brackets } from "typeorm";
 import { getTestDriveBookingRepository } from "@/db/repositories";
 import { TestDriveBooking } from "@/db/entities";
 import { BookingStatusEnum } from "@/types";
+import {
+  validateId,
+  validateBookingStatus,
+  validateSearchParams,
+} from "@/db/validation";
 
 export class AdminTestDriveService {
   /**
@@ -17,19 +22,39 @@ export class AdminTestDriveService {
   }): Promise<TestDriveBooking[]> {
     const bookingRepo = await getTestDriveBookingRepository();
 
-    const where: FindOptionsWhere<TestDriveBooking> = {};
-
-    if (filters?.status) {
-      where.status = filters.status;
+    // Validate search if provided
+    if (filters?.search) {
+      validateSearchParams(filters.search);
     }
 
-    const bookings = await bookingRepo.find({
-      where,
-      relations: ["car", "car.carMake", "car.carColor", "user"],
-      order: { bookingDate: "DESC", startTime: "DESC" },
-    });
+    const qb = bookingRepo.createQueryBuilder("booking");
+    qb.leftJoinAndSelect("booking.car", "car");
+    qb.leftJoinAndSelect("car.carMake", "carMake");
+    qb.leftJoinAndSelect("car.carColor", "carColor");
+    qb.leftJoinAndSelect("booking.user", "user");
 
-    return bookings;
+    if (filters?.status) {
+      qb.andWhere("booking.status = :status", {
+        status: validateBookingStatus(filters.status),
+      });
+    }
+
+    if (filters?.search) {
+      const search = `%${filters.search}%`;
+      qb.andWhere(
+        new Brackets((sqb) => {
+          sqb.where("car.model ILIKE :search", { search });
+          sqb.orWhere("carMake.name ILIKE :search", { search });
+          sqb.orWhere("user.name ILIKE :search", { search });
+          sqb.orWhere("user.email ILIKE :search", { search });
+        })
+      );
+    }
+
+    qb.orderBy("booking.bookingDate", "DESC");
+    qb.addOrderBy("booking.startTime", "DESC");
+
+    return await qb.getMany();
   }
 
   /**
@@ -39,8 +64,12 @@ export class AdminTestDriveService {
     id: string,
     status: BookingStatusEnum
   ): Promise<boolean> {
+    const validatedId = validateId(id);
+    const validatedStatus = validateBookingStatus(status);
     const bookingRepo = await getTestDriveBookingRepository();
-    const result = await bookingRepo.update(id, { status });
+    const result = await bookingRepo.update(validatedId, {
+      status: validatedStatus,
+    });
     return (result.affected ?? 0) > 0;
   }
 
@@ -48,13 +77,18 @@ export class AdminTestDriveService {
    * Cancels a booking.
    */
   static async cancelBooking(id: string): Promise<boolean> {
-    return await this.updateBookingStatus(id, BookingStatusEnum.CANCELLED);
+    const validatedId = validateId(id);
+    return await this.updateBookingStatus(
+      validatedId,
+      BookingStatusEnum.CANCELLED
+    );
   }
 
   /**
    * Gets booking by ID with relations.
    */
   static async getBookingById(id: string): Promise<TestDriveBooking | null> {
+    const validatedId = validateId(id);
     const bookingRepo = await getTestDriveBookingRepository();
     return await bookingRepo.findOne({
       where: { id },
@@ -70,11 +104,12 @@ export class AdminTestDriveService {
     carId: string,
     date: Date
   ): Promise<TestDriveBooking[]> {
+    const validatedCarId = validateId(carId);
     const bookingRepo = await getTestDriveBookingRepository();
 
     return await bookingRepo.find({
       where: {
-        carId,
+        carId: validatedCarId,
         bookingDate: date,
         status: In([BookingStatusEnum.PENDING, BookingStatusEnum.CONFIRMED]),
       },
@@ -91,10 +126,14 @@ export class AdminTestDriveService {
     startTime: string,
     excludeBookingId?: string
   ): Promise<boolean> {
+    const validatedCarId = validateId(carId);
+    const validatedExcludeId = excludeBookingId
+      ? validateId(excludeBookingId)
+      : undefined;
     const bookingRepo = await getTestDriveBookingRepository();
 
     const where: FindOptionsWhere<TestDriveBooking> = {
-      carId,
+      carId: validatedCarId,
       bookingDate,
       startTime,
       status: In([BookingStatusEnum.PENDING, BookingStatusEnum.CONFIRMED]),
@@ -103,7 +142,7 @@ export class AdminTestDriveService {
     const existingBooking = await bookingRepo.findOne({ where });
 
     if (!existingBooking) return true;
-    if (excludeBookingId && existingBooking.id === excludeBookingId)
+    if (validatedExcludeId && existingBooking.id === validatedExcludeId)
       return true;
 
     return false;

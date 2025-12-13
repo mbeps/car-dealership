@@ -9,15 +9,10 @@ import {
   ActionResponse,
   TestDriveBookingWithUser,
   DashboardData,
+  BookingStatusEnum,
 } from "@/types";
 import { AdminCarService, AdminTestDriveService } from "@/db/services";
-
-type BookingStatus =
-  | "PENDING"
-  | "CONFIRMED"
-  | "COMPLETED"
-  | "CANCELLED"
-  | "NO_SHOW";
+import { getUserRepository } from "@/db/repositories";
 
 /**
  * Verifies admin access for protected routes.
@@ -35,18 +30,23 @@ export async function getAdmin(): Promise<AdminAuthResult> {
   } = await supabase.auth.getUser();
   if (authError || !authUser) throw new Error("Unauthorized");
 
-  const { data: user } = await supabase
-    .from("User")
-    .select("*")
-    .eq("supabaseAuthUserId", authUser.id)
-    .single();
+  const userRepo = await getUserRepository();
+  const user = await userRepo.findOne({
+    where: { supabaseAuthUserId: authUser.id },
+  });
 
   // If user not found in our db or not an admin, return not authorized
   if (!user || user.role !== "ADMIN") {
     return { authorized: false, reason: "not-admin" };
   }
 
-  return { authorized: true, user };
+  const serializedUser = {
+    ...user,
+    createdAt: user.createdAt.toISOString(),
+    updatedAt: user.updatedAt.toISOString(),
+  };
+
+  return { authorized: true, user: serializedUser };
 }
 
 /**
@@ -67,85 +67,40 @@ export async function getAdminTestDrives({
   status?: string;
 }): Promise<ActionResponse<TestDriveBookingWithUser[]>> {
   try {
-    const supabase = await createClient();
-
-    const {
-      data: { user: authUser },
-      error: authError,
-    } = await supabase.auth.getUser();
-    if (authError || !authUser) throw new Error("Unauthorized");
-
-    // Verify admin status
-    const { data: user } = await supabase
-      .from("User")
-      .select("*")
-      .eq("supabaseAuthUserId", authUser.id)
-      .single();
-
-    if (!user || user.role !== "ADMIN") {
+    const auth = await getAdmin();
+    if (!auth.authorized) {
       throw new Error("Unauthorized access");
     }
 
-    // Build query
-    let query = supabase
-      .from("TestDriveBooking")
-      .select(
-        `
-        *,
-        car:Car(
-          *,
-          carMake:CarMake(id, name, slug),
-          carColor:CarColor(id, name, slug)
-        ),
-        user:User(id, name, email, imageUrl, phone)
-      `
-      )
-      .order("bookingDate", { ascending: false })
-      .order("startTime", { ascending: true });
-
-    // Add status filter
-    if (status) {
-      query = query.eq("status", status);
-    }
-
-    const { data: bookings, error } = await query;
-
-    if (error) throw error;
+    const bookings = await AdminTestDriveService.getBookings({
+      search,
+      status: status ? (status as BookingStatusEnum) : undefined,
+    });
 
     // Format the bookings
-    const formattedBookings: TestDriveBookingWithUser[] = (bookings || []).map(
+    const formattedBookings: TestDriveBookingWithUser[] = bookings.map(
       (booking) => ({
         id: booking.id,
         carId: booking.carId,
-        car: serializeCarData(booking.car),
+        car: serializeCarData(booking.car!),
         userId: booking.userId,
-        user: booking.user,
-        bookingDate: booking.bookingDate,
+        user: booking.user!,
+        bookingDate:
+          booking.bookingDate instanceof Date
+            ? booking.bookingDate.toISOString().split("T")[0]
+            : (booking.bookingDate as unknown as string),
         startTime: booking.startTime,
         endTime: booking.endTime,
         status: booking.status,
         notes: booking.notes,
-        createdAt: booking.createdAt,
-        updatedAt: booking.updatedAt,
+        createdAt: booking.createdAt.toISOString(),
+        updatedAt: booking.updatedAt.toISOString(),
       })
     );
 
-    // Filter by search if provided (client-side filtering for now)
-    let filtered = formattedBookings;
-    if (search) {
-      const searchLower = search.toLowerCase();
-      filtered = formattedBookings.filter(
-        (booking) =>
-          booking.car.make.toLowerCase().includes(searchLower) ||
-          booking.car.model.toLowerCase().includes(searchLower) ||
-          booking.user.name?.toLowerCase().includes(searchLower) ||
-          booking.user.email.toLowerCase().includes(searchLower)
-      );
-    }
-
     return {
       success: true,
-      data: filtered,
+      data: formattedBookings,
     };
   } catch (error) {
     console.error("Error fetching test drives:", error);
@@ -168,61 +123,15 @@ export async function getAdminTestDrives({
  */
 export async function updateTestDriveStatus(
   bookingId: string,
-  newStatus: BookingStatus
+  newStatus: BookingStatusEnum
 ): Promise<ActionResponse<string>> {
   try {
-    const supabase = await createClient();
-
-    const {
-      data: { user: authUser },
-      error: authError,
-    } = await supabase.auth.getUser();
-    if (authError || !authUser) throw new Error("Unauthorized");
-
-    // Verify admin status
-    const { data: user } = await supabase
-      .from("User")
-      .select("*")
-      .eq("supabaseAuthUserId", authUser.id)
-      .single();
-
-    if (!user || user.role !== "ADMIN") {
+    const auth = await getAdmin();
+    if (!auth.authorized) {
       throw new Error("Unauthorized access");
     }
 
-    // Get the booking
-    const { data: booking } = await supabase
-      .from("TestDriveBooking")
-      .select("*")
-      .eq("id", bookingId)
-      .single();
-
-    if (!booking) {
-      throw new Error("Booking not found");
-    }
-
-    // Validate status
-    const validStatuses: BookingStatus[] = [
-      "PENDING",
-      "CONFIRMED",
-      "COMPLETED",
-      "CANCELLED",
-      "NO_SHOW",
-    ];
-    if (!validStatuses.includes(newStatus)) {
-      return {
-        success: false,
-        error: "Invalid status",
-      };
-    }
-
-    // Update status
-    const { error: updateError } = await supabase
-      .from("TestDriveBooking")
-      .update({ status: newStatus })
-      .eq("id", bookingId);
-
-    if (updateError) throw updateError;
+    await AdminTestDriveService.updateBookingStatus(bookingId, newStatus);
 
     // Revalidate paths
     revalidatePath(ROUTES.ADMIN_TEST_DRIVES);
@@ -251,22 +160,8 @@ export async function getDashboardData(): Promise<
   ActionResponse<DashboardData>
 > {
   try {
-    const supabase = await createClient();
-
-    const {
-      data: { user: authUser },
-      error: authError,
-    } = await supabase.auth.getUser();
-    if (authError || !authUser) throw new Error("Unauthorized");
-
-    // Get user
-    const { data: user } = await supabase
-      .from("User")
-      .select("*")
-      .eq("supabaseAuthUserId", authUser.id)
-      .single();
-
-    if (!user || user.role !== "ADMIN") {
+    const auth = await getAdmin();
+    if (!auth.authorized) {
       return {
         success: false,
         error: "Unauthorized",
