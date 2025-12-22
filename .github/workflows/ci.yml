@@ -45,8 +45,8 @@ jobs:
       - name: Install dependencies
         run: ${{ steps.detect-package-manager.outputs.manager }} ${{ steps.detect-package-manager.outputs.command }}
 
-      - name: Run Linter (Next)
-        run: ${{ steps.detect-package-manager.outputs.runner }} next lint
+      - name: Run Linter
+        run: ${{ steps.detect-package-manager.outputs.manager }} run lint
 
   build:
     name: Build - Node ${{ matrix.node-version }}

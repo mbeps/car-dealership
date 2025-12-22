@@ -25,11 +25,8 @@ export function ReservationsList({
 }: {
   initialData: ActionResponse<TestDriveBookingWithCar[]>;
 }) {
-  const {
-    loading: cancelling,
-    fn: cancelBookingFn,
-    error: cancelError,
-  } = useFetch(cancelTestDrive);
+  const { loading: cancelling, fn: cancelBookingFn } =
+    useFetch(cancelTestDrive);
 
   // Handle cancellation
   const handleCancelBooking = async (bookingId: string) => {

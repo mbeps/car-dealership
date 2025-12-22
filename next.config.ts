@@ -14,7 +14,7 @@ const addSupabasePattern = (maybeUrl: string | undefined) => {
       protocol,
       hostname: supabaseUrl.hostname,
     });
-  } catch (error) {
+  } catch {
     console.warn(
       "Invalid NEXT_PUBLIC_SUPABASE_URL value. Remote images from Supabase will be blocked until it is fixed."
     );
@@ -31,7 +31,6 @@ SUPABASE_REMOTE_PATTERNS.push({
 
 const nextConfig: NextConfig = {
   experimental: {
-    serverComponentsHmrCache: false, // defaults to true
     serverActions: {
       bodySizeLimit: "50mb",
     },

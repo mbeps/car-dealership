@@ -8,6 +8,7 @@ import {
   ActionResponse,
   TestDriveFormData,
   TestDriveBookingWithCar,
+  TestDriveBooking,
 } from "@/types";
 
 /**
@@ -24,7 +25,7 @@ import {
  */
 export async function bookTestDrive(
   formData: TestDriveFormData
-): Promise<ActionResponse<any>> {
+): Promise<ActionResponse<TestDriveBooking>> {
   try {
     const { carId, bookingDate, startTime, endTime, notes } = formData;
 

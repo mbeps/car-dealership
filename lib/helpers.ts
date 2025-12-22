@@ -1,4 +1,4 @@
-import { SerializedCar } from "@/types";
+import { RawSupabaseCar, SerializedCar } from "@/types";
 
 /**
  * Normalizes car data from Supabase for client components.
@@ -11,7 +11,7 @@ import { SerializedCar } from "@/types";
  * @see SerializedCar - Return type
  */
 export function serializeCarData(
-  car: any,
+  car: RawSupabaseCar,
   wishlisted?: boolean
 ): SerializedCar {
   const carMakeRelation = car.carMake || car.CarMake || null;
@@ -24,6 +24,12 @@ export function serializeCarData(
     color: car.color ?? carColorRelation?.name ?? "",
   };
   const { carMake, CarMake, carColor, CarColor, ...rest } = normalizedCar;
+
+  // Prevent unused var warning
+  void carMake;
+  void CarMake;
+  void carColor;
+  void CarColor;
 
   return {
     ...rest,

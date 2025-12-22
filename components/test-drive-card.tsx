@@ -24,7 +24,7 @@ import { ROUTES } from "@/lib/routes";
 const formatTime = (timeString: string): string => {
   try {
     return format(parseISO(`2022-01-01T${timeString}`), "h:mm a");
-  } catch (error) {
+  } catch {
     return timeString;
   }
 };

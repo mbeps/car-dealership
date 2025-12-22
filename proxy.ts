@@ -1,5 +1,6 @@
 import arcjet, { createMiddleware, detectBot, shield } from "@arcjet/next";
 import { createServerClient } from "@supabase/ssr";
+import type { CookieOptions } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
 import { getSupabasePublishableKey, getSupabaseUrl } from "./lib/supabase-env";
@@ -20,7 +21,7 @@ const isProtectedRoute = (pathname: string): boolean => {
 };
 
 /**
- * Arcjet security middleware.
+ * Arcjet security proxy.
  * Enables shield protection and bot detection.
  * Allows search engine crawlers.
  *
@@ -44,7 +45,7 @@ const aj = arcjet({
 });
 
 /**
- * Supabase session management middleware.
+ * Supabase session management proxy.
  * Refreshes expired sessions via cookies.
  * Redirects authenticated users away from auth pages.
  * Enforces protection on PROTECTED_ROUTES.
@@ -53,7 +54,7 @@ const aj = arcjet({
  * @returns Response with updated cookies or redirect
  * @see createSignInRedirect - Builds sign-in URL with return path
  */
-async function supabaseMiddleware(request: NextRequest) {
+async function supabaseProxy(request: NextRequest) {
   let response = NextResponse.next({
     request: {
       headers: request.headers,
@@ -68,8 +69,14 @@ async function supabaseMiddleware(request: NextRequest) {
         getAll() {
           return request.cookies.getAll();
         },
-        setAll(cookiesToSet) {
-          cookiesToSet.forEach(({ name, value, options }) =>
+        setAll(
+          cookiesToSet: Array<{
+            name: string;
+            value: string;
+            options: CookieOptions;
+          }>
+        ) {
+          cookiesToSet.forEach(({ name, value }) =>
             request.cookies.set(name, value)
           );
           response = NextResponse.next({
@@ -106,12 +113,13 @@ async function supabaseMiddleware(request: NextRequest) {
 }
 
 /**
- * Chained middleware pipeline.
+ * Chained proxy pipeline.
  * Arcjet runs first for security, then Supabase for auth.
+ * Uses Node.js runtime (not Edge).
  *
  * @see https://arcjet.com/docs/nextjs/reference/middleware
  */
-export default createMiddleware(aj, supabaseMiddleware);
+export default createMiddleware(aj, supabaseProxy);
 
 export const config = {
   matcher: [

@@ -5,7 +5,7 @@ type UseFetchResult<T, Args extends unknown[]> = {
   data: T | undefined;
   loading: boolean;
   error: Error | null;
-  fn: (...args: Args) => Promise<void>;
+  fn: (...args: Args) => Promise<T | undefined>;
   setData: React.Dispatch<React.SetStateAction<T | undefined>>;
 };
 
@@ -36,10 +36,12 @@ const useFetch = <T, Args extends unknown[] = []>(
         const response = await cb(...args);
         setData(response);
         setError(null);
+        return response;
       } catch (error) {
         const err = error as Error;
         setError(err);
         toast.error(err.message);
+        return undefined;
       } finally {
         setLoading(false);
       }

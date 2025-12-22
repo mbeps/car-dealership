@@ -1,5 +1,3 @@
-// Re-export Prisma enums for now (will be replaced with custom enums later)
-// Custom enums (previously from Prisma)
 export enum BookingStatusEnum {
   PENDING = "PENDING",
   CONFIRMED = "CONFIRMED",
@@ -96,6 +94,18 @@ export interface CarColor {
 }
 
 export type CarColorOption = Pick<CarColor, "id" | "name" | "slug">;
+
+// Raw car from Supabase with nested relations
+export interface RawSupabaseCar extends Omit<Car, "make" | "color" | "price"> {
+  make?: string;
+  color?: string;
+  wishlisted?: boolean;
+  carMake?: CarMake | null;
+  CarMake?: CarMake | null;
+  carColor?: CarColor | null;
+  CarColor?: CarColor | null;
+  price: string | number;
+}
 
 // TestDriveBooking type
 export interface TestDriveBooking {

@@ -1,7 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import Link from "next/link";
+import { useState } from "react";
 import Image from "next/image";
 import { Heart, Car as CarIcon, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -26,27 +25,8 @@ export const CarCard = ({ car }: CarCardProps) => {
   const [isSaved, setIsSaved] = useState(car.wishlisted || false);
 
   // Use the useFetch hook
-  const {
-    loading: isToggling,
-    fn: toggleSavedCarFn,
-    data: toggleResult,
-    error: toggleError,
-  } = useFetch(toggleSavedCar);
-
-  // Handle toggle result with useEffect
-  useEffect(() => {
-    if (toggleResult?.success && toggleResult.data.saved !== isSaved) {
-      setIsSaved(toggleResult.data.saved);
-      toast.success(toggleResult.data.message);
-    }
-  }, [toggleResult, isSaved]);
-
-  // Handle errors with useEffect
-  useEffect(() => {
-    if (toggleError) {
-      toast.error("Failed to update favorites");
-    }
-  }, [toggleError]);
+  const { loading: isToggling, fn: toggleSavedCarFn } =
+    useFetch(toggleSavedCar);
 
   // Handle save/unsave car
   const handleToggleSave = async (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -59,10 +39,11 @@ export const CarCard = ({ car }: CarCardProps) => {
       return;
     }
 
-    if (isToggling) return;
-
-    // Call the toggleSavedCar function using our useFetch hook
-    await toggleSavedCarFn(car.id);
+    const result = await toggleSavedCarFn(car.id);
+    if (result?.success) {
+      setIsSaved(result.data.saved);
+      toast.success(result.data.message);
+    }
   };
 
   return (
