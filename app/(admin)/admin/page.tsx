@@ -4,8 +4,8 @@ import { Dashboard } from "./_components/dashboard";
 export const dynamic = "force-dynamic";
 
 export const metadata = {
-  title: "Dashboard | Maruf Motors Admin",
-  description: "Admin dashboard for Maruf Motors car marketplace",
+  title: "Dashboard | MN LTD Admin",
+  description: "Admin dashboard for MN LTD Motors car marketplace",
 };
 
 export default async function AdminDashboardPage() {

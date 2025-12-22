@@ -3,7 +3,7 @@ import { getCarMakes } from "@/actions/car-makes";
 import { getCarColors } from "@/actions/car-colors";
 
 export const metadata = {
-  title: "Add New Car | Maruf Motors Admin",
+  title: "Add New Car | MN LTD Motors Admin",
   description: "Add a new car to the marketplace",
 };
 

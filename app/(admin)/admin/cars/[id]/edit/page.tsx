@@ -5,7 +5,7 @@ import { getCarColors } from "@/actions/car-colors";
 import { getCars } from "@/actions/cars";
 
 export const metadata = {
-  title: "Edit Car | Maruf Motors Admin",
+  title: "Edit Car | MN LTD Motors Admin",
   description: "Edit car details",
 };
 

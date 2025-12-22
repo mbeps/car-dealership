@@ -6,7 +6,7 @@ import { ROUTES } from "@/lib/routes";
 
 export async function generateMetadata() {
   return {
-    title: `Book Test Drive | Maruf Motors`,
+    title: `Book Test Drive | MN LTD`,
     description: `Schedule a test drive in few seconds`,
   };
 }

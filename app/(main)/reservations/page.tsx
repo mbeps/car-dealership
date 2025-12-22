@@ -5,7 +5,7 @@ import { ReservationsList } from "./_components/reservations-list";
 import { createSignInRedirect, ROUTES } from "@/lib/routes";
 
 export const metadata = {
-  title: "My Reservations | Maruf Motors",
+  title: "My Reservations | MN LTD",
   description: "Manage your test drive reservations",
 };
 

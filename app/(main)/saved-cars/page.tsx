@@ -5,7 +5,7 @@ import { redirect } from "next/navigation";
 import { createSignInRedirect, ROUTES } from "@/lib/routes";
 
 export const metadata = {
-  title: "Saved Cars | Maruf Motors",
+  title: "Saved Cars | MN LTD",
   description: "View your saved cars and favorites",
 };
 

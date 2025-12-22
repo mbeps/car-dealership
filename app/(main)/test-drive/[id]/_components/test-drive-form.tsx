@@ -309,7 +309,7 @@ export function TestDriveForm({
             <h2 className="text-xl font-bold mb-4">Dealership Info</h2>
             <div className="text-sm">
               <p className="font-medium">
-                {dealership?.name || "Maruf Motors"}
+                {dealership?.name || "MN LTD"}
               </p>
               <p className="text-gray-600 mt-1">
                 {dealership?.address || "Address not available"}
@@ -514,7 +514,7 @@ export function TestDriveForm({
                 </div>
                 <div className="flex justify-between">
                   <span className="font-medium">Dealership:</span>
-                  <span>{dealership?.name || "Maruf Motors"}</span>
+                  <span>{dealership?.name || "MN LTD"}</span>
                 </div>
               </div>
 
