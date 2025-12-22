@@ -3,7 +3,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { format, parseISO } from "date-fns";
-import { useForm, Controller } from "react-hook-form";
+import { useForm, Controller, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Calendar as CalendarIcon,
@@ -93,7 +93,6 @@ export function TestDriveForm({
   };
 }) {
   const router = useRouter();
-  const [availableTimeSlots, setAvailableTimeSlots] = useState<TimeSlot[]>([]);
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [bookingDetails, setBookingDetails] = useState<BookingDetails | null>(
     null
@@ -103,10 +102,9 @@ export function TestDriveForm({
   const {
     control,
     handleSubmit,
-    watch,
     setValue,
     reset,
-    formState: { errors, isValid },
+    formState: { errors },
   } = useForm({
     resolver: zodResolver(testDriveSchema),
     defaultValues: {
@@ -125,50 +123,15 @@ export function TestDriveForm({
   );
 
   // Watch date field to update available time slots
-  const selectedDate = watch("date");
+  const selectedDate = useWatch({ control, name: "date" });
 
   // Custom hooks for API calls
-  const {
-    loading: bookingInProgress,
-    fn: bookTestDriveFn,
-    data: bookingResult,
-    error: bookingError,
-  } = useFetch(bookTestDrive);
-
-  // Handle successful booking
-  useEffect(() => {
-    if (bookingResult?.success) {
-      setBookingDetails({
-        carId: car.id,
-        date: format(bookingResult?.data?.bookingDate, "EEEE, MMMM d, yyyy"),
-        timeSlot: `${format(
-          parseISO(`2022-01-01T${bookingResult?.data?.startTime}`),
-          "h:mm a"
-        )} - ${format(
-          parseISO(`2022-01-01T${bookingResult?.data?.endTime}`),
-          "h:mm a"
-        )}`,
-        notes: bookingResult?.data?.notes ?? undefined,
-      });
-      setShowConfirmation(true);
-
-      // Reset form
-      reset();
-    }
-  }, [bookingResult, reset, car.id]);
-
-  // Handle booking error
-  useEffect(() => {
-    if (bookingError) {
-      toast.error(
-        bookingError.message || "Failed to book test drive. Please try again."
-      );
-    }
-  }, [bookingError]);
+  const { loading: bookingInProgress, fn: bookTestDriveFn } =
+    useFetch(bookTestDrive);
 
   // Update available time slots when date changes
-  useEffect(() => {
-    if (!selectedDate || !dealership?.workingHours) return;
+  const availableTimeSlots = useMemo<TimeSlot[]>(() => {
+    if (!selectedDate || !dealership?.workingHours) return [];
 
     const selectedDayOfWeek = format(selectedDate, "EEEE").toUpperCase();
 
@@ -178,8 +141,7 @@ export function TestDriveForm({
     );
 
     if (!daySchedule || !daySchedule.isOpen) {
-      setAvailableTimeSlots([]);
-      return;
+      return [];
     }
 
     // Parse opening and closing hours
@@ -210,11 +172,15 @@ export function TestDriveForm({
       }
     }
 
-    setAvailableTimeSlots(slots);
+    return slots;
+  }, [selectedDate, dealership, existingBookings]);
 
-    // Clear time slot selection when date changes
-    setValue("timeSlot", "");
-  }, [selectedDate, dealership?.workingHours, existingBookings, setValue]);
+  // Clear time slot selection when date changes
+  useEffect(() => {
+    if (selectedDate) {
+      setValue("timeSlot", "");
+    }
+  }, [selectedDate, setValue]);
 
   // Create a function to determine which days should be disabled
   const isDayDisabled = (day: Date) => {
@@ -246,13 +212,30 @@ export function TestDriveForm({
       return;
     }
 
-    await bookTestDriveFn({
+    const result = await bookTestDriveFn({
       carId: car.id,
       bookingDate: format(data.date, "yyyy-MM-dd"),
       startTime: selectedSlot.startTime,
       endTime: selectedSlot.endTime,
       notes: data.notes || "",
     });
+
+    if (result?.success) {
+      setBookingDetails({
+        carId: car.id,
+        date: format(result.data.bookingDate, "EEEE, MMMM d, yyyy"),
+        timeSlot: `${format(
+          parseISO(`2022-01-01T${result.data.startTime}`),
+          "h:mm a"
+        )} - ${format(
+          parseISO(`2022-01-01T${result.data.endTime}`),
+          "h:mm a"
+        )}`,
+        notes: result.data.notes ?? undefined,
+      });
+      setShowConfirmation(true);
+      reset();
+    }
   };
 
   // Close confirmation handler

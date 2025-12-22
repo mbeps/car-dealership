@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useState, useEffect } from "react";
+import { useCallback, useState } from "react";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { CarFiltersData } from "@/types";
 
@@ -62,7 +62,39 @@ export const useCarFilters = (filters: CarFiltersData) => {
   const [sortBy, setSortBy] = useState(currentSortBy);
   const [isSheetOpen, setIsSheetOpen] = useState(false);
 
-  useEffect(() => {
+  // Sync state from URL params (Derived State Pattern)
+  const [prevParams, setPrevParams] = useState({
+    make: currentMake,
+    bodyType: currentBodyType,
+    color: currentColor,
+    fuelType: currentFuelType,
+    transmission: currentTransmission,
+    minPrice: currentMinPrice,
+    maxPrice: currentMaxPrice,
+    minMileage: currentMinMileage,
+    maxMileage: currentMaxMileage,
+    minAge: currentMinAge,
+    maxAge: currentMaxAge,
+    sortBy: currentSortBy,
+  });
+
+  const currentParams = {
+    make: currentMake,
+    bodyType: currentBodyType,
+    color: currentColor,
+    fuelType: currentFuelType,
+    transmission: currentTransmission,
+    minPrice: currentMinPrice,
+    maxPrice: currentMaxPrice,
+    minMileage: currentMinMileage,
+    maxMileage: currentMaxMileage,
+    minAge: currentMinAge,
+    maxAge: currentMaxAge,
+    sortBy: currentSortBy,
+  };
+
+  if (JSON.stringify(prevParams) !== JSON.stringify(currentParams)) {
+    setPrevParams(currentParams);
     setMake(currentMake);
     setBodyType(currentBodyType);
     setColor(currentColor);
@@ -72,20 +104,7 @@ export const useCarFilters = (filters: CarFiltersData) => {
     setMileageRange([currentMinMileage, currentMaxMileage]);
     setAgeRange([currentMinAge, currentMaxAge]);
     setSortBy(currentSortBy);
-  }, [
-    currentMake,
-    currentBodyType,
-    currentColor,
-    currentFuelType,
-    currentTransmission,
-    currentMinPrice,
-    currentMaxPrice,
-    currentMinMileage,
-    currentMaxMileage,
-    currentMinAge,
-    currentMaxAge,
-    currentSortBy,
-  ]);
+  }
 
   const currentSearch = searchParams.get("search") || "";
   const activeFilterCount = [

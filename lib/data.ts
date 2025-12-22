@@ -1,18 +1,3 @@
-interface FeaturedCar {
-  id: number;
-  make: string;
-  model: string;
-  year: number;
-  price: number;
-  images: string[];
-  transmission: string;
-  fuelType: string;
-  bodyType: string;
-  mileage: number;
-  color: string;
-  wishlisted: boolean;
-}
-
 interface CarMake {
   id: number;
   name: string;

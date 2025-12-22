@@ -1,5 +1,5 @@
 import { createServerClient } from "@supabase/ssr";
-import type { CookieMethodsServer, CookieOptions } from "@supabase/ssr";
+import type { CookieOptions } from "@supabase/ssr";
 import { createClient as createSupabaseClient } from "@supabase/supabase-js";
 import { cookies } from "next/headers";
 

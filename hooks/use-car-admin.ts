@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect } from "react";
-import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import useFetch from "@/hooks/use-fetch";
 import { deleteCar, updateCarStatus } from "@/actions/cars";
@@ -24,8 +23,6 @@ interface UseCarAdminOptions {
  * @see updateCarStatus - Server action for status updates
  */
 export function useCarAdmin(options: UseCarAdminOptions = {}) {
-  const router = useRouter();
-
   const {
     loading: deletingCar,
     fn: deleteCarFn,

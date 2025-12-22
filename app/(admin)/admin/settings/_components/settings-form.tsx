@@ -100,39 +100,21 @@ export const SettingsForm = () => {
   const [userToDemote, setUserToDemote] = useState<User | null>(null);
 
   // Custom hooks for API calls
-  const {
-    fn: fetchDealershipInfo,
-    data: settingsData,
-    error: settingsError,
-  } = useFetch(getDealershipInfo);
+  const { fn: fetchDealershipInfo, data: settingsData } =
+    useFetch(getDealershipInfo);
 
-  const {
-    loading: savingHours,
-    fn: saveHours,
-    data: saveResult,
-    error: saveError,
-  } = useFetch(saveWorkingHours);
+  const { loading: savingHours, fn: saveHours } = useFetch(saveWorkingHours);
 
   const {
     loading: fetchingUsers,
     fn: fetchUsers,
     data: usersData,
-    error: usersError,
   } = useFetch(getUsers);
 
-  const {
-    loading: updatingRole,
-    fn: updateRole,
-    data: updateRoleResult,
-    error: updateRoleError,
-  } = useFetch(updateUserRole);
+  const { loading: updatingRole, fn: updateRole } = useFetch(updateUserRole);
 
-  const {
-    loading: updatingDealership,
-    fn: updateDealership,
-    data: updateDealershipResult,
-    error: updateDealershipError,
-  } = useFetch(updateDealershipInfo);
+  const { loading: updatingDealership, fn: updateDealership } =
+    useFetch(updateDealershipInfo);
 
   // React Hook Form for dealership info
   const {
@@ -153,111 +135,54 @@ export const SettingsForm = () => {
 
   // Fetch settings and users on component mount
   useEffect(() => {
-    fetchDealershipInfo();
-    fetchUsers();
-  }, [fetchDealershipInfo, fetchUsers]);
+    const loadSettings = async () => {
+      const res = await fetchDealershipInfo();
+      if (res?.success && res.data) {
+        const dealership = res.data;
 
-  // Set working hours when settings data is fetched
-  useEffect(() => {
-    if (settingsData?.success && settingsData.data) {
-      const dealership = settingsData.data;
-
-      // Reset form with dealership info
-      reset({
-        name: dealership.name || "",
-        address: dealership.address || "",
-        email: dealership.email || "",
-        phone: dealership.phone || "",
-        whatsappPhone: dealership.whatsappPhone || "",
-      });
-
-      // Map the working hours
-      if (dealership.workingHours && dealership.workingHours.length > 0) {
-        const mappedHours = DAYS.map((day) => {
-          // Find matching working hour
-          const hourData = dealership.workingHours?.find(
-            (h) => h.dayOfWeek === day.value
-          );
-
-          if (hourData) {
-            return {
-              dayOfWeek: hourData.dayOfWeek,
-              openTime: hourData.openTime,
-              closeTime: hourData.closeTime,
-              isOpen: hourData.isOpen,
-            };
-          }
-
-          // Default values if no working hour is found
-          return {
-            dayOfWeek: day.value,
-            openTime: "09:00",
-            closeTime: "18:00",
-            isOpen: day.value !== "SUNDAY",
-          };
+        // Reset form with dealership info
+        reset({
+          name: dealership.name || "",
+          address: dealership.address || "",
+          email: dealership.email || "",
+          phone: dealership.phone || "",
+          whatsappPhone: dealership.whatsappPhone || "",
         });
 
-        setWorkingHours(mappedHours);
+        // Map the working hours
+        if (dealership.workingHours && dealership.workingHours.length > 0) {
+          const mappedHours = DAYS.map((day) => {
+            // Find matching working hour
+            const hourData = dealership.workingHours?.find(
+              (h) => h.dayOfWeek === day.value
+            );
+
+            if (hourData) {
+              return {
+                dayOfWeek: hourData.dayOfWeek,
+                openTime: hourData.openTime,
+                closeTime: hourData.closeTime,
+                isOpen: hourData.isOpen,
+              };
+            }
+
+            // Default values if no working hour is found
+            return {
+              dayOfWeek: day.value,
+              openTime: "09:00",
+              closeTime: "18:00",
+              isOpen: day.value !== "SUNDAY",
+            };
+          });
+
+          setWorkingHours(mappedHours);
+        }
       }
-    }
-  }, [settingsData, reset]);
+    };
 
-  // Handle errors
-  useEffect(() => {
-    if (settingsError) {
-      toast.error("Failed to load dealership settings");
-    }
-
-    if (saveError) {
-      toast.error(`Failed to save working hours: ${saveError.message}`);
-    }
-
-    if (usersError) {
-      toast.error("Failed to load users");
-    }
-
-    if (updateRoleError) {
-      toast.error(`Failed to update user role: ${updateRoleError.message}`);
-    }
-
-    if (updateDealershipError) {
-      toast.error(
-        `Failed to update dealership info: ${updateDealershipError.message}`
-      );
-    }
-  }, [
-    settingsError,
-    saveError,
-    usersError,
-    updateRoleError,
-    updateDealershipError,
-  ]);
-
-  // Handle successful operations
-  useEffect(() => {
-    if (saveResult?.success) {
-      toast.success("Working hours saved successfully");
-      fetchDealershipInfo();
-    }
-
-    if (updateRoleResult?.success) {
-      toast.success("User role updated successfully");
-      fetchUsers();
-      setConfirmAdminDialog(false);
-      setConfirmRemoveDialog(false);
-    }
-
-    if (updateDealershipResult?.success) {
-      toast.success("Dealership information updated successfully");
-      fetchDealershipInfo();
-    }
-  }, [
-    saveResult,
-    updateRoleResult,
-    updateDealershipResult,
-    fetchDealershipInfo,
-    fetchUsers,
-  ]);
+    loadSettings();
+    fetchUsers();
+  }, [fetchDealershipInfo, fetchUsers, reset, setWorkingHours]);
 
   // Handle working hours change
   const handleWorkingHourChange = (
@@ -279,7 +204,11 @@ export const SettingsForm = () => {
       toast.error("No dealership found. Please create dealership info first.");
       return;
     }
-    await saveHours(settingsData.data.id, workingHours);
+    const result = await saveHours(settingsData.data.id, workingHours);
+    if (result?.success) {
+      toast.success("Working hours saved successfully");
+      fetchDealershipInfo();
+    }
   };
 
   // Save dealership info
@@ -288,19 +217,35 @@ export const SettingsForm = () => {
       toast.error("No dealership found.");
       return;
     }
-    await updateDealership(settingsData.data.id, data);
+    const result = await updateDealership(settingsData.data.id, data);
+    if (result?.success) {
+      toast.success("Dealership information updated successfully");
+      fetchDealershipInfo();
+    }
   };
 
   // Make user admin
   const handleMakeAdmin = async () => {
     if (!userToPromote) return;
-    await updateRole(userToPromote.id, "ADMIN");
+    const result = await updateRole(userToPromote.id, "ADMIN");
+    if (result?.success) {
+      toast.success("User role updated successfully");
+      fetchUsers();
+      setConfirmAdminDialog(false);
+      setConfirmRemoveDialog(false);
+    }
   };
 
   // Remove admin privileges
   const handleRemoveAdmin = async () => {
     if (!userToDemote) return;
-    await updateRole(userToDemote.id, "USER");
+    const result = await updateRole(userToDemote.id, "USER");
+    if (result?.success) {
+      toast.success("User role updated successfully");
+      fetchUsers();
+      setConfirmAdminDialog(false);
+      setConfirmRemoveDialog(false);
+    }
   };
 
   // Filter users by search term

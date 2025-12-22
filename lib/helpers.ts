@@ -25,6 +25,12 @@ export function serializeCarData(
   };
   const { carMake, CarMake, carColor, CarColor, ...rest } = normalizedCar;
 
+  // Prevent unused var warning
+  void carMake;
+  void CarMake;
+  void carColor;
+  void CarColor;
+
   return {
     ...rest,
     price: typeof rest.price === "string" ? parseFloat(rest.price) : rest.price,

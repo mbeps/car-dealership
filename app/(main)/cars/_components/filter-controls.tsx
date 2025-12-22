@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Check, X } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
@@ -61,45 +61,36 @@ export const CarFilterControls = ({
   const [minAgeInput, setMinAgeInput] = useState("");
   const [maxAgeInput, setMaxAgeInput] = useState("");
 
-  // Update local inputs when priceRange changes from parent (e.g., on reset)
-  useEffect(() => {
-    if (
+  // Sync state from props (Derived State Pattern)
+  const [prevPriceRange, setPrevPriceRange] = useState(priceRange);
+  if (prevPriceRange !== priceRange) {
+    setPrevPriceRange(priceRange);
+    const isDefault =
       priceRange[0] === filters.priceRange.min &&
-      priceRange[1] === filters.priceRange.max
-    ) {
-      setMinPriceInput("");
-      setMaxPriceInput("");
-    } else {
-      setMinPriceInput(priceRange[0].toString());
-      setMaxPriceInput(priceRange[1].toString());
-    }
-  }, [priceRange, filters.priceRange.min, filters.priceRange.max]);
+      priceRange[1] === filters.priceRange.max;
+    setMinPriceInput(isDefault ? "" : priceRange[0].toString());
+    setMaxPriceInput(isDefault ? "" : priceRange[1].toString());
+  }
 
-  useEffect(() => {
-    if (
+  const [prevMileageRange, setPrevMileageRange] = useState(mileageRange);
+  if (prevMileageRange !== mileageRange) {
+    setPrevMileageRange(mileageRange);
+    const isDefault =
       mileageRange[0] === filters.mileageRange.min &&
-      mileageRange[1] === filters.mileageRange.max
-    ) {
-      setMinMileageInput("");
-      setMaxMileageInput("");
-    } else {
-      setMinMileageInput(mileageRange[0].toString());
-      setMaxMileageInput(mileageRange[1].toString());
-    }
-  }, [mileageRange, filters.mileageRange.min, filters.mileageRange.max]);
+      mileageRange[1] === filters.mileageRange.max;
+    setMinMileageInput(isDefault ? "" : mileageRange[0].toString());
+    setMaxMileageInput(isDefault ? "" : mileageRange[1].toString());
+  }
 
-  useEffect(() => {
-    if (
+  const [prevAgeRange, setPrevAgeRange] = useState(ageRange);
+  if (prevAgeRange !== ageRange) {
+    setPrevAgeRange(ageRange);
+    const isDefault =
       ageRange[0] === filters.ageRange.min &&
-      ageRange[1] === filters.ageRange.max
-    ) {
-      setMinAgeInput("");
-      setMaxAgeInput("");
-    } else {
-      setMinAgeInput(ageRange[0].toString());
-      setMaxAgeInput(ageRange[1].toString());
-    }
-  }, [ageRange, filters.ageRange.min, filters.ageRange.max]);
+      ageRange[1] === filters.ageRange.max;
+    setMinAgeInput(isDefault ? "" : ageRange[0].toString());
+    setMaxAgeInput(isDefault ? "" : ageRange[1].toString());
+  }
 
   const filterSections = [
     {

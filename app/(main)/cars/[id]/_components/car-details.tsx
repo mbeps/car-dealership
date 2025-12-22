@@ -48,7 +48,7 @@ import {
   Trash2,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { toast } from "sonner";
 import { CarGallery } from "./car-gallery";
 import Link from "next/link";
@@ -83,12 +83,7 @@ export function CarDetails({
   const [isWishlisted, setIsWishlisted] = useState(car.wishlisted);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
-  const {
-    loading: savingCar,
-    fn: toggleSavedCarFn,
-    data: toggleResult,
-    error: toggleError,
-  } = useFetch(toggleSavedCar);
+  const { loading: savingCar, fn: toggleSavedCarFn } = useFetch(toggleSavedCar);
 
   const {
     deletingCar,
@@ -105,21 +100,6 @@ export function CarDetails({
     },
   });
 
-  // Handle toggle result with useEffect
-  useEffect(() => {
-    if (toggleResult?.success) {
-      setIsWishlisted(toggleResult.data.saved);
-      toast.success(toggleResult.data.message);
-    }
-  }, [toggleResult]);
-
-  // Handle errors with useEffect
-  useEffect(() => {
-    if (toggleError) {
-      toast.error("Failed to update favorites");
-    }
-  }, [toggleError]);
-
   // Handle save car
   const handleSaveCar = async () => {
     if (!isSignedIn) {
@@ -131,7 +111,11 @@ export function CarDetails({
     if (savingCar) return;
 
     // Use the toggleSavedCarFn from useFetch hook
-    await toggleSavedCarFn(car.id);
+    const result = await toggleSavedCarFn(car.id);
+    if (result?.success) {
+      setIsWishlisted(result.data.saved);
+      toast.success(result.data.message);
+    }
   };
 
   // Handle share
