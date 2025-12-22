@@ -101,7 +101,6 @@ export const SettingsForm = () => {
 
   // Custom hooks for API calls
   const {
-    loading: fetchingSettings,
     fn: fetchDealershipInfo,
     data: settingsData,
     error: settingsError,

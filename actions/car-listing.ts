@@ -21,7 +21,7 @@ import {
   CarColorOption,
 } from "@/types";
 
-type DatabaseClient = SupabaseClient<any>;
+type DatabaseClient = SupabaseClient;
 
 /**
  * Resolves make slug to database ID.

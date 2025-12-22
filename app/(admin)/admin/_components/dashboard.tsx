@@ -12,7 +12,6 @@ import {
   CheckCircle,
   Clock,
   XCircle,
-  Star,
   PoundSterling,
 } from "lucide-react";
 import { ActionResponse, DashboardData } from "@/types";

@@ -189,7 +189,7 @@ export async function addCar({
       const filePath = `${folderPath}/${fileName}`;
 
       // Upload the file buffer directly
-      const { data, error } = await supabaseAdmin.storage
+      const { error } = await supabaseAdmin.storage
         .from("car-images")
         .upload(filePath, imageBuffer, {
           contentType: `image/${fileExtension}`,
