@@ -25,7 +25,7 @@ export default async function CarsPage() {
 
       <div className="flex flex-col lg:flex-row gap-8">
         {/* Filters Section */}
-        <div className="w-full lg:w-80 flex-shrink-0">
+        <div className="w-full lg:w-80 shrink-0">
           <CarFilters filters={filtersData.data} />
         </div>
 

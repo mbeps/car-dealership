@@ -82,7 +82,7 @@ export function CarGallery({ images, carName }: CarGalleryProps) {
           {images.map((image, index) => (
             <div
               key={index}
-              className={`relative cursor-pointer rounded-md h-20 w-24 flex-shrink-0 transition ${
+              className={`relative cursor-pointer rounded-md h-20 w-24 shrink-0 transition ${
                 index === currentImageIndex
                   ? "border-2 border-blue-600"
                   : "opacity-70 hover:opacity-100"
