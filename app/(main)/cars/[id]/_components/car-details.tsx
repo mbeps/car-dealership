@@ -520,13 +520,13 @@ export function CarDetails({
             <div className="flex items-start gap-3 w-full">
               <div className="flex flex-col gap-5 flex-1 text-lg">
                 <div className="flex items-start gap-3">
-                  <LocateFixed className="h-5 w-5 text-blue-600 mt-0.5 flex-shrink-0" />
+                  <LocateFixed className="h-5 w-5 text-blue-600 mt-0.5 shrink-0" />
                   <h4 className="font-medium">
                     {testDriveInfo.dealership?.name}
                   </h4>
                 </div>
                 <div className="flex items-start gap-3">
-                  <MapPin className="h-5 w-5 text-gray-500 mt-0.5 flex-shrink-0" />
+                  <MapPin className="h-5 w-5 text-gray-500 mt-0.5 shrink-0" />
                   {testDriveInfo.dealership?.address ? (
                     <a
                       href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
@@ -543,7 +543,7 @@ export function CarDetails({
                   )}
                 </div>
                 <div className="flex items-center gap-3">
-                  <Phone className="h-5 w-5 text-gray-500 flex-shrink-0" />
+                  <Phone className="h-5 w-5 text-gray-500 shrink-0" />
                   {testDriveInfo.dealership?.phone ? (
                     <a
                       href={`tel:${testDriveInfo.dealership.phone}`}
@@ -556,7 +556,7 @@ export function CarDetails({
                   )}
                 </div>
                 <div className="flex items-center gap-3">
-                  <Mail className="h-5 w-5 text-gray-500 flex-shrink-0" />
+                  <Mail className="h-5 w-5 text-gray-500 shrink-0" />
                   {testDriveInfo.dealership?.email ? (
                     <a
                       href={`mailto:${testDriveInfo.dealership.email}`}

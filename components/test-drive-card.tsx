@@ -145,7 +145,7 @@ export function TestDriveCard({
 
           {/* Action Buttons - Right */}
           {showActions && (
-            <div className="p-4 border-t sm:border-t-0 sm:border-l sm:w-1/4 sm:flex sm:flex-col sm:justify-center sm:items-center sm:space-y-2">
+            <div className="p-4 border-t sm:border-t-0 sm:border-l sm:w-1/4 flex flex-col justify-center gap-2">
               {/* Show notes if any */}
               {booking.notes && (
                 <div className="bg-gray-50 p-2 rounded text-sm w-full">
@@ -154,12 +154,7 @@ export function TestDriveCard({
                 </div>
               )}
 
-              <Button
-                variant="outline"
-                size="sm"
-                className="w-full my-2 sm:mb-0"
-                asChild
-              >
+              <Button variant="outline" size="sm" className="w-full" asChild>
                 <Link
                   href={ROUTES.CAR_DETAILS(booking.carId)}
                   className="flex items-center justify-center"
