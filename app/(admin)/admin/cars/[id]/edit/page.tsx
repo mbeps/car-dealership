@@ -3,9 +3,10 @@ import { EditCarForm } from "./_components/edit-car-form";
 import { getCarMakes } from "@/actions/car-makes";
 import { getCarColors } from "@/actions/car-colors";
 import { getCars } from "@/actions/cars";
+import { DEALERSHIP_NAME } from "@/constants/dealership-name";
 
 export const metadata = {
-  title: "Edit Car | Maruf Motors Admin",
+  title: `Edit Car | ${DEALERSHIP_NAME} Admin`,
   description: "Edit car details",
 };
 

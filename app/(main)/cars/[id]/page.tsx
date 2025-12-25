@@ -1,4 +1,5 @@
 import { getCarById } from "@/actions/car-listing";
+import { DEALERSHIP_NAME } from "@/constants/dealership-name";
 import { CarDetails } from "./_components/car-details";
 import { notFound } from "next/navigation";
 import { isCurrentUserAdmin } from "@/actions/auth";
@@ -13,7 +14,7 @@ export async function generateMetadata({
 
   if (!result.success) {
     return {
-      title: "Car Not Found | Maruf Motors",
+      title: `Car Not Found | ${DEALERSHIP_NAME}`,
       description: "The requested car could not be found",
     };
   }
@@ -21,7 +22,7 @@ export async function generateMetadata({
   const car = result.data;
 
   return {
-    title: `${car.year} ${car.make} ${car.model} | Maruf Motors`,
+    title: `${car.year} ${car.make} ${car.model} | ${DEALERSHIP_NAME}`,
     description: car.description.substring(0, 160),
     openGraph: {
       images: car.images?.[0] ? [car.images[0]] : [],

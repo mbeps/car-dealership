@@ -3,9 +3,10 @@ import { SavedCarsList } from "./_components/saved-cars-list";
 import { ensureProfile } from "@/actions/auth";
 import { redirect } from "next/navigation";
 import { createSignInRedirect, ROUTES } from "@/constants/routes";
+import { DEALERSHIP_NAME } from "@/constants/dealership-name";
 
 export const metadata = {
-  title: "Saved Cars | Maruf Motors",
+  title: `Saved Cars | ${DEALERSHIP_NAME}`,
   description: "View your saved cars and favorites",
 };
 

@@ -1,9 +1,10 @@
 import { CarFilters } from "./_components/car-filters";
 import { getCarFilters } from "@/actions/car-listing";
 import { CarListings } from "./_components/cars-listing";
+import { DEALERSHIP_NAME } from "@/constants/dealership-name";
 
 export const metadata = {
-  title: "Cars | Maruf Motors",
+  title: `Cars | ${DEALERSHIP_NAME}`,
   description: "Browse and search for your dream car",
 };
 

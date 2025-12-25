@@ -1,7 +1,8 @@
 import { TestDrivesList } from "./_components/test-drive-list";
+import { DEALERSHIP_NAME } from "@/constants/dealership-name";
 
 export const metadata = {
-  title: "Test Drives | Maruf Motors Admin",
+  title: `Test Drives | ${DEALERSHIP_NAME} Admin`,
   description: "Manage test drive bookings",
 };
 

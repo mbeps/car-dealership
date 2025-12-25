@@ -3,9 +3,10 @@ import { ensureProfile } from "@/actions/auth";
 import { redirect } from "next/navigation";
 import { ReservationsList } from "./_components/reservations-list";
 import { createSignInRedirect, ROUTES } from "@/constants/routes";
+import { DEALERSHIP_NAME } from "@/constants/dealership-name";
 
 export const metadata = {
-  title: "My Reservations | Maruf Motors",
+  title: `My Reservations | ${DEALERSHIP_NAME}`,
   description: "Manage your test drive reservations",
 };
 
