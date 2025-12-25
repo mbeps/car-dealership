@@ -19,7 +19,7 @@ import {
 import { TestDriveBookingWithCar } from "@/types/test-drive/test-drive-booking-with-car";
 import { TestDriveBookingWithUser } from "@/types/test-drive/test-drive-booking-with-user";
 import { BookingStatusEnum as BookingStatus } from "@/enums/booking-status";
-import { ROUTES } from "@/lib/routes";
+import { ROUTES } from "@/constants/routes";
 
 // Helper function to format time
 const formatTime = (timeString: string): string => {

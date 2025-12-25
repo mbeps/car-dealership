@@ -24,7 +24,7 @@ import { useCarAdmin } from "@/hooks/use-car-admin";
 import useFetch from "@/hooks/use-fetch";
 import { useAuth } from "@/lib/auth-context";
 import { formatCurrency } from "@/lib/helpers/format-currency";
-import { ROUTES } from "@/lib/routes";
+import { ROUTES } from "@/constants/routes";
 import { SerializedCar } from "@/types/car/serialized-car";
 import { SerializedDealershipInfo } from "@/types/dealership/serialized-dealership-info";
 import { SerializedWorkingHour } from "@/types/dealership/serialized-working-hour";

@@ -5,7 +5,7 @@ import { Button } from "./ui/button";
 import { Heart, CarFront, Layout, ArrowLeft, LogOut } from "lucide-react";
 import Link from "next/link";
 import { useAuth, SignedIn, SignedOut } from "@/lib/auth-context";
-import { ROUTES } from "@/lib/routes";
+import { ROUTES } from "@/constants/routes";
 import Image from "next/image";
 import { UserRoleEnum as UserRole } from "@/enums/user-role";
 import {

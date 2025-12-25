@@ -13,7 +13,7 @@ import { HomeSearch } from "@/components/home-search";
 import Link from "next/link";
 import Image from "next/image";
 import { bodyTypes, carMakes, faqItems } from "@/lib/data";
-import { ROUTES, createCarSearchUrl } from "@/lib/routes";
+import { ROUTES, createCarSearchUrl } from "@/constants/routes";
 
 export default async function Home() {
   const featuredCars = await getFeaturedCars();

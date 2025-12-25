@@ -3,7 +3,7 @@
 import { serializeCarData } from "@/lib/helpers/serialize-car";
 import { createClient } from "@/lib/supabase/supabase";
 import { revalidatePath } from "next/cache";
-import { ROUTES } from "@/lib/routes";
+import { ROUTES } from "@/constants/routes";
 import type {
   SupabaseClient,
   User as SupabaseAuthUser,

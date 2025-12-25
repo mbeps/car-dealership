@@ -8,7 +8,7 @@ import type { WorkingHour } from "@/types/dealership/working-hour";
 import type { User } from "@/types/user/user";
 import { UserRoleEnum as UserRole } from "@/enums/user-role";
 import { dealershipInfoSchema } from "@/schemas/dealership-info";
-import { ROUTES } from "@/lib/routes";
+import { ROUTES } from "@/constants/routes";
 
 /**
  * Fetches dealership contact info and working hours.

@@ -7,7 +7,11 @@ import {
   getSupabasePublishableKey,
   getSupabaseUrl,
 } from "./lib/supabase/supabase-env";
-import { PROTECTED_ROUTES, ROUTES, createSignInRedirect } from "./lib/routes";
+import {
+  PROTECTED_ROUTES,
+  ROUTES,
+  createSignInRedirect,
+} from "./constants/routes";
 
 // Protected routes that require authentication
 const protectedRoutes = PROTECTED_ROUTES;

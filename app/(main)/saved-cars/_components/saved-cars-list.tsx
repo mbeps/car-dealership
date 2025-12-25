@@ -6,7 +6,7 @@ import { CarCard } from "@/components/car-card";
 import { Heart } from "lucide-react";
 import { ActionResponse } from "@/types/common/action-response";
 import { SerializedCar } from "@/types/car/serialized-car";
-import { ROUTES } from "@/lib/routes";
+import { ROUTES } from "@/constants/routes";
 
 /**
  * User's wishlist page.

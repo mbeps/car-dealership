@@ -3,7 +3,7 @@ import {
   PROTECTED_ROUTES,
   createCarSearchUrl,
   createSignInRedirect,
-} from "@/lib/routes";
+} from "@/constants/routes";
 
 describe("createSignInRedirect", () => {
   it("returns sign-in path with encoded redirect", () => {

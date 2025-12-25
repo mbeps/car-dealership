@@ -5,7 +5,7 @@ import type { ActionResponse } from "@/types/common/action-response";
 import type { User } from "@/types/user/user";
 import { UserRoleEnum as UserRole } from "@/enums/user-role";
 import { redirect } from "next/navigation";
-import { ROUTES } from "@/lib/routes";
+import { ROUTES } from "@/constants/routes";
 import { getSiteUrl } from "@/lib/utils";
 
 /**
