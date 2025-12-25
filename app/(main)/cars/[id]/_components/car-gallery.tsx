@@ -62,12 +62,12 @@ export function CarGallery({ images, carName }: CarGalleryProps) {
         <CarouselContent>
           {images.map((image, index) => (
             <CarouselItem key={index}>
-              <div className="aspect-video rounded-lg overflow-hidden relative">
+              <div className="aspect-video rounded-lg overflow-hidden relative bg-secondary">
                 <Image
                   src={image}
                   alt={`${carName} - view ${index + 1}`}
                   fill
-                  className="object-cover"
+                  className="object-contain"
                   priority={index === 0}
                 />
               </div>
