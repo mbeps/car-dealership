@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createBrowserClient } from "@/lib/supabase-client";
+import { getSiteUrl } from "@/lib/utils";
 
 interface UseSignInOptions {
   onSuccess?: () => void;
@@ -71,7 +72,7 @@ export function useSignIn(options?: UseSignInOptions) {
       const { error } = await supabase.auth.signInWithOAuth({
         provider: "google",
         options: {
-          redirectTo: `${window.location.origin}/auth/callback?redirect=${redirectTo}`,
+          redirectTo: `${getSiteUrl()}/auth/callback?redirect=${redirectTo}`,
           queryParams: {
             access_type: "offline",
             prompt: "consent",
