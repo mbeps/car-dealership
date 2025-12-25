@@ -6,7 +6,11 @@ import { Calendar } from "lucide-react";
 import { TestDriveCard } from "@/components/test-drive-card";
 import useFetch from "@/hooks/use-fetch";
 import { cancelTestDrive } from "@/actions/test-drive";
-import { ActionResponse, TestDriveBookingWithCar } from "@/types";
+import {
+  ActionResponse,
+  TestDriveBookingWithCar,
+  BookingStatusEnum as BookingStatus,
+} from "@/types";
 import { ROUTES } from "@/lib/routes";
 
 /**
@@ -37,14 +41,20 @@ export function ReservationsList({
   const upcomingBookings =
     initialData && initialData.success
       ? initialData.data.filter((booking: TestDriveBookingWithCar) =>
-          ["PENDING", "CONFIRMED"].includes(booking.status)
+          [BookingStatus.PENDING, BookingStatus.CONFIRMED].includes(
+            booking.status as BookingStatus
+          )
         )
       : [];
 
   const pastBookings =
     initialData && initialData.success
       ? initialData.data.filter((booking: TestDriveBookingWithCar) =>
-          ["COMPLETED", "CANCELLED", "NO_SHOW"].includes(booking.status)
+          [
+            BookingStatus.COMPLETED,
+            BookingStatus.CANCELLED,
+            BookingStatus.NO_SHOW,
+          ].includes(booking.status as BookingStatus)
         )
       : [];
 

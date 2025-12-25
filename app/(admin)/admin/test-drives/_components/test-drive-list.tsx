@@ -133,11 +133,11 @@ export const TestDrivesList = () => {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All Statuses</SelectItem>
-              <SelectItem value="PENDING">Pending</SelectItem>
-              <SelectItem value="CONFIRMED">Confirmed</SelectItem>
-              <SelectItem value="COMPLETED">Completed</SelectItem>
-              <SelectItem value="CANCELLED">Cancelled</SelectItem>
-              <SelectItem value="NO_SHOW">No Show</SelectItem>
+              <SelectItem value={BookingStatus.PENDING}>Pending</SelectItem>
+              <SelectItem value={BookingStatus.CONFIRMED}>Confirmed</SelectItem>
+              <SelectItem value={BookingStatus.COMPLETED}>Completed</SelectItem>
+              <SelectItem value={BookingStatus.CANCELLED}>Cancelled</SelectItem>
+              <SelectItem value={BookingStatus.NO_SHOW}>No Show</SelectItem>
             </SelectContent>
           </Select>
 
@@ -205,9 +205,10 @@ export const TestDrivesList = () => {
                     <TestDriveCard
                       booking={booking}
                       onCancel={handleCancel}
-                      showActions={["PENDING", "CONFIRMED"].includes(
-                        booking.status
-                      )}
+                      showActions={[
+                        BookingStatus.PENDING,
+                        BookingStatus.CONFIRMED,
+                      ].includes(booking.status as BookingStatus)}
                       isAdmin={true}
                       isCancelling={cancelling}
                       renderStatusSelector={() => (
@@ -225,11 +226,21 @@ export const TestDrivesList = () => {
                             <SelectValue placeholder="Update Status" />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="PENDING">Pending</SelectItem>
-                            <SelectItem value="CONFIRMED">Confirmed</SelectItem>
-                            <SelectItem value="COMPLETED">Completed</SelectItem>
-                            <SelectItem value="CANCELLED">Cancelled</SelectItem>
-                            <SelectItem value="NO_SHOW">No Show</SelectItem>
+                            <SelectItem value={BookingStatus.PENDING}>
+                              Pending
+                            </SelectItem>
+                            <SelectItem value={BookingStatus.CONFIRMED}>
+                              Confirmed
+                            </SelectItem>
+                            <SelectItem value={BookingStatus.COMPLETED}>
+                              Completed
+                            </SelectItem>
+                            <SelectItem value={BookingStatus.CANCELLED}>
+                              Cancelled
+                            </SelectItem>
+                            <SelectItem value={BookingStatus.NO_SHOW}>
+                              No Show
+                            </SelectItem>
                           </SelectContent>
                         </Select>
                       )}

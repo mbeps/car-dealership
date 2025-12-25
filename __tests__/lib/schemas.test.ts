@@ -5,6 +5,7 @@ import {
   testDriveSchema,
   updatePasswordSchema,
 } from "@/lib/schemas";
+import { CarStatusEnum } from "@/types";
 
 const baseCarFormData = {
   carMakeId: "make-1",
@@ -19,7 +20,7 @@ const baseCarFormData = {
   numberPlate: "AB12CDE",
   seats: "5",
   description: "A fast electric sedan with autopilot capabilities.",
-  status: "AVAILABLE" as const,
+  status: CarStatusEnum.AVAILABLE,
   featured: true,
   features: ["Autopilot", "Panoramic Roof"],
 };

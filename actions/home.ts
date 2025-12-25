@@ -2,7 +2,7 @@
 
 import { createClient } from "@/lib/supabase";
 import { serializeCarData } from "@/lib/helpers";
-import { SerializedCar } from "@/types";
+import { SerializedCar, CarStatusEnum as CarStatus } from "@/types";
 
 /**
  * Retrieves featured cars for homepage.
@@ -28,7 +28,7 @@ export async function getFeaturedCars(limit = 3): Promise<SerializedCar[]> {
       `
       )
       .eq("featured", true)
-      .eq("status", "AVAILABLE")
+      .eq("status", CarStatus.AVAILABLE)
       .order("createdAt", { ascending: false })
       .limit(limit);
 

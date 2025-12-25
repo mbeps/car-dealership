@@ -30,6 +30,8 @@ import {
   SerializedDealershipInfo,
   SerializedWorkingHour,
   UserTestDrive,
+  DayOfWeekEnum as DayOfWeek,
+  CarStatusEnum as CarStatus,
 } from "@/types";
 import { format } from "date-fns";
 import {
@@ -168,10 +170,7 @@ export function CarDetails({
 
   // Handle status change
   const handleStatusChange = async (newStatus: string) => {
-    await handleUpdateStatus(
-      car.id,
-      newStatus as "AVAILABLE" | "SOLD" | "UNAVAILABLE"
-    );
+    await handleUpdateStatus(car.id, newStatus as CarStatus);
   };
 
   return (
@@ -312,7 +311,8 @@ export function CarDetails({
             </Card>
           )}
 
-          {(car.status === "SOLD" || car.status === "UNAVAILABLE") && (
+          {(car.status === CarStatus.SOLD ||
+            car.status === CarStatus.UNAVAILABLE) && (
             <Alert variant="destructive">
               <AlertTitle className="capitalize">
                 This car is {car.status.toLowerCase()}
@@ -322,71 +322,76 @@ export function CarDetails({
           )}
 
           {/* Book Test Drive Button */}
-          {car.status !== "SOLD" && car.status !== "UNAVAILABLE" && (
-            <>
-              {isAdmin ? (
-                <div className="space-y-3">
+          {car.status !== CarStatus.SOLD &&
+            car.status !== CarStatus.UNAVAILABLE && (
+              <>
+                {isAdmin ? (
+                  <div className="space-y-3">
+                    <Button
+                      className="w-full py-6 text-lg"
+                      onClick={handleAdminTestDrives}
+                    >
+                      <Calendar className="mr-2 h-5 w-5" />
+                      Manage Test Drives
+                    </Button>
+
+                    {/* Admin Controls */}
+                    <div className="flex gap-2">
+                      <Button
+                        variant="outline"
+                        className="flex-1"
+                        onClick={handleEditCar}
+                      >
+                        <Pencil className="mr-2 h-4 w-4" />
+                        Edit Car
+                      </Button>
+
+                      <Select
+                        value={car.status}
+                        onValueChange={handleStatusChange}
+                        disabled={updatingStatus}
+                      >
+                        <SelectTrigger className="flex-1">
+                          <SelectValue placeholder="Status" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value={CarStatus.AVAILABLE}>
+                            Available
+                          </SelectItem>
+                          <SelectItem value={CarStatus.SOLD}>Sold</SelectItem>
+                          <SelectItem value={CarStatus.UNAVAILABLE}>
+                            Unavailable
+                          </SelectItem>
+                        </SelectContent>
+                      </Select>
+
+                      <Button
+                        variant="destructive"
+                        size="icon"
+                        onClick={() => setShowDeleteDialog(true)}
+                        disabled={deletingCar}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </div>
+                ) : (
                   <Button
                     className="w-full py-6 text-lg"
-                    onClick={handleAdminTestDrives}
+                    onClick={handleBookTestDrive}
+                    disabled={!!testDriveInfo.userTestDrive}
                   >
                     <Calendar className="mr-2 h-5 w-5" />
-                    Manage Test Drives
+                    {testDriveInfo.userTestDrive
+                      ? `Booked for ${format(
+                          new Date(testDriveInfo.userTestDrive.bookingDate),
+                          "EEEE, MMMM d, yyyy"
+                        )}`
+                      : "Book Test Drive"}
                   </Button>
-
-                  {/* Admin Controls */}
-                  <div className="flex gap-2">
-                    <Button
-                      variant="outline"
-                      className="flex-1"
-                      onClick={handleEditCar}
-                    >
-                      <Pencil className="mr-2 h-4 w-4" />
-                      Edit Car
-                    </Button>
-
-                    <Select
-                      value={car.status}
-                      onValueChange={handleStatusChange}
-                      disabled={updatingStatus}
-                    >
-                      <SelectTrigger className="flex-1">
-                        <SelectValue placeholder="Status" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="AVAILABLE">Available</SelectItem>
-                        <SelectItem value="SOLD">Sold</SelectItem>
-                        <SelectItem value="UNAVAILABLE">Unavailable</SelectItem>
-                      </SelectContent>
-                    </Select>
-
-                    <Button
-                      variant="destructive"
-                      size="icon"
-                      onClick={() => setShowDeleteDialog(true)}
-                      disabled={deletingCar}
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </div>
-              ) : (
-                <Button
-                  className="w-full py-6 text-lg"
-                  onClick={handleBookTestDrive}
-                  disabled={!!testDriveInfo.userTestDrive}
-                >
-                  <Calendar className="mr-2 h-5 w-5" />
-                  {testDriveInfo.userTestDrive
-                    ? `Booked for ${format(
-                        new Date(testDriveInfo.userTestDrive.bookingDate),
-                        "EEEE, MMMM d, yyyy"
-                      )}`
-                    : "Book Test Drive"}
-                </Button>
-              )}
-            </>
-          )}
+                )}
+              </>
+            )}
         </div>
       </div>
 
@@ -567,13 +572,13 @@ export function CarDetails({
                           b: SerializedWorkingHour
                         ) => {
                           const days = [
-                            "MONDAY",
-                            "TUESDAY",
-                            "WEDNESDAY",
-                            "THURSDAY",
-                            "FRIDAY",
-                            "SATURDAY",
-                            "SUNDAY",
+                            DayOfWeek.MONDAY,
+                            DayOfWeek.TUESDAY,
+                            DayOfWeek.WEDNESDAY,
+                            DayOfWeek.THURSDAY,
+                            DayOfWeek.FRIDAY,
+                            DayOfWeek.SATURDAY,
+                            DayOfWeek.SUNDAY,
                           ];
                           return (
                             days.indexOf(a.dayOfWeek) -
@@ -599,16 +604,16 @@ export function CarDetails({
                       ))
                   : // Default hours if none provided
                     [
-                      "Monday",
-                      "Tuesday",
-                      "Wednesday",
-                      "Thursday",
-                      "Friday",
-                      "Saturday",
-                      "Sunday",
-                    ].map((day, index) => (
+                      { day: DayOfWeek.MONDAY, label: "Monday" },
+                      { day: DayOfWeek.TUESDAY, label: "Tuesday" },
+                      { day: DayOfWeek.WEDNESDAY, label: "Wednesday" },
+                      { day: DayOfWeek.THURSDAY, label: "Thursday" },
+                      { day: DayOfWeek.FRIDAY, label: "Friday" },
+                      { day: DayOfWeek.SATURDAY, label: "Saturday" },
+                      { day: DayOfWeek.SUNDAY, label: "Sunday" },
+                    ].map(({ day, label }, index) => (
                       <div key={day} className="flex justify-between text-sm">
-                        <span className="text-gray-600">{day}</span>
+                        <span className="text-gray-600">{label}</span>
                         <span>
                           {index < 5
                             ? "9:00 - 18:00"

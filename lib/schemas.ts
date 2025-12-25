@@ -1,4 +1,5 @@
 import * as z from "zod";
+import { CarStatusEnum as CarStatus } from "@/types";
 
 /**
  * Validation schema for test drive booking form.
@@ -68,7 +69,7 @@ export const carFormSchema = z.object({
       return !isNaN(seats) && seats > 0;
     }, "Number of seats must be a valid number"),
   description: z.string().min(10, "Description must be at least 10 characters"),
-  status: z.enum(["AVAILABLE", "UNAVAILABLE", "SOLD"]),
+  status: z.enum([CarStatus.AVAILABLE, CarStatus.UNAVAILABLE, CarStatus.SOLD]),
   featured: z.boolean().default(false),
   features: z.array(z.string()).default([]),
   // Images are handled separately

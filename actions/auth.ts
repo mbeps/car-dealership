@@ -1,7 +1,7 @@
 "use server";
 
 import { createClient } from "@/lib/supabase";
-import { ActionResponse, User } from "@/types";
+import { ActionResponse, User, UserRoleEnum as UserRole } from "@/types";
 import { redirect } from "next/navigation";
 import { ROUTES } from "@/lib/routes";
 import { getSiteUrl } from "@/lib/utils";
@@ -28,7 +28,7 @@ export async function isCurrentUserAdmin(): Promise<boolean> {
       .eq("supabaseAuthUserId", authUser.id)
       .single();
 
-    return user?.role === "ADMIN";
+    return user?.role === UserRole.ADMIN;
   } catch (error) {
     console.error("Error checking admin status:", error);
     return false;
@@ -43,7 +43,7 @@ export async function isCurrentUserAdmin(): Promise<boolean> {
  * @see User.role - Database enum for roles
  */
 export async function getCurrentUserRole(): Promise<
-  ActionResponse<{ role: "USER" | "ADMIN" | null }>
+  ActionResponse<{ role: UserRole | null }>
 > {
   try {
     const supabase = await createClient();

@@ -9,14 +9,10 @@ import {
   ActionResponse,
   TestDriveBookingWithUser,
   DashboardData,
+  BookingStatusEnum as BookingStatus,
+  UserRoleEnum as UserRole,
+  CarStatusEnum as CarStatus,
 } from "@/types";
-
-type BookingStatus =
-  | "PENDING"
-  | "CONFIRMED"
-  | "COMPLETED"
-  | "CANCELLED"
-  | "NO_SHOW";
 
 /**
  * Verifies admin access for protected routes.
@@ -41,7 +37,7 @@ export async function getAdmin(): Promise<AdminAuthResult> {
     .single();
 
   // If user not found in our db or not an admin, return not authorized
-  if (!user || user.role !== "ADMIN") {
+  if (!user || user.role !== UserRole.ADMIN) {
     return { authorized: false, reason: "not-admin" };
   }
 
@@ -81,7 +77,7 @@ export async function getAdminTestDrives({
       .eq("supabaseAuthUserId", authUser.id)
       .single();
 
-    if (!user || user.role !== "ADMIN") {
+    if (!user || user.role !== UserRole.ADMIN) {
       throw new Error("Unauthorized access");
     }
 
@@ -185,7 +181,7 @@ export async function updateTestDriveStatus(
       .eq("supabaseAuthUserId", authUser.id)
       .single();
 
-    if (!user || user.role !== "ADMIN") {
+    if (!user || user.role !== UserRole.ADMIN) {
       throw new Error("Unauthorized access");
     }
 
@@ -202,11 +198,11 @@ export async function updateTestDriveStatus(
 
     // Validate status
     const validStatuses: BookingStatus[] = [
-      "PENDING",
-      "CONFIRMED",
-      "COMPLETED",
-      "CANCELLED",
-      "NO_SHOW",
+      BookingStatus.PENDING,
+      BookingStatus.CONFIRMED,
+      BookingStatus.COMPLETED,
+      BookingStatus.CANCELLED,
+      BookingStatus.NO_SHOW,
     ];
     if (!validStatuses.includes(newStatus)) {
       return {
@@ -265,7 +261,7 @@ export async function getDashboardData(): Promise<
       .eq("supabaseAuthUserId", authUser.id)
       .single();
 
-    if (!user || user.role !== "ADMIN") {
+    if (!user || user.role !== UserRole.ADMIN) {
       return {
         success: false,
         error: "Unauthorized",
@@ -284,40 +280,41 @@ export async function getDashboardData(): Promise<
     // Calculate car statistics
     const totalCars = cars.length;
     const availableCars = cars.filter(
-      (car) => car.status === "AVAILABLE"
+      (car) => car.status === CarStatus.AVAILABLE
     ).length;
-    const soldCars = cars.filter((car) => car.status === "SOLD").length;
+    const soldCars = cars.filter((car) => car.status === CarStatus.SOLD).length;
     const unavailableCars = cars.filter(
-      (car) => car.status === "UNAVAILABLE"
+      (car) => car.status === CarStatus.UNAVAILABLE
     ).length;
     const featuredCars = cars.filter((car) => car.featured === true).length;
 
     // Calculate test drive statistics
     const totalTestDrives = testDrives.length;
     const pendingTestDrives = testDrives.filter(
-      (td) => td.status === "PENDING"
+      (td) => td.status === BookingStatus.PENDING
     ).length;
     const confirmedTestDrives = testDrives.filter(
-      (td) => td.status === "CONFIRMED"
+      (td) => td.status === BookingStatus.CONFIRMED
     ).length;
     const completedTestDrives = testDrives.filter(
-      (td) => td.status === "COMPLETED"
+      (td) => td.status === BookingStatus.COMPLETED
     ).length;
     const cancelledTestDrives = testDrives.filter(
-      (td) => td.status === "CANCELLED"
+      (td) => td.status === BookingStatus.CANCELLED
     ).length;
     const noShowTestDrives = testDrives.filter(
-      (td) => td.status === "NO_SHOW"
+      (td) => td.status === BookingStatus.NO_SHOW
     ).length;
 
     // Calculate test drive conversion rate
     const completedTestDriveCarIds = testDrives
-      .filter((td) => td.status === "COMPLETED")
+      .filter((td) => td.status === BookingStatus.COMPLETED)
       .map((td) => td.carId);
 
     const soldCarsAfterTestDrive = cars.filter(
       (car) =>
-        car.status === "SOLD" && completedTestDriveCarIds.includes(car.id)
+        car.status === CarStatus.SOLD &&
+        completedTestDriveCarIds.includes(car.id)
     ).length;
 
     const conversionRate =

@@ -7,6 +7,7 @@ import Link from "next/link";
 import { useAuth, SignedIn, SignedOut } from "@/lib/auth-context";
 import { ROUTES } from "@/lib/routes";
 import Image from "next/image";
+import { UserRoleEnum as UserRole } from "@/types";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -17,7 +18,7 @@ import {
 
 interface HeaderClientProps {
   isAdminPage?: boolean;
-  userRole?: "ADMIN" | "USER" | null;
+  userRole?: UserRole | null;
 }
 
 const HeaderClient = ({
@@ -25,7 +26,7 @@ const HeaderClient = ({
   userRole = null,
 }: HeaderClientProps) => {
   const { user, signOut, openSignInModal } = useAuth();
-  const isAdmin = userRole === "ADMIN";
+  const isAdmin = userRole === UserRole.ADMIN;
 
   return (
     <header className="fixed top-0 w-full bg-white/80 backdrop-blur-md z-50 border-b">

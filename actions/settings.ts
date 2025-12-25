@@ -2,7 +2,13 @@
 
 import { createClient } from "@/lib/supabase";
 import { revalidatePath } from "next/cache";
-import { ActionResponse, DealershipInfo, WorkingHour, User } from "@/types";
+import {
+  ActionResponse,
+  DealershipInfo,
+  WorkingHour,
+  User,
+  UserRoleEnum as UserRole,
+} from "@/types";
 import { dealershipInfoSchema } from "@/lib/schemas";
 import { ROUTES } from "@/lib/routes";
 
@@ -84,7 +90,7 @@ export async function saveWorkingHours(
       .eq("supabaseAuthUserId", authUser.id)
       .single();
 
-    if (!user || user.role !== "ADMIN") {
+    if (!user || user.role !== UserRole.ADMIN) {
       throw new Error("Unauthorized access");
     }
 
@@ -152,7 +158,7 @@ export async function getUsers(): Promise<ActionResponse<User[]>> {
       .eq("supabaseAuthUserId", authUser.id)
       .single();
 
-    if (!user || user.role !== "ADMIN") {
+    if (!user || user.role !== UserRole.ADMIN) {
       throw new Error("Unauthorized access");
     }
 
@@ -188,7 +194,7 @@ export async function getUsers(): Promise<ActionResponse<User[]>> {
  */
 export async function updateUserRole(
   userId: string,
-  newRole: "ADMIN" | "USER"
+  newRole: UserRole
 ): Promise<ActionResponse<string>> {
   try {
     const supabase = await createClient();
@@ -206,7 +212,7 @@ export async function updateUserRole(
       .eq("supabaseAuthUserId", authUser.id)
       .single();
 
-    if (!user || user.role !== "ADMIN") {
+    if (!user || user.role !== UserRole.ADMIN) {
       throw new Error("Unauthorized access");
     }
 
@@ -277,7 +283,7 @@ export async function updateDealershipInfo(
       .eq("supabaseAuthUserId", authUser.id)
       .single();
 
-    if (!user || user.role !== "ADMIN") {
+    if (!user || user.role !== UserRole.ADMIN) {
       throw new Error("Unauthorized access");
     }
 

@@ -10,6 +10,7 @@ import { ROUTES } from "@/lib/routes";
 import { addCar } from "@/actions/cars";
 import useFetch from "@/hooks/use-fetch";
 import { carFormSchema, CarFormData } from "@/lib/schemas";
+import { CarStatusEnum as CarStatus } from "@/types";
 
 /**
  * Hook for car creation form.
@@ -41,7 +42,7 @@ export const useAddCarForm = () => {
       numberPlate: "",
       seats: "",
       description: "",
-      status: "AVAILABLE",
+      status: CarStatus.AVAILABLE,
       featured: false,
       features: [],
     },

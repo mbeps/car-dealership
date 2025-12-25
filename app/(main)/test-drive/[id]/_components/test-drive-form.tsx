@@ -43,6 +43,7 @@ import {
   SerializedCar,
   SerializedDealershipInfo,
   UserTestDrive,
+  DayOfWeekEnum,
 } from "@/types";
 import { testDriveSchema, TestDriveFormData } from "@/lib/schemas";
 import { formatCurrency } from "@/lib/helpers";
@@ -133,7 +134,10 @@ export function TestDriveForm({
   const availableTimeSlots = useMemo<TimeSlot[]>(() => {
     if (!selectedDate || !dealership?.workingHours) return [];
 
-    const selectedDayOfWeek = format(selectedDate, "EEEE").toUpperCase();
+    const selectedDayOfWeek = format(
+      selectedDate,
+      "EEEE"
+    ).toUpperCase() as DayOfWeekEnum;
 
     // Find working hours for the selected day
     const daySchedule = dealership.workingHours.find(
@@ -190,7 +194,7 @@ export function TestDriveForm({
     }
 
     // Get day of week
-    const dayOfWeek = format(day, "EEEE").toUpperCase();
+    const dayOfWeek = format(day, "EEEE").toUpperCase() as DayOfWeekEnum;
 
     // Find working hours for the day
     const daySchedule = dealership?.workingHours?.find(
