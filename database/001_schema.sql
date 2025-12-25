@@ -252,5 +252,5 @@ VALUES
   ('Gold', 'gold'),
   ('Purple', 'purple'),
   ('Pink', 'pink'),
-  ('Gunmetal', 'gunmetal'),
+  ('Gunmetal', 'gunmetal')
 ON CONFLICT ("slug") DO NOTHING;
