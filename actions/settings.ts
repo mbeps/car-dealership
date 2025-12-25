@@ -1,6 +1,6 @@
 "use server";
 
-import { createClient } from "@/lib/supabase";
+import { createClient } from "@/lib/supabase/supabase";
 import { revalidatePath } from "next/cache";
 import type { ActionResponse } from "@/types/common/action-response";
 import type { DealershipInfo } from "@/types/dealership/dealership-info";

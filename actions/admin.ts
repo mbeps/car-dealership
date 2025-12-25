@@ -1,7 +1,7 @@
 "use server";
 
 import { serializeCarData } from "@/lib/helpers/serialize-car";
-import { createClient } from "@/lib/supabase";
+import { createClient } from "@/lib/supabase/supabase";
 import { revalidatePath } from "next/cache";
 import { ROUTES } from "@/lib/routes";
 import type { AdminAuthResult } from "@/types/common/admin-auth-result";

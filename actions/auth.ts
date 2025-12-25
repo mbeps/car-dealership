@@ -1,6 +1,6 @@
 "use server";
 
-import { createClient } from "@/lib/supabase";
+import { createClient } from "@/lib/supabase/supabase";
 import type { ActionResponse } from "@/types/common/action-response";
 import type { User } from "@/types/user/user";
 import { UserRoleEnum as UserRole } from "@/enums/user-role";

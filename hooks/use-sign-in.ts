@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { createBrowserClient } from "@/lib/supabase-client";
+import { createBrowserClient } from "@/lib/supabase/supabase-client";
 import { getSiteUrl } from "@/lib/utils";
 
 interface UseSignInOptions {

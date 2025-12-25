@@ -1,7 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { createClient } from "@/lib/supabase";
+import { createClient } from "@/lib/supabase/supabase";
 import { ROUTES } from "@/lib/routes";
 import { serializeCarData } from "@/lib/helpers/serialize-car";
 import type { ActionResponse } from "@/types/common/action-response";
