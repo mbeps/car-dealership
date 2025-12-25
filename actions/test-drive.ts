@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase";
 import { ROUTES } from "@/lib/routes";
-import { serializeCarData } from "@/lib/helpers";
+import { serializeCarData } from "@/lib/helpers/serialize-car";
 import type { ActionResponse } from "@/types/common/action-response";
 import type { TestDriveFormData } from "@/types/test-drive/test-drive-form-data";
 import type { TestDriveBookingWithCar } from "@/types/test-drive/test-drive-booking-with-car";

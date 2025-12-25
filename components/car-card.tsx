@@ -11,7 +11,7 @@ import { toggleSavedCar } from "@/actions/car-listing";
 import { useAuth } from "@/lib/auth-context";
 import { useRouter } from "next/navigation";
 import useFetch from "@/hooks/use-fetch";
-import { formatCurrency } from "@/lib/helpers";
+import { formatCurrency } from "@/lib/helpers/format-currency";
 import { ROUTES } from "@/lib/routes";
 import type { SerializedCar } from "@/types/car/serialized-car";
 

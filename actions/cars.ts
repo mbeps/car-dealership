@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { v4 as uuidv4 } from "uuid";
 import { ROUTES } from "@/lib/routes";
 import { createClient, createAdminClient } from "@/lib/supabase";
-import { serializeCarData } from "@/lib/helpers";
+import { serializeCarData } from "@/lib/helpers/serialize-car";
 import type { ActionResponse } from "@/types/common/action-response";
 import type { SerializedCar } from "@/types/car/serialized-car";
 import { UserRoleEnum as UserRole } from "@/enums/user-role";

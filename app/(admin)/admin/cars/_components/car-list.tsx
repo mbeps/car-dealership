@@ -47,7 +47,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import useFetch from "@/hooks/use-fetch";
 import { useCarAdmin } from "@/hooks/use-car-admin";
 import { getCars } from "@/actions/cars";
-import { formatCurrency } from "@/lib/helpers";
+import { formatCurrency } from "@/lib/helpers/format-currency";
 import Image from "next/image";
 import { SerializedCar } from "@/types/car/serialized-car";
 import { CarStatusEnum as CarStatus } from "@/enums/car-status";

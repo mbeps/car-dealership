@@ -1,4 +1,5 @@
-import { formatCurrency, serializeCarData } from "@/lib/helpers";
+import { formatCurrency } from "@/lib/helpers/format-currency";
+import { serializeCarData } from "@/lib/helpers/serialize-car";
 import type { RawSupabaseCar } from "@/types/car/raw-supabase-car";
 import { CarStatusEnum } from "@/enums/car-status";
 

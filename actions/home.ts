@@ -1,7 +1,7 @@
 "use server";
 
 import { createClient } from "@/lib/supabase";
-import { serializeCarData } from "@/lib/helpers";
+import { serializeCarData } from "@/lib/helpers/serialize-car";
 import type { SerializedCar } from "@/types/car/serialized-car";
 import { CarStatusEnum as CarStatus } from "@/enums/car-status";
 

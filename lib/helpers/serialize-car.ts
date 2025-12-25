@@ -5,11 +5,6 @@ import { SerializedCar } from "@/types/car/serialized-car";
  * Normalizes car data from Supabase for client components.
  * Converts numeric strings to numbers, handles date serialization.
  * Flattens nested make/color relations into top-level fields.
- *
- * @param car - Raw car data from Supabase query
- * @param wishlisted - Whether user has saved this car
- * @returns Serialized car with proper types
- * @see SerializedCar - Return type
  */
 export function serializeCarData(
   car: RawSupabaseCar,
@@ -24,7 +19,8 @@ export function serializeCarData(
     carColorId: car.carColorId ?? carColorRelation?.id ?? "",
     color: car.color ?? carColorRelation?.name ?? "",
   };
-  const { carMake, CarMake, carColor, CarColor, ...rest } = normalizedCar;
+  const { carMake, CarMake, carColor, CarColor, ...rest } =
+    normalizedCar as any;
 
   // Prevent unused var warning
   void carMake;
@@ -48,21 +44,5 @@ export function serializeCarData(
         ? rest.updatedAt
         : rest.updatedAt.toISOString(),
     wishlisted: wishlisted ?? rest.wishlisted ?? false,
-  };
-}
-
-/**
- * Formats number as GBP currency.
- * No decimal places for car prices.
- *
- * @param amount - Numeric amount
- * @returns Formatted currency string (e.g., £25,000)
- */
-export function formatCurrency(amount: number): string {
-  return new Intl.NumberFormat("en-GB", {
-    style: "currency",
-    currency: "GBP",
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(amount);
+  } as SerializedCar;
 }

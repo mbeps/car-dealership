@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { CarFiltersData } from "@/types/filters/car-filters-data";
-import { formatCurrency } from "@/lib/helpers";
+import { formatCurrency } from "@/lib/helpers/format-currency";
 
 interface CurrentFilters {
   make: string;

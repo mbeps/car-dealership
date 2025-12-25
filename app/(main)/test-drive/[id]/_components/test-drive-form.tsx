@@ -44,7 +44,7 @@ import { SerializedDealershipInfo } from "@/types/dealership/serialized-dealersh
 import { UserTestDrive } from "@/types/test-drive/user-test-drive";
 import { DayOfWeekEnum } from "@/enums/day-of-week";
 import { testDriveSchema, TestDriveFormData } from "@/schemas/test-drive";
-import { formatCurrency } from "@/lib/helpers";
+import { formatCurrency } from "@/lib/helpers/format-currency";
 import Image from "next/image";
 
 interface BookingDetails {
