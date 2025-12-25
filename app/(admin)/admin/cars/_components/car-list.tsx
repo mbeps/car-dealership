@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { ROUTES } from "@/lib/routes";
+import { ROUTES } from "@/constants/routes";
 import {
   Plus,
   Search,
@@ -47,10 +47,10 @@ import { Card, CardContent } from "@/components/ui/card";
 import useFetch from "@/hooks/use-fetch";
 import { useCarAdmin } from "@/hooks/use-car-admin";
 import { getCars } from "@/actions/cars";
-import { formatCurrency } from "@/lib/helpers";
+import { formatCurrency } from "@/lib/helpers/format-currency";
 import Image from "next/image";
-import { SerializedCar } from "@/types";
-import { CarStatusEnum as CarStatus } from "@/types";
+import { SerializedCar } from "@/types/car/serialized-car";
+import { CarStatusEnum as CarStatus } from "@/enums/car-status";
 
 /**
  * Admin car management table.
@@ -136,19 +136,19 @@ export const CarsList = () => {
   // Get status badge color
   const getStatusBadge = (status: string) => {
     switch (status) {
-      case "AVAILABLE":
+      case CarStatus.AVAILABLE:
         return (
           <Badge className="bg-green-100 text-green-800 hover:bg-green-100">
             Available
           </Badge>
         );
-      case "UNAVAILABLE":
+      case CarStatus.UNAVAILABLE:
         return (
           <Badge className="bg-amber-100 text-amber-800 hover:bg-amber-100">
             Unavailable
           </Badge>
         );
-      case "SOLD":
+      case CarStatus.SOLD:
         return (
           <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-100">
             Sold
@@ -288,7 +288,8 @@ export const CarsList = () => {
                                 )
                               }
                               disabled={
-                                car.status === "AVAILABLE" || updatingStatus
+                                car.status === CarStatus.AVAILABLE ||
+                                updatingStatus
                               }
                             >
                               Set Available
@@ -301,7 +302,8 @@ export const CarsList = () => {
                                 )
                               }
                               disabled={
-                                car.status === "UNAVAILABLE" || updatingStatus
+                                car.status === CarStatus.UNAVAILABLE ||
+                                updatingStatus
                               }
                             >
                               Set Unavailable
@@ -310,7 +312,9 @@ export const CarsList = () => {
                               onClick={() =>
                                 handleStatusUpdateClick(car, CarStatus.SOLD)
                               }
-                              disabled={car.status === "SOLD" || updatingStatus}
+                              disabled={
+                                car.status === CarStatus.SOLD || updatingStatus
+                              }
                             >
                               Mark as Sold
                             </DropdownMenuItem>

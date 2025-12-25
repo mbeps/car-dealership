@@ -1,7 +1,8 @@
 "use server";
 
-import { createClient } from "@/lib/supabase";
-import { ActionResponse, CarColorOption } from "@/types";
+import { createClient } from "@/lib/supabase/supabase";
+import type { ActionResponse } from "@/types/common/action-response";
+import type { CarColorOption } from "@/types/car-color/car-color-option";
 
 /**
  * Fetches all car colors for form comboboxes.

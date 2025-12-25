@@ -3,8 +3,15 @@ import { createServerClient } from "@supabase/ssr";
 import type { CookieOptions } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
-import { getSupabasePublishableKey, getSupabaseUrl } from "./lib/supabase-env";
-import { PROTECTED_ROUTES, ROUTES, createSignInRedirect } from "./lib/routes";
+import {
+  getSupabasePublishableKey,
+  getSupabaseUrl,
+} from "./lib/supabase/supabase-env";
+import {
+  PROTECTED_ROUTES,
+  ROUTES,
+  createSignInRedirect,
+} from "./constants/routes";
 
 // Protected routes that require authentication
 const protectedRoutes = PROTECTED_ROUTES;

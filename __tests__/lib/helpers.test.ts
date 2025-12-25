@@ -1,5 +1,7 @@
-import { formatCurrency, serializeCarData } from "@/lib/helpers";
-import type { RawSupabaseCar } from "@/types";
+import { formatCurrency } from "@/lib/helpers/format-currency";
+import { serializeCarData } from "@/lib/helpers/serialize-car";
+import type { RawSupabaseCar } from "@/types/car/raw-supabase-car";
+import { CarStatusEnum } from "@/enums/car-status";
 
 describe("serializeCarData", () => {
   it("normalizes nested relations and string-based numeric fields", () => {
@@ -68,7 +70,7 @@ describe("serializeCarData", () => {
       bodyType: "SUV",
       numberPlate: "ABC123",
       description: "Test car",
-      status: "AVAILABLE",
+      status: CarStatusEnum.AVAILABLE,
       featured: false,
       features: [],
       images: [],
@@ -98,7 +100,7 @@ describe("serializeCarData", () => {
       bodyType: "Sedan",
       numberPlate: "XYZ789",
       description: "",
-      status: "AVAILABLE",
+      status: CarStatusEnum.AVAILABLE,
       featured: false,
       features: [],
       images: [],

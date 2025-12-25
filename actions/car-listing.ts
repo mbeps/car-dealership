@@ -1,25 +1,25 @@
 "use server";
 
-import { serializeCarData } from "@/lib/helpers";
-import { createClient } from "@/lib/supabase";
+import { serializeCarData } from "@/lib/helpers/serialize-car";
+import { createClient } from "@/lib/supabase/supabase";
 import { revalidatePath } from "next/cache";
-import { ROUTES } from "@/lib/routes";
+import { ROUTES } from "@/constants/routes";
 import type {
   SupabaseClient,
   User as SupabaseAuthUser,
 } from "@supabase/supabase-js";
-import {
-  ActionResponse,
-  CarFiltersData,
-  SerializedCar,
-  CarFilters,
-  PaginationInfo,
-  UserTestDrive,
-  SerializedDealershipInfo,
-  User as DbUser,
-  CarMakeOption,
-  CarColorOption,
-} from "@/types";
+import type { ActionResponse } from "@/types/common/action-response";
+import type { CarFiltersData } from "@/types/filters/car-filters-data";
+import type { SerializedCar } from "@/types/car/serialized-car";
+import type { CarFilters } from "@/types/filters/car-filters";
+import type { PaginationInfo } from "@/types/common/pagination-info";
+import type { UserTestDrive } from "@/types/test-drive/user-test-drive";
+import type { SerializedDealershipInfo } from "@/types/dealership/serialized-dealership-info";
+import type { User as DbUser } from "@/types/user/user";
+import type { CarMakeOption } from "@/types/car-make/car-make-option";
+import type { CarColorOption } from "@/types/car-color/car-color-option";
+import { BookingStatusEnum as BookingStatus } from "@/enums/booking-status";
+import { CarStatusEnum as CarStatus } from "@/enums/car-status";
 
 type DatabaseClient = SupabaseClient;
 
@@ -211,34 +211,34 @@ export async function getCarFilters(): Promise<ActionResponse<CarFiltersData>> {
         carColor:CarColor(id, name, slug)
       `
       )
-      .eq("status", "AVAILABLE");
+      .eq("status", CarStatus.AVAILABLE);
 
     // Get unique body types
     const { data: bodyTypes } = await supabase
       .from("Car")
       .select("bodyType")
-      .eq("status", "AVAILABLE")
+      .eq("status", CarStatus.AVAILABLE)
       .order("bodyType", { ascending: true });
 
     // Get unique fuel types
     const { data: fuelTypes } = await supabase
       .from("Car")
       .select("fuelType")
-      .eq("status", "AVAILABLE")
+      .eq("status", CarStatus.AVAILABLE)
       .order("fuelType", { ascending: true });
 
     // Get unique transmissions
     const { data: transmissions } = await supabase
       .from("Car")
       .select("transmission")
-      .eq("status", "AVAILABLE")
+      .eq("status", CarStatus.AVAILABLE)
       .order("transmission", { ascending: true });
 
     // Get min and max prices
     const { data: priceData } = await supabase
       .from("Car")
       .select("price")
-      .eq("status", "AVAILABLE");
+      .eq("status", CarStatus.AVAILABLE);
 
     const prices =
       priceData?.map((car) => parseFloat(car.price.toString())) || [];
@@ -249,7 +249,7 @@ export async function getCarFilters(): Promise<ActionResponse<CarFiltersData>> {
     const { data: mileageData } = await supabase
       .from("Car")
       .select("mileage")
-      .eq("status", "AVAILABLE");
+      .eq("status", CarStatus.AVAILABLE);
 
     const mileages = mileageData?.map((car) => car.mileage) || [];
     const minMileage = mileages.length > 0 ? Math.min(...mileages) : 0;
@@ -259,7 +259,7 @@ export async function getCarFilters(): Promise<ActionResponse<CarFiltersData>> {
     const { data: yearData } = await supabase
       .from("Car")
       .select("year")
-      .eq("status", "AVAILABLE");
+      .eq("status", CarStatus.AVAILABLE);
 
     const currentYear = new Date().getFullYear();
     const years = yearData?.map((car) => car.year) || [];
@@ -431,7 +431,7 @@ export async function getCars(
       `,
         { count: "exact" }
       )
-      .eq("status", "AVAILABLE");
+      .eq("status", CarStatus.AVAILABLE);
 
     // Add search filter
     if (search) {
@@ -725,7 +725,11 @@ export async function getCarById(carId: string): Promise<
         .select("*")
         .eq("carId", carId)
         .eq("userId", dbUser.id)
-        .in("status", ["PENDING", "CONFIRMED", "COMPLETED"])
+        .in("status", [
+          BookingStatus.PENDING,
+          BookingStatus.CONFIRMED,
+          BookingStatus.COMPLETED,
+        ])
         .order("createdAt", { ascending: false })
         .limit(1)
         .single();
@@ -755,7 +759,7 @@ export async function getCarById(carId: string): Promise<
       .from("TestDriveBooking")
       .select("bookingDate, startTime, endTime")
       .eq("carId", carId)
-      .in("status", ["PENDING", "CONFIRMED"])
+      .in("status", [BookingStatus.PENDING, BookingStatus.CONFIRMED])
       .gte("bookingDate", new Date().toISOString().split("T")[0]);
 
     return {

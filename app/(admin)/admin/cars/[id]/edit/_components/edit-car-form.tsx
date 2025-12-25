@@ -6,7 +6,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
-import { ROUTES } from "@/lib/routes";
+import { ROUTES } from "@/constants/routes";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -18,8 +18,10 @@ import {
 } from "@/components/ui/card";
 import { updateCar } from "@/actions/cars";
 import useFetch from "@/hooks/use-fetch";
-import { carFormSchema, CarFormData } from "@/lib/schemas";
-import { CarColorOption, CarMakeOption, SerializedCar } from "@/types";
+import { carFormSchema, CarFormData } from "@/schemas/car-form";
+import { CarColorOption } from "@/types/car-color/car-color-option";
+import { CarMakeOption } from "@/types/car-make/car-make-option";
+import { SerializedCar } from "@/types/car/serialized-car";
 import { CarFormFields } from "@/components/car-form";
 
 interface EditCarFormProps {

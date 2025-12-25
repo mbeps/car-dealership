@@ -13,10 +13,10 @@ import {
 } from "@/components/ui/card";
 import Link from "next/link";
 import { Loader2 } from "lucide-react";
-import { ROUTES } from "@/lib/routes";
+import { ROUTES } from "@/constants/routes";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { requestPasswordReset } from "@/actions/auth";
-import { forgotPasswordSchema } from "@/lib/schemas";
+import { forgotPasswordSchema } from "@/schemas/forgot-password";
 
 /**
  * Forgot password page for requesting password reset.

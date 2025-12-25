@@ -5,11 +5,12 @@ import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
-import { ROUTES } from "@/lib/routes";
+import { ROUTES } from "@/constants/routes";
 
 import { addCar } from "@/actions/cars";
 import useFetch from "@/hooks/use-fetch";
-import { carFormSchema, CarFormData } from "@/lib/schemas";
+import { carFormSchema, CarFormData } from "@/schemas/car-form";
+import { CarStatusEnum as CarStatus } from "@/enums/car-status";
 
 /**
  * Hook for car creation form.
@@ -41,7 +42,7 @@ export const useAddCarForm = () => {
       numberPlate: "",
       seats: "",
       description: "",
-      status: "AVAILABLE",
+      status: CarStatus.AVAILABLE,
       featured: false,
       features: [],
     },

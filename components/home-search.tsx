@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
-import { createCarSearchUrl } from "@/lib/routes";
+import { createCarSearchUrl } from "@/constants/routes";
 
 export function HomeSearch() {
   const router = useRouter();

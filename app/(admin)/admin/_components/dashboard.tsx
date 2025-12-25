@@ -14,7 +14,8 @@ import {
   XCircle,
   PoundSterling,
 } from "lucide-react";
-import { ActionResponse, DashboardData } from "@/types";
+import { ActionResponse } from "@/types/common/action-response";
+import { DashboardData } from "@/types/common/dashboard-data";
 
 /**
  * Admin dashboard with KPI cards and charts.

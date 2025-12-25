@@ -8,10 +8,10 @@ import React, {
   useState,
 } from "react";
 import { User } from "@supabase/supabase-js";
-import { createBrowserClient } from "@/lib/supabase-client";
+import { createBrowserClient } from "@/lib/supabase/supabase-client";
 import { useRouter } from "next/navigation";
 import { SignInModal } from "@/components/sign-in-modal";
-import { ROUTES } from "@/lib/routes";
+import { ROUTES } from "@/constants/routes";
 
 interface AuthContextType {
   user: User | null;

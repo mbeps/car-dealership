@@ -11,7 +11,7 @@ import {
   CheckCircle2,
   Loader2,
 } from "lucide-react";
-import { ROUTES } from "@/lib/routes";
+import { ROUTES } from "@/constants/routes";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { Card, CardContent } from "@/components/ui/card";
@@ -39,13 +39,12 @@ import { cn } from "@/lib/utils";
 import { bookTestDrive } from "@/actions/test-drive";
 import { toast } from "sonner";
 import useFetch from "@/hooks/use-fetch";
-import {
-  SerializedCar,
-  SerializedDealershipInfo,
-  UserTestDrive,
-} from "@/types";
-import { testDriveSchema, TestDriveFormData } from "@/lib/schemas";
-import { formatCurrency } from "@/lib/helpers";
+import { SerializedCar } from "@/types/car/serialized-car";
+import { SerializedDealershipInfo } from "@/types/dealership/serialized-dealership-info";
+import { UserTestDrive } from "@/types/test-drive/user-test-drive";
+import { DayOfWeekEnum } from "@/enums/day-of-week";
+import { testDriveSchema, TestDriveFormData } from "@/schemas/test-drive";
+import { formatCurrency } from "@/lib/helpers/format-currency";
 import Image from "next/image";
 
 interface BookingDetails {
@@ -133,7 +132,10 @@ export function TestDriveForm({
   const availableTimeSlots = useMemo<TimeSlot[]>(() => {
     if (!selectedDate || !dealership?.workingHours) return [];
 
-    const selectedDayOfWeek = format(selectedDate, "EEEE").toUpperCase();
+    const selectedDayOfWeek = format(
+      selectedDate,
+      "EEEE"
+    ).toUpperCase() as DayOfWeekEnum;
 
     // Find working hours for the selected day
     const daySchedule = dealership.workingHours.find(
@@ -190,7 +192,7 @@ export function TestDriveForm({
     }
 
     // Get day of week
-    const dayOfWeek = format(day, "EEEE").toUpperCase();
+    const dayOfWeek = format(day, "EEEE").toUpperCase() as DayOfWeekEnum;
 
     // Find working hours for the day
     const daySchedule = dealership?.workingHours?.find(

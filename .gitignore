@@ -42,3 +42,5 @@ next-env.d.ts
 
 # agents
 AGENTS.md
+.vscode/mcp.json
+.github/copilot-instructions.md

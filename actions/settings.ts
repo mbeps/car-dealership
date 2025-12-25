@@ -1,10 +1,14 @@
 "use server";
 
-import { createClient } from "@/lib/supabase";
+import { createClient } from "@/lib/supabase/supabase";
 import { revalidatePath } from "next/cache";
-import { ActionResponse, DealershipInfo, WorkingHour, User } from "@/types";
-import { dealershipInfoSchema } from "@/lib/schemas";
-import { ROUTES } from "@/lib/routes";
+import type { ActionResponse } from "@/types/common/action-response";
+import type { DealershipInfo } from "@/types/dealership/dealership-info";
+import type { WorkingHour } from "@/types/dealership/working-hour";
+import type { User } from "@/types/user/user";
+import { UserRoleEnum as UserRole } from "@/enums/user-role";
+import { dealershipInfoSchema } from "@/schemas/dealership-info";
+import { ROUTES } from "@/constants/routes";
 
 /**
  * Fetches dealership contact info and working hours.
@@ -84,7 +88,7 @@ export async function saveWorkingHours(
       .eq("supabaseAuthUserId", authUser.id)
       .single();
 
-    if (!user || user.role !== "ADMIN") {
+    if (!user || user.role !== UserRole.ADMIN) {
       throw new Error("Unauthorized access");
     }
 
@@ -152,7 +156,7 @@ export async function getUsers(): Promise<ActionResponse<User[]>> {
       .eq("supabaseAuthUserId", authUser.id)
       .single();
 
-    if (!user || user.role !== "ADMIN") {
+    if (!user || user.role !== UserRole.ADMIN) {
       throw new Error("Unauthorized access");
     }
 
@@ -188,7 +192,7 @@ export async function getUsers(): Promise<ActionResponse<User[]>> {
  */
 export async function updateUserRole(
   userId: string,
-  newRole: "ADMIN" | "USER"
+  newRole: UserRole
 ): Promise<ActionResponse<string>> {
   try {
     const supabase = await createClient();
@@ -206,7 +210,7 @@ export async function updateUserRole(
       .eq("supabaseAuthUserId", authUser.id)
       .single();
 
-    if (!user || user.role !== "ADMIN") {
+    if (!user || user.role !== UserRole.ADMIN) {
       throw new Error("Unauthorized access");
     }
 
@@ -277,7 +281,7 @@ export async function updateDealershipInfo(
       .eq("supabaseAuthUserId", authUser.id)
       .single();
 
-    if (!user || user.role !== "ADMIN") {
+    if (!user || user.role !== UserRole.ADMIN) {
       throw new Error("Unauthorized access");
     }
 

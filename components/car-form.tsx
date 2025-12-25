@@ -34,8 +34,10 @@ import {
   CommandList,
 } from "@/components/ui/command";
 import { cn } from "@/lib/utils";
-import { CarColorOption, CarMakeOption } from "@/types";
-import { CarFormData } from "@/lib/schemas";
+import { CarColorOption } from "@/types/car-color/car-color-option";
+import { CarMakeOption } from "@/types/car-make/car-make-option";
+import { CarStatusEnum as CarStatus } from "@/enums/car-status";
+import { CarFormData } from "@/schemas/car-form";
 import { readAsDataUrl } from "@/lib/image-utils";
 
 // Predefined options
@@ -50,7 +52,11 @@ const bodyTypes = [
   "Wagon",
   "Pickup",
 ];
-const carStatuses = ["AVAILABLE", "UNAVAILABLE", "SOLD"];
+const carStatuses = [
+  CarStatus.AVAILABLE,
+  CarStatus.UNAVAILABLE,
+  CarStatus.SOLD,
+];
 
 interface CarFormFieldsProps {
   form: UseFormReturn<CarFormData>;
@@ -494,9 +500,7 @@ export function CarFormFields({
         <div className="space-y-2">
           <Label htmlFor="status">Status</Label>
           <Select
-            onValueChange={(value) =>
-              setValue("status", value as "AVAILABLE" | "UNAVAILABLE" | "SOLD")
-            }
+            onValueChange={(value) => setValue("status", value as CarStatus)}
             defaultValue={getValues("status")}
           >
             <SelectTrigger>

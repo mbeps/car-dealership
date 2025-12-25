@@ -11,8 +11,8 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ROUTES } from "@/lib/routes";
-import { createBrowserClient } from "@/lib/supabase-client";
+import { ROUTES } from "@/constants/routes";
+import { createBrowserClient } from "@/lib/supabase/supabase-client";
 import { getSiteUrl } from "@/lib/utils";
 import { Loader2 } from "lucide-react";
 import Link from "next/link";

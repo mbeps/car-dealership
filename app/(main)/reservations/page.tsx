@@ -2,7 +2,7 @@ import { getUserTestDrives } from "@/actions/test-drive";
 import { ensureProfile } from "@/actions/auth";
 import { redirect } from "next/navigation";
 import { ReservationsList } from "./_components/reservations-list";
-import { createSignInRedirect, ROUTES } from "@/lib/routes";
+import { createSignInRedirect, ROUTES } from "@/constants/routes";
 
 export const metadata = {
   title: "My Reservations | Maruf Motors",

@@ -1,8 +1,9 @@
 "use server";
 
-import { createClient } from "@/lib/supabase";
-import { serializeCarData } from "@/lib/helpers";
-import { SerializedCar } from "@/types";
+import { createClient } from "@/lib/supabase/supabase";
+import { serializeCarData } from "@/lib/helpers/serialize-car";
+import type { SerializedCar } from "@/types/car/serialized-car";
+import { CarStatusEnum as CarStatus } from "@/enums/car-status";
 
 /**
  * Retrieves featured cars for homepage.
@@ -28,7 +29,7 @@ export async function getFeaturedCars(limit = 3): Promise<SerializedCar[]> {
       `
       )
       .eq("featured", true)
-      .eq("status", "AVAILABLE")
+      .eq("status", CarStatus.AVAILABLE)
       .order("createdAt", { ascending: false })
       .limit(limit);
 

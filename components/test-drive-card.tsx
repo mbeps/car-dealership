@@ -16,9 +16,10 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { TestDriveBookingWithCar, TestDriveBookingWithUser } from "@/types";
-import { BookingStatusEnum as BookingStatus } from "@/types";
-import { ROUTES } from "@/lib/routes";
+import { TestDriveBookingWithCar } from "@/types/test-drive/test-drive-booking-with-car";
+import { TestDriveBookingWithUser } from "@/types/test-drive/test-drive-booking-with-user";
+import { BookingStatusEnum as BookingStatus } from "@/enums/booking-status";
+import { ROUTES } from "@/constants/routes";
 
 // Helper function to format time
 const formatTime = (timeString: string): string => {
@@ -32,15 +33,15 @@ const formatTime = (timeString: string): string => {
 // Helper function for status badge
 const getStatusBadge = (status: BookingStatus) => {
   switch (status) {
-    case "PENDING":
+    case BookingStatus.PENDING:
       return <Badge className="bg-amber-100 text-amber-800">Pending</Badge>;
-    case "CONFIRMED":
+    case BookingStatus.CONFIRMED:
       return <Badge className="bg-green-100 text-green-800">Confirmed</Badge>;
-    case "COMPLETED":
+    case BookingStatus.COMPLETED:
       return <Badge className="bg-blue-100 text-blue-800">Completed</Badge>;
-    case "CANCELLED":
+    case BookingStatus.CANCELLED:
       return <Badge className="bg-gray-100 text-gray-800">Cancelled</Badge>;
-    case "NO_SHOW":
+    case BookingStatus.NO_SHOW:
       return <Badge className="bg-red-100 text-red-800">No Show</Badge>;
     default:
       return <Badge variant="outline">{status}</Badge>;
@@ -163,8 +164,8 @@ export function TestDriveCard({
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>
               </Button>
-              {(booking.status === "PENDING" ||
-                booking.status === "CONFIRMED") && (
+              {(booking.status === BookingStatus.PENDING ||
+                booking.status === BookingStatus.CONFIRMED) && (
                 <Button
                   variant="destructive"
                   size="sm"

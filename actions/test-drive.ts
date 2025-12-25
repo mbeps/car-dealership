@@ -1,15 +1,16 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { createClient } from "@/lib/supabase";
-import { ROUTES } from "@/lib/routes";
-import { serializeCarData } from "@/lib/helpers";
-import {
-  ActionResponse,
-  TestDriveFormData,
-  TestDriveBookingWithCar,
-  TestDriveBooking,
-} from "@/types";
+import { createClient } from "@/lib/supabase/supabase";
+import { ROUTES } from "@/constants/routes";
+import { serializeCarData } from "@/lib/helpers/serialize-car";
+import type { ActionResponse } from "@/types/common/action-response";
+import type { TestDriveFormData } from "@/types/test-drive/test-drive-form-data";
+import type { TestDriveBookingWithCar } from "@/types/test-drive/test-drive-booking-with-car";
+import type { TestDriveBooking } from "@/types/test-drive/test-drive-booking";
+import { UserRoleEnum as UserRole } from "@/enums/user-role";
+import { CarStatusEnum as CarStatus } from "@/enums/car-status";
+import { BookingStatusEnum as BookingStatus } from "@/enums/booking-status";
 
 /**
  * Creates test drive booking from user form.
@@ -49,7 +50,7 @@ export async function bookTestDrive(
     if (!user) throw new Error("User not found in database");
 
     // Prevent admins from making bookings through the regular form
-    if (user.role === "ADMIN") {
+    if (user.role === UserRole.ADMIN) {
       throw new Error(
         "Admins cannot book test drives. Please use the admin panel to manage bookings."
       );
@@ -60,7 +61,7 @@ export async function bookTestDrive(
       .from("Car")
       .select("*")
       .eq("id", carId)
-      .eq("status", "AVAILABLE")
+      .eq("status", CarStatus.AVAILABLE)
       .single();
 
     if (!car) throw new Error("Car not available for test drive");
@@ -72,7 +73,7 @@ export async function bookTestDrive(
       .eq("carId", carId)
       .eq("bookingDate", bookingDate)
       .eq("startTime", startTime)
-      .in("status", ["PENDING", "CONFIRMED"])
+      .in("status", [BookingStatus.PENDING, BookingStatus.CONFIRMED])
       .single();
 
     if (existingBooking) {
@@ -92,7 +93,7 @@ export async function bookTestDrive(
         startTime,
         endTime,
         notes: notes || null,
-        status: "PENDING",
+        status: BookingStatus.PENDING,
       })
       .select()
       .single();
@@ -260,7 +261,7 @@ export async function cancelTestDrive(
     }
 
     // Check if user owns this booking
-    if (booking.userId !== user.id && user.role !== "ADMIN") {
+    if (booking.userId !== user.id && user.role !== UserRole.ADMIN) {
       return {
         success: false,
         error: "Unauthorized to cancel this booking",
@@ -268,14 +269,14 @@ export async function cancelTestDrive(
     }
 
     // Check if booking can be cancelled
-    if (booking.status === "CANCELLED") {
+    if (booking.status === BookingStatus.CANCELLED) {
       return {
         success: false,
         error: "Booking is already cancelled",
       };
     }
 
-    if (booking.status === "COMPLETED") {
+    if (booking.status === BookingStatus.COMPLETED) {
       return {
         success: false,
         error: "Cannot cancel a completed booking",
@@ -285,7 +286,7 @@ export async function cancelTestDrive(
     // Update the booking status
     const { error: updateError } = await supabase
       .from("TestDriveBooking")
-      .update({ status: "CANCELLED" })
+      .update({ status: BookingStatus.CANCELLED })
       .eq("id", bookingId);
 
     if (updateError) throw updateError;

@@ -54,9 +54,15 @@ import {
   updateUserRole,
   updateDealershipInfo,
 } from "@/actions/settings";
-import { WorkingHourInput, User, DayOfWeekEnum } from "@/types";
+import { WorkingHourInput } from "@/types/dealership/working-hour-input";
+import { User } from "@/types/user/user";
+import { DayOfWeekEnum } from "@/enums/day-of-week";
+import { UserRoleEnum as UserRole } from "@/enums/user-role";
 import { useAuth } from "@/lib/auth-context";
-import { dealershipInfoSchema, DealershipInfoFormData } from "@/lib/schemas";
+import {
+  dealershipInfoSchema,
+  DealershipInfoFormData,
+} from "@/schemas/dealership-info";
 
 // Day names for display
 const DAYS: Array<{ value: DayOfWeekEnum; label: string }> = [
@@ -171,7 +177,7 @@ export const SettingsForm = () => {
               dayOfWeek: day.value,
               openTime: "09:00",
               closeTime: "18:00",
-              isOpen: day.value !== "SUNDAY",
+              isOpen: day.value !== DayOfWeekEnum.SUNDAY,
             };
           });
 
@@ -227,7 +233,7 @@ export const SettingsForm = () => {
   // Make user admin
   const handleMakeAdmin = async () => {
     if (!userToPromote) return;
-    const result = await updateRole(userToPromote.id, "ADMIN");
+    const result = await updateRole(userToPromote.id, UserRole.ADMIN);
     if (result?.success) {
       toast.success("User role updated successfully");
       fetchUsers();
@@ -239,7 +245,7 @@ export const SettingsForm = () => {
   // Remove admin privileges
   const handleRemoveAdmin = async () => {
     if (!userToDemote) return;
-    const result = await updateRole(userToDemote.id, "USER");
+    const result = await updateRole(userToDemote.id, UserRole.USER);
     if (result?.success) {
       toast.success("User role updated successfully");
       fetchUsers();
@@ -542,7 +548,7 @@ export const SettingsForm = () => {
                             <TableCell>
                               <Badge
                                 className={
-                                  user.role === "ADMIN"
+                                  user.role === UserRole.ADMIN
                                     ? "bg-green-800"
                                     : "bg-gray-800"
                                 }
@@ -551,7 +557,7 @@ export const SettingsForm = () => {
                               </Badge>
                             </TableCell>
                             <TableCell className="text-right">
-                              {user.role === "ADMIN" ? (
+                              {user.role === UserRole.ADMIN ? (
                                 <Button
                                   variant="outline"
                                   size="sm"

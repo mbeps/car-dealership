@@ -2,12 +2,13 @@
 
 import { revalidatePath } from "next/cache";
 import { v4 as uuidv4 } from "uuid";
-import { ROUTES } from "@/lib/routes";
-import { createClient, createAdminClient } from "@/lib/supabase";
-import { serializeCarData } from "@/lib/helpers";
-import { ActionResponse, SerializedCar } from "@/types";
-
-type CarStatus = "AVAILABLE" | "UNAVAILABLE" | "SOLD";
+import { ROUTES } from "@/constants/routes";
+import { createClient, createAdminClient } from "@/lib/supabase/supabase";
+import { serializeCarData } from "@/lib/helpers/serialize-car";
+import type { ActionResponse } from "@/types/common/action-response";
+import type { SerializedCar } from "@/types/car/serialized-car";
+import { UserRoleEnum as UserRole } from "@/enums/user-role";
+import { CarStatusEnum as CarStatus } from "@/enums/car-status";
 
 const MAX_IMAGE_SIZE_MB = 1;
 const MAX_IMAGE_SIZE_BYTES = MAX_IMAGE_SIZE_MB * 1024 * 1024;
@@ -152,7 +153,7 @@ export async function addCar({
       .eq("supabaseAuthUserId", authUser.id)
       .single();
 
-    if (!user || user.role !== "ADMIN") throw new Error("Unauthorized");
+    if (!user || user.role !== UserRole.ADMIN) throw new Error("Unauthorized");
 
     // Validate image sizes
     validateImageSizes(images);
@@ -496,7 +497,7 @@ export async function updateCar({
       .eq("supabaseAuthUserId", authUser.id)
       .single();
 
-    if (!user || user.role !== "ADMIN") throw new Error("Unauthorized");
+    if (!user || user.role !== UserRole.ADMIN) throw new Error("Unauthorized");
 
     // Get current car data
     const { data: existingCar, error: fetchError } = await supabase

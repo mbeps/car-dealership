@@ -2,7 +2,7 @@ import { getSavedCars } from "@/actions/car-listing";
 import { SavedCarsList } from "./_components/saved-cars-list";
 import { ensureProfile } from "@/actions/auth";
 import { redirect } from "next/navigation";
-import { createSignInRedirect, ROUTES } from "@/lib/routes";
+import { createSignInRedirect, ROUTES } from "@/constants/routes";
 
 export const metadata = {
   title: "Saved Cars | Maruf Motors",

@@ -4,8 +4,7 @@ import { useEffect } from "react";
 import { toast } from "sonner";
 import useFetch from "@/hooks/use-fetch";
 import { deleteCar, updateCarStatus } from "@/actions/cars";
-
-type CarStatus = "AVAILABLE" | "SOLD" | "UNAVAILABLE";
+import { CarStatusEnum as CarStatus } from "@/enums/car-status";
 
 interface UseCarAdminOptions {
   onDeleteSuccess?: () => void;

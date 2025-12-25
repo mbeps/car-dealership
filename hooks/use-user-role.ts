@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { getCurrentUserRole } from "@/actions/auth";
 import { useAuth } from "@/lib/auth-context";
+import { UserRoleEnum as UserRole } from "@/enums/user-role";
 
 /**
  * Hook to fetch and track user role.
@@ -15,7 +16,7 @@ import { useAuth } from "@/lib/auth-context";
  */
 export function useUserRole() {
   const { user, isSignedIn } = useAuth();
-  const [role, setRole] = useState<"USER" | "ADMIN" | null>(null);
+  const [role, setRole] = useState<UserRole | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -44,8 +45,8 @@ export function useUserRole() {
 
   return {
     role,
-    isAdmin: role === "ADMIN",
-    isUser: role === "USER",
+    isAdmin: role === UserRole.ADMIN,
+    isUser: role === UserRole.USER,
     loading,
   };
 }

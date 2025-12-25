@@ -2,7 +2,7 @@ import { getCarById } from "@/actions/car-listing";
 import { notFound, redirect } from "next/navigation";
 import { TestDriveForm } from "./_components/test-drive-form";
 import { isCurrentUserAdmin } from "@/actions/auth";
-import { ROUTES } from "@/lib/routes";
+import { ROUTES } from "@/constants/routes";
 
 export async function generateMetadata() {
   return {
