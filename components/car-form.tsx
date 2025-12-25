@@ -37,7 +37,7 @@ import { cn } from "@/lib/utils";
 import { CarColorOption } from "@/types/car-color/car-color-option";
 import { CarMakeOption } from "@/types/car-make/car-make-option";
 import { CarStatusEnum as CarStatus } from "@/enums/car-status";
-import { CarFormData } from "@/lib/schemas";
+import { CarFormData } from "@/schemas/car-form";
 import { readAsDataUrl } from "@/lib/image-utils";
 
 // Predefined options

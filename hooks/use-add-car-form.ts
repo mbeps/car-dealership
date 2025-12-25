@@ -9,7 +9,7 @@ import { ROUTES } from "@/lib/routes";
 
 import { addCar } from "@/actions/cars";
 import useFetch from "@/hooks/use-fetch";
-import { carFormSchema, CarFormData } from "@/lib/schemas";
+import { carFormSchema, CarFormData } from "@/schemas/car-form";
 import { CarStatusEnum as CarStatus } from "@/enums/car-status";
 
 /**

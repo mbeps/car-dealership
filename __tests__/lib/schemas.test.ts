@@ -1,10 +1,8 @@
-import {
-  carFormSchema,
-  dealershipInfoSchema,
-  forgotPasswordSchema,
-  testDriveSchema,
-  updatePasswordSchema,
-} from "@/lib/schemas";
+import { carFormSchema } from "@/schemas/car-form";
+import { dealershipInfoSchema } from "@/schemas/dealership-info";
+import { forgotPasswordSchema } from "@/schemas/forgot-password";
+import { testDriveSchema } from "@/schemas/test-drive";
+import { updatePasswordSchema } from "@/schemas/update-password";
 import { CarStatusEnum } from "@/enums/car-status";
 
 const baseCarFormData = {

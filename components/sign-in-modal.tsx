@@ -17,7 +17,7 @@ import { useSignIn } from "@/hooks/use-sign-in";
 import { ROUTES } from "@/lib/routes";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { requestPasswordReset } from "@/actions/auth";
-import { forgotPasswordSchema } from "@/lib/schemas";
+import { forgotPasswordSchema } from "@/schemas/forgot-password";
 
 /**
  * Props for the SignInModal component.

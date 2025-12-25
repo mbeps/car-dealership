@@ -7,7 +7,7 @@ import type { DealershipInfo } from "@/types/dealership/dealership-info";
 import type { WorkingHour } from "@/types/dealership/working-hour";
 import type { User } from "@/types/user/user";
 import { UserRoleEnum as UserRole } from "@/enums/user-role";
-import { dealershipInfoSchema } from "@/lib/schemas";
+import { dealershipInfoSchema } from "@/schemas/dealership-info";
 import { ROUTES } from "@/lib/routes";
 
 /**

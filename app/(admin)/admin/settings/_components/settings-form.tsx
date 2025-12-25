@@ -59,7 +59,10 @@ import { User } from "@/types/user/user";
 import { DayOfWeekEnum } from "@/enums/day-of-week";
 import { UserRoleEnum as UserRole } from "@/enums/user-role";
 import { useAuth } from "@/lib/auth-context";
-import { dealershipInfoSchema, DealershipInfoFormData } from "@/lib/schemas";
+import {
+  dealershipInfoSchema,
+  DealershipInfoFormData,
+} from "@/schemas/dealership-info";
 
 // Day names for display
 const DAYS: Array<{ value: DayOfWeekEnum; label: string }> = [

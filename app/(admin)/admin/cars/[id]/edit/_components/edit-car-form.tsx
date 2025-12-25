@@ -18,7 +18,7 @@ import {
 } from "@/components/ui/card";
 import { updateCar } from "@/actions/cars";
 import useFetch from "@/hooks/use-fetch";
-import { carFormSchema, CarFormData } from "@/lib/schemas";
+import { carFormSchema, CarFormData } from "@/schemas/car-form";
 import { CarColorOption } from "@/types/car-color/car-color-option";
 import { CarMakeOption } from "@/types/car-make/car-make-option";
 import { SerializedCar } from "@/types/car/serialized-car";

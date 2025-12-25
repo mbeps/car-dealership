@@ -43,7 +43,7 @@ import { SerializedCar } from "@/types/car/serialized-car";
 import { SerializedDealershipInfo } from "@/types/dealership/serialized-dealership-info";
 import { UserTestDrive } from "@/types/test-drive/user-test-drive";
 import { DayOfWeekEnum } from "@/enums/day-of-week";
-import { testDriveSchema, TestDriveFormData } from "@/lib/schemas";
+import { testDriveSchema, TestDriveFormData } from "@/schemas/test-drive";
 import { formatCurrency } from "@/lib/helpers";
 import Image from "next/image";
 
