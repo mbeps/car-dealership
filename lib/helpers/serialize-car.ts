@@ -12,15 +12,14 @@ export function serializeCarData(
 ): SerializedCar {
   const carMakeRelation = car.carMake || car.CarMake || null;
   const carColorRelation = car.carColor || car.CarColor || null;
-  const normalizedCar = {
+  const normalizedCar: RawSupabaseCar = {
     ...car,
     carMakeId: car.carMakeId ?? carMakeRelation?.id ?? "",
     make: car.make ?? carMakeRelation?.name ?? "",
     carColorId: car.carColorId ?? carColorRelation?.id ?? "",
     color: car.color ?? carColorRelation?.name ?? "",
   };
-  const { carMake, CarMake, carColor, CarColor, ...rest } =
-    normalizedCar as any;
+  const { carMake, CarMake, carColor, CarColor, ...rest } = normalizedCar;
 
   // Prevent unused var warning
   void carMake;
