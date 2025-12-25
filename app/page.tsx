@@ -1,19 +1,21 @@
-import { ChevronRight, Car, Calendar, Shield } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { getFeaturedCars } from "@/actions/home";
+import { CarCard } from "@/components/car-card";
+import { HomeSearch } from "@/components/home-search";
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { SignedOut } from "@/lib/auth-context";
-import { getFeaturedCars } from "@/actions/home";
-import { CarCard } from "@/components/car-card";
-import { HomeSearch } from "@/components/home-search";
-import Link from "next/link";
-import Image from "next/image";
-import { bodyTypes, carMakes, faqItems } from "@/lib/data";
+import { Button } from "@/components/ui/button";
+import { bodyTypes } from "@/constants/body-types";
+import { carMakes } from "@/constants/car-makes";
+import { faqItems } from "@/constants/faq";
 import { ROUTES, createCarSearchUrl } from "@/constants/routes";
+import { SignedOut } from "@/lib/auth-context";
+import { Calendar, Car, ChevronRight, Shield } from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
 
 export default async function Home() {
   const featuredCars = await getFeaturedCars();
