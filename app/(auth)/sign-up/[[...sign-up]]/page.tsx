@@ -17,6 +17,7 @@ import Link from "next/link";
 import { Loader2 } from "lucide-react";
 import { ROUTES } from "@/lib/routes";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { getSiteUrl } from "@/lib/utils";
 
 export default function SignUpPage() {
   const [email, setEmail] = useState("");
@@ -56,7 +57,7 @@ export default function SignUpPage() {
           data: {
             full_name: fullName,
           },
-          emailRedirectTo: `${window.location.origin}/auth/callback?redirect=${redirect}`,
+          emailRedirectTo: `${getSiteUrl()}/auth/callback?redirect=${redirect}`,
         },
       });
 
@@ -84,7 +85,7 @@ export default function SignUpPage() {
       const { error } = await supabase.auth.signInWithOAuth({
         provider: "google",
         options: {
-          redirectTo: `${window.location.origin}/auth/callback?redirect=${redirect}`,
+          redirectTo: `${getSiteUrl()}/auth/callback?redirect=${redirect}`,
           queryParams: {
             access_type: "offline",
             prompt: "consent",

@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase";
 import { ActionResponse, User } from "@/types";
 import { redirect } from "next/navigation";
 import { ROUTES } from "@/lib/routes";
+import { getSiteUrl } from "@/lib/utils";
 
 /**
  * Quick admin role check for conditional rendering.
@@ -234,9 +235,7 @@ export async function requestPasswordReset(
   try {
     const supabase = await createClient();
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${
-        process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"
-      }${ROUTES.UPDATE_PASSWORD}`,
+      redirectTo: `${getSiteUrl()}${ROUTES.UPDATE_PASSWORD}`,
     });
 
     if (error) {
