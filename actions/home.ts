@@ -2,7 +2,8 @@
 
 import { createClient } from "@/lib/supabase";
 import { serializeCarData } from "@/lib/helpers";
-import { SerializedCar, CarStatusEnum as CarStatus } from "@/types";
+import type { SerializedCar } from "@/types/car/serialized-car";
+import { CarStatusEnum as CarStatus } from "@/enums/car-status";
 
 /**
  * Retrieves featured cars for homepage.

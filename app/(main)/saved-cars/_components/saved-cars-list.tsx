@@ -4,7 +4,8 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { CarCard } from "@/components/car-card";
 import { Heart } from "lucide-react";
-import { ActionResponse, SerializedCar } from "@/types";
+import { ActionResponse } from "@/types/common/action-response";
+import { SerializedCar } from "@/types/car/serialized-car";
 import { ROUTES } from "@/lib/routes";
 
 /**

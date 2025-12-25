@@ -4,15 +4,13 @@ import { serializeCarData } from "@/lib/helpers";
 import { createClient } from "@/lib/supabase";
 import { revalidatePath } from "next/cache";
 import { ROUTES } from "@/lib/routes";
-import {
-  AdminAuthResult,
-  ActionResponse,
-  TestDriveBookingWithUser,
-  DashboardData,
-  BookingStatusEnum as BookingStatus,
-  UserRoleEnum as UserRole,
-  CarStatusEnum as CarStatus,
-} from "@/types";
+import type { AdminAuthResult } from "@/types/common/admin-auth-result";
+import type { ActionResponse } from "@/types/common/action-response";
+import type { TestDriveBookingWithUser } from "@/types/test-drive/test-drive-booking-with-user";
+import type { DashboardData } from "@/types/common/dashboard-data";
+import { BookingStatusEnum as BookingStatus } from "@/enums/booking-status";
+import { UserRoleEnum as UserRole } from "@/enums/user-role";
+import { CarStatusEnum as CarStatus } from "@/enums/car-status";
 
 /**
  * Verifies admin access for protected routes.

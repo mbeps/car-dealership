@@ -1,6 +1,6 @@
 import { formatCurrency, serializeCarData } from "@/lib/helpers";
-import type { RawSupabaseCar } from "@/types";
-import { CarStatusEnum } from "@/types";
+import type { RawSupabaseCar } from "@/types/car/raw-supabase-car";
+import { CarStatusEnum } from "@/enums/car-status";
 
 describe("serializeCarData", () => {
   it("normalizes nested relations and string-based numeric fields", () => {

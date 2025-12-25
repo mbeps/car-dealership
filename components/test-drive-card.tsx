@@ -16,8 +16,9 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { TestDriveBookingWithCar, TestDriveBookingWithUser } from "@/types";
-import { BookingStatusEnum as BookingStatus } from "@/types";
+import { TestDriveBookingWithCar } from "@/types/test-drive/test-drive-booking-with-car";
+import { TestDriveBookingWithUser } from "@/types/test-drive/test-drive-booking-with-user";
+import { BookingStatusEnum as BookingStatus } from "@/enums/booking-status";
 import { ROUTES } from "@/lib/routes";
 
 // Helper function to format time

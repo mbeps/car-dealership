@@ -4,15 +4,13 @@ import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase";
 import { ROUTES } from "@/lib/routes";
 import { serializeCarData } from "@/lib/helpers";
-import {
-  ActionResponse,
-  TestDriveFormData,
-  TestDriveBookingWithCar,
-  TestDriveBooking,
-  UserRoleEnum as UserRole,
-  CarStatusEnum as CarStatus,
-  BookingStatusEnum as BookingStatus,
-} from "@/types";
+import type { ActionResponse } from "@/types/common/action-response";
+import type { TestDriveFormData } from "@/types/test-drive/test-drive-form-data";
+import type { TestDriveBookingWithCar } from "@/types/test-drive/test-drive-booking-with-car";
+import type { TestDriveBooking } from "@/types/test-drive/test-drive-booking";
+import { UserRoleEnum as UserRole } from "@/enums/user-role";
+import { CarStatusEnum as CarStatus } from "@/enums/car-status";
+import { BookingStatusEnum as BookingStatus } from "@/enums/booking-status";
 
 /**
  * Creates test drive booking from user form.

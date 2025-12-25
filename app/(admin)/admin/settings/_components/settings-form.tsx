@@ -54,12 +54,10 @@ import {
   updateUserRole,
   updateDealershipInfo,
 } from "@/actions/settings";
-import {
-  WorkingHourInput,
-  User,
-  DayOfWeekEnum,
-  UserRoleEnum as UserRole,
-} from "@/types";
+import { WorkingHourInput } from "@/types/dealership/working-hour-input";
+import { User } from "@/types/user/user";
+import { DayOfWeekEnum } from "@/enums/day-of-week";
+import { UserRoleEnum as UserRole } from "@/enums/user-role";
 import { useAuth } from "@/lib/auth-context";
 import { dealershipInfoSchema, DealershipInfoFormData } from "@/lib/schemas";
 

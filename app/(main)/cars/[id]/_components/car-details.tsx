@@ -25,14 +25,12 @@ import useFetch from "@/hooks/use-fetch";
 import { useAuth } from "@/lib/auth-context";
 import { formatCurrency } from "@/lib/helpers";
 import { ROUTES } from "@/lib/routes";
-import {
-  SerializedCar,
-  SerializedDealershipInfo,
-  SerializedWorkingHour,
-  UserTestDrive,
-  DayOfWeekEnum as DayOfWeek,
-  CarStatusEnum as CarStatus,
-} from "@/types";
+import { SerializedCar } from "@/types/car/serialized-car";
+import { SerializedDealershipInfo } from "@/types/dealership/serialized-dealership-info";
+import { SerializedWorkingHour } from "@/types/dealership/serialized-working-hour";
+import { UserTestDrive } from "@/types/test-drive/user-test-drive";
+import { DayOfWeekEnum as DayOfWeek } from "@/enums/day-of-week";
+import { CarStatusEnum as CarStatus } from "@/enums/car-status";
 import { format } from "date-fns";
 import {
   Calendar,

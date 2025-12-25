@@ -8,20 +8,18 @@ import type {
   SupabaseClient,
   User as SupabaseAuthUser,
 } from "@supabase/supabase-js";
-import {
-  ActionResponse,
-  CarFiltersData,
-  SerializedCar,
-  CarFilters,
-  PaginationInfo,
-  UserTestDrive,
-  SerializedDealershipInfo,
-  User as DbUser,
-  CarMakeOption,
-  CarColorOption,
-  BookingStatusEnum as BookingStatus,
-  CarStatusEnum as CarStatus,
-} from "@/types";
+import type { ActionResponse } from "@/types/common/action-response";
+import type { CarFiltersData } from "@/types/filters/car-filters-data";
+import type { SerializedCar } from "@/types/car/serialized-car";
+import type { CarFilters } from "@/types/filters/car-filters";
+import type { PaginationInfo } from "@/types/common/pagination-info";
+import type { UserTestDrive } from "@/types/test-drive/user-test-drive";
+import type { SerializedDealershipInfo } from "@/types/dealership/serialized-dealership-info";
+import type { User as DbUser } from "@/types/user/user";
+import type { CarMakeOption } from "@/types/car-make/car-make-option";
+import type { CarColorOption } from "@/types/car-color/car-color-option";
+import { BookingStatusEnum as BookingStatus } from "@/enums/booking-status";
+import { CarStatusEnum as CarStatus } from "@/enums/car-status";
 
 type DatabaseClient = SupabaseClient;
 

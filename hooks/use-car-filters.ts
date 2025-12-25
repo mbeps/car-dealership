@@ -2,7 +2,7 @@
 
 import { useCallback, useState } from "react";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
-import { CarFiltersData } from "@/types";
+import { CarFiltersData } from "@/types/filters/car-filters-data";
 
 /**
  * Manages car listing filters with URL sync.

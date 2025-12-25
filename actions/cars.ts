@@ -5,12 +5,10 @@ import { v4 as uuidv4 } from "uuid";
 import { ROUTES } from "@/lib/routes";
 import { createClient, createAdminClient } from "@/lib/supabase";
 import { serializeCarData } from "@/lib/helpers";
-import {
-  ActionResponse,
-  SerializedCar,
-  UserRoleEnum as UserRole,
-  CarStatusEnum as CarStatus,
-} from "@/types";
+import type { ActionResponse } from "@/types/common/action-response";
+import type { SerializedCar } from "@/types/car/serialized-car";
+import { UserRoleEnum as UserRole } from "@/enums/user-role";
+import { CarStatusEnum as CarStatus } from "@/enums/car-status";
 
 const MAX_IMAGE_SIZE_MB = 1;
 const MAX_IMAGE_SIZE_BYTES = MAX_IMAGE_SIZE_MB * 1024 * 1024;

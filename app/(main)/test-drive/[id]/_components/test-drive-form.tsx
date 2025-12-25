@@ -39,12 +39,10 @@ import { cn } from "@/lib/utils";
 import { bookTestDrive } from "@/actions/test-drive";
 import { toast } from "sonner";
 import useFetch from "@/hooks/use-fetch";
-import {
-  SerializedCar,
-  SerializedDealershipInfo,
-  UserTestDrive,
-  DayOfWeekEnum,
-} from "@/types";
+import { SerializedCar } from "@/types/car/serialized-car";
+import { SerializedDealershipInfo } from "@/types/dealership/serialized-dealership-info";
+import { UserTestDrive } from "@/types/test-drive/user-test-drive";
+import { DayOfWeekEnum } from "@/enums/day-of-week";
 import { testDriveSchema, TestDriveFormData } from "@/lib/schemas";
 import { formatCurrency } from "@/lib/helpers";
 import Image from "next/image";

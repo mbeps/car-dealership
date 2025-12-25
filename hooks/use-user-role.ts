@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { getCurrentUserRole } from "@/actions/auth";
 import { useAuth } from "@/lib/auth-context";
-import { UserRoleEnum as UserRole } from "@/types";
+import { UserRoleEnum as UserRole } from "@/enums/user-role";
 
 /**
  * Hook to fetch and track user role.

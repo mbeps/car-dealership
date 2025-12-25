@@ -6,11 +6,9 @@ import { Calendar } from "lucide-react";
 import { TestDriveCard } from "@/components/test-drive-card";
 import useFetch from "@/hooks/use-fetch";
 import { cancelTestDrive } from "@/actions/test-drive";
-import {
-  ActionResponse,
-  TestDriveBookingWithCar,
-  BookingStatusEnum as BookingStatus,
-} from "@/types";
+import { ActionResponse } from "@/types/common/action-response";
+import { TestDriveBookingWithCar } from "@/types/test-drive/test-drive-booking-with-car";
+import { BookingStatusEnum as BookingStatus } from "@/enums/booking-status";
 import { ROUTES } from "@/lib/routes";
 
 /**

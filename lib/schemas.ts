@@ -1,5 +1,5 @@
 import * as z from "zod";
-import { CarStatusEnum as CarStatus } from "@/types";
+import { CarStatusEnum as CarStatus } from "@/enums/car-status";
 
 /**
  * Validation schema for test drive booking form.

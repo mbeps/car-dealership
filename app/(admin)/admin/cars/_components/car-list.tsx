@@ -49,8 +49,8 @@ import { useCarAdmin } from "@/hooks/use-car-admin";
 import { getCars } from "@/actions/cars";
 import { formatCurrency } from "@/lib/helpers";
 import Image from "next/image";
-import { SerializedCar } from "@/types";
-import { CarStatusEnum as CarStatus } from "@/types";
+import { SerializedCar } from "@/types/car/serialized-car";
+import { CarStatusEnum as CarStatus } from "@/enums/car-status";
 
 /**
  * Admin car management table.

@@ -9,7 +9,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { CarColorOption, CarMakeOption } from "@/types";
+import { CarColorOption } from "@/types/car-color/car-color-option";
+import { CarMakeOption } from "@/types/car-make/car-make-option";
 import { CarFormFields } from "@/components/car-form";
 import { useAddCarForm } from "@/hooks/use-add-car-form";
 

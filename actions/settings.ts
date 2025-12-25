@@ -2,13 +2,11 @@
 
 import { createClient } from "@/lib/supabase";
 import { revalidatePath } from "next/cache";
-import {
-  ActionResponse,
-  DealershipInfo,
-  WorkingHour,
-  User,
-  UserRoleEnum as UserRole,
-} from "@/types";
+import type { ActionResponse } from "@/types/common/action-response";
+import type { DealershipInfo } from "@/types/dealership/dealership-info";
+import type { WorkingHour } from "@/types/dealership/working-hour";
+import type { User } from "@/types/user/user";
+import { UserRoleEnum as UserRole } from "@/enums/user-role";
 import { dealershipInfoSchema } from "@/lib/schemas";
 import { ROUTES } from "@/lib/routes";
 

@@ -19,7 +19,9 @@ import {
 import { updateCar } from "@/actions/cars";
 import useFetch from "@/hooks/use-fetch";
 import { carFormSchema, CarFormData } from "@/lib/schemas";
-import { CarColorOption, CarMakeOption, SerializedCar } from "@/types";
+import { CarColorOption } from "@/types/car-color/car-color-option";
+import { CarMakeOption } from "@/types/car-make/car-make-option";
+import { SerializedCar } from "@/types/car/serialized-car";
 import { CarFormFields } from "@/components/car-form";
 
 interface EditCarFormProps {

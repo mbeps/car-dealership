@@ -5,7 +5,7 @@ import {
   testDriveSchema,
   updatePasswordSchema,
 } from "@/lib/schemas";
-import { CarStatusEnum } from "@/types";
+import { CarStatusEnum } from "@/enums/car-status";
 
 const baseCarFormData = {
   carMakeId: "make-1",

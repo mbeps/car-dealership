@@ -1,4 +1,5 @@
-import { RawSupabaseCar, SerializedCar } from "@/types";
+import { RawSupabaseCar } from "@/types/car/raw-supabase-car";
+import { SerializedCar } from "@/types/car/serialized-car";
 
 /**
  * Normalizes car data from Supabase for client components.

@@ -34,11 +34,9 @@ import {
   CommandList,
 } from "@/components/ui/command";
 import { cn } from "@/lib/utils";
-import {
-  CarColorOption,
-  CarMakeOption,
-  CarStatusEnum as CarStatus,
-} from "@/types";
+import { CarColorOption } from "@/types/car-color/car-color-option";
+import { CarMakeOption } from "@/types/car-make/car-make-option";
+import { CarStatusEnum as CarStatus } from "@/enums/car-status";
 import { CarFormData } from "@/lib/schemas";
 import { readAsDataUrl } from "@/lib/image-utils";
 

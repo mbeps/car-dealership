@@ -7,7 +7,7 @@ import Link from "next/link";
 import { useAuth, SignedIn, SignedOut } from "@/lib/auth-context";
 import { ROUTES } from "@/lib/routes";
 import Image from "next/image";
-import { UserRoleEnum as UserRole } from "@/types";
+import { UserRoleEnum as UserRole } from "@/enums/user-role";
 import {
   DropdownMenu,
   DropdownMenuContent,

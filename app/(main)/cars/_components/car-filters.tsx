@@ -19,7 +19,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { CarFiltersData } from "@/types";
+import { CarFiltersData } from "@/types/filters/car-filters-data";
 import { useCarFilters } from "@/hooks/use-car-filters";
 
 /**

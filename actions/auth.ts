@@ -1,7 +1,9 @@
 "use server";
 
 import { createClient } from "@/lib/supabase";
-import { ActionResponse, User, UserRoleEnum as UserRole } from "@/types";
+import type { ActionResponse } from "@/types/common/action-response";
+import type { User } from "@/types/user/user";
+import { UserRoleEnum as UserRole } from "@/enums/user-role";
 import { redirect } from "next/navigation";
 import { ROUTES } from "@/lib/routes";
 import { getSiteUrl } from "@/lib/utils";
