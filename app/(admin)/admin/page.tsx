@@ -1,11 +1,12 @@
 import { getDashboardData } from "@/actions/admin";
 import { Dashboard } from "./_components/dashboard";
+import { DEALERSHIP_NAME } from "@/constants/dealership-name";
 
 export const dynamic = "force-dynamic";
 
 export const metadata = {
-  title: "Dashboard | Maruf Motors Admin",
-  description: "Admin dashboard for Maruf Motors car marketplace",
+  title: `Dashboard | ${DEALERSHIP_NAME} Admin`,
+  description: `Admin dashboard for ${DEALERSHIP_NAME} car marketplace`,
 };
 
 export default async function AdminDashboardPage() {

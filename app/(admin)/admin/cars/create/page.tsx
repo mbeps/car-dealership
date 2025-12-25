@@ -1,9 +1,10 @@
 import { AddCarForm } from "./_components/add-car-form";
+import { DEALERSHIP_NAME } from "@/constants/dealership-name";
 import { getCarMakes } from "@/actions/car-makes";
 import { getCarColors } from "@/actions/car-colors";
 
 export const metadata = {
-  title: "Add New Car | Maruf Motors Admin",
+  title: `Add New Car | ${DEALERSHIP_NAME} Admin`,
   description: "Add a new car to the marketplace",
 };
 

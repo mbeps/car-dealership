@@ -4,12 +4,13 @@ import Header from "@/components/header";
 import { AuthProvider } from "@/lib/auth-context";
 import { Toaster } from "sonner";
 import type { Metadata } from "next";
+import { DEALERSHIP_NAME } from "@/constants/dealership-name";
 import Link from "next/link";
 
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Maruf Motors",
+  title: DEALERSHIP_NAME,
   description: "Find your Dream Car",
 };
 

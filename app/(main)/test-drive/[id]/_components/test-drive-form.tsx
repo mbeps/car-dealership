@@ -41,6 +41,7 @@ import { toast } from "sonner";
 import useFetch from "@/hooks/use-fetch";
 import { SerializedCar } from "@/types/car/serialized-car";
 import { SerializedDealershipInfo } from "@/types/dealership/serialized-dealership-info";
+import { DEALERSHIP_NAME } from "@/constants/dealership-name";
 import { UserTestDrive } from "@/types/test-drive/user-test-drive";
 import { DayOfWeekEnum } from "@/enums/day-of-week";
 import { testDriveSchema, TestDriveFormData } from "@/schemas/test-drive";
@@ -310,9 +311,7 @@ export function TestDriveForm({
           <CardContent className="p-6">
             <h2 className="text-xl font-bold mb-4">Dealership Info</h2>
             <div className="text-sm">
-              <p className="font-medium">
-                {dealership?.name || "Maruf Motors"}
-              </p>
+              <p className="font-medium">{DEALERSHIP_NAME}</p>
               <p className="text-gray-600 mt-1">
                 {dealership?.address || "Address not available"}
               </p>
@@ -516,7 +515,7 @@ export function TestDriveForm({
                 </div>
                 <div className="flex justify-between">
                   <span className="font-medium">Dealership:</span>
-                  <span>{dealership?.name || "Maruf Motors"}</span>
+                  <span>{DEALERSHIP_NAME}</span>
                 </div>
               </div>
 

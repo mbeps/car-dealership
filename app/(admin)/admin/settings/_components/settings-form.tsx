@@ -296,7 +296,7 @@ export const SettingsForm = () => {
                     <Label htmlFor="name">Dealership Name</Label>
                     <Input
                       id="name"
-                      placeholder="Vehiql Motors"
+                      placeholder="Name Motors"
                       {...register("name")}
                     />
                     {errors.name && (
