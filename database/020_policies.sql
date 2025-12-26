@@ -17,6 +17,8 @@ ALTER TABLE public."UserSavedCar" ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public."TestDriveBooking" ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public."DealershipInfo" ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public."WorkingHour" ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public."HomePageContent" ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public."FAQ" ENABLE ROW LEVEL SECURITY;
 
 DROP POLICY IF EXISTS "user_read_own" ON public."User";
 DROP POLICY IF EXISTS "user_self_update" ON public."User";
@@ -270,6 +272,36 @@ CREATE POLICY "hours_admin_delete" ON public."WorkingHour"
   FOR DELETE
   TO authenticated
   USING (public.is_admin());
+
+-- HomePageContent policies -------------------------------------------------
+DROP POLICY IF EXISTS "home_content_public_read" ON public."HomePageContent";
+DROP POLICY IF EXISTS "home_content_admin_all" ON public."HomePageContent";
+
+CREATE POLICY "home_content_public_read" ON public."HomePageContent"
+  FOR SELECT
+  TO anon, authenticated
+  USING (TRUE);
+
+CREATE POLICY "home_content_admin_all" ON public."HomePageContent"
+  FOR ALL
+  TO authenticated
+  USING (public.is_admin())
+  WITH CHECK (public.is_admin());
+
+-- FAQ policies -------------------------------------------------------------
+DROP POLICY IF EXISTS "faq_public_read" ON public."FAQ";
+DROP POLICY IF EXISTS "faq_admin_all" ON public."FAQ";
+
+CREATE POLICY "faq_public_read" ON public."FAQ"
+  FOR SELECT
+  TO anon, authenticated
+  USING (TRUE);
+
+CREATE POLICY "faq_admin_all" ON public."FAQ"
+  FOR ALL
+  TO authenticated
+  USING (public.is_admin())
+  WITH CHECK (public.is_admin());
 
 -- Note: storage bucket policies must be created inside the storage schema
 -- via the Supabase Dashboard. Keep the app-level policies in sync if you

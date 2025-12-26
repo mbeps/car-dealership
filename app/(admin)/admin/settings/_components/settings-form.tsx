@@ -6,6 +6,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { DealershipInfoForm } from "./dealership-info-form";
 import { WorkingHoursForm } from "./working-hours-form";
 import { AdminUsersList } from "./admin-users-list";
+import { HomeContentForm } from "./home-content-form";
 
 /**
  * Admin settings page with tabs.
@@ -90,15 +91,7 @@ export const SettingsForm = () => {
         </TabsContent>
 
         <TabsContent value="home-data" className="space-y-6 mt-6">
-          <div className="rounded-md border p-6">
-            <h2 className="text-lg font-medium mb-2">
-              Home Data (placeholder)
-            </h2>
-            <p className="text-sm text-muted-foreground">
-              Placeholder content for Home Data settings. UI and controls will
-              be implemented later.
-            </p>
-          </div>
+          <HomeContentForm />
         </TabsContent>
       </Tabs>
     </div>

@@ -1,4 +1,5 @@
 import { getFeaturedCars } from "@/actions/home";
+import { getHomePageContent, getFAQs } from "@/actions/home-content";
 import { CarCard } from "@/components/car-card";
 import { HomeSearch } from "@/components/home-search";
 import {
@@ -10,7 +11,6 @@ import {
 import { Button } from "@/components/ui/button";
 import { bodyTypes } from "@/constants/body-types";
 import { carMakes } from "@/constants/car-makes";
-import { faqItems } from "@/constants/faq";
 import { ROUTES, createCarSearchUrl } from "@/constants/routes";
 import { SignedOut } from "@/lib/auth-context";
 import { Calendar, Car, ChevronRight, Shield } from "lucide-react";
@@ -19,6 +19,29 @@ import Link from "next/link";
 
 export default async function Home() {
   const featuredCars = await getFeaturedCars();
+  const homeContent = await getHomePageContent();
+  const faqs = await getFAQs();
+
+  const heroTitle = homeContent?.heroTitle || "Find your ideal car today.";
+  const heroSubtitle =
+    homeContent?.heroSubtitle ||
+    "Advanced Car Search and test drive from thousands of vehicles.";
+  const feature1Title = homeContent?.feature1Title || "Wide Selection";
+  const feature1Description =
+    homeContent?.feature1Description ||
+    "Thousands of verified vehicles from trusted dealerships and private sellers.";
+  const feature2Title = homeContent?.feature2Title || "Easy Test Drive";
+  const feature2Description =
+    homeContent?.feature2Description ||
+    "Book a test drive online in minutes, with flexible scheduling options.";
+  const feature3Title = homeContent?.feature3Title || "Secure Process";
+  const feature3Description =
+    homeContent?.feature3Description ||
+    "Verified listings and secure booking process for peace of mind.";
+  const ctaTitle = homeContent?.ctaTitle || "Ready to Find Your Dream Car?";
+  const ctaSubtitle =
+    homeContent?.ctaSubtitle ||
+    "Join thousands of satisfied customers who found their perfect vehicle through our platform.";
 
   return (
     <div className="flex flex-col pt-20">
@@ -27,10 +50,10 @@ export default async function Home() {
         <div className="max-w-4xl mx-auto text-center">
           <div className="mb-8">
             <h1 className="text-5xl md:text-8xl mb-4 gradient-title">
-              Find your ideal car today.
+              {heroTitle}
             </h1>
             <p className="text-xl text-gray-500 mb-8 max-w-2xl mx-auto">
-              Advanced Car Search and test drive from thousands of vehicles.
+              {heroSubtitle}
             </p>
           </div>
 
@@ -102,30 +125,22 @@ export default async function Home() {
               <div className="bg-blue-100 text-blue-700 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
                 <Car className="h-8 w-8" />
               </div>
-              <h3 className="text-xl font-bold mb-2">Wide Selection</h3>
-              <p className="text-gray-600">
-                Thousands of verified vehicles from trusted dealerships and
-                private sellers.
-              </p>
+              <h3 className="text-xl font-bold mb-2">{feature1Title}</h3>
+              <p className="text-gray-600">{feature1Description}</p>
             </div>
             <div className="text-center">
               <div className="bg-blue-100 text-blue-700 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
                 <Calendar className="h-8 w-8" />
               </div>
-              <h3 className="text-xl font-bold mb-2">Easy Test Drive</h3>
-              <p className="text-gray-600">
-                Book a test drive online in minutes, with flexible scheduling
-                options.
-              </p>
+              <h3 className="text-xl font-bold mb-2">{feature2Title}</h3>
+              <p className="text-gray-600">{feature2Description}</p>
             </div>
             <div className="text-center">
               <div className="bg-blue-100 text-blue-700 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
                 <Shield className="h-8 w-8" />
               </div>
-              <h3 className="text-xl font-bold mb-2">Secure Process</h3>
-              <p className="text-gray-600">
-                Verified listings and secure booking process for peace of mind.
-              </p>
+              <h3 className="text-xl font-bold mb-2">{feature3Title}</h3>
+              <p className="text-gray-600">{feature3Description}</p>
             </div>
           </div>
         </div>
@@ -175,8 +190,8 @@ export default async function Home() {
             Frequently Asked Questions
           </h2>
           <Accordion type="single" collapsible className="w-full">
-            {faqItems.map((faq, index) => (
-              <AccordionItem key={index} value={`item-${index}`}>
+            {faqs.map((faq, index) => (
+              <AccordionItem key={faq.id} value={`item-${index}`}>
                 <AccordionTrigger>{faq.question}</AccordionTrigger>
                 <AccordionContent>{faq.answer}</AccordionContent>
               </AccordionItem>
@@ -188,12 +203,9 @@ export default async function Home() {
       {/* CTA Section */}
       <section className="py-16 dotted-background text-white">
         <div className="container mx-auto px-4 text-center">
-          <h2 className="text-3xl font-bold mb-4">
-            Ready to Find Your Dream Car?
-          </h2>
+          <h2 className="text-3xl font-bold mb-4">{ctaTitle}</h2>
           <p className="text-xl text-blue-100 mb-8 max-w-2xl mx-auto">
-            Join thousands of satisfied customers who found their perfect
-            vehicle through our platform.
+            {ctaSubtitle}
           </p>
           <div className="flex flex-col sm:flex-row justify-center gap-4">
             <Button size="lg" variant="secondary" asChild>

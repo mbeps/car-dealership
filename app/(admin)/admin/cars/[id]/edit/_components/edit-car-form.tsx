@@ -53,7 +53,7 @@ export const EditCarForm = ({ car, carMakes, carColors }: EditCarFormProps) => {
   const [imageError, setImageError] = useState("");
 
   // Initialize form with existing car data
-  const form = useForm({
+  const form = useForm<CarFormData>({
     resolver: zodResolver(carFormSchema),
     defaultValues: {
       carMakeId: car.carMakeId,
