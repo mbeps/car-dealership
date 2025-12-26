@@ -43,8 +43,8 @@ export const carFormSchema = z.object({
     }, "Number of seats must be a valid number"),
   description: z.string().min(10, "Description must be at least 10 characters"),
   status: z.enum([CarStatus.AVAILABLE, CarStatus.UNAVAILABLE, CarStatus.SOLD]),
-  featured: z.boolean(),
-  features: z.array(z.string()),
+  featured: z.boolean().optional().default(false),
+  features: z.array(z.string()).optional().default([]),
 });
 
 export type CarFormData = z.infer<typeof carFormSchema>;
