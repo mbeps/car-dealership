@@ -9,13 +9,15 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { TestDriveBookingWithCar } from "@/types/test-drive/test-drive-booking-with-car";
 import { TestDriveBookingWithUser } from "@/types/test-drive/test-drive-booking-with-user";
 import { BookingStatusEnum as BookingStatus } from "@/enums/booking-status";
@@ -187,16 +189,16 @@ export function TestDriveCard({
 
       {/* Cancel Confirmation Dialog */}
       {onCancel && (
-        <Dialog open={cancelDialogOpen} onOpenChange={setCancelDialogOpen}>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Cancel Test Drive</DialogTitle>
-              <DialogDescription>
+        <AlertDialog open={cancelDialogOpen} onOpenChange={setCancelDialogOpen}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Cancel Test Drive</AlertDialogTitle>
+              <AlertDialogDescription>
                 Are you sure you want to cancel your test drive for the{" "}
                 {booking.car.year} {booking.car.make} {booking.car.model}? This
                 action cannot be undone.
-              </DialogDescription>
-            </DialogHeader>
+              </AlertDialogDescription>
+            </AlertDialogHeader>
 
             <div className="py-4">
               <div className="space-y-2 text-sm">
@@ -219,18 +221,14 @@ export function TestDriveCard({
               </div>
             </div>
 
-            <DialogFooter>
-              <Button
-                variant="outline"
-                onClick={() => setCancelDialogOpen(false)}
-                disabled={isCancelling}
-              >
+            <AlertDialogFooter>
+              <AlertDialogCancel disabled={isCancelling}>
                 Keep Reservation
-              </Button>
-              <Button
-                variant="destructive"
+              </AlertDialogCancel>
+              <AlertDialogAction
                 onClick={handleCancel}
                 disabled={isCancelling}
+                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
               >
                 {isCancelling ? (
                   <>
@@ -240,10 +238,10 @@ export function TestDriveCard({
                 ) : (
                   "Cancel Reservation"
                 )}
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       )}
     </>
   );

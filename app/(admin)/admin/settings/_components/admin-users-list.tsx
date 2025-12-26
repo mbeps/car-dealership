@@ -31,13 +31,15 @@ import {
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import useFetch from "@/hooks/use-fetch";
 import { getUsers, updateUserRole } from "@/actions/settings";
 import { User } from "@/types/user/user";
@@ -225,25 +227,27 @@ export const AdminUsersList = () => {
       </Card>
 
       {/* Confirm Make Admin Dialog */}
-      <Dialog open={confirmAdminDialog} onOpenChange={setConfirmAdminDialog}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Confirm Admin Privileges</DialogTitle>
-            <DialogDescription>
+      <AlertDialog
+        open={confirmAdminDialog}
+        onOpenChange={setConfirmAdminDialog}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Confirm Admin Privileges</AlertDialogTitle>
+            <AlertDialogDescription>
               Are you sure you want to give admin privileges to{" "}
               {userToPromote?.name || userToPromote?.email}? Admin users can
               manage all aspects of the dealership.
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <Button
-              variant="outline"
-              onClick={() => setConfirmAdminDialog(false)}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={updatingRole}>
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleMakeAdmin}
               disabled={updatingRole}
             >
-              Cancel
-            </Button>
-            <Button onClick={handleMakeAdmin} disabled={updatingRole}>
               {updatingRole ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -255,34 +259,33 @@ export const AdminUsersList = () => {
                   Confirm
                 </>
               )}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       {/* Confirm Remove Admin Dialog */}
-      <Dialog open={confirmRemoveDialog} onOpenChange={setConfirmRemoveDialog}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Remove Admin Privileges</DialogTitle>
-            <DialogDescription>
+      <AlertDialog
+        open={confirmRemoveDialog}
+        onOpenChange={setConfirmRemoveDialog}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Remove Admin Privileges</AlertDialogTitle>
+            <AlertDialogDescription>
               Are you sure you want to remove admin privileges from{" "}
               {userToDemote?.name || userToDemote?.email}? They will no longer
               be able to access the admin dashboard.
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <Button
-              variant="outline"
-              onClick={() => setConfirmRemoveDialog(false)}
-              disabled={updatingRole}
-            >
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={updatingRole}>
               Cancel
-            </Button>
-            <Button
-              variant="destructive"
+            </AlertDialogCancel>
+            <AlertDialogAction
               onClick={handleRemoveAdmin}
               disabled={updatingRole}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
               {updatingRole ? (
                 <>
@@ -292,10 +295,10 @@ export const AdminUsersList = () => {
               ) : (
                 "Remove Admin"
               )}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </>
   );
 };
