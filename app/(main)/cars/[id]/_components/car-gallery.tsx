@@ -9,6 +9,7 @@ import {
   CarouselItem,
   type CarouselApi,
 } from "@/components/ui/carousel";
+import { AspectRatio } from "@/components/ui/aspect-ratio";
 
 interface CarGalleryProps {
   images: string[];
@@ -47,10 +48,15 @@ export function CarGallery({ images, carName }: CarGalleryProps) {
 
   if (!images || images.length === 0) {
     return (
-      <div className="aspect-video rounded-lg overflow-hidden relative mb-4">
-        <div className="w-full h-full bg-gray-200 flex items-center justify-center">
-          <Car className="h-24 w-24 text-gray-400" />
-        </div>
+      <div className="mb-4">
+        <AspectRatio
+          ratio={4 / 3}
+          className="rounded-lg overflow-hidden relative"
+        >
+          <div className="w-full h-full bg-gray-200 flex items-center justify-center">
+            <Car className="h-24 w-24 text-gray-400" />
+          </div>
+        </AspectRatio>
       </div>
     );
   }
@@ -62,7 +68,10 @@ export function CarGallery({ images, carName }: CarGalleryProps) {
         <CarouselContent>
           {images.map((image, index) => (
             <CarouselItem key={index}>
-              <div className="aspect-video rounded-lg overflow-hidden relative bg-secondary">
+              <AspectRatio
+                ratio={4 / 3}
+                className="rounded-lg overflow-hidden relative bg-secondary"
+              >
                 <Image
                   src={image}
                   alt={`${carName} - view ${index + 1}`}
@@ -70,7 +79,7 @@ export function CarGallery({ images, carName }: CarGalleryProps) {
                   className="object-contain"
                   priority={index === 0}
                 />
-              </div>
+              </AspectRatio>
             </CarouselItem>
           ))}
         </CarouselContent>
