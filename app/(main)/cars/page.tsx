@@ -14,14 +14,14 @@ export default async function CarsPage() {
 
   if (!filtersData.success) {
     return (
-      <div className="container mx-auto px-4 py-12">
+      <div className="py-12">
         <p>Error loading filters</p>
       </div>
     );
   }
 
   return (
-    <div className="container mx-auto px-4 py-12">
+    <div className="py-12">
       <h1 className="text-6xl mb-4 gradient-title">Browse Cars</h1>
 
       <div className="flex flex-col lg:flex-row gap-8">

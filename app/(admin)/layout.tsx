@@ -22,7 +22,9 @@ export default async function AdminLayout({
       <div className="md:hidden">
         <Sidebar />
       </div>
-      <main className="pt-[80px] h-full pb-20 md:pb-0">{children}</main>
+      <main className="pt-[80px] h-full pb-20 md:pb-0">
+        <div className="container mx-auto px-4">{children}</div>
+      </main>
     </div>
   );
 }
