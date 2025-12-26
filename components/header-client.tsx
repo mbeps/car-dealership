@@ -2,7 +2,15 @@
 
 import React from "react";
 import { Button } from "./ui/button";
-import { Heart, CarFront, Layout, ArrowLeft, LogOut, Home } from "lucide-react";
+import {
+  Heart,
+  CarFront,
+  Layout,
+  ArrowLeft,
+  LogOut,
+  Home,
+  Calendar,
+} from "lucide-react";
 import Link from "next/link";
 import { useAuth, SignedIn, SignedOut } from "@/lib/auth-context";
 import { ROUTES } from "@/constants/routes";
@@ -96,18 +104,21 @@ const HeaderClient = ({
                   {!isAdmin && (
                     <Link
                       href={ROUTES.RESERVATIONS}
-                      className="text-gray-600 hover:text-blue-600 hidden md:flex items-center gap-2"
+                      className="hidden md:block"
                     >
-                      <Button variant="outline">
-                        <CarFront size={18} />
-                        <span>My Reservations</span>
+                      <Button
+                        variant="ghost"
+                        className="flex items-center gap-2"
+                      >
+                        <Calendar size={18} />
+                        <span>Reservations</span>
                       </Button>
                     </Link>
                   )}
                   <Link href={ROUTES.SAVED_CARS} className="hidden md:block">
-                    <Button className="flex items-center gap-2">
+                    <Button variant="ghost" className="flex items-center gap-2">
                       <Heart size={18} />
-                      <span>Saved Cars</span>
+                      <span>Saved</span>
                     </Button>
                   </Link>
                   {isAdmin && (
@@ -127,7 +138,7 @@ const HeaderClient = ({
 
             <SignedOut>
               {!isAdminPage && (
-                <Button variant="outline" onClick={() => openSignInModal()}>
+                <Button variant="ghost" onClick={() => openSignInModal()}>
                   Login
                 </Button>
               )}
