@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, UseFormReturn } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 
@@ -120,7 +120,9 @@ export const HomeContentForm = () => {
     }
   };
 
-  const handleReset = (form: any) => {
+  const handleReset = (
+    form: UseFormReturn<Partial<HomePageContentFormValues>>
+  ) => {
     if (initialContent) {
       form.reset(initialContent);
     }

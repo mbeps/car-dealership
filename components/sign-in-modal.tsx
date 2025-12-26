@@ -86,7 +86,6 @@ export function SignInModal({
       // Validate email
       const validation = forgotPasswordSchema.safeParse({ email });
       if (!validation.success) {
-        // @ts-ignore
         setResetError(validation.error.errors[0].message);
         return;
       }

@@ -51,7 +51,7 @@ interface FAQSectionProps {
   isDialogOpen: boolean;
   setIsDialogOpen: (open: boolean) => void;
   editingFAQ: FAQ | null;
-  faqForm: any;
+  faqForm: UseFormReturn<FAQFormValues>;
   onFAQSubmit: (data: FAQFormValues) => Promise<void>;
   isSubmitting: boolean;
   isDeleting: boolean;

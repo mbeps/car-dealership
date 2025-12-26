@@ -98,7 +98,6 @@ export async function updateHomePageContent(
 
     if (error) throw new Error(error.message);
 
-    // @ts-ignore
     revalidateTag(HOME_CONTENT_TAG);
     revalidatePath("/", "layout");
     return { success: true, data: updated };
@@ -143,7 +142,6 @@ export async function addFAQ(
 
     if (error) throw new Error(error.message);
 
-    // @ts-ignore
     revalidateTag(FAQ_TAG);
     revalidatePath("/", "layout");
     return { success: true, data: newFAQ };
@@ -190,7 +188,6 @@ export async function updateFAQ(
 
     if (error) throw new Error(error.message);
 
-    // @ts-ignore
     revalidateTag(FAQ_TAG);
     revalidatePath("/", "layout");
     return { success: true, data: updated };
@@ -228,7 +225,6 @@ export async function deleteFAQ(id: string): Promise<ActionResponse<void>> {
 
     if (error) throw new Error(error.message);
 
-    // @ts-ignore
     revalidateTag(FAQ_TAG);
     revalidatePath("/", "layout");
     return { success: true, data: undefined };
@@ -279,7 +275,6 @@ export async function reorderFAQs(
 
     if (error) throw new Error(error.message);
 
-    // @ts-ignore
     revalidateTag(FAQ_TAG);
     revalidatePath("/", "layout");
     return { success: true, data: updatedFAQs };
