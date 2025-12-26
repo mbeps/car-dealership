@@ -108,7 +108,9 @@ const HeaderClient = ({
               height={60}
               className="h-12 w-auto object-contain"
             />
-            {isAdminPage && <span className="text-lg font-bold">Admin</span>}
+            {isAdminPage && (
+              <span className="text-lg font-bold hidden md:inline">Admin</span>
+            )}
           </Link>
         </div>
 
