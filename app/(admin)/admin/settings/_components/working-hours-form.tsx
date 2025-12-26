@@ -134,7 +134,7 @@ export const WorkingHoursForm = () => {
                 <div className="font-medium">{day.label}</div>
               </div>
 
-              <div className="col-span-9 md:col-span-2 flex items-center">
+              <div className="col-span-9 md:col-span-2 flex items-center justify-end md:justify-start">
                 <Checkbox
                   id={`is-open-${day.value}`}
                   checked={workingHours[index]?.isOpen}
@@ -170,7 +170,7 @@ export const WorkingHoursForm = () => {
                     </div>
                   </div>
 
-                  <div className="text-center col-span-1">to</div>
+                  <div className="text-center col-span-2 md:col-span-1">to</div>
 
                   <div className="col-span-5 md:col-span-3">
                     <Input
