@@ -1,11 +1,11 @@
-import { Inter } from "next/font/google";
-import "./globals.css";
+import Footer from "@/components/footer";
 import Header from "@/components/header";
-import { AuthProvider } from "@/lib/auth-context";
-import { Toaster } from "sonner";
-import type { Metadata } from "next";
 import { DEALERSHIP_NAME } from "@/constants/dealership-name";
-import Link from "next/link";
+import { AuthProvider } from "@/lib/auth-context";
+import type { Metadata } from "next";
+import { Inter } from "next/font/google";
+import { Toaster } from "sonner";
+import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -30,21 +30,7 @@ export default function RootLayout({
           <main className="min-h-screen">{children}</main>
           <Toaster richColors />
 
-          <footer className="bg-blue-50 py-12">
-            <div className="container mx-auto px-4 text-center text-gray-600">
-              <p>
-                {`Developed by `}
-                <Link
-                  href="https://maruf-bepary.com"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-blue-600 hover:underline"
-                >
-                  Maruf Bepary
-                </Link>
-              </p>
-            </div>
-          </footer>
+          <Footer />
         </AuthProvider>
       </body>
     </html>
