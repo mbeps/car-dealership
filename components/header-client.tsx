@@ -66,12 +66,6 @@ const HeaderClient = ({
           <div className="flex items-center space-x-4">
             {isAdminPage ? (
               <>
-                <Link href={ROUTES.HOME}>
-                  <Button variant="outline" className="flex items-center gap-2">
-                    <ArrowLeft size={18} />
-                    <span>Back to App</span>
-                  </Button>
-                </Link>
                 <div className="hidden md:flex items-center gap-2">
                   {ADMIN_NAV_ROUTES.map((r) => (
                     <Link key={r.href} href={r.href}>
@@ -85,6 +79,12 @@ const HeaderClient = ({
                     </Link>
                   ))}
                 </div>
+                <Link href={ROUTES.HOME}>
+                  <Button variant="outline" className="flex items-center gap-2">
+                    <ArrowLeft size={18} />
+                    <span>Back to App</span>
+                  </Button>
+                </Link>
               </>
             ) : (
               <>
