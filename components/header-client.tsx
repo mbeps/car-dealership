@@ -8,6 +8,7 @@ import { useAuth, SignedIn, SignedOut } from "@/lib/auth-context";
 import { ROUTES } from "@/constants/routes";
 import Image from "next/image";
 import { UserRoleEnum as UserRole } from "@/enums/user-role";
+import { ADMIN_NAV_ROUTES } from "@/app/(admin)/admin/_components/sidebar";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -31,7 +32,7 @@ const HeaderClient = ({
 
   return (
     <>
-      <header className="fixed top-0 w-full bg-white/80 backdrop-blur-md z-50 border-b">
+      <header className="fixed top-0 w-full bg-white z-50 border-b">
         <nav className="mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Link
@@ -63,6 +64,19 @@ const HeaderClient = ({
                     <span>Back to App</span>
                   </Button>
                 </Link>
+                <div className="hidden md:flex items-center gap-2">
+                  {ADMIN_NAV_ROUTES.map((r) => (
+                    <Link key={r.href} href={r.href}>
+                      <Button
+                        className="flex items-center gap-2"
+                        variant="ghost"
+                      >
+                        <r.icon size={16} />
+                        <span>{r.label}</span>
+                      </Button>
+                    </Link>
+                  ))}
+                </div>
               </>
             ) : (
               <>

@@ -18,17 +18,11 @@ export default async function AdminLayout({
   return (
     <div className="h-full">
       <Header isAdminPage={true} />
-      {/* Desktop Sidebar */}
-      <div className="hidden md:flex h-full w-56 flex-col top-20 fixed inset-y-0 z-50">
-        <Sidebar />
-      </div>
-      {/* Mobile Sidebar */}
+      {/* Mobile Sidebar (bottom tabs) */}
       <div className="md:hidden">
         <Sidebar />
       </div>
-      <main className="md:pl-56 pt-[80px] h-full pb-20 md:pb-0">
-        {children}
-      </main>
+      <main className="pt-[80px] h-full pb-20 md:pb-0">{children}</main>
     </div>
   );
 }
