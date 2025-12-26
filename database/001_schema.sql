@@ -93,6 +93,31 @@ CREATE TABLE public."DealershipInfo" (
   "updatedAt" TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT timezone('utc', now())
 );
 
+CREATE TABLE public."HomePageContent" (
+  "id" TEXT PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  "heroTitle" TEXT NOT NULL DEFAULT 'Find your ideal car today.',
+  "heroSubtitle" TEXT NOT NULL DEFAULT 'Advanced Car Search and test drive from thousands of vehicles.',
+  "feature1Title" TEXT NOT NULL DEFAULT 'Wide Selection',
+  "feature1Description" TEXT NOT NULL DEFAULT 'Thousands of verified vehicles from trusted dealerships and private sellers.',
+  "feature2Title" TEXT NOT NULL DEFAULT 'Easy Test Drive',
+  "feature2Description" TEXT NOT NULL DEFAULT 'Book a test drive online in minutes, with flexible scheduling options.',
+  "feature3Title" TEXT NOT NULL DEFAULT 'Secure Process',
+  "feature3Description" TEXT NOT NULL DEFAULT 'Verified listings and secure booking process for peace of mind.',
+  "ctaTitle" TEXT NOT NULL DEFAULT 'Ready to Find Your Dream Car?',
+  "ctaSubtitle" TEXT NOT NULL DEFAULT 'Join thousands of satisfied customers who found their perfect vehicle through our platform.',
+  "createdAt" TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT timezone('utc', now()),
+  "updatedAt" TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT timezone('utc', now())
+);
+
+CREATE TABLE public."FAQ" (
+  "id" TEXT PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  "question" TEXT NOT NULL,
+  "answer" TEXT NOT NULL,
+  "order" INTEGER NOT NULL DEFAULT 0,
+  "createdAt" TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT timezone('utc', now()),
+  "updatedAt" TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT timezone('utc', now())
+);
+
 CREATE TABLE public."WorkingHour" (
   "id" TEXT PRIMARY KEY DEFAULT gen_random_uuid()::text,
   "dealershipId" TEXT NOT NULL,

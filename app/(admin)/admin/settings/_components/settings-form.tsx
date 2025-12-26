@@ -1,11 +1,12 @@
 "use client";
 
-import { Clock, Shield, Building2 } from "lucide-react";
+import { Clock, Shield, Building2, Home } from "lucide-react";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { DealershipInfoForm } from "./dealership-info-form";
 import { WorkingHoursForm } from "./working-hours-form";
 import { AdminUsersList } from "./admin-users-list";
+import { HomeContentForm } from "./home-content-form";
 
 /**
  * Admin settings page with tabs.
@@ -61,6 +62,20 @@ export const SettingsForm = () => {
               <span className="hidden md:inline">Admin Users</span>
             </div>
           </TabsTrigger>
+          <TabsTrigger
+            value="home-data"
+            className="h-auto flex-1 py-2 md:flex-none md:py-1"
+          >
+            <div className="flex flex-col items-center gap-1 md:flex-row md:gap-2">
+              <Home className="h-5 w-5 md:h-4 md:w-4" />
+              <span className="md:hidden text-xs">
+                Home
+                <br />
+                Data
+              </span>
+              <span className="hidden md:inline">Home Data</span>
+            </div>
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="info" className="space-y-6 mt-6">
@@ -73,6 +88,10 @@ export const SettingsForm = () => {
 
         <TabsContent value="admins" className="space-y-6 mt-6">
           <AdminUsersList />
+        </TabsContent>
+
+        <TabsContent value="home-data" className="space-y-6 mt-6">
+          <HomeContentForm />
         </TabsContent>
       </Tabs>
     </div>

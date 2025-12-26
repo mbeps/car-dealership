@@ -62,3 +62,13 @@ export { createBrowserClient } from "./supabase-client";
 export const createAdminClient = () => {
   return createSupabaseClient(getSupabaseUrl(), getSupabaseSecretKey());
 };
+
+/**
+ * Creates a stateless Supabase client with the anonymous key.
+ * Does NOT use cookies or headers.
+ * Safe to use inside unstable_cache or other static contexts.
+ * Respects RLS for public/anon roles.
+ */
+export const createPublicClient = () => {
+  return createSupabaseClient(getSupabaseUrl(), getSupabasePublishableKey());
+};

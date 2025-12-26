@@ -138,7 +138,7 @@ const HeaderClient = ({
 
             <SignedOut>
               {!isAdminPage && (
-                <Button variant="ghost" onClick={() => openSignInModal()}>
+                <Button variant="default" onClick={() => openSignInModal()}>
                   Login
                 </Button>
               )}
