@@ -183,47 +183,7 @@ export function CarDetails({
             carName={`${car.year} ${car.make} ${car.model}`}
           />
 
-          {/* Secondary Actions */}
-          <div className="flex mt-4 gap-4">
-            {/* Save Button */}
-            <Button
-              variant="outline"
-              className={`flex items-center gap-2 flex-1 ${
-                isWishlisted ? "text-red-500" : ""
-              }`}
-              onClick={handleSaveCar}
-              disabled={savingCar}
-            >
-              <Heart
-                className={`h-5 w-5 ${isWishlisted ? "fill-red-500" : ""}`}
-              />
-              {isWishlisted ? "Saved" : "Save"}
-            </Button>
-            {/* Share Button */}
-            <Button
-              variant="outline"
-              className="flex items-center gap-2 flex-1"
-              onClick={handleShare}
-            >
-              <Share2 className="h-5 w-5" />
-              Share
-            </Button>
-            {/* View MOT Button */}
-            <Button
-              variant="outline"
-              className="flex items-center gap-2 flex-1"
-              asChild
-            >
-              <Link
-                href={`https://www.check-mot.service.gov.uk/results?registration=${car.numberPlate}`}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <Car className="h-5 w-5" />
-                View MOT
-              </Link>
-            </Button>
-          </div>
+          {/* Secondary actions moved to details column (under Book Test Drive) */}
         </div>
 
         {/* Car Details */}
@@ -392,6 +352,47 @@ export function CarDetails({
                 )}
               </>
             )}
+
+          {/* Secondary Actions (moved) - take full available width */}
+          <div className="flex flex-col sm:flex-row mt-4 gap-4 w-full">
+            <Button
+              variant="outline"
+              className={`flex-1 flex items-center justify-center gap-2 ${
+                isWishlisted ? "text-red-500" : ""
+              }`}
+              onClick={handleSaveCar}
+              disabled={savingCar}
+            >
+              <Heart
+                className={`h-5 w-5 ${isWishlisted ? "fill-red-500" : ""}`}
+              />
+              {isWishlisted ? "Saved" : "Save"}
+            </Button>
+
+            <Button
+              variant="outline"
+              className="flex-1 flex items-center justify-center gap-2"
+              onClick={handleShare}
+            >
+              <Share2 className="h-5 w-5" />
+              Share
+            </Button>
+
+            <Button
+              variant="outline"
+              className="flex-1 flex items-center justify-center gap-2"
+              asChild
+            >
+              <Link
+                href={`https://www.check-mot.service.gov.uk/results?registration=${car.numberPlate}`}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <Car className="h-5 w-5" />
+                View MOT
+              </Link>
+            </Button>
+          </div>
         </div>
       </div>
 
