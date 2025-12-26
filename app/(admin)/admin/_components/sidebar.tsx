@@ -8,7 +8,7 @@ import { ROUTES } from "@/constants/routes";
 import { signOut } from "@/actions/auth";
 
 // Navigation items
-const routes = [
+export const ADMIN_NAV_ROUTES = [
   {
     label: "Dashboard",
     icon: LayoutDashboard,
@@ -57,7 +57,7 @@ export const Sidebar = () => {
           </Link>
         </div>
         <div className="flex flex-col w-full">
-          {routes.map((route) => (
+          {ADMIN_NAV_ROUTES.map((route) => (
             <Link
               key={route.href}
               href={route.href}
@@ -87,7 +87,7 @@ export const Sidebar = () => {
 
       {/* Mobile Bottom Tabs */}
       <div className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-white border-t flex justify-around items-center h-16">
-        {routes.map((route) => (
+        {ADMIN_NAV_ROUTES.map((route) => (
           <Link
             key={route.href}
             href={route.href}

@@ -2,12 +2,21 @@
 
 import React from "react";
 import { Button } from "./ui/button";
-import { Heart, CarFront, Layout, ArrowLeft, LogOut, Home } from "lucide-react";
+import {
+  Heart,
+  CarFront,
+  Layout,
+  ArrowLeft,
+  LogOut,
+  Home,
+  Calendar,
+} from "lucide-react";
 import Link from "next/link";
 import { useAuth, SignedIn, SignedOut } from "@/lib/auth-context";
 import { ROUTES } from "@/constants/routes";
 import Image from "next/image";
 import { UserRoleEnum as UserRole } from "@/enums/user-role";
+import { ADMIN_NAV_ROUTES } from "@/app/(admin)/admin/_components/sidebar";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -31,7 +40,7 @@ const HeaderClient = ({
 
   return (
     <>
-      <header className="fixed top-0 w-full bg-white/80 backdrop-blur-md z-50 border-b">
+      <header className="fixed top-0 w-full bg-white z-50 border-b">
         <nav className="mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Link
@@ -63,6 +72,19 @@ const HeaderClient = ({
                     <span>Back to App</span>
                   </Button>
                 </Link>
+                <div className="hidden md:flex items-center gap-2">
+                  {ADMIN_NAV_ROUTES.map((r) => (
+                    <Link key={r.href} href={r.href}>
+                      <Button
+                        className="flex items-center gap-2"
+                        variant="ghost"
+                      >
+                        <r.icon size={16} />
+                        <span>{r.label}</span>
+                      </Button>
+                    </Link>
+                  ))}
+                </div>
               </>
             ) : (
               <>
@@ -82,18 +104,21 @@ const HeaderClient = ({
                   {!isAdmin && (
                     <Link
                       href={ROUTES.RESERVATIONS}
-                      className="text-gray-600 hover:text-blue-600 hidden md:flex items-center gap-2"
+                      className="hidden md:block"
                     >
-                      <Button variant="outline">
-                        <CarFront size={18} />
-                        <span>My Reservations</span>
+                      <Button
+                        variant="ghost"
+                        className="flex items-center gap-2"
+                      >
+                        <Calendar size={18} />
+                        <span>Reservations</span>
                       </Button>
                     </Link>
                   )}
                   <Link href={ROUTES.SAVED_CARS} className="hidden md:block">
-                    <Button className="flex items-center gap-2">
+                    <Button variant="ghost" className="flex items-center gap-2">
                       <Heart size={18} />
-                      <span>Saved Cars</span>
+                      <span>Saved</span>
                     </Button>
                   </Link>
                   {isAdmin && (
@@ -113,7 +138,7 @@ const HeaderClient = ({
 
             <SignedOut>
               {!isAdminPage && (
-                <Button variant="outline" onClick={() => openSignInModal()}>
+                <Button variant="ghost" onClick={() => openSignInModal()}>
                   Login
                 </Button>
               )}
