@@ -129,7 +129,7 @@ export function Dashboard({
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="bg-gray-50 p-4 rounded-lg">
                     <h3 className="font-medium text-sm mb-2">Car Inventory</h3>
                     <div className="flex items-center">
@@ -180,7 +180,7 @@ export function Dashboard({
                   </div>
                 </div>
 
-                <div className="grid grid-cols-3 gap-4 mt-6">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-6">
                   <div className="text-center">
                     <span className="text-3xl font-bold text-blue-600">
                       {cars.sold}
@@ -284,7 +284,7 @@ export function Dashboard({
             </CardHeader>
             <CardContent>
               <div className="space-y-6">
-                <div className="grid grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                   {/* Conversion Rate Card */}
                   <div className="bg-gray-50 rounded-lg p-4">
                     <h3 className="text-lg font-medium mb-2">
