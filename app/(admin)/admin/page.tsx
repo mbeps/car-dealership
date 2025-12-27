@@ -1,5 +1,5 @@
 import { getDashboardData } from "@/actions/admin";
-import { Dashboard } from "./_components/dashboard";
+import { Dashboard } from "./dashboard/Dashboard";
 import { DEALERSHIP_NAME } from "@/constants/dealership-name";
 
 export const dynamic = "force-dynamic";
