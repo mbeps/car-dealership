@@ -29,7 +29,6 @@ export default function RootLayout({
           <Header />
           <main className="min-h-screen">{children}</main>
           <Toaster richColors />
-
           <Footer />
         </AuthProvider>
       </body>
