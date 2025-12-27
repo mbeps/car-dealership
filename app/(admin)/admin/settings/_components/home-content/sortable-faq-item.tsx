@@ -15,7 +15,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { FAQ } from "@/types/home-content";
+import { FAQ } from "@/types/home-content/faq";
 
 interface SortableFAQItemProps {
   faq: FAQ;

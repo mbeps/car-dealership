@@ -20,7 +20,7 @@ import {
   HomePageContentFormValues,
   FAQFormValues,
 } from "@/schemas/home-content";
-import { FAQ } from "@/types/home-content";
+import { FAQ } from "@/types/home-content/faq";
 import { HeroSection } from "./home-content/hero-section";
 import { FeaturesSection } from "./home-content/features-section";
 import { CTASection } from "./home-content/cta-section";
