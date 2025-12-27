@@ -3,7 +3,8 @@
 import { createClient, createPublicClient } from "@/lib/supabase/supabase";
 import { revalidatePath, revalidateTag, unstable_cache } from "next/cache";
 import type { ActionResponse } from "@/types/common/action-response";
-import type { HomePageContent, FAQ } from "@/types/home-content";
+import type { HomePageContent } from "@/types/home-content/home-page-content";
+import type { FAQ } from "@/types/home-content/faq";
 import { UserRoleEnum as UserRole } from "@/enums/user-role";
 import { homePageContentSchema, faqSchema } from "@/schemas/home-content";
 import { z } from "zod";

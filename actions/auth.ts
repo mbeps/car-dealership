@@ -6,7 +6,7 @@ import type { User } from "@/types/user/user";
 import { UserRoleEnum as UserRole } from "@/enums/user-role";
 import { redirect } from "next/navigation";
 import { ROUTES } from "@/constants/routes";
-import { getSiteUrl } from "@/lib/utils";
+import { getSiteUrl } from "@/lib/site-url";
 
 /**
  * Quick admin role check for conditional rendering.

@@ -37,7 +37,7 @@ import {
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { FAQFormValues } from "@/schemas/home-content";
-import { FAQ } from "@/types/home-content";
+import { FAQ } from "@/types/home-content/faq";
 import { SortableFAQItem } from "./sortable-faq-item";
 import { reorderFAQs } from "@/actions/home-content";
 import { toast } from "sonner";

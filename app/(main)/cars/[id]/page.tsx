@@ -48,7 +48,7 @@ export default async function CarDetailsPage({
   const isAdmin = await isCurrentUserAdmin();
 
   return (
-    <div className="container mx-auto px-4 py-12">
+    <div className="py-12">
       <CarDetails
         car={{
           ...result.data,
