@@ -14,7 +14,7 @@ import { Label } from "@/components/ui/label";
 import { GoogleIcon } from "@/components/google-icon";
 import { ROUTES } from "@/constants/routes";
 import { createBrowserClient } from "@/lib/supabase/supabase-client";
-import { getSiteUrl } from "@/lib/utils";
+import { getSiteUrl } from "@/lib/site-url";
 import { Loader2 } from "lucide-react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";

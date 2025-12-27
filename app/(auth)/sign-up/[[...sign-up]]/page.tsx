@@ -18,7 +18,7 @@ import Link from "next/link";
 import { Loader2 } from "lucide-react";
 import { ROUTES } from "@/constants/routes";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { getSiteUrl } from "@/lib/utils";
+import { getSiteUrl } from "@/lib/site-url";
 
 export default function SignUpPage() {
   const [email, setEmail] = useState("");
