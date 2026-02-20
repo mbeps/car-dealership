@@ -127,7 +127,6 @@ async function supabaseProxy(request: NextRequest) {
  * @see https://arcjet.com/docs/nextjs/reference/middleware
  */
 export default createMiddleware(aj, supabaseProxy);
-
 export const config = {
   matcher: [
     // Skip Next.js internals and all static files, unless found in search params
