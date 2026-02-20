@@ -54,7 +54,7 @@ export const faqSchema = z.object({
     .string()
     .min(1, "Answer is required")
     .max(300, "Answer must be 300 characters or fewer"),
-  order: z.coerce.number().int(),
+  order: z.number().int(),
 });
 
 export type FAQFormValues = z.infer<typeof faqSchema>;
