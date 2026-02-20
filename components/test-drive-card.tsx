@@ -157,14 +157,19 @@ export function TestDriveCard({
                 </div>
               )}
 
-              <Button variant="outline" size="sm" className="w-full" asChild>
-                <Link
-                  href={ROUTES.CAR_DETAILS(booking.carId)}
-                  className="flex items-center justify-center"
-                >
+              <Button
+                variant="outline"
+                size="sm"
+                className="w-full"
+                render={
+                  <Link
+                    href={ROUTES.CAR_DETAILS(booking.carId)}
+                    className="flex items-center justify-center"
+                  />
+                }
+              >
                   View Car
                   <ArrowRight className="ml-2 h-4 w-4" />
-                </Link>
               </Button>
               {(booking.status === BookingStatus.PENDING ||
                 booking.status === BookingStatus.CONFIRMED) && (

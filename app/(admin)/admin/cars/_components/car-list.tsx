@@ -29,6 +29,7 @@ import {
 import {
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
@@ -130,7 +131,7 @@ export const CarsList = () => {
   // Handle status change
   const handleStatusUpdateClick = async (
     car: SerializedCar,
-    newStatus: CarStatus
+    newStatus: CarStatus,
   ) => {
     await handleUpdateStatus(car.id, newStatus);
   };
@@ -253,73 +254,80 @@ export const CarsList = () => {
                       </TableCell>
                       <TableCell className="text-right">
                         <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              className="p-0 h-8 w-8"
-                            >
-                              <MoreHorizontal className="h-4 w-4" />
-                            </Button>
+                          <DropdownMenuTrigger
+                            render={
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="p-0 h-8 w-8"
+                              />
+                            }
+                          >
+                            <MoreHorizontal className="h-4 w-4" />
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end" className="w-48">
-                            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                            <DropdownMenuItem
-                              onClick={() =>
-                                router.push(ROUTES.CAR_DETAILS(car.id))
-                              }
-                            >
-                              <Eye className="mr-2 h-4 w-4" />
-                              View
-                            </DropdownMenuItem>
-                            <DropdownMenuItem
-                              onClick={() =>
-                                router.push(ROUTES.ADMIN_CAR_EDIT(car.id))
-                              }
-                            >
-                              <Pencil className="mr-2 h-4 w-4" />
-                              Edit
-                            </DropdownMenuItem>
+                            <DropdownMenuGroup>
+                              <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                              <DropdownMenuItem
+                                onClick={() =>
+                                  router.push(ROUTES.CAR_DETAILS(car.id))
+                                }
+                              >
+                                <Eye className="mr-2 h-4 w-4" />
+                                View
+                              </DropdownMenuItem>
+                              <DropdownMenuItem
+                                onClick={() =>
+                                  router.push(ROUTES.ADMIN_CAR_EDIT(car.id))
+                                }
+                              >
+                                <Pencil className="mr-2 h-4 w-4" />
+                                Edit
+                              </DropdownMenuItem>
+                            </DropdownMenuGroup>
                             <DropdownMenuSeparator />
-                            <DropdownMenuLabel>Status</DropdownMenuLabel>
-                            <DropdownMenuItem
-                              onClick={() =>
-                                handleStatusUpdateClick(
-                                  car,
-                                  CarStatus.AVAILABLE
-                                )
-                              }
-                              disabled={
-                                car.status === CarStatus.AVAILABLE ||
-                                updatingStatus
-                              }
-                            >
-                              Set Available
-                            </DropdownMenuItem>
-                            <DropdownMenuItem
-                              onClick={() =>
-                                handleStatusUpdateClick(
-                                  car,
-                                  CarStatus.UNAVAILABLE
-                                )
-                              }
-                              disabled={
-                                car.status === CarStatus.UNAVAILABLE ||
-                                updatingStatus
-                              }
-                            >
-                              Set Unavailable
-                            </DropdownMenuItem>
-                            <DropdownMenuItem
-                              onClick={() =>
-                                handleStatusUpdateClick(car, CarStatus.SOLD)
-                              }
-                              disabled={
-                                car.status === CarStatus.SOLD || updatingStatus
-                              }
-                            >
-                              Mark as Sold
-                            </DropdownMenuItem>
+                            <DropdownMenuGroup>
+                              <DropdownMenuLabel>Status</DropdownMenuLabel>
+                              <DropdownMenuItem
+                                onClick={() =>
+                                  handleStatusUpdateClick(
+                                    car,
+                                    CarStatus.AVAILABLE,
+                                  )
+                                }
+                                disabled={
+                                  car.status === CarStatus.AVAILABLE ||
+                                  updatingStatus
+                                }
+                              >
+                                Set Available
+                              </DropdownMenuItem>
+                              <DropdownMenuItem
+                                onClick={() =>
+                                  handleStatusUpdateClick(
+                                    car,
+                                    CarStatus.UNAVAILABLE,
+                                  )
+                                }
+                                disabled={
+                                  car.status === CarStatus.UNAVAILABLE ||
+                                  updatingStatus
+                                }
+                              >
+                                Set Unavailable
+                              </DropdownMenuItem>
+                              <DropdownMenuItem
+                                onClick={() =>
+                                  handleStatusUpdateClick(car, CarStatus.SOLD)
+                                }
+                                disabled={
+                                  car.status === CarStatus.SOLD ||
+                                  updatingStatus
+                                }
+                              >
+                                Mark as Sold
+                              </DropdownMenuItem>
+                            </DropdownMenuGroup>
                             <DropdownMenuSeparator />
                             <DropdownMenuItem
                               className="text-red-600"

@@ -51,8 +51,9 @@ export const UserMenu = ({
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="icon" className="rounded-full">
+      <DropdownMenuTrigger
+        render={<Button variant="ghost" size="icon" className="rounded-full" />}
+      >
           {user?.user_metadata?.avatar_url || user?.user_metadata?.picture ? (
             <Image
               src={user.user_metadata.avatar_url || user.user_metadata.picture}
@@ -66,7 +67,6 @@ export const UserMenu = ({
               {user?.email?.charAt(0).toUpperCase() || "U"}
             </div>
           )}
-        </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
         <div className="px-2 py-1.5 text-sm font-medium">
