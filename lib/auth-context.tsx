@@ -73,8 +73,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     router.push(ROUTES.HOME);
   };
 
-  const openSignInModal = (redirectUrl?: string) => {
-    setSignInRedirectUrl(redirectUrl);
+  const openSignInModal = (redirectUrl?: string | any) => {
+    setSignInRedirectUrl(typeof redirectUrl === 'string' ? redirectUrl : undefined);
     setSignInModalOpen(true);
   };
 

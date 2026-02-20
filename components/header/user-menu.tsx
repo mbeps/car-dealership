@@ -43,7 +43,7 @@ export const UserMenu = ({
 }: UserMenuProps) => {
   if (!isAuthenticated) {
     return showSignInButton ? (
-      <Button variant="default" onClick={onOpenSignIn}>
+      <Button variant="default" onClick={() => onOpenSignIn()}>
         Login
       </Button>
     ) : null;
