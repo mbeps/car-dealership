@@ -67,10 +67,12 @@ export default async function Home() {
         <div className="container mx-auto px-4">
           <div className="flex justify-between items-center mb-8">
             <h2 className="text-2xl font-bold">Featured Cars</h2>
-            <Button variant="ghost" className="flex items-center" asChild>
-              <Link href={ROUTES.CARS}>
-                View All <ChevronRight className="ml-1 h-4 w-4" />
-              </Link>
+            <Button
+              variant="ghost"
+              className="flex items-center"
+              render={<Link href={ROUTES.CARS} />}
+            >
+              View All <ChevronRight className="ml-1 h-4 w-4" />
             </Button>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -86,10 +88,12 @@ export default async function Home() {
         <div className="container mx-auto px-4">
           <div className="flex justify-between items-center mb-8">
             <h2 className="text-2xl font-bold">Browse by Make</h2>
-            <Button variant="ghost" className="flex items-center" asChild>
-              <Link href={ROUTES.CARS}>
-                View All <ChevronRight className="ml-1 h-4 w-4" />
-              </Link>
+            <Button
+              variant="ghost"
+              className="flex items-center"
+              render={<Link href={ROUTES.CARS} />}
+            >
+              View All <ChevronRight className="ml-1 h-4 w-4" />
             </Button>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
@@ -151,10 +155,12 @@ export default async function Home() {
         <div className="container mx-auto px-4">
           <div className="flex justify-between items-center mb-8">
             <h2 className="text-2xl font-bold">Browse by Body Type</h2>
-            <Button variant="ghost" className="flex items-center" asChild>
-              <Link href={ROUTES.CARS}>
-                View All <ChevronRight className="ml-1 h-4 w-4" />
-              </Link>
+            <Button
+              variant="ghost"
+              className="flex items-center"
+              render={<Link href={ROUTES.CARS} />}
+            >
+              View All <ChevronRight className="ml-1 h-4 w-4" />
             </Button>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
@@ -189,7 +195,7 @@ export default async function Home() {
           <h2 className="text-2xl font-bold text-center mb-8">
             Frequently Asked Questions
           </h2>
-          <Accordion type="single" collapsible className="w-full">
+          <Accordion className="w-full">
             {faqs.map((faq, index) => (
               <AccordionItem key={faq.id} value={`item-${index}`}>
                 <AccordionTrigger>{faq.question}</AccordionTrigger>
@@ -208,12 +214,16 @@ export default async function Home() {
             {ctaSubtitle}
           </p>
           <div className="flex flex-col sm:flex-row justify-center gap-4">
-            <Button size="lg" variant="secondary" asChild>
-              <Link href={ROUTES.CARS}>View All Cars</Link>
+            <Button
+              size="lg"
+              variant="secondary"
+              render={<Link href={ROUTES.CARS} />}
+            >
+              View All Cars
             </Button>
             <SignedOut>
-              <Button size="lg" asChild>
-                <Link href={ROUTES.SIGN_UP}>Sign Up Now</Link>
+              <Button size="lg" render={<Link href={ROUTES.SIGN_UP} />}>
+                Sign Up Now
               </Button>
             </SignedOut>
           </div>

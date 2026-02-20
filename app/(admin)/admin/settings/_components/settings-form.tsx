@@ -19,7 +19,7 @@ export const SettingsForm = () => {
   return (
     <div className="space-y-6">
       <Tabs defaultValue="info">
-        <TabsList className="h-auto w-full md:w-auto md:h-9">
+        <TabsList className="h-auto w-full md:w-auto md:h-9 md:self-start">
           <TabsTrigger
             value="info"
             className="h-auto flex-1 py-2 md:flex-none md:py-1"

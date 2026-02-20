@@ -52,8 +52,9 @@ export const CarFilters = ({ filters }: { filters: CarFiltersData }) => {
       <div className="lg:hidden mb-4">
         <div className="flex items-center">
           <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
-            <SheetTrigger asChild>
-              <Button variant="outline" className="flex items-center gap-2">
+            <SheetTrigger
+              render={<Button variant="outline" className="flex items-center gap-2" />}
+            >
                 <Filter className="h-4 w-4" />
                 Filters
                 {activeFilterCount > 0 && (
@@ -61,7 +62,6 @@ export const CarFilters = ({ filters }: { filters: CarFiltersData }) => {
                     {activeFilterCount}
                   </Badge>
                 )}
-              </Button>
             </SheetTrigger>
             <SheetContent
               side="left"
@@ -101,7 +101,7 @@ export const CarFilters = ({ filters }: { filters: CarFiltersData }) => {
       <Select
         value={sortBy}
         onValueChange={(value) => {
-          setSortBy(value);
+          setSortBy(value ?? "newest");
           // Apply filters immediately when sort changes
           setTimeout(() => applyFilters(), 0);
         }}

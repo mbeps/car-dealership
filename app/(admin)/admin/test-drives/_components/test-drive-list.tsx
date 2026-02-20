@@ -127,7 +127,10 @@ export const TestDrivesList = () => {
       <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
         <div className="flex flex-col sm:flex-row gap-4 w-full">
           {/* Status Filter */}
-          <Select value={statusFilter} onValueChange={setStatusFilter}>
+          <Select
+            value={statusFilter}
+            onValueChange={(value) => setStatusFilter(value ?? "all")}
+          >
             <SelectTrigger className="w-full sm:w-48">
               <SelectValue placeholder="All Statuses" />
             </SelectTrigger>
@@ -214,12 +217,14 @@ export const TestDrivesList = () => {
                       renderStatusSelector={() => (
                         <Select
                           value={booking.status}
-                          onValueChange={(value) =>
-                            handleUpdateStatus(
-                              booking.id,
-                              value as BookingStatus
-                            )
-                          }
+                          onValueChange={(value) => {
+                            if (value) {
+                              handleUpdateStatus(
+                                booking.id,
+                                value as BookingStatus
+                              );
+                            }
+                          }}
                           disabled={updatingStatus}
                         >
                           <SelectTrigger className="w-full h-8">

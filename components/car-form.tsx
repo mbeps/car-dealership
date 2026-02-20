@@ -214,20 +214,22 @@ export function CarFormFields({
         <div className="space-y-2">
           <Label htmlFor="carMakeId">Make</Label>
           <Popover open={makePopoverOpen} onOpenChange={setMakePopoverOpen}>
-            <PopoverTrigger asChild>
-              <Button
-                type="button"
-                variant="outline"
-                role="combobox"
-                aria-expanded={makePopoverOpen}
-                className={cn(
-                  "w-full justify-between",
-                  errors.carMakeId ? "border-red-500" : ""
-                )}
-              >
+            <PopoverTrigger
+              render={
+                <Button
+                  type="button"
+                  variant="outline"
+                  role="combobox"
+                  aria-expanded={makePopoverOpen}
+                  className={cn(
+                    "w-full justify-between",
+                    errors.carMakeId ? "border-red-500" : ""
+                  )}
+                />
+              }
+            >
                 {selectedMake ? selectedMake.name : "Select make"}
                 <ChevronsUpDown className="ml-1 h-4 w-4 shrink-0 opacity-50" />
-              </Button>
             </PopoverTrigger>
             <PopoverContent className="w-[280px] p-0">
               <Command>
@@ -333,20 +335,22 @@ export function CarFormFields({
         <div className="space-y-2">
           <Label htmlFor="carColorId">Color</Label>
           <Popover open={colorPopoverOpen} onOpenChange={setColorPopoverOpen}>
-            <PopoverTrigger asChild>
-              <Button
-                type="button"
-                variant="outline"
-                role="combobox"
-                aria-expanded={colorPopoverOpen}
-                className={cn(
-                  "w-full justify-between",
-                  errors.carColorId ? "border-red-500" : ""
-                )}
-              >
+            <PopoverTrigger
+              render={
+                <Button
+                  type="button"
+                  variant="outline"
+                  role="combobox"
+                  aria-expanded={colorPopoverOpen}
+                  className={cn(
+                    "w-full justify-between",
+                    errors.carColorId ? "border-red-500" : ""
+                  )}
+                />
+              }
+            >
                 {selectedColor ? selectedColor.name : "Select color"}
                 <ChevronsUpDown className="ml-1 h-4 w-4 shrink-0 opacity-50" />
-              </Button>
             </PopoverTrigger>
             <PopoverContent className="w-[280px] p-0">
               <Command>
@@ -396,7 +400,10 @@ export function CarFormFields({
         <div className="space-y-2">
           <Label htmlFor="fuelType">Fuel Type</Label>
           <Select
-            onValueChange={(value) => setValue("fuelType", value)}
+            onValueChange={(value) => {
+              if (value === null) return;
+              setValue("fuelType", value);
+            }}
             defaultValue={getValues("fuelType")}
           >
             <SelectTrigger className={errors.fuelType ? "border-red-500" : ""}>
@@ -419,7 +426,10 @@ export function CarFormFields({
         <div className="space-y-2">
           <Label htmlFor="transmission">Transmission</Label>
           <Select
-            onValueChange={(value) => setValue("transmission", value)}
+            onValueChange={(value) => {
+              if (value === null) return;
+              setValue("transmission", value);
+            }}
             defaultValue={getValues("transmission")}
           >
             <SelectTrigger
@@ -446,7 +456,10 @@ export function CarFormFields({
         <div className="space-y-2">
           <Label htmlFor="bodyType">Body Type</Label>
           <Select
-            onValueChange={(value) => setValue("bodyType", value)}
+            onValueChange={(value) => {
+              if (value === null) return;
+              setValue("bodyType", value);
+            }}
             defaultValue={getValues("bodyType")}
           >
             <SelectTrigger className={errors.bodyType ? "border-red-500" : ""}>
@@ -500,7 +513,10 @@ export function CarFormFields({
         <div className="space-y-2">
           <Label htmlFor="status">Status</Label>
           <Select
-            onValueChange={(value) => setValue("status", value as CarStatus)}
+            onValueChange={(value) => {
+              if (value === null) return;
+              setValue("status", value as CarStatus);
+            }}
             defaultValue={getValues("status")}
           >
             <SelectTrigger>

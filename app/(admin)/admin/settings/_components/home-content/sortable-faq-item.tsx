@@ -70,15 +70,17 @@ export const SortableFAQItem = ({
           <Pencil className="h-4 w-4" />
         </Button>
         <AlertDialog>
-          <AlertDialogTrigger asChild>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="text-red-500 hover:text-red-600"
-              disabled={isDeleting}
-            >
+          <AlertDialogTrigger
+            render={
+              <Button
+                variant="ghost"
+                size="icon"
+                className="text-red-500 hover:text-red-600"
+                disabled={isDeleting}
+              />
+            }
+          >
               <Trash2 className="h-4 w-4" />
-            </Button>
           </AlertDialogTrigger>
           <AlertDialogContent>
             <AlertDialogHeader>

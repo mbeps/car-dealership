@@ -169,7 +169,8 @@ export function CarDetails({
   };
 
   // Handle status change
-  const handleStatusChange = async (newStatus: string) => {
+  const handleStatusChange = async (newStatus: string | null) => {
+    if (!newStatus) return;
     await handleUpdateStatus(car.id, newStatus as CarStatus);
   };
 
@@ -381,16 +382,16 @@ export function CarDetails({
             <Button
               variant="outline"
               className="flex-1 flex items-center justify-center gap-2"
-              asChild
+              render={
+                <Link
+                  href={`https://www.check-mot.service.gov.uk/results?registration=${car.numberPlate}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                />
+              }
             >
-              <Link
-                href={`https://www.check-mot.service.gov.uk/results?registration=${car.numberPlate}`}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <Car className="h-5 w-5" />
-                View MOT
-              </Link>
+              <Car className="h-5 w-5" />
+              View MOT
             </Button>
           </div>
         </div>
