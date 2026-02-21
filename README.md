@@ -63,7 +63,7 @@ These are the main technologies that were used in this project:
 
 # Requirements
 These are the requirements needed to run the project:
-- Node 20 LTS or higher
+- Node 22 LTS or higher
 - Yarn package manager
 - Supabase account
 - Arcjet account
