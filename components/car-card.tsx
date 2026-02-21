@@ -8,7 +8,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { toggleSavedCar } from "@/actions/car-listing";
-import { useAuth } from "@/lib/auth-context";
+import { useUser } from "@/hooks/useUser";
+import useAuthModal from "@/hooks/useAuthModal";
 import { useRouter } from "next/navigation";
 import useFetch from "@/hooks/use-fetch";
 import { formatCurrency } from "@/lib/helpers/format-currency";
@@ -20,7 +21,9 @@ interface CarCardProps {
 }
 
 export const CarCard = ({ car }: CarCardProps) => {
-  const { isSignedIn, openSignInModal } = useAuth();
+  const { user } = useUser();
+  const isSignedIn = !!user;
+  const { onOpen: openSignInModal } = useAuthModal();
   const router = useRouter();
   const [isSaved, setIsSaved] = useState(car.wishlisted || false);
 

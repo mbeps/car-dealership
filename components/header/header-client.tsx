@@ -5,7 +5,10 @@ import Link from "next/link";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
-import { useAuth } from "@/lib/auth-context";
+import { useUser } from "@/hooks/useUser";
+import useAuthModal from "@/hooks/useAuthModal";
+import { useSupabaseClient } from "@/providers/SupabaseProvider";
+import { useRouter } from "next/navigation";
 import { ROUTES } from "@/constants/routes";
 import { UserRoleEnum as UserRole } from "@/enums/user-role";
 import { DesktopNav } from "./desktop-nav";
@@ -39,7 +42,16 @@ const HeaderClient = ({
   isAdminPage = false,
   userRole = null,
 }: HeaderClientProps) => {
-  const { user, signOut, openSignInModal } = useAuth();
+  const { user } = useUser();
+  const { onOpen: openSignInModal } = useAuthModal();
+  const supabaseClient = useSupabaseClient();
+  const router = useRouter();
+
+  const signOut = async () => {
+    await supabaseClient.auth.signOut();
+    router.push(ROUTES.HOME);
+  };
+
   const isAuthenticated = !!user;
   const isAdmin = userRole === UserRole.ADMIN;
 
