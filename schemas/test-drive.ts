@@ -1,7 +1,9 @@
 import * as z from "zod";
 
 export const testDriveSchema = z.object({
-  date: z.date({ required_error: "Please select a date for your test drive" }),
+  date: z.date({ 
+    message: "Please select a date for your test drive"
+  }),
   timeSlot: z.string().min(1, "Please select a time slot"),
   notes: z.string().optional(),
 });

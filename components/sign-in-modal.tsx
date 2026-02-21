@@ -19,33 +19,19 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { requestPasswordReset } from "@/actions/auth";
 import { forgotPasswordSchema } from "@/schemas/forgot-password";
 
-/**
- * Props for the SignInModal component.
- */
-interface SignInModalProps {
-  /** Controls modal visibility */
-  open: boolean;
-  /** Callback when modal open state changes */
-  onOpenChange: (open: boolean) => void;
-  /** Optional URL to redirect after successful sign-in */
-  redirectUrl?: string;
-}
+import useAuthModal from "@/hooks/useAuthModal";
 
 /**
  * Modal dialog for user authentication.
  * Supports email/password sign-in, Google OAuth, and password reset.
- * Used by AuthProvider to prompt authentication for protected actions.
+ * Used globally to prompt authentication for protected actions.
  *
- * @param props - Component props
  * @returns Sign-in modal dialog
  * @see useSignIn - Hook handling sign-in logic
- * @see AuthProvider - Context managing modal state
+ * @see useAuthModal - Hook managing modal state
  */
-export function SignInModal({
-  open,
-  onOpenChange,
-  redirectUrl,
-}: SignInModalProps) {
+export function SignInModal() {
+  const { isOpen, onClose, redirectUrl } = useAuthModal();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showForgotPassword, setShowForgotPassword] = useState(false);
@@ -56,7 +42,7 @@ export function SignInModal({
   const { loading, error, success, signInWithEmail, signInWithGoogle } =
     useSignIn({
       onSuccess: () => {
-        onOpenChange(false);
+        onClose();
         setEmail("");
         setPassword("");
       },
@@ -86,7 +72,7 @@ export function SignInModal({
       // Validate email
       const validation = forgotPasswordSchema.safeParse({ email });
       if (!validation.success) {
-        setResetError(validation.error.errors[0].message);
+        setResetError(validation.error.issues[0].message);
         return;
       }
 
@@ -119,7 +105,7 @@ export function SignInModal({
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle className="text-2xl font-bold">
@@ -290,7 +276,7 @@ export function SignInModal({
               <Link
                 href={ROUTES.SIGN_UP}
                 className="text-blue-600 hover:underline font-medium"
-                onClick={() => onOpenChange(false)}
+                onClick={onClose}
               >
                 Sign up
               </Link>

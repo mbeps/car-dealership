@@ -58,7 +58,7 @@ export const HomeContentForm = () => {
   const [isFAQDialogOpen, setIsFAQDialogOpen] = useState(false);
   const [editingFAQ, setEditingFAQ] = useState<FAQ | null>(null);
 
-  const faqForm = useForm({
+  const faqForm = useForm<FAQFormValues>({
     resolver: zodResolver(faqSchema),
     defaultValues: {
       question: "",

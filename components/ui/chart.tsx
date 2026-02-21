@@ -125,6 +125,10 @@ function ChartTooltipContent({
     indicator?: "line" | "dot" | "dashed"
     nameKey?: string
     labelKey?: string
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    label?: any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    payload?: any[]
   }) {
   const { config } = useChart()
 
@@ -256,9 +260,11 @@ function ChartLegendContent({
   verticalAlign = "bottom",
   nameKey,
 }: React.ComponentProps<"div"> &
-  Pick<RechartsPrimitive.LegendProps, "payload" | "verticalAlign"> & {
+  Pick<RechartsPrimitive.LegendProps, "verticalAlign"> & {
     hideIcon?: boolean
     nameKey?: string
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    payload?: any[]
   }) {
   const { config } = useChart()
 
@@ -275,8 +281,10 @@ function ChartLegendContent({
       )}
     >
       {payload
-        .filter((item) => item.type !== "none")
-        .map((item) => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        .filter((item: any) => item.type !== "none")
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        .map((item: any) => {
           const key = `${nameKey || item.dataKey || "value"}`
           const itemConfig = getPayloadConfigFromPayload(config, item, key)
 

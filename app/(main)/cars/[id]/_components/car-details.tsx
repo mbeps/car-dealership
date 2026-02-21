@@ -24,7 +24,8 @@ import {
 } from "@/components/ui/select";
 import { useCarAdmin } from "@/hooks/use-car-admin";
 import useFetch from "@/hooks/use-fetch";
-import { useAuth } from "@/lib/auth-context";
+import { useUser } from "@/hooks/useUser";
+import useAuthModal from "@/hooks/useAuthModal";
 import { formatCurrency } from "@/lib/helpers/format-currency";
 import { ROUTES } from "@/constants/routes";
 import { SerializedCar } from "@/types/car/serialized-car";
@@ -81,7 +82,9 @@ export function CarDetails({
   isAdmin?: boolean;
 }) {
   const router = useRouter();
-  const { isSignedIn, openSignInModal } = useAuth();
+  const { user } = useUser();
+  const isSignedIn = !!user;
+  const { onOpen: openSignInModal } = useAuthModal();
   const [isWishlisted, setIsWishlisted] = useState(car.wishlisted);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 

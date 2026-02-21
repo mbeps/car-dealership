@@ -44,10 +44,10 @@ import useFetch from "@/hooks/use-fetch";
 import { getUsers, updateUserRole } from "@/actions/settings";
 import { User } from "@/types/user/user";
 import { UserRoleEnum as UserRole } from "@/enums/user-role";
-import { useAuth } from "@/lib/auth-context";
+import { useUser } from "@/hooks/useUser";
 
 export const AdminUsersList = () => {
-  const { user: authUser } = useAuth();
+  const { user: authUser } = useUser();
   const [userSearch, setUserSearch] = useState("");
   const [confirmAdminDialog, setConfirmAdminDialog] = useState(false);
   const [userToPromote, setUserToPromote] = useState<User | null>(null);

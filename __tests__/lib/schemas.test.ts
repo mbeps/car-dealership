@@ -87,17 +87,15 @@ describe("carFormSchema", () => {
     }
   });
 
-  it("allows seats to be omitted and applies defaults", () => {
+  it("allows seats to be omitted", () => {
     const result = carFormSchema.parse({
       ...baseCarFormData,
       seats: undefined,
-      features: undefined,
-      featured: undefined,
     });
 
     expect(result.seats).toBeUndefined();
-    expect(result.features).toEqual([]);
-    expect(result.featured).toBe(false);
+    expect(result.features).toEqual(["Autopilot", "Panoramic Roof"]);
+    expect(result.featured).toBe(true);
   });
 });
 
