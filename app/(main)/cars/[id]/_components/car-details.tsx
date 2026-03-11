@@ -257,7 +257,7 @@ export function CarDetails({
                     href={`https://wa.me/${
                       testDriveInfo.dealership?.whatsappPhone?.replace(
                         /[^0-9]/g,
-                        ""
+                        "",
                       ) || ""
                     }`}
                     target="_blank"
@@ -349,7 +349,7 @@ export function CarDetails({
                     {testDriveInfo.userTestDrive
                       ? `Booked for ${format(
                           new Date(testDriveInfo.userTestDrive.bookingDate),
-                          "EEEE, MMMM d, yyyy"
+                          "EEEE, MMMM d, yyyy",
                         )}`
                       : "Book Test Drive"}
                   </Button>
@@ -358,10 +358,10 @@ export function CarDetails({
             )}
 
           {/* Secondary Actions (moved) - take full available width */}
-          <div className="flex flex-col sm:flex-row mt-4 gap-4 w-full">
+          <div className="grid grid-cols-1 sm:grid-cols-3 mt-4 gap-4 w-full">
             <Button
               variant="outline"
-              className={`flex-1 flex items-center justify-center gap-2 ${
+              className={`w-full flex items-center justify-center gap-2 ${
                 isWishlisted ? "text-red-500" : ""
               }`}
               onClick={handleSaveCar}
@@ -375,7 +375,7 @@ export function CarDetails({
 
             <Button
               variant="outline"
-              className="flex-1 flex items-center justify-center gap-2"
+              className="w-full flex items-center justify-center gap-2"
               onClick={handleShare}
             >
               <Share2 className="h-5 w-5" />
@@ -384,7 +384,7 @@ export function CarDetails({
 
             <Button
               variant="outline"
-              className="flex-1 flex items-center justify-center gap-2"
+              className="w-full flex items-center justify-center gap-2"
               render={
                 <Link
                   href={`https://www.check-mot.service.gov.uk/results?registration=${car.numberPlate}`}
@@ -518,7 +518,7 @@ export function CarDetails({
                   {testDriveInfo.dealership?.address ? (
                     <a
                       href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
-                        testDriveInfo.dealership.address
+                        testDriveInfo.dealership.address,
                       )}`}
                       target="_blank"
                       rel="noopener noreferrer"
@@ -568,7 +568,7 @@ export function CarDetails({
                       .sort(
                         (
                           a: SerializedWorkingHour,
-                          b: SerializedWorkingHour
+                          b: SerializedWorkingHour,
                         ) => {
                           const days = [
                             DayOfWeek.MONDAY,
@@ -583,7 +583,7 @@ export function CarDetails({
                             days.indexOf(a.dayOfWeek) -
                             days.indexOf(b.dayOfWeek)
                           );
-                        }
+                        },
                       )
                       .map((day: SerializedWorkingHour) => (
                         <div
@@ -617,8 +617,8 @@ export function CarDetails({
                           {index < 5
                             ? "9:00 - 18:00"
                             : index === 5
-                            ? "10:00 - 16:00"
-                            : "Closed"}
+                              ? "10:00 - 16:00"
+                              : "Closed"}
                         </span>
                       </div>
                     ))}
