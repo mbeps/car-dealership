@@ -1,5 +1,7 @@
 # **Car Dealership Web App**
 
+<img width="1000" height="625" alt="image" src="https://github.com/user-attachments/assets/2bd09148-6df0-4cb6-bdcc-ab1207919107" />
+
 ---
 
 A full-stack web application for buying and selling cars.
