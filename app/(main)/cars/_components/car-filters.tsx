@@ -53,15 +53,17 @@ export const CarFilters = ({ filters }: { filters: CarFiltersData }) => {
         <div className="flex items-center">
           <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
             <SheetTrigger
-              render={<Button variant="outline" className="flex items-center gap-2" />}
+              render={
+                <Button variant="outline" className="flex items-center gap-2" />
+              }
             >
-                <Filter className="h-4 w-4" />
-                Filters
-                {activeFilterCount > 0 && (
-                  <Badge className="ml-1 h-5 w-5 rounded-full p-0 flex items-center justify-center">
-                    {activeFilterCount}
-                  </Badge>
-                )}
+              <Filter className="h-4 w-4" />
+              Filters
+              {activeFilterCount > 0 && (
+                <Badge className="ml-1 h-5 w-5 rounded-full p-0 flex items-center justify-center">
+                  {activeFilterCount}
+                </Badge>
+              )}
             </SheetTrigger>
             <SheetContent
               side="left"
@@ -71,7 +73,7 @@ export const CarFilters = ({ filters }: { filters: CarFiltersData }) => {
                 <SheetTitle>Filters</SheetTitle>
               </SheetHeader>
 
-              <div className="py-6">
+              <div className="px-6 py-6">
                 <CarFilterControls
                   filters={filters}
                   currentFilters={currentFilters}
@@ -143,7 +145,7 @@ export const CarFilters = ({ filters }: { filters: CarFiltersData }) => {
             )}
           </div>
 
-          <div className="p-4">
+          <div className="p-6">
             <CarFilterControls
               filters={filters}
               currentFilters={currentFilters}

@@ -201,7 +201,7 @@ export const CarFilterControls = ({
       {/* Price Range */}
       <div className="space-y-3">
         <h3 className="font-medium">Price Range</h3>
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-2 gap-4">
           <div className="space-y-2">
             <Label htmlFor="minPrice" className="text-xs text-gray-600">
               Minimum
@@ -254,7 +254,7 @@ export const CarFilterControls = ({
       {/* Mileage Range */}
       <div className="space-y-3">
         <h3 className="font-medium">Mileage Range</h3>
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-2 gap-4">
           <div className="space-y-2">
             <Label htmlFor="minMileage" className="text-xs text-gray-600">
               Minimum
@@ -307,7 +307,7 @@ export const CarFilterControls = ({
       {/* Age Range */}
       <div className="space-y-3">
         <h3 className="font-medium">Age Range (Years)</h3>
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-2 gap-4">
           <div className="space-y-2">
             <Label htmlFor="minAge" className="text-xs text-gray-600">
               Minimum
@@ -386,7 +386,7 @@ export const CarFilterControls = ({
                 }`}
                 onClick={() => {
                   section.onChange(
-                    section.currentValue === option.value ? "" : option.value
+                    section.currentValue === option.value ? "" : option.value,
                   );
                 }}
               >

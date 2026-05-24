@@ -32,7 +32,7 @@ export const getHomePageContent = unstable_cache(
     return data;
   },
   [HOME_CONTENT_TAG],
-  { tags: [HOME_CONTENT_TAG] }
+  { tags: [HOME_CONTENT_TAG] },
 );
 
 /**
@@ -55,7 +55,7 @@ export const getFAQs = unstable_cache(
     return data;
   },
   [FAQ_TAG],
-  { tags: [FAQ_TAG] }
+  { tags: [FAQ_TAG] },
 );
 
 /**
@@ -63,7 +63,7 @@ export const getFAQs = unstable_cache(
  * Admin only. Supports partial updates.
  */
 export async function updateHomePageContent(
-  data: Partial<z.infer<typeof homePageContentSchema>>
+  data: Partial<z.infer<typeof homePageContentSchema>>,
 ): Promise<ActionResponse<HomePageContent>> {
   try {
     const validated = homePageContentSchema.partial().parse(data);
@@ -99,7 +99,7 @@ export async function updateHomePageContent(
 
     if (error) throw new Error(error.message);
 
-    revalidateTag(HOME_CONTENT_TAG);
+    revalidateTag(HOME_CONTENT_TAG, "max");
     revalidatePath("/", "layout");
     return { success: true, data: updated };
   } catch (error) {
@@ -112,7 +112,7 @@ export async function updateHomePageContent(
  * Admin only.
  */
 export async function addFAQ(
-  data: z.infer<typeof faqSchema>
+  data: z.infer<typeof faqSchema>,
 ): Promise<ActionResponse<FAQ>> {
   try {
     const validated = faqSchema.parse(data);
@@ -143,7 +143,7 @@ export async function addFAQ(
 
     if (error) throw new Error(error.message);
 
-    revalidateTag(FAQ_TAG);
+    revalidateTag(FAQ_TAG, "max");
     revalidatePath("/", "layout");
     return { success: true, data: newFAQ };
   } catch (error) {
@@ -157,7 +157,7 @@ export async function addFAQ(
  */
 export async function updateFAQ(
   id: string,
-  data: z.infer<typeof faqSchema>
+  data: z.infer<typeof faqSchema>,
 ): Promise<ActionResponse<FAQ>> {
   try {
     const validated = faqSchema.parse(data);
@@ -189,7 +189,7 @@ export async function updateFAQ(
 
     if (error) throw new Error(error.message);
 
-    revalidateTag(FAQ_TAG);
+    revalidateTag(FAQ_TAG, "max");
     revalidatePath("/", "layout");
     return { success: true, data: updated };
   } catch (error) {
@@ -226,7 +226,7 @@ export async function deleteFAQ(id: string): Promise<ActionResponse<void>> {
 
     if (error) throw new Error(error.message);
 
-    revalidateTag(FAQ_TAG);
+    revalidateTag(FAQ_TAG, "max");
     revalidatePath("/", "layout");
     return { success: true, data: undefined };
   } catch (error) {
@@ -239,7 +239,7 @@ export async function deleteFAQ(id: string): Promise<ActionResponse<void>> {
  * Admin only. Accepts an array of {id, order} pairs.
  */
 export async function reorderFAQs(
-  updates: Array<{ id: string; order: number }>
+  updates: Array<{ id: string; order: number }>,
 ): Promise<ActionResponse<FAQ[]>> {
   try {
     const supabase = await createClient();
@@ -263,7 +263,7 @@ export async function reorderFAQs(
 
     // Update each FAQ's order field
     const updatePromises = updates.map(({ id, order }) =>
-      supabase.from("FAQ").update({ order }).eq("id", id)
+      supabase.from("FAQ").update({ order }).eq("id", id),
     );
 
     await Promise.all(updatePromises);
@@ -276,7 +276,7 @@ export async function reorderFAQs(
 
     if (error) throw new Error(error.message);
 
-    revalidateTag(FAQ_TAG);
+    revalidateTag(FAQ_TAG, "max");
     revalidatePath("/", "layout");
     return { success: true, data: updatedFAQs };
   } catch (error) {

@@ -108,7 +108,7 @@ export function CarFormFields({
         const validFiles = acceptedFiles.filter((file) => {
           if (file.size > 1024 * 1024) {
             toast.error(
-              `${file.name} exceeds the 1MB limit and will be skipped`
+              `${file.name} exceeds the 1MB limit and will be skipped`,
             );
             return false;
           }
@@ -140,7 +140,7 @@ export function CarFormFields({
           toast.success(
             `Added ${processedImages.length} image${
               processedImages.length > 1 ? "s" : ""
-            }`
+            }`,
           );
         } else {
           toast.error("No images were added");
@@ -151,7 +151,7 @@ export function CarFormFields({
 
       void processFiles();
     },
-    [newImages, onImageErrorChange, onNewImagesChange]
+    [newImages, onImageErrorChange, onNewImagesChange],
   );
 
   const {
@@ -195,7 +195,7 @@ export function CarFormFields({
     const currentFeatures = watch("features") || [];
     setValue(
       "features",
-      currentFeatures.filter((_, i) => i !== index)
+      currentFeatures.filter((_, i) => i !== index),
     );
   };
 
@@ -223,13 +223,13 @@ export function CarFormFields({
                   aria-expanded={makePopoverOpen}
                   className={cn(
                     "w-full justify-between",
-                    errors.carMakeId ? "border-red-500" : ""
+                    errors.carMakeId ? "border-red-500" : "",
                   )}
                 />
               }
             >
-                {selectedMake ? selectedMake.name : "Select make"}
-                <ChevronsUpDown className="ml-1 h-4 w-4 shrink-0 opacity-50" />
+              {selectedMake ? selectedMake.name : "Select make"}
+              <ChevronsUpDown className="ml-1 h-4 w-4 shrink-0 opacity-50" />
             </PopoverTrigger>
             <PopoverContent className="w-[280px] p-0">
               <Command>
@@ -254,7 +254,7 @@ export function CarFormFields({
                             "mr-2 h-4 w-4",
                             make.id === selectedMakeId
                               ? "opacity-100"
-                              : "opacity-0"
+                              : "opacity-0",
                           )}
                         />
                         {make.name}
@@ -344,13 +344,13 @@ export function CarFormFields({
                   aria-expanded={colorPopoverOpen}
                   className={cn(
                     "w-full justify-between",
-                    errors.carColorId ? "border-red-500" : ""
+                    errors.carColorId ? "border-red-500" : "",
                   )}
                 />
               }
             >
-                {selectedColor ? selectedColor.name : "Select color"}
-                <ChevronsUpDown className="ml-1 h-4 w-4 shrink-0 opacity-50" />
+              {selectedColor ? selectedColor.name : "Select color"}
+              <ChevronsUpDown className="ml-1 h-4 w-4 shrink-0 opacity-50" />
             </PopoverTrigger>
             <PopoverContent className="w-[280px] p-0">
               <Command>
@@ -375,7 +375,7 @@ export function CarFormFields({
                             "mr-2 h-4 w-4",
                             color.id === selectedColorId
                               ? "opacity-100"
-                              : "opacity-0"
+                              : "opacity-0",
                           )}
                         />
                         {color.name}
@@ -572,7 +572,7 @@ export function CarFormFields({
             id="features"
             value={featureInput}
             onChange={(e) => setFeatureInput(e.target.value)}
-            onKeyPress={handleFeatureKeyPress}
+            onKeyDown={handleFeatureKeyPress}
             placeholder="e.g. Bluetooth, Navigation System, Leather Seats"
           />
           <Button
