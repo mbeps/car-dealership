@@ -1,6 +1,8 @@
 import Footer from "@/components/footer";
 import Header from "@/components/header";
+import { getPublicBranding } from "@/actions/settings";
 import { DEALERSHIP_NAME } from "@/constants/dealership-name";
+import { resolveIconHrefs } from "@/lib/helpers/branding";
 import SupabaseProvider from "@/providers/SupabaseProvider";
 import UserProvider from "@/providers/UserProvider";
 import { SignInModal } from "@/components/sign-in-modal";
@@ -11,10 +13,20 @@ import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"] });
 
-export const metadata: Metadata = {
-  title: DEALERSHIP_NAME,
-  description: "Find your Dream Car",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const branding = await getPublicBranding();
+  const iconHrefs = resolveIconHrefs(branding);
+
+  return {
+    title: DEALERSHIP_NAME,
+    description: "Find your Dream Car",
+    icons: {
+      icon: iconHrefs.map((href) => ({
+        url: href,
+      })),
+    },
+  };
+}
 
 export default function RootLayout({
   children,
@@ -23,9 +35,6 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <head>
-        <link rel="icon" href="/logo-white.png" sizes="any" />
-      </head>
       <body className={`${inter.className}`}>
         <SupabaseProvider>
           <UserProvider>

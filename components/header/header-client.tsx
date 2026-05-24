@@ -11,6 +11,7 @@ import { useSupabaseClient } from "@/providers/SupabaseProvider";
 import { useRouter } from "next/navigation";
 import { ROUTES } from "@/constants/routes";
 import { UserRoleEnum as UserRole } from "@/enums/user-role";
+import { resolveHeaderLogoSrc } from "@/lib/helpers/branding";
 import { DesktopNav } from "./desktop-nav";
 import { MobileNav } from "./mobile-nav";
 import { UserMenu } from "./user-menu";
@@ -23,6 +24,8 @@ import {
 interface HeaderClientProps {
   isAdminPage?: boolean;
   userRole?: UserRole | null;
+  logoUrl?: string | null;
+  logoVersion?: string | null;
 }
 
 /*
@@ -41,6 +44,8 @@ interface HeaderClientProps {
 const HeaderClient = ({
   isAdminPage = false,
   userRole = null,
+  logoUrl = null,
+  logoVersion = null,
 }: HeaderClientProps) => {
   const { user } = useUser();
   const { onOpen: openSignInModal } = useAuthModal();
@@ -54,6 +59,8 @@ const HeaderClient = ({
 
   const isAuthenticated = !!user;
   const isAdmin = userRole === UserRole.ADMIN;
+  const logoSrc = resolveHeaderLogoSrc({ logoUrl, logoVersion });
+  const isSvgLogo = /\.svg($|\?)/i.test(logoSrc);
 
   // Determine which navigation items to show
   const desktopNavItems = isAdminPage ? ADMIN_NAV_ITEMS : MAIN_NAV_ITEMS;
@@ -70,10 +77,11 @@ const HeaderClient = ({
               className="flex items-center gap-2"
             >
               <Image
-                src="/logo.png"
+                src={logoSrc}
                 alt="Site Logo"
                 width={200}
                 height={60}
+                unoptimized={isSvgLogo}
                 className="h-12 w-auto object-contain"
               />
               {isAdminPage && (

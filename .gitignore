@@ -43,7 +43,10 @@ next-env.d.ts
 # agents
 AGENTS.md
 .vscode/mcp.json
-.github/copilot-instructions.md
+copilot-instructions.md
 .github/skills/**
+
+docs/**
+wiki/**
 
 todo.md
