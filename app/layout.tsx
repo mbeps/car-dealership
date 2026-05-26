@@ -16,10 +16,14 @@ const inter = Inter({ subsets: ["latin"] });
 export async function generateMetadata(): Promise<Metadata> {
   const branding = await getPublicBranding();
   const iconHrefs = resolveIconHrefs(branding);
+  const name = branding.name || DEALERSHIP_NAME;
 
   return {
-    title: DEALERSHIP_NAME,
-    description: "Find your Dream Car",
+    title: {
+      default: name,
+      template: `%s | ${name}`,
+    },
+    description: `Find your Dream Car at ${name}`,
     icons: {
       icon: iconHrefs.map((href) => ({
         url: href,

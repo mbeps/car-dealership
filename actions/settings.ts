@@ -15,11 +15,12 @@ import {
   buildVersionedLogoPath,
 } from "@/lib/helpers/logo-upload";
 import type { LogoUploadPayload } from "@/schemas/logo-upload";
+import { DEALERSHIP_NAME } from "@/constants/dealership-name";
 
 const BRANDING_CACHE_TAG = "public-branding";
 const BRANDING_CACHE_TTL_SECONDS = 86_400;
 
-type PublicBranding = Pick<DealershipInfo, "logoUrl" | "logoVersion">;
+type PublicBranding = Pick<DealershipInfo, "logoUrl" | "logoVersion" | "name">;
 
 function getErrorMessage(error: unknown): string {
   return error instanceof Error ? error.message : "Unexpected error";
@@ -30,19 +31,21 @@ const getCachedPublicBranding = unstable_cache(
     const supabase = createPublicClient();
     const { data, error } = await supabase
       .from("DealershipInfo")
-      .select("logoUrl, logoVersion")
+      .select("logoUrl, logoVersion, name")
       .single();
 
     if (error || !data) {
       return {
         logoUrl: null,
         logoVersion: null,
+        name: DEALERSHIP_NAME,
       };
     }
 
     return {
       logoUrl: data.logoUrl,
       logoVersion: data.logoVersion,
+      name: data.name || DEALERSHIP_NAME,
     };
   },
   ["dealership-public-branding"],
@@ -97,6 +100,7 @@ export async function getPublicBranding(): Promise<PublicBranding> {
     return {
       logoUrl: null,
       logoVersion: null,
+      name: DEALERSHIP_NAME,
     };
   }
 }
@@ -396,6 +400,7 @@ export async function updateDealershipInfo(
     revalidatePath(ROUTES.ADMIN_SETTINGS);
     // Revalidate test-drive pages as dealership info is shown there
     revalidatePath("/test-drive");
+    revalidateBrandingPages();
 
     return {
       success: true,

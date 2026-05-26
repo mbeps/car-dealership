@@ -3,12 +3,11 @@ import { notFound, redirect } from "next/navigation";
 import { TestDriveForm } from "./_components/test-drive-form";
 import { isCurrentUserAdmin } from "@/actions/auth";
 import { ROUTES } from "@/constants/routes";
-import { DEALERSHIP_NAME } from "@/constants/dealership-name";
 
 export async function generateMetadata() {
   return {
-    title: `Book Test Drive | ${DEALERSHIP_NAME}`,
-    description: `Schedule a test drive in few seconds`,
+    title: "Book Test Drive",
+    description: "Schedule a test drive in few seconds",
   };
 }
 

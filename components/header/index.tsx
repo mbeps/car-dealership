@@ -30,6 +30,7 @@ const Header = async ({ isAdminPage = false }: HeaderProps) => {
       userRole={userRole}
       logoUrl={branding.logoUrl}
       logoVersion={branding.logoVersion}
+      dealershipName={branding.name}
     />
   );
 };

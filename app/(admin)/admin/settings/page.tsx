@@ -1,8 +1,7 @@
 import { SettingsForm } from "./_components/settings-form";
-import { DEALERSHIP_NAME } from "@/constants/dealership-name";
 
 export const metadata = {
-  title: `Settings | ${DEALERSHIP_NAME} Admin`,
+  title: "Settings",
   description: "Manage dealership working hours and admin users",
 };
 

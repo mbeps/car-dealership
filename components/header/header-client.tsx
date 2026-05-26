@@ -10,6 +10,7 @@ import useAuthModal from "@/hooks/useAuthModal";
 import { useSupabaseClient } from "@/providers/SupabaseProvider";
 import { useRouter } from "next/navigation";
 import { ROUTES } from "@/constants/routes";
+import { DEALERSHIP_NAME } from "@/constants/dealership-name";
 import { UserRoleEnum as UserRole } from "@/enums/user-role";
 import { resolveHeaderLogoSrc } from "@/lib/helpers/branding";
 import { DesktopNav } from "./desktop-nav";
@@ -26,6 +27,7 @@ interface HeaderClientProps {
   userRole?: UserRole | null;
   logoUrl?: string | null;
   logoVersion?: string | null;
+  dealershipName?: string | null;
 }
 
 /*
@@ -35,6 +37,9 @@ interface HeaderClientProps {
  *
  * @param isAdminPage - Whether this is an admin page (shows admin navigation vs main site)
  * @param userRole - Current user's role for role-based navigation filtering
+ * @param logoUrl - Custom logo URL from branding settings
+ * @param logoVersion - Logo version for cache busting
+ * @param dealershipName - Dynamic dealership name for SEO and alt tags
  * @returns Complete header with desktop nav, mobile nav, and user menu
  * @see DesktopNav - Desktop navigation links component
  * @see MobileNav - Mobile bottom navigation component
@@ -46,6 +51,7 @@ const HeaderClient = ({
   userRole = null,
   logoUrl = null,
   logoVersion = null,
+  dealershipName = null,
 }: HeaderClientProps) => {
   const { user } = useUser();
   const { onOpen: openSignInModal } = useAuthModal();
@@ -78,7 +84,7 @@ const HeaderClient = ({
             >
               <Image
                 src={logoSrc}
-                alt="Site Logo"
+                alt={dealershipName || DEALERSHIP_NAME}
                 width={200}
                 height={60}
                 unoptimized={isSvgLogo}
