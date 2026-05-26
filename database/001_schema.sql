@@ -89,6 +89,12 @@ CREATE TABLE public."DealershipInfo" (
   "phone" TEXT NOT NULL DEFAULT '+1 (555) 123-4567',
   "email" TEXT NOT NULL DEFAULT 'contact@maruf-motors.com',
   "whatsappPhone" TEXT NOT NULL DEFAULT '+1 (555) 123-4567',
+  "logoUrl" TEXT,
+  "logoPath" TEXT,
+  "logoVersion" TEXT,
+  "logoMimeType" TEXT,
+  "logoSizeBytes" INTEGER,
+  "logoUpdatedAt" TIMESTAMP WITHOUT TIME ZONE,
   "createdAt" TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
   "updatedAt" TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT timezone('utc', now())
 );

@@ -1,7 +1,7 @@
 "use server";
 
 import { serializeCarData } from "@/lib/helpers/serialize-car";
-import { createClient } from "@/lib/supabase/supabase";
+import { createClient, createPublicClient } from "@/lib/supabase/supabase";
 import { revalidatePath } from "next/cache";
 import { ROUTES } from "@/constants/routes";
 import type {
@@ -33,7 +33,7 @@ type DatabaseClient = SupabaseClient;
  */
 async function getMakeIdBySlug(
   supabase: DatabaseClient,
-  slug: string
+  slug: string,
 ): Promise<string | null> {
   if (!slug) return null;
 
@@ -60,7 +60,7 @@ async function getMakeIdBySlug(
  */
 async function getColorIdBySlug(
   supabase: DatabaseClient,
-  slug: string
+  slug: string,
 ): Promise<string | null> {
   if (!slug) return null;
 
@@ -87,7 +87,7 @@ async function getColorIdBySlug(
  */
 async function getMakeIdsForSearch(
   supabase: DatabaseClient,
-  search: string
+  search: string,
 ): Promise<string[]> {
   if (!search) return [];
 
@@ -113,7 +113,7 @@ async function getMakeIdsForSearch(
  */
 async function getColorIdsForSearch(
   supabase: DatabaseClient,
-  search: string
+  search: string,
 ): Promise<string[]> {
   if (!search) return [];
 
@@ -141,7 +141,7 @@ async function getColorIdsForSearch(
  */
 async function getOrCreateDbUser(
   supabase: DatabaseClient,
-  authUser: SupabaseAuthUser
+  authUser: SupabaseAuthUser,
 ): Promise<DbUser> {
   const { data: user, error } = await supabase
     .from("User")
@@ -200,7 +200,7 @@ async function getOrCreateDbUser(
  */
 export async function getCarFilters(): Promise<ActionResponse<CarFiltersData>> {
   try {
-    const supabase = await createClient();
+    const supabase = createPublicClient();
 
     // Get makes and colors that currently have available cars
     const { data: makeAndColorRows } = await supabase
@@ -209,7 +209,7 @@ export async function getCarFilters(): Promise<ActionResponse<CarFiltersData>> {
         `
         carMake:CarMake(id, name, slug, country),
         carColor:CarColor(id, name, slug)
-      `
+      `,
       )
       .eq("status", CarStatus.AVAILABLE);
 
@@ -300,10 +300,10 @@ export async function getCarFilters(): Promise<ActionResponse<CarFiltersData>> {
     });
 
     const uniqueMakes = Array.from(uniqueMakesMap.values()).sort((a, b) =>
-      a.name.localeCompare(b.name)
+      a.name.localeCompare(b.name),
     );
     const uniqueColors = Array.from(uniqueColorsMap.values()).sort((a, b) =>
-      a.name.localeCompare(b.name)
+      a.name.localeCompare(b.name),
     );
     const uniqueBodyTypes = [
       ...new Set(bodyTypes?.map((b) => b.bodyType) || []),
@@ -353,7 +353,7 @@ export async function getCarFilters(): Promise<ActionResponse<CarFiltersData>> {
  * @see serializeCarData - Normalizes car data for client
  */
 export async function getCars(
-  filters: CarFilters = {}
+  filters: CarFilters = {},
 ): Promise<
   ActionResponse<{ cars: SerializedCar[]; pagination: PaginationInfo }>
 > {
@@ -429,7 +429,7 @@ export async function getCars(
         carMake:CarMake(id, name, slug),
         carColor:CarColor(id, name, slug)
       `,
-        { count: "exact" }
+        { count: "exact" },
       )
       .eq("status", CarStatus.AVAILABLE);
 
@@ -525,7 +525,7 @@ export async function getCars(
 
     // Serialize and check wishlist status
     const serializedCars = (cars || []).map((car) =>
-      serializeCarData(car, wishlisted.has(car.id))
+      serializeCarData(car, wishlisted.has(car.id)),
     );
 
     return {
@@ -556,7 +556,7 @@ export async function getCars(
  * @see ROUTES.SAVED_CARS - Page that displays wishlist
  */
 export async function toggleSavedCar(
-  carId: string
+  carId: string,
 ): Promise<ActionResponse<{ saved: boolean; message: string }>> {
   try {
     const supabase = await createClient();
@@ -691,7 +691,7 @@ export async function getCarById(carId: string): Promise<
         *,
         carMake:CarMake(id, name, slug),
         carColor:CarColor(id, name, slug)
-      `
+      `,
       )
       .eq("id", carId)
       .single();
@@ -750,7 +750,7 @@ export async function getCarById(carId: string): Promise<
         `
         *,
         workingHours:WorkingHour(*)
-      `
+      `,
       )
       .single();
 
@@ -819,7 +819,7 @@ export async function getSavedCars(): Promise<ActionResponse<SerializedCar[]>> {
           carMake:CarMake(id, name, slug),
           carColor:CarColor(id, name, slug)
         )
-      `
+      `,
       )
       .eq("userId", user.id)
       .order("savedAt", { ascending: false });

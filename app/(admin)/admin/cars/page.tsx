@@ -1,8 +1,7 @@
 import { CarsList } from "./_components/car-list";
-import { DEALERSHIP_NAME } from "@/constants/dealership-name";
 
 export const metadata = {
-  title: `Cars | ${DEALERSHIP_NAME} Admin`,
+  title: "Cars Management",
   description: "Manage cars in your marketplace",
 };
 

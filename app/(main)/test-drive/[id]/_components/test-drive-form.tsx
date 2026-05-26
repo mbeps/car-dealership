@@ -95,7 +95,7 @@ export function TestDriveForm({
   const router = useRouter();
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [bookingDetails, setBookingDetails] = useState<BookingDetails | null>(
-    null
+    null,
   );
 
   // Initialize react-hook-form with zod resolver
@@ -119,7 +119,7 @@ export function TestDriveForm({
   // Use useMemo to avoid changing existingBookings reference on every render
   const existingBookings = useMemo(
     () => testDriveInfo?.existingBookings || [],
-    [testDriveInfo?.existingBookings]
+    [testDriveInfo?.existingBookings],
   );
 
   // Watch date field to update available time slots
@@ -135,12 +135,12 @@ export function TestDriveForm({
 
     const selectedDayOfWeek = format(
       selectedDate,
-      "EEEE"
+      "EEEE",
     ).toUpperCase() as DayOfWeekEnum;
 
     // Find working hours for the selected day
     const daySchedule = dealership.workingHours.find(
-      (day) => day.dayOfWeek === selectedDayOfWeek
+      (day) => day.dayOfWeek === selectedDayOfWeek,
     );
 
     if (!daySchedule || !daySchedule.isOpen) {
@@ -197,7 +197,7 @@ export function TestDriveForm({
 
     // Find working hours for the day
     const daySchedule = dealership?.workingHours?.find(
-      (schedule) => schedule.dayOfWeek === dayOfWeek
+      (schedule) => schedule.dayOfWeek === dayOfWeek,
     );
 
     // Disable if dealership is closed on this day
@@ -207,7 +207,7 @@ export function TestDriveForm({
   // Submit handler
   const onSubmit = async (data: TestDriveFormData) => {
     const selectedSlot = availableTimeSlots.find(
-      (slot) => slot.id === data.timeSlot
+      (slot) => slot.id === data.timeSlot,
     );
 
     if (!selectedSlot) {
@@ -229,10 +229,10 @@ export function TestDriveForm({
         date: format(result.data.bookingDate, "EEEE, MMMM d, yyyy"),
         timeSlot: `${format(
           parseISO(`2022-01-01T${result.data.startTime}`),
-          "h:mm a"
+          "h:mm a",
         )} - ${format(
           parseISO(`2022-01-01T${result.data.endTime}`),
-          "h:mm a"
+          "h:mm a",
         )}`,
         notes: result.data.notes ?? undefined,
       });
@@ -311,7 +311,9 @@ export function TestDriveForm({
           <CardContent className="p-6">
             <h2 className="text-xl font-bold mb-4">Dealership Info</h2>
             <div className="text-sm">
-              <p className="font-medium">{DEALERSHIP_NAME}</p>
+              <p className="font-medium">
+                {testDriveInfo.dealership?.name || DEALERSHIP_NAME}
+              </p>
               <p className="text-gray-600 mt-1">
                 {dealership?.address || "Address not available"}
               </p>
@@ -352,15 +354,15 @@ export function TestDriveForm({
                               variant="outline"
                               className={cn(
                                 "w-full justify-start text-left font-normal",
-                                !field.value && "text-muted-foreground"
+                                !field.value && "text-muted-foreground",
                               )}
                             />
                           }
                         >
-                            <CalendarIcon className="mr-2 h-4 w-4" />
-                            {field.value
-                              ? format(field.value, "PPP")
-                              : "Pick a date"}
+                          <CalendarIcon className="mr-2 h-4 w-4" />
+                          {field.value
+                            ? format(field.value, "PPP")
+                            : "Pick a date"}
                         </PopoverTrigger>
                         <PopoverContent className="w-auto p-0">
                           <Calendar
@@ -405,8 +407,8 @@ export function TestDriveForm({
                               !selectedDate
                                 ? "Please select a date first"
                                 : availableTimeSlots.length === 0
-                                ? "No available slots on this date"
-                                : "Select a time slot"
+                                  ? "No available slots on this date"
+                                  : "Select a time slot"
                             }
                           />
                         </SelectTrigger>
@@ -517,7 +519,9 @@ export function TestDriveForm({
                 </div>
                 <div className="flex justify-between">
                   <span className="font-medium">Dealership:</span>
-                  <span>{DEALERSHIP_NAME}</span>
+                  <span>
+                    {testDriveInfo.dealership?.name || DEALERSHIP_NAME}
+                  </span>
                 </div>
               </div>
 

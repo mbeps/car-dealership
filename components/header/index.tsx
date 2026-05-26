@@ -1,4 +1,5 @@
 import { ensureProfile } from "@/actions/auth";
+import { getPublicBranding } from "@/actions/settings";
 import HeaderClient from "./header-client";
 
 interface HeaderProps {
@@ -17,10 +18,21 @@ interface HeaderProps {
  * @author Maruf Bepary
  */
 const Header = async ({ isAdminPage = false }: HeaderProps) => {
-  const user = await ensureProfile();
+  const [user, branding] = await Promise.all([
+    ensureProfile(),
+    getPublicBranding(),
+  ]);
   const userRole = user?.role || null;
 
-  return <HeaderClient isAdminPage={isAdminPage} userRole={userRole} />;
+  return (
+    <HeaderClient
+      isAdminPage={isAdminPage}
+      userRole={userRole}
+      logoUrl={branding.logoUrl}
+      logoVersion={branding.logoVersion}
+      dealershipName={branding.name}
+    />
+  );
 };
 
 export default Header;

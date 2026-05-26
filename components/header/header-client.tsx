@@ -10,7 +10,9 @@ import useAuthModal from "@/hooks/useAuthModal";
 import { useSupabaseClient } from "@/providers/SupabaseProvider";
 import { useRouter } from "next/navigation";
 import { ROUTES } from "@/constants/routes";
+import { DEALERSHIP_NAME } from "@/constants/dealership-name";
 import { UserRoleEnum as UserRole } from "@/enums/user-role";
+import { resolveHeaderLogoSrc } from "@/lib/helpers/branding";
 import { DesktopNav } from "./desktop-nav";
 import { MobileNav } from "./mobile-nav";
 import { UserMenu } from "./user-menu";
@@ -23,6 +25,9 @@ import {
 interface HeaderClientProps {
   isAdminPage?: boolean;
   userRole?: UserRole | null;
+  logoUrl?: string | null;
+  logoVersion?: string | null;
+  dealershipName?: string | null;
 }
 
 /*
@@ -32,6 +37,9 @@ interface HeaderClientProps {
  *
  * @param isAdminPage - Whether this is an admin page (shows admin navigation vs main site)
  * @param userRole - Current user's role for role-based navigation filtering
+ * @param logoUrl - Custom logo URL from branding settings
+ * @param logoVersion - Logo version for cache busting
+ * @param dealershipName - Dynamic dealership name for SEO and alt tags
  * @returns Complete header with desktop nav, mobile nav, and user menu
  * @see DesktopNav - Desktop navigation links component
  * @see MobileNav - Mobile bottom navigation component
@@ -41,6 +49,9 @@ interface HeaderClientProps {
 const HeaderClient = ({
   isAdminPage = false,
   userRole = null,
+  logoUrl = null,
+  logoVersion = null,
+  dealershipName = null,
 }: HeaderClientProps) => {
   const { user } = useUser();
   const { onOpen: openSignInModal } = useAuthModal();
@@ -54,6 +65,8 @@ const HeaderClient = ({
 
   const isAuthenticated = !!user;
   const isAdmin = userRole === UserRole.ADMIN;
+  const logoSrc = resolveHeaderLogoSrc({ logoUrl, logoVersion });
+  const isSvgLogo = /\.svg($|\?)/i.test(logoSrc);
 
   // Determine which navigation items to show
   const desktopNavItems = isAdminPage ? ADMIN_NAV_ITEMS : MAIN_NAV_ITEMS;
@@ -70,10 +83,11 @@ const HeaderClient = ({
               className="flex items-center gap-2"
             >
               <Image
-                src="/logo.png"
-                alt="Site Logo"
+                src={logoSrc}
+                alt={dealershipName || DEALERSHIP_NAME}
                 width={200}
                 height={60}
+                unoptimized={isSvgLogo}
                 className="h-12 w-auto object-contain"
               />
               {isAdminPage && (
