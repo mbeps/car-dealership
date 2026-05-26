@@ -54,21 +54,21 @@ export const UserMenu = ({
       <DropdownMenuTrigger
         render={<Button variant="ghost" size="icon" className="rounded-full" />}
       >
-          {user?.user_metadata?.avatar_url || user?.user_metadata?.picture ? (
-            <Image
-              src={user.user_metadata.avatar_url || user.user_metadata.picture}
-              alt="Profile"
-              width={40}
-              height={40}
-              className="rounded-full"
-            />
-          ) : (
-            <div className="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center text-white font-semibold">
-              {user?.email?.charAt(0).toUpperCase() || "U"}
-            </div>
-          )}
+        {user?.user_metadata?.avatar_url || user?.user_metadata?.picture ? (
+          <Image
+            src={user.user_metadata.avatar_url || user.user_metadata.picture}
+            alt="Profile"
+            width={40}
+            height={40}
+            className="rounded-full"
+          />
+        ) : (
+          <div className="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center text-white font-semibold">
+            {user?.email?.charAt(0).toUpperCase() || "U"}
+          </div>
+        )}
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end">
+      <DropdownMenuContent align="end" className="w-64 max-w-xs">
         <div className="px-2 py-1.5 text-sm font-medium">
           {user?.user_metadata?.full_name || user?.email}
         </div>
