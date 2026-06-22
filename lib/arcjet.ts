@@ -1,4 +1,5 @@
 import arcjet, { tokenBucket } from "@arcjet/next";
+import { env } from "@/lib/env";
 
 /**
  * Arcjet rate limiting config.
@@ -9,7 +10,7 @@ import arcjet, { tokenBucket } from "@arcjet/next";
  * @see https://docs.arcjet.com/rate-limiting/token-bucket
  */
 const aj = arcjet({
-  key: process.env.ARCJET_KEY!,
+  key: env.ARCJET_KEY,
   characteristics: ["ip.src"], // Track based on User IP
   rules: [
     // Rate limiting specifically for collection creation

@@ -1,10 +1,11 @@
 import * as z from "zod";
+import { FILE_LIMITS } from "@/lib/env";
 
 export type LogoExtension = "png" | "jpg" | "jpeg" | "ico" | "svg";
 
-export const MAX_BYTES_PNG_JPEG = 1_048_576;
-export const MAX_BYTES_ICO = 262_144;
-export const MAX_BYTES_SVG = 262_144;
+export const MAX_BYTES_PNG_JPEG = FILE_LIMITS.LOGO;
+export const MAX_BYTES_ICO = FILE_LIMITS.FAVICON;
+export const MAX_BYTES_SVG = FILE_LIMITS.FAVICON;
 export const MIN_DIMENSION_PX = 64;
 export const MAX_DIMENSION_PX = 2048;
 export const MIN_ASPECT_RATIO = 0.2;

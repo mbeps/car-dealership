@@ -39,6 +39,7 @@ import { CarMakeOption } from "@/types/car-make/car-make-option";
 import { CarStatusEnum as CarStatus } from "@/enums/car-status";
 import { CarFormData } from "@/schemas/car-form";
 import { readAsDataUrl } from "@/lib/image-utils";
+import { env, FILE_LIMITS } from "@/lib/env";
 
 // Predefined options
 const fuelTypes = ["Petrol", "Diesel", "Electric", "Hybrid", "Plug-in Hybrid"];
@@ -106,9 +107,9 @@ export function CarFormFields({
     (acceptedFiles: File[]) => {
       const processFiles = async () => {
         const validFiles = acceptedFiles.filter((file) => {
-          if (file.size > 1024 * 1024) {
+          if (file.size > FILE_LIMITS.CAR_IMAGE) {
             toast.error(
-              `${file.name} exceeds the 1MB limit and will be skipped`,
+              `${file.name} exceeds the ${env.NEXT_PUBLIC_MAX_CAR_IMAGE_SIZE_MB}MB limit and will be skipped`,
             );
             return false;
           }

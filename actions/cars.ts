@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { v4 as uuidv4 } from "uuid";
 import { ROUTES } from "@/constants/routes";
+import { env } from "@/lib/env";
 import { createClient, createAdminClient } from "@/lib/supabase/supabase";
 import { serializeCarData } from "@/lib/helpers/serialize-car";
 import type { ActionResponse } from "@/types/common/action-response";
@@ -46,7 +47,7 @@ function validateImageSizes(images: string[]): void {
       throw new Error(
         `Image ${
           i + 1
-        } is too large (${sizeInMB}MB). Images must be less than ${MAX_IMAGE_SIZE_MB}MB.`
+        } is too large (${sizeInMB}MB). Images must be less than ${MAX_IMAGE_SIZE_MB}MB.`,
       );
     }
   }
@@ -62,7 +63,7 @@ function validateImageSizes(images: string[]): void {
  */
 async function getMakeIdsForTerm(
   supabase: Awaited<ReturnType<typeof createClient>>,
-  term: string
+  term: string,
 ): Promise<string[]> {
   if (!term) return [];
 
@@ -86,7 +87,7 @@ async function getMakeIdsForTerm(
  */
 async function getColorIdsForTerm(
   supabase: Awaited<ReturnType<typeof createClient>>,
-  term: string
+  term: string,
 ): Promise<string[]> {
   if (!term) return [];
 
@@ -202,7 +203,7 @@ export async function addCar({
       }
 
       // Get the public URL for the uploaded file
-      const publicUrl = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/car-images/${filePath}`;
+      const publicUrl = `${env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/car-images/${filePath}`;
 
       imageUrls.push(publicUrl);
     }
@@ -255,7 +256,7 @@ export async function addCar({
  * @returns All cars with nested make/color data
  */
 export async function getCars(
-  search = ""
+  search = "",
 ): Promise<ActionResponse<SerializedCar[]>> {
   try {
     const supabase = await createClient();
@@ -268,7 +269,7 @@ export async function getCars(
         *,
         carMake:CarMake(id, name, slug),
         carColor:CarColor(id, name, slug)
-      `
+      `,
       )
       .order("createdAt", { ascending: false });
 
@@ -409,7 +410,7 @@ export async function deleteCar(id: string): Promise<ActionResponse<null>> {
  */
 export async function updateCarStatus(
   id: string,
-  { status, featured }: { status?: CarStatus; featured?: boolean }
+  { status, featured }: { status?: CarStatus; featured?: boolean },
 ): Promise<ActionResponse<null>> {
   try {
     const supabase = await createClient();
@@ -538,7 +539,7 @@ export async function updateCar({
       }
 
       finalImages = finalImages.filter(
-        (img: string) => !imagesToRemove.includes(img)
+        (img: string) => !imagesToRemove.includes(img),
       );
     }
 
@@ -578,7 +579,7 @@ export async function updateCar({
           throw new Error(`Failed to upload image: ${error.message}`);
         }
 
-        const publicUrl = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/car-images/${filePath}`;
+        const publicUrl = `${env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/car-images/${filePath}`;
         newImageUrls.push(publicUrl);
       }
 
