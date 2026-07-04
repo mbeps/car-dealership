@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { useCallback, useState, useEffect } from "react";
 import { UseFormReturn } from "react-hook-form";
 import { toast } from "sonner";
 import { X, Upload, Check, ChevronsUpDown, Plus } from "lucide-react";
@@ -38,7 +38,6 @@ import { CarColorOption } from "@/types/car-color/car-color-option";
 import { CarMakeOption } from "@/types/car-make/car-make-option";
 import { CarStatusEnum as CarStatus } from "@/enums/car-status";
 import { CarFormData } from "@/schemas/car-form";
-import { readAsDataUrl } from "@/lib/image-utils";
 import { env, FILE_LIMITS } from "@/lib/env";
 
 // Predefined options
@@ -64,8 +63,8 @@ interface CarFormFieldsProps {
   carMakes: CarMakeOption[];
   carColors: CarColorOption[];
   existingImages?: string[];
-  newImages: string[];
-  onNewImagesChange: (images: string[]) => void;
+  newImages: File[];
+  onNewImagesChange: (images: File[]) => void;
   onExistingImageRemove?: (imageUrl: string) => void;
   imageError: string;
   onImageErrorChange: (error: string) => void;
@@ -87,6 +86,15 @@ export function CarFormFields({
   const [colorPopoverOpen, setColorPopoverOpen] = useState(false);
   const [featureInput, setFeatureInput] = useState("");
 
+  const imagePreviews = newImages.map((file) => URL.createObjectURL(file));
+
+  // Clean up object URLs on unmount or when newImages changes
+  useEffect(() => {
+    return () => {
+      imagePreviews.forEach((url) => URL.revokeObjectURL(url));
+    };
+  }, [imagePreviews]);
+
   const {
     register,
     setValue,
@@ -105,52 +113,27 @@ export function CarFormFields({
   // Handle multiple image uploads with Dropzone
   const onMultiImagesDrop = useCallback(
     (acceptedFiles: File[]) => {
-      const processFiles = async () => {
-        const validFiles = acceptedFiles.filter((file) => {
-          if (file.size > FILE_LIMITS.CAR_IMAGE) {
-            toast.error(
-              `${file.name} exceeds the ${env.NEXT_PUBLIC_MAX_CAR_IMAGE_SIZE_MB}MB limit and will be skipped`,
-            );
-            return false;
-          }
-          return true;
-        });
-
-        if (validFiles.length === 0) return;
-
-        setUploadProgress(5);
-        const processedImages: string[] = [];
-
-        for (let i = 0; i < validFiles.length; i++) {
-          const file = validFiles[i];
-          try {
-            const dataUrl = await readAsDataUrl(file);
-            processedImages.push(dataUrl);
-          } catch (error) {
-            console.error("Failed to process image", error);
-            toast.error(`Failed to process ${file.name}`);
-          } finally {
-            const progress = Math.round(((i + 1) / validFiles.length) * 100);
-            setUploadProgress(progress);
-          }
-        }
-
-        if (processedImages.length > 0) {
-          onNewImagesChange([...newImages, ...processedImages]);
-          onImageErrorChange("");
-          toast.success(
-            `Added ${processedImages.length} image${
-              processedImages.length > 1 ? "s" : ""
-            }`,
+      const validFiles = acceptedFiles.filter((file) => {
+        if (file.size > FILE_LIMITS.CAR_IMAGE) {
+          toast.error(
+            `${file.name} exceeds the ${env.NEXT_PUBLIC_MAX_CAR_IMAGE_SIZE_MB}MB limit and will be skipped`,
           );
-        } else {
-          toast.error("No images were added");
+          return false;
         }
+        return true;
+      });
 
-        setTimeout(() => setUploadProgress(0), 300);
-      };
+      if (validFiles.length === 0) return;
 
-      void processFiles();
+      setUploadProgress(100);
+
+      onNewImagesChange([...newImages, ...validFiles]);
+      onImageErrorChange("");
+      toast.success(
+        `Added ${validFiles.length} image${validFiles.length > 1 ? "s" : ""}`,
+      );
+
+      setTimeout(() => setUploadProgress(0), 300);
     },
     [newImages, onImageErrorChange, onNewImagesChange],
   );
@@ -284,6 +267,7 @@ export function CarFormFields({
             {...register("model")}
             placeholder="e.g. Camry"
             className={errors.model ? "border-red-500" : ""}
+            suppressHydrationWarning
           />
           {errors.model && (
             <p className="text-xs text-red-500">{errors.model.message}</p>
@@ -298,6 +282,7 @@ export function CarFormFields({
             {...register("year")}
             placeholder="e.g. 2022"
             className={errors.year ? "border-red-500" : ""}
+            suppressHydrationWarning
           />
           {errors.year && (
             <p className="text-xs text-red-500">{errors.year.message}</p>
@@ -312,6 +297,7 @@ export function CarFormFields({
             {...register("price")}
             placeholder="e.g. 25000"
             className={errors.price ? "border-red-500" : ""}
+            suppressHydrationWarning
           />
           {errors.price && (
             <p className="text-xs text-red-500">{errors.price.message}</p>
@@ -326,6 +312,7 @@ export function CarFormFields({
             {...register("mileage")}
             placeholder="e.g. 15000"
             className={errors.mileage ? "border-red-500" : ""}
+            suppressHydrationWarning
           />
           {errors.mileage && (
             <p className="text-xs text-red-500">{errors.mileage.message}</p>
@@ -487,6 +474,7 @@ export function CarFormFields({
             {...register("numberPlate")}
             placeholder="e.g. AB12CDE"
             className={errors.numberPlate ? "border-red-500" : ""}
+            suppressHydrationWarning
           />
           {errors.numberPlate && (
             <p className="text-xs text-red-500">{errors.numberPlate.message}</p>
@@ -504,6 +492,7 @@ export function CarFormFields({
             {...register("seats")}
             placeholder="e.g. 5"
             className={errors.seats ? "border-red-500" : ""}
+            suppressHydrationWarning
           />
           {errors.seats && (
             <p className="text-xs text-red-500">{errors.seats.message}</p>
@@ -542,6 +531,7 @@ export function CarFormFields({
           {...register("description")}
           placeholder="Enter detailed description of the car..."
           className={`min-h-32 ${errors.description ? "border-red-500" : ""}`}
+          suppressHydrationWarning
         />
         {errors.description && (
           <p className="text-xs text-red-500">{errors.description.message}</p>
@@ -575,6 +565,7 @@ export function CarFormFields({
             onChange={(e) => setFeatureInput(e.target.value)}
             onKeyDown={handleFeatureKeyPress}
             placeholder="e.g. Bluetooth, Navigation System, Leather Seats"
+            suppressHydrationWarning
           />
           <Button
             type="button"
@@ -684,17 +675,17 @@ export function CarFormFields({
         </div>
 
         {/* New Images Preview */}
-        {newImages.length > 0 && (
+        {imagePreviews.length > 0 && (
           <div className="mt-4">
             <h3 className="mb-2 text-sm font-medium">
               {existingImages.length > 0 ? "New " : "Uploaded "}Images (
-              {newImages.length})
+              {imagePreviews.length})
             </h3>
             <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
-              {newImages.map((image, index) => (
+              {imagePreviews.map((previewUrl, index) => (
                 <div key={index} className="group relative">
                   <Image
-                    src={image}
+                    src={previewUrl}
                     alt={`${existingImages.length > 0 ? "New " : ""}car image ${
                       index + 1
                     }`}
