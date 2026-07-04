@@ -60,6 +60,7 @@
     "eslint-config-next": "16.2.6",
     "jsdom": "^28.1.0",
     "postcss": "^8.5.15",
+    "supabase": "^2.109.0",
     "tailwindcss": "4.3.0",
     "typescript": "^5.9.3",
     "vite-tsconfig-paths": "^6.1.1",

@@ -6,12 +6,13 @@ import { ROUTES } from "@/constants/routes";
 import { env } from "@/lib/env";
 import { createClient, createAdminClient } from "@/lib/supabase/supabase";
 import { serializeCarData } from "@/lib/helpers/serialize-car";
+import { checkStorageQuota } from "./storage";
 import type { ActionResponse } from "@/types/common/action-response";
 import type { SerializedCar } from "@/types/car/serialized-car";
 import { UserRoleEnum as UserRole } from "@/enums/user-role";
 import { CarStatusEnum as CarStatus } from "@/enums/car-status";
 
-const MAX_IMAGE_SIZE_MB = 1;
+const MAX_IMAGE_SIZE_MB = env.NEXT_PUBLIC_MAX_CAR_IMAGE_SIZE_MB;
 const MAX_IMAGE_SIZE_BYTES = MAX_IMAGE_SIZE_MB * 1024 * 1024;
 
 /**
@@ -159,6 +160,18 @@ export async function addCar({
     // Validate image sizes
     validateImageSizes(images);
 
+    // Check storage quota
+    const totalSize = images.reduce(
+      (acc, img) => acc + getBase64SizeInBytes(img),
+      0,
+    );
+    const { allowed } = await checkStorageQuota(totalSize);
+    if (!allowed) {
+      throw new Error(
+        "Global storage limit reached. Please contact support or delete existing files.",
+      );
+    }
+
     // Create a unique folder name for this car's images
     const carId = uuidv4();
     const folderPath = `cars/${carId}`;
@@ -231,6 +244,7 @@ export async function addCar({
       featured: carData.featured,
       features: carData.features || [],
       images: imageUrls,
+      storage_bytes: totalSize,
     });
 
     if (insertError) throw insertError;
@@ -518,6 +532,47 @@ export async function updateCar({
     let finalImages = [...existingCar.images];
     const supabaseAdmin = createAdminClient();
 
+    // Check storage quota
+    const newImagesSize = newImages.reduce(
+      (acc, img) => acc + getBase64SizeInBytes(img),
+      0,
+    );
+    let removedImagesSize = 0;
+
+    if (imagesToRemove.length > 0) {
+      const folderPath = `cars/${carId}`;
+      const { data: storageFiles } = await supabaseAdmin.storage
+        .from("car-images")
+        .list(folderPath);
+
+      if (storageFiles) {
+        const removedFileNames = imagesToRemove.map((url) => {
+          try {
+            const u = new URL(url);
+            return u.pathname.split("/").pop();
+          } catch {
+            return url.split("/").pop();
+          }
+        });
+
+        removedImagesSize = storageFiles
+          .filter((f) => f.name && removedFileNames.includes(f.name))
+          .reduce(
+            (acc, f) => acc + (f.metadata?.size || (f as any).size || 0),
+            0,
+          );
+      }
+    }
+
+    const { allowed } = await checkStorageQuota(
+      newImagesSize - removedImagesSize,
+    );
+    if (!allowed) {
+      throw new Error(
+        "Global storage limit reached. Please contact support or delete existing files.",
+      );
+    }
+
     // Remove images if requested
     if (imagesToRemove.length > 0) {
       const filePaths = imagesToRemove
@@ -594,6 +649,17 @@ export async function updateCar({
       };
     }
 
+    // Calculate storage delta and fetch current storage_bytes
+    const { data: currentCar } = await supabase
+      .from("Car")
+      .select("storage_bytes")
+      .eq("id", carId)
+      .single();
+
+    const currentStorageBytes = currentCar?.storage_bytes || 0;
+    const netStorageChange = newImagesSize - removedImagesSize;
+    const newStorageBytes = Math.max(0, currentStorageBytes + netStorageChange);
+
     // Update the car in the database
     const { error: updateError } = await supabase
       .from("Car")
@@ -614,6 +680,7 @@ export async function updateCar({
         featured: carData.featured,
         features: carData.features || [],
         images: finalImages,
+        storage_bytes: newStorageBytes,
       })
       .eq("id", carId);
 

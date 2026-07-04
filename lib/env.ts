@@ -21,6 +21,7 @@ const clientSchema = z.object({
   NEXT_PUBLIC_MAX_CAR_IMAGE_SIZE_MB: z.coerce.number().default(5),
   NEXT_PUBLIC_MAX_LOGO_SIZE_MB: z.coerce.number().default(1),
   NEXT_PUBLIC_MAX_FAVICON_SIZE_KB: z.coerce.number().default(256),
+  NEXT_PUBLIC_TOTAL_STORAGE_LIMIT_GB: z.coerce.number().default(50),
 });
 
 /**
@@ -59,6 +60,8 @@ const rawEnv = {
     process.env.NEXT_PUBLIC_MAX_CAR_IMAGE_SIZE_MB,
   NEXT_PUBLIC_MAX_LOGO_SIZE_MB: process.env.NEXT_PUBLIC_MAX_LOGO_SIZE_MB,
   NEXT_PUBLIC_MAX_FAVICON_SIZE_KB: process.env.NEXT_PUBLIC_MAX_FAVICON_SIZE_KB,
+  NEXT_PUBLIC_TOTAL_STORAGE_LIMIT_GB:
+    process.env.NEXT_PUBLIC_TOTAL_STORAGE_LIMIT_GB,
 };
 
 // Validate using the appropriate schema for the environment
@@ -87,4 +90,6 @@ export const FILE_LIMITS = {
   CAR_IMAGE: env.NEXT_PUBLIC_MAX_CAR_IMAGE_SIZE_MB * 1024 * 1024,
   LOGO: env.NEXT_PUBLIC_MAX_LOGO_SIZE_MB * 1024 * 1024,
   FAVICON: env.NEXT_PUBLIC_MAX_FAVICON_SIZE_KB * 1024,
+  GLOBAL_STORAGE_LIMIT_BYTES:
+    env.NEXT_PUBLIC_TOTAL_STORAGE_LIMIT_GB * 1024 * 1024 * 1024,
 } as const;
