@@ -175,7 +175,6 @@ export const CarsList = () => {
             <Plus className="h-4 w-4" />
             Add Car
           </Button>
-          <StorageMeter />
         </div>
 
         {/* Simple Search Form */}
@@ -192,7 +191,7 @@ export const CarsList = () => {
           </div>
         </form>
       </div>
-
+      <StorageMeter />
       {/* Cars Table */}
       <Card>
         <CardContent className="p-0">

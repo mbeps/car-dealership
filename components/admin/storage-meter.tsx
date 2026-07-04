@@ -1,16 +1,21 @@
 "use client";
 
-import { useEffect, useState, useMemo } from "react";
-import { Progress } from "@/components/ui/progress";
 import { getStorageUsage } from "@/actions/storage";
-import { env } from "@/lib/env";
+import { Badge } from "@/components/ui/badge";
 import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
-import { cn } from "@/lib/utils";
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  Progress,
+  ProgressIndicator,
+  ProgressTrack,
+} from "@/components/ui/progress";
+import { env } from "@/lib/env";
+import { useEffect, useMemo, useState } from "react";
 
 /**
  * Formats bytes into a human-readable storage unit string (GB/MB).
@@ -32,7 +37,7 @@ function formatBytes(bytes: number): string {
  *
  * Displays a global storage usage meter for administrators.
  * Fetches current usage from the server logic and calculates percentage against global limit.
- * Uses color variants (Green/Yellow/Red) based on the usage severity.
+ * Uses color variants (Primary/Amber/Destructive) based on the usage severity.
  */
 export function StorageMeter() {
   const [usageBytes, setUsageBytes] = useState<number | null>(null);
@@ -52,55 +57,56 @@ export function StorageMeter() {
     return Math.min(100, (usageBytes / limitBytes) * 100);
   }, [usageBytes, limitBytes]);
 
-  const statusColor = useMemo(() => {
-    if (percentage >= 90) return "bg-red-500";
-    if (percentage >= 70) return "bg-yellow-500";
-    return "bg-green-500";
+  const displayPercentage = useMemo(() => {
+    if (percentage >= 1) return `${percentage.toFixed(1)}%`;
+    if (percentage >= 0.001) return `${percentage.toFixed(3)}%`;
+    return "< 0.001%";
+  }, [percentage]);
+
+  const status = useMemo(() => {
+    if (percentage >= 90)
+      return { color: "bg-destructive", variant: "destructive" as const };
+    if (percentage >= 70)
+      return { color: "bg-amber-500", variant: "secondary" as const };
+    return { color: "bg-primary", variant: "default" as const };
   }, [percentage]);
 
   if (usageBytes === null) {
     return (
-      <div className="space-y-2 py-4">
-        <div className="h-4 w-full animate-pulse rounded bg-muted"></div>
-        <div className="h-3 w-1/3 animate-pulse rounded bg-muted"></div>
-      </div>
+      <Card size="sm" className="animate-pulse">
+        <CardHeader>
+          <div className="h-4 w-24 rounded bg-muted"></div>
+          <div className="h-3 w-40 rounded bg-muted"></div>
+        </CardHeader>
+        <CardContent>
+          <div className="h-3 w-full rounded bg-muted"></div>
+        </CardContent>
+      </Card>
     );
   }
 
   return (
-    <div className="w-full space-y-2 py-4">
-      <div className="flex items-center justify-between text-xs font-medium text-muted-foreground">
-        <span>Global Storage Capacity</span>
-        <span>{percentage.toFixed(1)}%</span>
-      </div>
-
-      <TooltipProvider>
-        <Tooltip>
-          <TooltipTrigger>
-            <div>
-              <Progress value={percentage} className="h-2">
-                <div
-                  className={cn(
-                    "h-full transition-all duration-500",
-                    statusColor,
-                  )}
-                  style={{ width: `${percentage}%` }}
-                />
-              </Progress>
-            </div>
-          </TooltipTrigger>
-          <TooltipContent side="bottom" align="end">
-            <p className="text-xs">
-              {formatBytes(usageBytes)} / {formatBytes(limitBytes)} ({limitGB}GB
-              limit)
-            </p>
-          </TooltipContent>
-        </Tooltip>
-      </TooltipProvider>
-
-      <p className="text-[10px] text-muted-foreground italic">
-        * Global limit enforced across all uploads.
-      </p>
-    </div>
+    <Card size="sm" className="cursor-help transition-colors hover:bg-muted/5">
+      <CardHeader className="flex-row items-center justify-between space-y-0 text-left">
+        <div className="grid gap-1">
+          <CardTitle className="text-sm font-semibold leading-none">
+            Storage Usage
+          </CardTitle>
+          <CardDescription className="text-xs">
+            {formatBytes(usageBytes)} / {formatBytes(limitBytes)}
+          </CardDescription>
+        </div>
+      </CardHeader>
+      <CardContent className="space-y-2">
+        <Progress value={percentage}>
+          <ProgressTrack className="h-3">
+            <ProgressIndicator className={status.color} />
+          </ProgressTrack>
+        </Progress>
+        <Badge variant={status.variant} className="font-bold">
+          {displayPercentage}
+        </Badge>
+      </CardContent>
+    </Card>
   );
 }
