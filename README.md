@@ -46,6 +46,13 @@ The system provides a comprehensive admin interface for dealership management:
 - Admins can set working hours for each day of the week
 - Admins can manage admin user accounts
 
+## Storage Management
+The system includes intelligent storage management with global quotas:
+- Global storage quota with real-time usage monitoring (default 50GB)
+- Real-time storage meter displayed in admin dashboard
+- Automatic upload blocking when global quota is exceeded
+- Smart file replacement that tracks net storage changes
+
 # Stack
 These are the main technologies that were used in this project:
 ## Front-End
@@ -106,6 +113,7 @@ ARCJET_KEY=
 NEXT_PUBLIC_MAX_CAR_IMAGE_SIZE_MB=5
 NEXT_PUBLIC_MAX_LOGO_SIZE_MB=1
 NEXT_PUBLIC_MAX_FAVICON_SIZE_KB=256
+NEXT_PUBLIC_TOTAL_STORAGE_LIMIT_GB=50
 ```
 
 You'll need to fill in the value for each of these variables. Here's how to get each one:
@@ -120,6 +128,7 @@ You'll need to fill in the value for each of these variables. Here's how to get 
 - `NEXT_PUBLIC_MAX_CAR_IMAGE_SIZE_MB`: Maximum car image upload size in megabytes.
 - `NEXT_PUBLIC_MAX_LOGO_SIZE_MB`: Maximum logo upload size in megabytes.
 - `NEXT_PUBLIC_MAX_FAVICON_SIZE_KB`: Maximum favicon upload size in kilobytes.
+- `NEXT_PUBLIC_TOTAL_STORAGE_LIMIT_GB`: Global storage quota limit in gigabytes for all dealership uploads combined. Defaults to 50GB if not specified.
 
 ## 4. Set Up Supabase
 To get your Supabase instance up and running, you'll need to do a few things:
