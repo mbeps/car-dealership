@@ -370,7 +370,6 @@ export function TestDriveForm({
                             selected={field.value}
                             onSelect={field.onChange}
                             disabled={isDayDisabled}
-                            initialFocus
                           />
                         </PopoverContent>
                       </Popover>
