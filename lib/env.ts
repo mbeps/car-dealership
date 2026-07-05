@@ -66,21 +66,34 @@ const rawEnv = {
 
 // Validate using the appropriate schema for the environment
 const schema = isServer ? serverSchema : clientSchema;
-const parsed = schema.safeParse(rawEnv);
+const skipValidation = process.env.SKIP_ENV_VALIDATION === "true";
 
-if (!parsed.success) {
-  console.error(
-    `Invalid environment variables on ${isServer ? "server" : "client"}:`,
-    JSON.stringify(parsed.error.format(), null, 2),
-  );
-  throw new Error("Invalid environment variables");
-}
+/**
+ * Validates the environment variables and returns the typed data.
+ */
+const validatedEnv = (() => {
+  if (skipValidation) {
+    return rawEnv as unknown as z.infer<typeof serverSchema>;
+  }
+
+  const parsed = schema.safeParse(rawEnv);
+
+  if (!parsed.success) {
+    console.error(
+      `Invalid environment variables on ${isServer ? "server" : "client"}:`,
+      JSON.stringify(z.treeifyError(parsed.error), null, 2),
+    );
+    throw new Error("Invalid environment variables");
+  }
+
+  return parsed.data as z.infer<typeof serverSchema>;
+})();
 
 /**
  * Exported env object.
  * Note: Server-only variables will be undefined on the client.
  */
-export const env = parsed.data as z.infer<typeof serverSchema>;
+export const env = validatedEnv;
 
 /**
  * Pre-calculated byte values for file size limits.
