@@ -3,11 +3,7 @@ import type { CookieOptions } from "@supabase/ssr";
 import { createClient as createSupabaseClient } from "@supabase/supabase-js";
 import { cookies } from "next/headers";
 
-import {
-  getSupabasePublishableKey,
-  getSupabaseSecretKey,
-  getSupabaseUrl,
-} from "./supabase-env-server";
+import { env } from "@/lib/env";
 
 /**
  * Creates Supabase client for server-side operations.
@@ -20,28 +16,32 @@ import {
 export const createClient = async () => {
   const cookieStore = await cookies();
 
-  return createServerClient(getSupabaseUrl(), getSupabasePublishableKey(), {
-    cookies: {
-      getAll() {
-        return cookieStore.getAll();
-      },
-      setAll(
-        cookiesToSet: Array<{
-          name: string;
-          value: string;
-          options: CookieOptions;
-        }>
-      ) {
-        try {
-          cookiesToSet.forEach(({ name, value, options }) =>
-            cookieStore.set(name, value, options)
-          );
-        } catch {
-          // Called from a Server Component without writable cookies.
-        }
+  return createServerClient(
+    env.NEXT_PUBLIC_SUPABASE_URL,
+    env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY,
+    {
+      cookies: {
+        getAll() {
+          return cookieStore.getAll();
+        },
+        setAll(
+          cookiesToSet: Array<{
+            name: string;
+            value: string;
+            options: CookieOptions;
+          }>,
+        ) {
+          try {
+            cookiesToSet.forEach(({ name, value, options }) =>
+              cookieStore.set(name, value, options),
+            );
+          } catch {
+            // Called from a Server Component without writable cookies.
+          }
+        },
       },
     },
-  });
+  );
 };
 
 /**
@@ -60,7 +60,10 @@ export { createBrowserClient } from "./supabase-client";
  * @see https://supabase.com/docs/guides/api/rest/authentication#the-service_role-key
  */
 export const createAdminClient = () => {
-  return createSupabaseClient(getSupabaseUrl(), getSupabaseSecretKey());
+  return createSupabaseClient(
+    env.NEXT_PUBLIC_SUPABASE_URL,
+    env.SUPABASE_SECRET_KEY,
+  );
 };
 
 /**
@@ -70,5 +73,8 @@ export const createAdminClient = () => {
  * Respects RLS for public/anon roles.
  */
 export const createPublicClient = () => {
-  return createSupabaseClient(getSupabaseUrl(), getSupabasePublishableKey());
+  return createSupabaseClient(
+    env.NEXT_PUBLIC_SUPABASE_URL,
+    env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY,
+  );
 };

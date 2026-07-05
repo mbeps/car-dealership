@@ -1,6 +1,6 @@
 import { createBrowserClient as createBrowserClientSSR } from "@supabase/ssr";
 
-import { getSupabasePublishableKey, getSupabaseUrl } from "./supabase-env";
+import { env } from "@/lib/env";
 
 /**
  * Creates Supabase client for Client Components.
@@ -11,5 +11,8 @@ import { getSupabasePublishableKey, getSupabaseUrl } from "./supabase-env";
  * @see https://supabase.com/docs/guides/auth/server-side/creating-a-client
  */
 export const createBrowserClient = () => {
-  return createBrowserClientSSR(getSupabaseUrl(), getSupabasePublishableKey());
+  return createBrowserClientSSR(
+    env.NEXT_PUBLIC_SUPABASE_URL,
+    env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY,
+  );
 };

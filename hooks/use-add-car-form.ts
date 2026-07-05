@@ -24,7 +24,7 @@ import { CarStatusEnum as CarStatus } from "@/enums/car-status";
  */
 export const useAddCarForm = () => {
   const router = useRouter();
-  const [uploadedImages, setUploadedImages] = useState<string[]>([]);
+  const [uploadedImages, setUploadedImages] = useState<File[]>([]);
   const [imageError, setImageError] = useState("");
 
   const form = useForm({
@@ -75,10 +75,13 @@ export const useAddCarForm = () => {
       seats: data.seats ? parseInt(data.seats) : undefined,
     };
 
-    await addCarFn({
-      carData,
-      images: uploadedImages,
+    const formData = new FormData();
+    formData.append("carData", JSON.stringify(carData));
+    uploadedImages.forEach((image) => {
+      formData.append("images", image);
     });
+
+    await addCarFn(formData);
   };
 
   return {

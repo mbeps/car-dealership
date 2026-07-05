@@ -75,3 +75,13 @@ END;
 $$ LANGUAGE plpgsql
 SECURITY DEFINER
 SET search_path = public;
+
+-- Get total storage usage in bytes from application-level tracking.
+-- Sums storage_bytes from Car table and logoSizeBytes from DealershipInfo.
+CREATE OR REPLACE FUNCTION public.get_global_storage_usage()
+RETURNS bigint AS $$
+  SELECT (
+    COALESCE((SELECT SUM("storage_bytes") FROM public."Car"), 0) +
+    COALESCE((SELECT SUM("logoSizeBytes") FROM public."DealershipInfo"), 0)
+  )::bigint;
+$$ LANGUAGE sql SECURITY DEFINER;

@@ -3,50 +3,33 @@
 import { revalidatePath } from "next/cache";
 import { v4 as uuidv4 } from "uuid";
 import { ROUTES } from "@/constants/routes";
+import { env } from "@/lib/env";
 import { createClient, createAdminClient } from "@/lib/supabase/supabase";
 import { serializeCarData } from "@/lib/helpers/serialize-car";
+import { checkStorageQuota } from "./storage";
 import type { ActionResponse } from "@/types/common/action-response";
 import type { SerializedCar } from "@/types/car/serialized-car";
 import { UserRoleEnum as UserRole } from "@/enums/user-role";
 import { CarStatusEnum as CarStatus } from "@/enums/car-status";
 
-const MAX_IMAGE_SIZE_MB = 1;
+const MAX_IMAGE_SIZE_MB = env.NEXT_PUBLIC_MAX_CAR_IMAGE_SIZE_MB;
 const MAX_IMAGE_SIZE_BYTES = MAX_IMAGE_SIZE_MB * 1024 * 1024;
 
 /**
- * Calculates the size of a base64 image in bytes.
- * Base64 encoding increases size by ~33%, so we decode to get actual size.
+ * Validates that all files are under the size limit.
  *
- * @param base64String - Base64 encoded image string
- * @returns Size in bytes
+ * @param files - Array of File objects
+ * @throws Error if any file exceeds the limit
  */
-function getBase64SizeInBytes(base64String: string): number {
-  // Remove the data URL prefix if present
-  const base64Data = base64String.includes(",")
-    ? base64String.split(",")[1]
-    : base64String;
-
-  // Calculate the actual size: (base64 length * 3) / 4
-  // Account for padding characters
-  const padding = (base64Data.match(/=/g) || []).length;
-  return (base64Data.length * 3) / 4 - padding;
-}
-
-/**
- * Validates that all images are under the size limit.
- *
- * @param images - Array of base64 encoded images
- * @throws Error if any image exceeds the limit
- */
-function validateImageSizes(images: string[]): void {
-  for (let i = 0; i < images.length; i++) {
-    const sizeInBytes = getBase64SizeInBytes(images[i]);
-    if (sizeInBytes > MAX_IMAGE_SIZE_BYTES) {
-      const sizeInMB = (sizeInBytes / (1024 * 1024)).toFixed(2);
+function validateFileSizes(files: File[]): void {
+  for (let i = 0; i < files.length; i++) {
+    const file = files[i];
+    if (file.size > MAX_IMAGE_SIZE_BYTES) {
+      const sizeInMB = (file.size / (1024 * 1024)).toFixed(2);
       throw new Error(
         `Image ${
           i + 1
-        } is too large (${sizeInMB}MB). Images must be less than ${MAX_IMAGE_SIZE_MB}MB.`
+        } is too large (${sizeInMB}MB). Images must be less than ${MAX_IMAGE_SIZE_MB}MB.`,
       );
     }
   }
@@ -62,7 +45,7 @@ function validateImageSizes(images: string[]): void {
  */
 async function getMakeIdsForTerm(
   supabase: Awaited<ReturnType<typeof createClient>>,
-  term: string
+  term: string,
 ): Promise<string[]> {
   if (!term) return [];
 
@@ -86,7 +69,7 @@ async function getMakeIdsForTerm(
  */
 async function getColorIdsForTerm(
   supabase: Awaited<ReturnType<typeof createClient>>,
-  term: string
+  term: string,
 ): Promise<string[]> {
   if (!term) return [];
 
@@ -123,22 +106,26 @@ interface CarFormData {
  * Creates new car listing with image uploads.
  * Uploads images to Supabase Storage using admin client.
  * Generates unique folder per car for organization.
- * Base64 images converted to buffers before upload.
+ * Files are processed as Buffers before upload.
  *
- * @param carData - Car details from form
- * @param images - Base64 encoded images
+ * @param formData - FormData containing 'carData' (JSON string) and 'images' (File[])
  * @returns Success result or error
  * @see createAdminClient - Service role client for storage
  * @see https://supabase.com/docs/reference/javascript/storage-from-upload
  */
-export async function addCar({
-  carData,
-  images,
-}: {
-  carData: CarFormData;
-  images: string[];
-}): Promise<ActionResponse<null>> {
+export async function addCar(
+  formData: FormData,
+): Promise<ActionResponse<null>> {
   try {
+    const carDataRaw = formData.get("carData");
+    if (!carDataRaw) throw new Error("Car data is required");
+    const carData = JSON.parse(carDataRaw as string) as CarFormData;
+
+    const images = formData.getAll("images") as File[];
+    if (!images || images.length === 0) {
+      throw new Error("At least one image is required");
+    }
+
     const supabase = await createClient();
 
     const {
@@ -156,7 +143,16 @@ export async function addCar({
     if (!user || user.role !== UserRole.ADMIN) throw new Error("Unauthorized");
 
     // Validate image sizes
-    validateImageSizes(images);
+    validateFileSizes(images);
+
+    // Check storage quota
+    const totalSize = images.reduce((acc, img) => acc + img.size, 0);
+    const { allowed } = await checkStorageQuota(totalSize);
+    if (!allowed) {
+      throw new Error(
+        "Global storage limit reached. Please contact support or delete existing files.",
+      );
+    }
 
     // Create a unique folder name for this car's images
     const carId = uuidv4();
@@ -169,21 +165,14 @@ export async function addCar({
     const imageUrls: string[] = [];
 
     for (let i = 0; i < images.length; i++) {
-      const base64Data = images[i];
+      const file = images[i];
 
-      // Skip if image data is not valid
-      if (!base64Data || !base64Data.startsWith("data:image/")) {
-        console.warn("Skipping invalid image data");
-        continue;
-      }
+      // Convert File to Buffer
+      const imageBuffer = Buffer.from(await file.arrayBuffer());
 
-      // Extract the base64 part (remove the data:image/xyz;base64, prefix)
-      const base64 = base64Data.split(",")[1];
-      const imageBuffer = Buffer.from(base64, "base64");
-
-      // Determine file extension from the data URL
-      const mimeMatch = base64Data.match(/data:image\/([a-zA-Z0-9]+);/);
-      const fileExtension = mimeMatch ? mimeMatch[1] : "jpeg";
+      // Get file extension and content type
+      const contentType = file.type || "image/jpeg";
+      const fileExtension = contentType.split("/")[1] || "jpeg";
 
       // Create filename
       const fileName = `image-${Date.now()}-${i}.${fileExtension}`;
@@ -193,7 +182,7 @@ export async function addCar({
       const { error } = await supabaseAdmin.storage
         .from("car-images")
         .upload(filePath, imageBuffer, {
-          contentType: `image/${fileExtension}`,
+          contentType,
         });
 
       if (error) {
@@ -202,7 +191,7 @@ export async function addCar({
       }
 
       // Get the public URL for the uploaded file
-      const publicUrl = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/car-images/${filePath}`;
+      const publicUrl = `${env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/car-images/${filePath}`;
 
       imageUrls.push(publicUrl);
     }
@@ -230,6 +219,7 @@ export async function addCar({
       featured: carData.featured,
       features: carData.features || [],
       images: imageUrls,
+      storage_bytes: totalSize,
     });
 
     if (insertError) throw insertError;
@@ -255,7 +245,7 @@ export async function addCar({
  * @returns All cars with nested make/color data
  */
 export async function getCars(
-  search = ""
+  search = "",
 ): Promise<ActionResponse<SerializedCar[]>> {
   try {
     const supabase = await createClient();
@@ -268,7 +258,7 @@ export async function getCars(
         *,
         carMake:CarMake(id, name, slug),
         carColor:CarColor(id, name, slug)
-      `
+      `,
       )
       .order("createdAt", { ascending: false });
 
@@ -409,7 +399,7 @@ export async function deleteCar(id: string): Promise<ActionResponse<null>> {
  */
 export async function updateCarStatus(
   id: string,
-  { status, featured }: { status?: CarStatus; featured?: boolean }
+  { status, featured }: { status?: CarStatus; featured?: boolean },
 ): Promise<ActionResponse<null>> {
   try {
     const supabase = await createClient();
@@ -463,26 +453,24 @@ export async function updateCarStatus(
  * Validates at least one image remains after removals.
  * Revalidates admin list and public detail page.
  *
- * @param carId - Car ID to update
- * @param carData - Updated car details
- * @param newImages - Base64 images to add
- * @param imagesToRemove - URLs of images to delete
+ * @param formData - FormData with 'carId', 'carData' (JSON), 'newImages' (File[]), 'imagesToRemove' (string[])
  * @returns Success result or error
  * @see ROUTES.CAR_DETAILS - Public detail page
  * @see ROUTES.ADMIN_CARS - Admin car list
  */
-export async function updateCar({
-  carId,
-  carData,
-  newImages = [],
-  imagesToRemove = [],
-}: {
-  carId: string;
-  carData: CarFormData;
-  newImages?: string[];
-  imagesToRemove?: string[];
-}): Promise<ActionResponse<null>> {
+export async function updateCar(
+  formData: FormData,
+): Promise<ActionResponse<null>> {
   try {
+    const carId = formData.get("carId") as string;
+    const carDataRaw = formData.get("carData");
+    if (!carId || !carDataRaw) throw new Error("Car ID and data are required");
+    const carData = JSON.parse(carDataRaw as string) as CarFormData;
+
+    const newImages = (formData.getAll("newImages") || []) as File[];
+    const imagesToRemove = (formData.getAll("imagesToRemove") ||
+      []) as string[];
+
     const supabase = await createClient();
 
     const {
@@ -517,6 +505,41 @@ export async function updateCar({
     let finalImages = [...existingCar.images];
     const supabaseAdmin = createAdminClient();
 
+    // Check storage quota
+    const newImagesSize = newImages.reduce((acc, img) => acc + img.size, 0);
+    let removedImagesSize = 0;
+
+    if (imagesToRemove.length > 0) {
+      const folderPath = `cars/${carId}`;
+      const { data: storageFiles } = await supabaseAdmin.storage
+        .from("car-images")
+        .list(folderPath);
+
+      if (storageFiles) {
+        const removedFileNames = imagesToRemove.map((url) => {
+          try {
+            const u = new URL(url);
+            return u.pathname.split("/").pop();
+          } catch {
+            return url.split("/").pop();
+          }
+        });
+
+        removedImagesSize = storageFiles
+          .filter((f) => f.name && removedFileNames.includes(f.name))
+          .reduce((acc, f) => acc + (f.metadata?.size || 0), 0);
+      }
+    }
+
+    const { allowed } = await checkStorageQuota(
+      newImagesSize - removedImagesSize,
+    );
+    if (!allowed) {
+      throw new Error(
+        "Global storage limit reached. Please contact support or delete existing files.",
+      );
+    }
+
     // Remove images if requested
     if (imagesToRemove.length > 0) {
       const filePaths = imagesToRemove
@@ -538,31 +561,29 @@ export async function updateCar({
       }
 
       finalImages = finalImages.filter(
-        (img: string) => !imagesToRemove.includes(img)
+        (img: string) => !imagesToRemove.includes(img),
       );
     }
 
     // Upload new images if provided
     if (newImages.length > 0) {
       // Validate new image sizes
-      validateImageSizes(newImages);
+      validateFileSizes(newImages);
 
       const folderPath = `cars/${carId}`;
       const newImageUrls: string[] = [];
 
       for (let i = 0; i < newImages.length; i++) {
-        const base64Data = newImages[i];
+        const file = newImages[i];
 
-        if (!base64Data || !base64Data.startsWith("data:image/")) {
-          console.warn("Skipping invalid image data");
+        // Skip if not a valid file
+        if (!file || !(file instanceof File)) {
           continue;
         }
 
-        const base64 = base64Data.split(",")[1];
-        const imageBuffer = Buffer.from(base64, "base64");
-
-        const mimeMatch = base64Data.match(/data:image\/([a-zA-Z0-9]+);/);
-        const fileExtension = mimeMatch ? mimeMatch[1] : "jpeg";
+        const imageBuffer = Buffer.from(await file.arrayBuffer());
+        const contentType = file.type || "image/jpeg";
+        const fileExtension = contentType.split("/")[1] || "jpeg";
 
         const fileName = `image-${Date.now()}-${i}.${fileExtension}`;
         const filePath = `${folderPath}/${fileName}`;
@@ -570,7 +591,7 @@ export async function updateCar({
         const { error } = await supabaseAdmin.storage
           .from("car-images")
           .upload(filePath, imageBuffer, {
-            contentType: `image/${fileExtension}`,
+            contentType,
           });
 
         if (error) {
@@ -578,7 +599,7 @@ export async function updateCar({
           throw new Error(`Failed to upload image: ${error.message}`);
         }
 
-        const publicUrl = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/car-images/${filePath}`;
+        const publicUrl = `${env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/car-images/${filePath}`;
         newImageUrls.push(publicUrl);
       }
 
@@ -592,6 +613,17 @@ export async function updateCar({
         error: "At least one image is required",
       };
     }
+
+    // Calculate storage delta and fetch current storage_bytes
+    const { data: currentCar } = await supabase
+      .from("Car")
+      .select("storage_bytes")
+      .eq("id", carId)
+      .single();
+
+    const currentStorageBytes = currentCar?.storage_bytes || 0;
+    const netStorageChange = newImagesSize - removedImagesSize;
+    const newStorageBytes = Math.max(0, currentStorageBytes + netStorageChange);
 
     // Update the car in the database
     const { error: updateError } = await supabase
@@ -613,6 +645,7 @@ export async function updateCar({
         featured: carData.featured,
         features: carData.features || [],
         images: finalImages,
+        storage_bytes: newStorageBytes,
       })
       .eq("id", carId);
 

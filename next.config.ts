@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+import { env } from "./lib/env";
 
 const SUPABASE_REMOTE_PATTERNS: {
   protocol: "http" | "https";
@@ -16,12 +17,12 @@ const addSupabasePattern = (maybeUrl: string | undefined) => {
     });
   } catch {
     console.warn(
-      "Invalid NEXT_PUBLIC_SUPABASE_URL value. Remote images from Supabase will be blocked until it is fixed."
+      "Invalid NEXT_PUBLIC_SUPABASE_URL value. Remote images from Supabase will be blocked until it is fixed.",
     );
   }
 };
 
-addSupabasePattern(process.env.NEXT_PUBLIC_SUPABASE_URL);
+addSupabasePattern(env.NEXT_PUBLIC_SUPABASE_URL);
 
 // Allow any Supabase storage bucket as a fallback (covers dev misconfig).
 SUPABASE_REMOTE_PATTERNS.push({
@@ -34,6 +35,7 @@ const nextConfig: NextConfig = {
     serverActions: {
       bodySizeLimit: "50mb",
     },
+    proxyClientMaxBodySize: "50mb",
   },
   images: {
     remotePatterns: [

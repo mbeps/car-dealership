@@ -2,11 +2,8 @@ import arcjet, { createMiddleware, detectBot, shield } from "@arcjet/next";
 import { createServerClient } from "@supabase/ssr";
 import type { CookieOptions } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
+import { env } from "@/lib/env";
 
-import {
-  getSupabasePublishableKey,
-  getSupabaseUrl,
-} from "./lib/supabase/supabase-env";
 import {
   PROTECTED_ROUTES,
   ROUTES,
@@ -35,7 +32,7 @@ const isProtectedRoute = (pathname: string): boolean => {
  * @see https://arcjet.com/bot-list
  */
 const aj = arcjet({
-  key: process.env.ARCJET_KEY!,
+  key: env.ARCJET_KEY,
   rules: [
     // Shield protection for content and security
     shield({
@@ -69,8 +66,8 @@ async function supabaseProxy(request: NextRequest) {
   });
 
   const supabase = createServerClient(
-    getSupabaseUrl(),
-    getSupabasePublishableKey(),
+    env.NEXT_PUBLIC_SUPABASE_URL,
+    env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY,
     {
       cookies: {
         getAll() {
@@ -81,20 +78,20 @@ async function supabaseProxy(request: NextRequest) {
             name: string;
             value: string;
             options: CookieOptions;
-          }>
+          }>,
         ) {
           cookiesToSet.forEach(({ name, value }) =>
-            request.cookies.set(name, value)
+            request.cookies.set(name, value),
           );
           response = NextResponse.next({
             request,
           });
           cookiesToSet.forEach(({ name, value, options }) =>
-            response.cookies.set(name, value, options)
+            response.cookies.set(name, value, options),
           );
         },
       },
-    }
+    },
   );
 
   // Refresh session if expired

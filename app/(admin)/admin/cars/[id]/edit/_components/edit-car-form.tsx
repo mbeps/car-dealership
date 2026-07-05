@@ -46,9 +46,9 @@ interface EditCarFormProps {
 export const EditCarForm = ({ car, carMakes, carColors }: EditCarFormProps) => {
   const router = useRouter();
   const [existingImages, setExistingImages] = useState<string[]>(
-    car.images || []
+    car.images || [],
   );
-  const [newImages, setNewImages] = useState<string[]>([]);
+  const [newImages, setNewImages] = useState<File[]>([]);
   const [imagesToRemove, setImagesToRemove] = useState<string[]>([]);
   const [imageError, setImageError] = useState("");
 
@@ -112,13 +112,18 @@ export const EditCarForm = ({ car, carMakes, carColors }: EditCarFormProps) => {
       seats: data.seats ? parseInt(data.seats) : undefined,
     };
 
-    // Call the updateCar function
-    await updateCarFn({
-      carId: car.id,
-      carData,
-      newImages,
-      imagesToRemove,
+    const formData = new FormData();
+    formData.append("carId", car.id);
+    formData.append("carData", JSON.stringify(carData));
+    newImages.forEach((image) => {
+      formData.append("newImages", image);
     });
+    imagesToRemove.forEach((url) => {
+      formData.append("imagesToRemove", url);
+    });
+
+    // Call the updateCar function
+    await updateCarFn(formData);
   };
 
   return (

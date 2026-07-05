@@ -11,6 +11,11 @@ const eslintConfig = defineConfig([
       "@next/next/no-img-element": "warn",
       "react-hooks/exhaustive-deps": "warn",
     },
+    settings: {
+      react: {
+        version: "19.2.7",
+      },
+    },
   },
   globalIgnores([
     ".next/**",

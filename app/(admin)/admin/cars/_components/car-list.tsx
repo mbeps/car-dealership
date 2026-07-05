@@ -47,6 +47,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
+import { StorageMeter } from "@/components/admin/storage-meter";
 import useFetch from "@/hooks/use-fetch";
 import { useCarAdmin } from "@/hooks/use-car-admin";
 import { getCars } from "@/actions/cars";
@@ -166,13 +167,15 @@ export const CarsList = () => {
     <div className="space-y-4">
       {/* Actions and Search */}
       <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
-        <Button
-          onClick={() => router.push(ROUTES.ADMIN_CAR_CREATE)}
-          className="flex items-center"
-        >
-          <Plus className="h-4 w-4" />
-          Add Car
-        </Button>
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 w-full sm:w-auto">
+          <Button
+            onClick={() => router.push(ROUTES.ADMIN_CAR_CREATE)}
+            className="flex items-center w-full sm:w-auto"
+          >
+            <Plus className="h-4 w-4" />
+            Add Car
+          </Button>
+        </div>
 
         {/* Simple Search Form */}
         <form onSubmit={handleSearchSubmit} className="flex w-full sm:w-auto">
@@ -188,7 +191,7 @@ export const CarsList = () => {
           </div>
         </form>
       </div>
-
+      <StorageMeter />
       {/* Cars Table */}
       <Card>
         <CardContent className="p-0">

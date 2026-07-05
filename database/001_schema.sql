@@ -69,6 +69,7 @@ CREATE TABLE public."Car" (
   "createdAt" TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
   "updatedAt" TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT timezone('utc', now()),
   "images" TEXT[],
+  "storage_bytes" BIGINT NOT NULL DEFAULT 0,
   CONSTRAINT "Car_carMakeId_fkey"
     FOREIGN KEY ("carMakeId")
     REFERENCES public."CarMake"("id")

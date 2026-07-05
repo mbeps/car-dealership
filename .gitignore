@@ -36,6 +36,9 @@ yarn-error.log*
 # vercel
 .vercel
 
+# supabase
+supabase/.temp/**
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts
@@ -51,3 +54,6 @@ wiki/**
 graphify-out/**
 
 todo.md
+.github/instructions/**
+.agents/**
+skills-lock.json
