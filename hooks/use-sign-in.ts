@@ -26,6 +26,8 @@ export function useSignIn(options?: UseSignInOptions) {
   const [success, setSuccess] = useState("");
   const router = useRouter();
   const supabase = createBrowserClient();
+  const supportsPasskeys =
+    typeof window !== "undefined" && !!window.PublicKeyCredential;
 
   const signInWithEmail = async (email: string, password: string) => {
     setLoading(true);
@@ -93,11 +95,84 @@ export function useSignIn(options?: UseSignInOptions) {
     }
   };
 
+  const signInWithPasskey = async () => {
+    if (!supportsPasskeys) {
+      const error = new Error("Passkeys are not supported in this browser");
+      setError(error.message);
+      return { success: false, error };
+    }
+
+    setLoading(true);
+    setError("");
+    setSuccess("");
+
+    try {
+      const { data, error } = await supabase.auth.signInWithPasskey();
+
+      if (error) {
+        setError(error.message);
+        return { success: false, error };
+      }
+
+      setSuccess("Signed in successfully with your passkey!");
+
+      if (options?.onSuccess) {
+        options.onSuccess();
+      }
+
+      if (options?.redirectUrl) {
+        router.push(options.redirectUrl);
+      }
+
+      router.refresh();
+      return { success: true, data };
+    } catch (error) {
+      setError("An unexpected error occurred");
+      console.error(error);
+      return { success: false, error };
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const registerPasskey = async () => {
+    if (!supportsPasskeys) {
+      const error = new Error("Passkeys are not supported in this browser");
+      setError(error.message);
+      return { success: false, error };
+    }
+
+    setLoading(true);
+    setError("");
+    setSuccess("");
+
+    try {
+      const { data, error } = await supabase.auth.registerPasskey();
+
+      if (error) {
+        setError(error.message);
+        return { success: false, error };
+      }
+
+      setSuccess("Passkey added successfully.");
+      return { success: true, data };
+    } catch (error) {
+      setError("An unexpected error occurred");
+      console.error(error);
+      return { success: false, error };
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return {
     loading,
     error,
     success,
+    supportsPasskeys,
     signInWithEmail,
     signInWithGoogle,
+    signInWithPasskey,
+    registerPasskey,
   };
 }

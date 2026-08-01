@@ -231,8 +231,60 @@ export async function signOut(): Promise<void> {
  * @returns ActionResponse indicating success or failure
  * @see https://supabase.com/docs/reference/javascript/auth-resetpasswordforemail
  */
+export async function listUserPasskeys(): Promise<ActionResponse<unknown[]>> {
+  try {
+    const supabase = await createClient();
+    const { data, error } = await supabase.auth.passkey.list();
+
+    if (error) {
+      return {
+        success: false,
+        error: error.message,
+      };
+    }
+
+    return {
+      success: true,
+      data: data ?? [],
+    };
+  } catch (error) {
+    console.error("Error listing passkeys:", error);
+    return {
+      success: false,
+      error: (error as Error).message,
+    };
+  }
+}
+
+export async function deleteUserPasskey(
+  passkeyId: string,
+): Promise<ActionResponse<null>> {
+  try {
+    const supabase = await createClient();
+    const { error } = await supabase.auth.passkey.delete({ passkeyId });
+
+    if (error) {
+      return {
+        success: false,
+        error: error.message,
+      };
+    }
+
+    return {
+      success: true,
+      data: null,
+    };
+  } catch (error) {
+    console.error("Error deleting passkey:", error);
+    return {
+      success: false,
+      error: (error as Error).message,
+    };
+  }
+}
+
 export async function requestPasswordReset(
-  email: string
+  email: string,
 ): Promise<ActionResponse<null>> {
   try {
     const supabase = await createClient();
@@ -269,7 +321,7 @@ export async function requestPasswordReset(
  * @see https://supabase.com/docs/reference/javascript/auth-updateuser
  */
 export async function updatePassword(
-  password: string
+  password: string,
 ): Promise<ActionResponse<null>> {
   try {
     const supabase = await createClient();

@@ -40,6 +40,15 @@ export const createClient = async () => {
           }
         },
       },
+      auth: {
+        persistSession: false,
+        autoRefreshToken: true,
+        detectSessionInUrl: false,
+        flowType: "pkce",
+        experimental: {
+          passkey: true,
+        },
+      },
     },
   );
 };

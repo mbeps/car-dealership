@@ -39,15 +39,22 @@ export function SignInModal() {
   const [resetError, setResetError] = useState("");
   const [resetSuccess, setResetSuccess] = useState("");
 
-  const { loading, error, success, signInWithEmail, signInWithGoogle } =
-    useSignIn({
-      onSuccess: () => {
-        onClose();
-        setEmail("");
-        setPassword("");
-      },
-      redirectUrl,
-    });
+  const {
+    loading,
+    error,
+    success,
+    supportsPasskeys,
+    signInWithEmail,
+    signInWithGoogle,
+    signInWithPasskey,
+  } = useSignIn({
+    onSuccess: () => {
+      onClose();
+      setEmail("");
+      setPassword("");
+    },
+    redirectUrl,
+  });
 
   const handleEmailSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -56,6 +63,10 @@ export function SignInModal() {
 
   const handleGoogleSignIn = async () => {
     await signInWithGoogle();
+  };
+
+  const handlePasskeySignIn = async () => {
+    await signInWithPasskey();
   };
 
   /**
@@ -84,7 +95,7 @@ export function SignInModal() {
       }
 
       setResetSuccess(
-        "Password reset email sent! Please check your inbox and spam folder."
+        "Password reset email sent! Please check your inbox and spam folder.",
       );
       setEmail("");
     } catch (error) {
@@ -242,6 +253,24 @@ export function SignInModal() {
                 </span>
               </div>
             </div>
+
+            {supportsPasskeys && (
+              <Button
+                type="button"
+                variant="outline"
+                className="w-full"
+                onClick={handlePasskeySignIn}
+                disabled={loading}
+              >
+                <svg className="mr-2 h-4 w-4" viewBox="0 0 24 24">
+                  <path
+                    d="M12 2a4 4 0 0 0-4 4v2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8a2 2 0 0 0-2-2h-2V6a4 4 0 0 0-4-4zm-2 6V6a2 2 0 1 1 4 0v2H10z"
+                    fill="currentColor"
+                  />
+                </svg>
+                Continue with a passkey
+              </Button>
+            )}
 
             <Button
               type="button"
