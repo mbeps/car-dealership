@@ -1,4 +1,4 @@
-import { ensureProfile } from "@/actions/admin/ensure-profile";
+import { ensureProfile } from "@/actions/auth/ensure-profile";
 import { getPublicBranding } from "@/actions/settings";
 import HeaderClient from "./header-client";
 

@@ -1,20 +1,21 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/supabase";
+import { ROUTES } from "@/constants/routes";
+import { getSiteUrl } from "@/lib/site-url";
 import type { ActionResponse } from "@/types/common/action-response";
 
 /**
- * Deletes a registered passkey by identifier.
- *
- * @param passkeyId - The passkey identifier to remove
- * @returns Action response indicating success or failure
+ * Requests a password reset email.
  */
-export async function deleteUserPasskey(
-  passkeyId: string,
+export async function requestPasswordReset(
+  email: string,
 ): Promise<ActionResponse<null>> {
   try {
     const supabase = await createClient();
-    const { error } = await supabase.auth.passkey.delete({ passkeyId });
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${getSiteUrl()}${ROUTES.UPDATE_PASSWORD}`,
+    });
 
     if (error) {
       return {
@@ -28,7 +29,7 @@ export async function deleteUserPasskey(
       data: null,
     };
   } catch (error) {
-    console.error("Error deleting passkey:", error);
+    console.error("Error requesting password reset:", error);
     return {
       success: false,
       error: (error as Error).message,

@@ -15,7 +15,7 @@ import {
 import { Loader2 } from "lucide-react";
 import { ROUTES } from "@/constants/routes";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { updatePassword } from "@/actions/admin/update-password";
+import { updatePassword } from "@/actions/auth/update-password";
 import { updatePasswordSchema } from "@/schemas/update-password";
 
 /**

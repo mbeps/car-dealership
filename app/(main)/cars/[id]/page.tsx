@@ -1,7 +1,7 @@
 import { getCarById } from "@/actions/car-listing";
 import { CarDetails } from "./_components/car-details";
 import { notFound } from "next/navigation";
-import { isCurrentUserAdmin } from "@/actions/admin/is-current-user-admin";
+import { isCurrentUserAdmin } from "@/actions/auth/is-current-user-admin";
 
 export async function generateMetadata({
   params,

@@ -2,16 +2,18 @@
 
 import { createClient } from "@/lib/supabase/supabase";
 import type { ActionResponse } from "@/types/common/action-response";
-import type { User } from "@/types/user/user";
+import { UserRoleEnum as UserRole } from "@/enums/user-role";
 
 /**
- * Retrieves full user profile from database.
- * Joins Supabase auth user with public User table.
+ * Fetches user role from database.
+ * Returns null if not authenticated.
  *
- * @returns Complete user profile or null if not signed in
- * @see User - Database user table
+ * @returns ActionResponse with user role or null
+ * @see User.role - Database enum for roles
  */
-export async function getCurrentUser(): Promise<ActionResponse<User | null>> {
+export async function getCurrentUserRole(): Promise<
+  ActionResponse<{ role: UserRole | null }>
+> {
   try {
     const supabase = await createClient();
     const {
@@ -21,24 +23,22 @@ export async function getCurrentUser(): Promise<ActionResponse<User | null>> {
     if (!authUser) {
       return {
         success: true,
-        data: null,
+        data: { role: null },
       };
     }
 
-    const { data: user, error } = await supabase
+    const { data: user } = await supabase
       .from("User")
-      .select("*")
+      .select("role")
       .eq("supabaseAuthUserId", authUser.id)
       .single();
 
-    if (error) throw error;
-
     return {
       success: true,
-      data: user as User,
+      data: { role: user?.role || null },
     };
   } catch (error) {
-    console.error("Error getting current user:", error);
+    console.error("Error getting user role:", error);
     return {
       success: false,
       error: (error as Error).message,

@@ -1,6 +1,6 @@
 import { getSavedCars } from "@/actions/car-listing";
 import { SavedCarsList } from "./_components/saved-cars-list";
-import { ensureProfile } from "@/actions/admin/ensure-profile";
+import { ensureProfile } from "@/actions/auth/ensure-profile";
 import { redirect } from "next/navigation";
 import { createSignInRedirect, ROUTES } from "@/constants/routes";
 

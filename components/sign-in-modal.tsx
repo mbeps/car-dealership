@@ -16,7 +16,7 @@ import { Loader2 } from "lucide-react";
 import { useSignIn } from "@/hooks/use-sign-in";
 import { ROUTES } from "@/constants/routes";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { requestPasswordReset } from "@/actions/admin/request-password-reset";
+import { requestPasswordReset } from "@/actions/auth/request-password-reset";
 import { forgotPasswordSchema } from "@/schemas/forgot-password";
 
 import useAuthModal from "@/hooks/useAuthModal";
