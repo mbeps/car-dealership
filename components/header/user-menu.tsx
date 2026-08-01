@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
-import { LogOut } from "lucide-react";
+import { LogOut, User as UserIcon } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -11,6 +11,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { User } from "@supabase/supabase-js";
+import { useState } from "react";
+import { AccountDialog } from "./account-dialog";
 
 interface UserMenuProps {
   user: User | null;
@@ -41,6 +43,8 @@ export const UserMenu = ({
   onOpenSignIn,
   showSignInButton = true,
 }: UserMenuProps) => {
+  const [isAccountOpen, setIsAccountOpen] = useState(false);
+
   if (!isAuthenticated) {
     return showSignInButton ? (
       <Button variant="default" onClick={() => onOpenSignIn()}>
@@ -50,35 +54,45 @@ export const UserMenu = ({
   }
 
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger
-        render={<Button variant="ghost" size="icon" className="rounded-full" />}
-      >
-        {user?.user_metadata?.avatar_url || user?.user_metadata?.picture ? (
-          <Image
-            src={user.user_metadata.avatar_url || user.user_metadata.picture}
-            alt="Profile"
-            width={40}
-            height={40}
-            className="rounded-full"
-          />
-        ) : (
-          <div className="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center text-white font-semibold">
-            {user?.email?.charAt(0).toUpperCase() || "U"}
+    <>
+      <DropdownMenu>
+        <DropdownMenuTrigger
+          render={
+            <Button variant="ghost" size="icon" className="rounded-full" />
+          }
+        >
+          {user?.user_metadata?.avatar_url || user?.user_metadata?.picture ? (
+            <Image
+              src={user.user_metadata.avatar_url || user.user_metadata.picture}
+              alt="Profile"
+              width={40}
+              height={40}
+              className="rounded-full"
+            />
+          ) : (
+            <div className="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center text-white font-semibold">
+              {user?.email?.charAt(0).toUpperCase() || "U"}
+            </div>
+          )}
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end" className="w-64 max-w-xs">
+          <div className="px-2 py-1.5 text-sm font-medium">
+            {user?.user_metadata?.full_name || user?.email}
           </div>
-        )}
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-64 max-w-xs">
-        <div className="px-2 py-1.5 text-sm font-medium">
-          {user?.user_metadata?.full_name || user?.email}
-        </div>
-        <div className="px-2 py-1.5 text-xs text-gray-500">{user?.email}</div>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={onSignOut}>
-          <LogOut className="mr-2 h-4 w-4" />
-          Sign out
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
+          <div className="px-2 py-1.5 text-xs text-gray-500">{user?.email}</div>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem onClick={() => setIsAccountOpen(true)}>
+            <UserIcon className="mr-2 h-4 w-4" />
+            Profile
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={onSignOut}>
+            <LogOut className="mr-2 h-4 w-4" />
+            Sign out
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+
+      <AccountDialog open={isAccountOpen} onOpenChange={setIsAccountOpen} />
+    </>
   );
 };

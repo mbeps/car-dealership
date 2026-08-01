@@ -5,18 +5,20 @@ import { useRouter } from "next/navigation";
 import { createBrowserClient } from "@/lib/supabase/supabase-client";
 import { getSiteUrl } from "@/lib/site-url";
 
+/**
+ * Optional callbacks and navigation targets for the sign-in hook.
+ */
 interface UseSignInOptions {
   onSuccess?: () => void;
   redirectUrl?: string;
 }
 
 /**
- * Hook for email and Google OAuth sign-in.
- * Manages Supabase auth flows with loading/error states.
- * Handles redirects and success callbacks.
+ * Handles email, Google OAuth, and passkey sign-in flows.
+ * Manages Supabase auth state, loading, and success/error feedback.
  *
- * @param options - Success callback and redirect URL
- * @returns Sign-in methods, loading, error, and success states
+ * @param options - Optional success callback and redirect target
+ * @returns Sign-in helpers, loading state, and auth feedback
  * @see SignInModal - Component using this hook
  * @see https://supabase.com/docs/reference/javascript/auth-signinwithpassword
  */
@@ -26,6 +28,8 @@ export function useSignIn(options?: UseSignInOptions) {
   const [success, setSuccess] = useState("");
   const router = useRouter();
   const supabase = createBrowserClient();
+  const supportsPasskeys =
+    typeof window !== "undefined" && !!window.PublicKeyCredential;
 
   const signInWithEmail = async (email: string, password: string) => {
     setLoading(true);
@@ -93,11 +97,84 @@ export function useSignIn(options?: UseSignInOptions) {
     }
   };
 
+  const signInWithPasskey = async () => {
+    if (!supportsPasskeys) {
+      const error = new Error("Passkeys are not supported in this browser");
+      setError(error.message);
+      return { success: false, error };
+    }
+
+    setLoading(true);
+    setError("");
+    setSuccess("");
+
+    try {
+      const { data, error } = await supabase.auth.signInWithPasskey();
+
+      if (error) {
+        setError(error.message);
+        return { success: false, error };
+      }
+
+      setSuccess("Signed in successfully with your passkey!");
+
+      if (options?.onSuccess) {
+        options.onSuccess();
+      }
+
+      if (options?.redirectUrl) {
+        router.push(options.redirectUrl);
+      }
+
+      router.refresh();
+      return { success: true, data };
+    } catch (error) {
+      setError("An unexpected error occurred");
+      console.error(error);
+      return { success: false, error };
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const registerPasskey = async () => {
+    if (!supportsPasskeys) {
+      const error = new Error("Passkeys are not supported in this browser");
+      setError(error.message);
+      return { success: false, error };
+    }
+
+    setLoading(true);
+    setError("");
+    setSuccess("");
+
+    try {
+      const { data, error } = await supabase.auth.registerPasskey();
+
+      if (error) {
+        setError(error.message);
+        return { success: false, error };
+      }
+
+      setSuccess("Passkey added successfully.");
+      return { success: true, data };
+    } catch (error) {
+      setError("An unexpected error occurred");
+      console.error(error);
+      return { success: false, error };
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return {
     loading,
     error,
     success,
+    supportsPasskeys,
     signInWithEmail,
     signInWithGoogle,
+    signInWithPasskey,
+    registerPasskey,
   };
 }

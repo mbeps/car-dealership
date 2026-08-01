@@ -6,11 +6,10 @@ import { cookies } from "next/headers";
 import { env } from "@/lib/env";
 
 /**
- * Creates Supabase client for server-side operations.
- * Manages sessions via cookies for SSR.
- * Used in Server Components, Server Actions, Route Handlers.
+ * Creates a Supabase client for server-side operations.
+ * Manages SSR sessions via cookies and enables passkey support.
  *
- * @returns Supabase client with cookie-based auth
+ * @returns Supabase client with cookie-based auth and passkey support
  * @see https://supabase.com/docs/guides/auth/server-side/creating-a-client
  */
 export const createClient = async () => {
@@ -38,6 +37,15 @@ export const createClient = async () => {
           } catch {
             // Called from a Server Component without writable cookies.
           }
+        },
+      },
+      auth: {
+        persistSession: false,
+        autoRefreshToken: true,
+        detectSessionInUrl: false,
+        flowType: "pkce",
+        experimental: {
+          passkey: true,
         },
       },
     },
