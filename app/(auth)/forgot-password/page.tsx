@@ -15,7 +15,7 @@ import Link from "next/link";
 import { Loader2 } from "lucide-react";
 import { ROUTES } from "@/constants/routes";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { requestPasswordReset } from "@/actions/auth";
+import { requestPasswordReset } from "@/actions/admin/request-password-reset";
 import { forgotPasswordSchema } from "@/schemas/forgot-password";
 
 /**
@@ -60,7 +60,7 @@ export default function ForgotPasswordPage() {
       }
 
       setSuccess(
-        "Password reset email sent! Please check your inbox and spam folder."
+        "Password reset email sent! Please check your inbox and spam folder.",
       );
       setEmail("");
     } catch (error) {

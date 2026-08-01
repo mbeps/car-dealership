@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { getCurrentUserRole } from "@/actions/auth";
+import { getCurrentUserRole } from "@/actions/admin/get-current-user-role";
 import { useUser } from "@/hooks/useUser";
 import { UserRoleEnum as UserRole } from "@/enums/user-role";
 

@@ -1,5 +1,5 @@
 import { getUserTestDrives } from "@/actions/test-drive";
-import { ensureProfile } from "@/actions/auth";
+import { ensureProfile } from "@/actions/admin/ensure-profile";
 import { redirect } from "next/navigation";
 import { ReservationsList } from "./_components/reservations-list";
 import { createSignInRedirect, ROUTES } from "@/constants/routes";
