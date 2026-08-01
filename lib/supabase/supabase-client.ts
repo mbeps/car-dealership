@@ -3,10 +3,10 @@ import { createBrowserClient as createBrowserClientSSR } from "@supabase/ssr";
 import { env } from "@/lib/env";
 
 /**
- * Creates Supabase client for Client Components.
- * Manages auth state and session refresh in browser.
+ * Creates a Supabase client for client components.
+ * Enables browser auth features such as session refresh and passkeys.
  *
- * @returns Supabase browser client
+ * @returns Supabase browser client with passkey support enabled
  * @see AuthProvider - Initializes this on mount
  * @see https://supabase.com/docs/guides/auth/server-side/creating-a-client
  */

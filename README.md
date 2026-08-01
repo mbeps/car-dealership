@@ -14,6 +14,8 @@ The system has several key user authentication and account management features d
 - Users can sign up using email and password
 - Users can log in using email and password
 - Users can sign up and log in using third party providers (Google)
+- Users can sign in with passkeys on supported browsers for a passwordless option
+- Users can manage their enrolled passkeys from their account settings
 - Users can log out
 - Profile management with automatic user creation
 
@@ -142,7 +144,7 @@ To get your Supabase instance up and running, you'll need to do a few things:
 
    To do this, head to your Supabase dashboard and select the `SQL Editor` option from the left-hand panel. Here you can write or paste SQL scripts to be executed. Copy each query from your SQL files and run them in the Supabase editor.
 
-2. **Enable authentication providers**: This app uses Email and Google as authentication providers. To enable these, head over to the `Authentication` section in your Supabase dashboard, click on `Providers` and then enable Email and Google OAuth. For Google OAuth, you'll need to configure your Google Cloud Console credentials.
+2. **Enable authentication providers**: This app uses Email, Google, and passkeys as authentication options. To enable these, head over to the `Authentication` section in your Supabase dashboard, click on `Providers` and then enable Email and Google OAuth. For passkeys, enable the passkey support in your Supabase Auth settings and make sure the relying party, RP ID, and allowed origins match your local and production domains. For Google OAuth, you'll need to configure your Google Cloud Console credentials.
 
 3. **Create storage bucket**: The storage bucket `car-images` should be automatically created by the `030_storage.sql` script. If not, navigate to the `Storage` section in your Supabase dashboard, then click on the `New bucket` button. Fill in the bucket name as `car-images`, set it to public, and submit the form.
 

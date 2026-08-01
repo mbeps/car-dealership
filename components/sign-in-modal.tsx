@@ -23,7 +23,7 @@ import useAuthModal from "@/hooks/useAuthModal";
 
 /**
  * Modal dialog for user authentication.
- * Supports email/password sign-in, Google OAuth, and password reset.
+ * Supports email/password sign-in, Google OAuth, passkeys, and password reset.
  * Used globally to prompt authentication for protected actions.
  *
  * @returns Sign-in modal dialog

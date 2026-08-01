@@ -10,6 +10,9 @@ import { Check, Loader2, Pencil, Trash2, X } from "lucide-react";
 import { useSignIn } from "@/hooks/use-sign-in";
 import { createBrowserClient } from "@/lib/supabase/supabase-client";
 
+/**
+ * A passkey entry returned by the Supabase auth API.
+ */
 interface PasskeyEntry {
   id: string;
   friendly_name?: string | null;
@@ -17,16 +20,20 @@ interface PasskeyEntry {
   last_used_at?: string | null;
 }
 
+/**
+ * Feedback shown after a passkey create, rename, or delete action.
+ */
 interface PasskeyFeedback {
   type: "error" | "success";
   message: string;
 }
 
 /**
- * Props for the AccountDialog component.
+ * Props for the passkey-aware account dialog.
  *
- * @see AccountDialog for usage
- * @author Maruf Bepary
+ * @param trigger - Optional element used to open the dialog from a parent component
+ * @param open - Whether the dialog is controlled as open
+ * @param onOpenChange - Callback invoked when the dialog open state changes
  */
 interface AccountDialogProps {
   /** Optional element to trigger the dialog if not controlled from parent */
@@ -38,14 +45,12 @@ interface AccountDialogProps {
 }
 
 /**
- * Displays user profile information in a responsive modal.
- * Fetches data from the useUser hook and presents Name, Email, Phone, and Role.
- * Switches between Dialog and Drawer based on screen size via ResponsiveDrawerDialog.
+ * Displays account details and manages passkeys in a responsive modal.
+ * Fetches profile data from the user hook and supports add, rename, and delete flows.
  *
  * @param props - Control state and trigger for the account dialog
- * @returns A responsive user profile dialog
+ * @returns A responsive account dialog with passkey management
  * @see useUser for data fetching logic
- * @author Maruf Bepary
  */
 export function AccountDialog({
   trigger,

@@ -5,18 +5,20 @@ import { useRouter } from "next/navigation";
 import { createBrowserClient } from "@/lib/supabase/supabase-client";
 import { getSiteUrl } from "@/lib/site-url";
 
+/**
+ * Optional callbacks and navigation targets for the sign-in hook.
+ */
 interface UseSignInOptions {
   onSuccess?: () => void;
   redirectUrl?: string;
 }
 
 /**
- * Hook for email and Google OAuth sign-in.
- * Manages Supabase auth flows with loading/error states.
- * Handles redirects and success callbacks.
+ * Handles email, Google OAuth, and passkey sign-in flows.
+ * Manages Supabase auth state, loading, and success/error feedback.
  *
- * @param options - Success callback and redirect URL
- * @returns Sign-in methods, loading, error, and success states
+ * @param options - Optional success callback and redirect target
+ * @returns Sign-in helpers, loading state, and auth feedback
  * @see SignInModal - Component using this hook
  * @see https://supabase.com/docs/reference/javascript/auth-signinwithpassword
  */

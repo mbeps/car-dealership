@@ -224,12 +224,9 @@ export async function signOut(): Promise<void> {
 }
 
 /**
- * Sends password reset email to user.
- * Email contains link to update-password page with token.
+ * Lists the authenticated user's registered passkeys.
  *
- * @param email - User's email address
- * @returns ActionResponse indicating success or failure
- * @see https://supabase.com/docs/reference/javascript/auth-resetpasswordforemail
+ * @returns Action response containing passkey data or an error message
  */
 export async function listUserPasskeys(): Promise<ActionResponse<unknown[]>> {
   try {
@@ -256,6 +253,12 @@ export async function listUserPasskeys(): Promise<ActionResponse<unknown[]>> {
   }
 }
 
+/**
+ * Deletes a registered passkey by identifier.
+ *
+ * @param passkeyId - The passkey identifier to remove
+ * @returns Action response indicating success or failure
+ */
 export async function deleteUserPasskey(
   passkeyId: string,
 ): Promise<ActionResponse<null>> {
