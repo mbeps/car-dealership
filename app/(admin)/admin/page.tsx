@@ -1,4 +1,4 @@
-import { getDashboardData } from "@/actions/admin";
+import { getDashboardData } from "@/actions/admin/get-dashboard-data";
 import { Dashboard } from "./dashboard/Dashboard";
 
 export const dynamic = "force-dynamic";

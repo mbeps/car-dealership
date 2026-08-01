@@ -23,7 +23,8 @@ import { BookingStatusEnum as BookingStatus } from "@/enums/booking-status";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { TestDriveCard } from "@/components/test-drive-card";
 import useFetch from "@/hooks/use-fetch";
-import { getAdminTestDrives, updateTestDriveStatus } from "@/actions/admin";
+import { getAdminTestDrives } from "@/actions/admin/get-admin-test-drives";
+import { updateTestDriveStatus } from "@/actions/admin/update-test-drive-status";
 import { cancelTestDrive } from "@/actions/test-drive";
 
 /**
@@ -109,7 +110,7 @@ export const TestDrivesList = () => {
   // Handle status update
   const handleUpdateStatus = async (
     bookingId: string,
-    newStatus: BookingStatus
+    newStatus: BookingStatus,
   ) => {
     if (newStatus) {
       await updateStatusFn(bookingId, newStatus);
@@ -221,7 +222,7 @@ export const TestDrivesList = () => {
                             if (value) {
                               handleUpdateStatus(
                                 booking.id,
-                                value as BookingStatus
+                                value as BookingStatus,
                               );
                             }
                           }}

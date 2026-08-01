@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { getAdmin } from "@/actions/admin";
+import { getAdmin } from "@/actions/admin/get-admin";
 import Header from "@/components/header";
 
 export default async function AdminLayout({
