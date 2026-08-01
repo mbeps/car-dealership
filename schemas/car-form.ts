@@ -31,7 +31,7 @@ export const carFormSchema = z.object({
     .min(1, "Number plate is required")
     .regex(
       /^[A-Z0-9]{2,10}$/,
-      "Number plate must be 2-10 uppercase letters/numbers"
+      "Number plate must be 2-10 uppercase letters/numbers",
     ),
   seats: z
     .string()

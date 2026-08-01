@@ -1,6 +1,6 @@
 import { AddCarForm } from "./_components/add-car-form";
-import { getCarMakes } from "@/actions/car-makes";
-import { getCarColors } from "@/actions/car-colors";
+import { getCarMakes } from "@/actions/cars/get-car-makes";
+import { getCarColors } from "@/actions/cars/get-car-colors";
 
 export const metadata = {
   title: "Add New Car",

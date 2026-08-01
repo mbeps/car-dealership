@@ -3,7 +3,8 @@
 import { useEffect } from "react";
 import { toast } from "sonner";
 import useFetch from "@/hooks/use-fetch";
-import { deleteCar, updateCarStatus } from "@/actions/cars";
+import { deleteCar } from "@/actions/cars/delete-car";
+import { updateCarStatus } from "@/actions/cars/update-car-status";
 import { CarStatusEnum as CarStatus } from "@/enums/car-status";
 
 interface UseCarAdminOptions {
@@ -78,7 +79,7 @@ export function useCarAdmin(options: UseCarAdminOptions = {}) {
 
   const handleToggleFeatured = async (
     carId: string,
-    currentFeatured: boolean
+    currentFeatured: boolean,
   ) => {
     await updateCarStatusFn(carId, { featured: !currentFeatured });
   };

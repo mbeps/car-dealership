@@ -1,4 +1,4 @@
-import { getCarById } from "@/actions/car-listing";
+import { getCarById } from "@/actions/cars/get-car-by-id";
 import { notFound, redirect } from "next/navigation";
 import { TestDriveForm } from "./_components/test-drive-form";
 import { isCurrentUserAdmin } from "@/actions/auth/is-current-user-admin";

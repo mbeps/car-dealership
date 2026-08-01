@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
-import { toggleSavedCar } from "@/actions/car-listing";
+import { toggleSavedCar } from "@/actions/cars/toggle-saved-car";
 import { useUser } from "@/hooks/useUser";
 import useAuthModal from "@/hooks/useAuthModal";
 import { useRouter } from "next/navigation";

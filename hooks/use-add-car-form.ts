@@ -7,7 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import { ROUTES } from "@/constants/routes";
 
-import { addCar } from "@/actions/cars";
+import { addCar } from "@/actions/cars/add-car";
 import useFetch from "@/hooks/use-fetch";
 import { carFormSchema, CarFormData } from "@/schemas/car-form";
 import { CarStatusEnum as CarStatus } from "@/enums/car-status";

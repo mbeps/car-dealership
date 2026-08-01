@@ -16,7 +16,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { updateCar } from "@/actions/cars";
+import { updateCar } from "@/actions/cars/update-car";
 import useFetch from "@/hooks/use-fetch";
 import { carFormSchema, CarFormData } from "@/schemas/car-form";
 import { CarColorOption } from "@/types/car-color/car-color-option";

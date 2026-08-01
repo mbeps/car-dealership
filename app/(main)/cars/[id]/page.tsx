@@ -1,4 +1,4 @@
-import { getCarById } from "@/actions/car-listing";
+import { getCarById } from "@/actions/cars/get-car-by-id";
 import { CarDetails } from "./_components/car-details";
 import { notFound } from "next/navigation";
 import { isCurrentUserAdmin } from "@/actions/auth/is-current-user-admin";

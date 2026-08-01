@@ -1,6 +1,6 @@
 "use client";
 
-import { toggleSavedCar } from "@/actions/car-listing";
+import { toggleSavedCar } from "@/actions/cars/toggle-saved-car";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";

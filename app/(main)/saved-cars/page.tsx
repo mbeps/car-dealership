@@ -1,4 +1,4 @@
-import { getSavedCars } from "@/actions/car-listing";
+import { getSavedCars } from "@/actions/cars/get-saved-cars";
 import { SavedCarsList } from "./_components/saved-cars-list";
 import { ensureProfile } from "@/actions/auth/ensure-profile";
 import { redirect } from "next/navigation";

@@ -1,8 +1,8 @@
 import { notFound } from "next/navigation";
 import { EditCarForm } from "./_components/edit-car-form";
-import { getCarMakes } from "@/actions/car-makes";
-import { getCarColors } from "@/actions/car-colors";
-import { getCars } from "@/actions/cars";
+import { getCarMakes } from "@/actions/cars/get-car-makes";
+import { getCarColors } from "@/actions/cars/get-car-colors";
+import { getCars } from "@/actions/cars/get-cars";
 
 export const metadata = {
   title: "Edit Car",

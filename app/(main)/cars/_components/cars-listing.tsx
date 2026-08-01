@@ -9,7 +9,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Info, Search } from "lucide-react";
 import { CarCard } from "@/components/car-card";
 import useFetch from "@/hooks/use-fetch";
-import { getCars } from "@/actions/car-listing";
+import { getCars } from "@/actions/cars/get-public-cars";
 import CarListingsLoading from "./car-listing-loading";
 import { ROUTES } from "@/constants/routes";
 
@@ -198,7 +198,7 @@ export function CarListings() {
 
   // Sort and deduplicate
   const uniquePageNumbers = [...new Set(visiblePageNumbers)].sort(
-    (a, b) => a - b
+    (a, b) => a - b,
   );
 
   // Create pagination items with ellipses
@@ -209,7 +209,7 @@ export function CarListings() {
       paginationItems.push(
         <PaginationItem key={`ellipsis-${pageNumber}`}>
           <PaginationEllipsis />
-        </PaginationItem>
+        </PaginationItem>,
       );
     }
 
@@ -225,7 +225,7 @@ export function CarListings() {
         >
           {pageNumber}
         </PaginationLink>
-      </PaginationItem>
+      </PaginationItem>,
     );
 
     lastPageNumber = pageNumber;

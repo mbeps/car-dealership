@@ -50,7 +50,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { StorageMeter } from "@/components/admin/storage-meter";
 import useFetch from "@/hooks/use-fetch";
 import { useCarAdmin } from "@/hooks/use-car-admin";
-import { getCars } from "@/actions/cars";
+import { getCars } from "@/actions/cars/get-cars";
 import { formatCurrency } from "@/lib/helpers/format-currency";
 import Image from "next/image";
 import { SerializedCar } from "@/types/car/serialized-car";
