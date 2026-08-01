@@ -268,17 +268,9 @@ export function AccountDialog({
               <div className="flex flex-col">
                 <span className="text-base font-semibold">{displayName}</span>
                 <span className="text-muted-foreground text-xs">
-                  {userDetails?.role || "User"}
+                  {userDetails?.email || user?.email || "N/A"}
                 </span>
               </div>
-            </div>
-
-            <div className="grid gap-4">
-              <InfoField
-                label="Email"
-                value={userDetails?.email || user?.email || "N/A"}
-              />
-              <InfoField label="Role" value={userDetails?.role || "User"} />
             </div>
 
             {user && (
