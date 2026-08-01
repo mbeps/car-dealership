@@ -85,10 +85,6 @@ export function AccountDialog({
                 label="Email"
                 value={userDetails?.email || user?.email || "N/A"}
               />
-              <InfoField
-                label="Phone"
-                value={userDetails?.phone || "Not provided"}
-              />
               <InfoField label="Role" value={userDetails?.role || "User"} />
             </div>
           </>
