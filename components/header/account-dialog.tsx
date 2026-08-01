@@ -375,25 +375,19 @@ export function AccountDialog({
 }
 
 /**
- * Renders a labeled read-only information field.
- * Used for displaying profile attributes like Email, Phone, and Role.
+ * Renders a single passkey row with edit and delete controls.
  *
- * @param label - Descriptive label for the information
- * @param value - The actual data value to display
- * @returns A styled label-value pair
- * @author Maruf Bepary
+ * @param passkey - The passkey entry to display in the row
+ * @param isEditing - Whether the row is in edit mode for renaming
+ * @param draftName - The current draft name for the passkey
+ * @param pending - Whether an action (rename/delete) is pending for this passkey
+ * @param onDraftChange - Callback to update the draft name
+ * @param onEditStart - Callback to initiate editing this passkey
+ * @param onEditCancel - Callback to cancel editing this passkey
+ * @param onRenameSave - Callback to save the renamed passkey
+ * @param onDelete - Callback to delete this passkey
+ * @returns A list item representing a passkey with edit and delete controls
  */
-function InfoField({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="flex flex-col gap-1">
-      <span className="text-muted-foreground text-xs font-medium uppercase tracking-wider">
-        {label}
-      </span>
-      <span className="text-sm font-medium">{value}</span>
-    </div>
-  );
-}
-
 function PasskeyRow({
   passkey,
   isEditing,
