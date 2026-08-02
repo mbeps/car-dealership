@@ -2,10 +2,8 @@
 
 import { createAdminClient } from "@/lib/supabase/supabase";
 import { ensureAdminUser } from "@/lib/supabase/ensure-admin-user";
-import {
-  validateAndPrepareLogoUpload,
-  buildVersionedLogoPath,
-} from "@/lib/helpers/logo-upload";
+import { buildVersionedLogoPath } from "@/lib/helpers/build-versioned-logo-path";
+import { validateAndPrepareLogoUpload } from "@/lib/helpers/validate-and-prepare-logo-upload";
 import { getErrorMessage } from "@/lib/helpers/get-error-message";
 import { revalidateBrandingPages } from "@/lib/helpers/branding-cache";
 import type { LogoUploadPayload } from "@/schemas/logo-upload";

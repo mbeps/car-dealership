@@ -65,7 +65,7 @@ describe("useSignIn", () => {
     const response = await result.current.signInWithPasskey();
 
     expect(response.success).toBe(false);
-    expect(response.error?.message).toContain("not supported");
+    expect((response.error as Error).message).toContain("not supported");
     expect(mockSignInWithPasskey).not.toHaveBeenCalled();
   });
 });

@@ -1,3 +1,4 @@
+import type { LogoExtension, LogoUploadPayload } from "@/schemas/logo-upload";
 import {
   MAX_ASPECT_RATIO,
   MAX_BYTES_ICO,
@@ -11,27 +12,12 @@ import {
   isCompatibleLogoExtensionAndMimeType,
   logoUploadPayloadSchema,
   normaliseLogoMimeType,
-  type LogoExtension,
-  type LogoUploadPayload,
 } from "@/schemas/logo-upload";
-
-interface ParsedDataUrl {
-  mimeType: string;
-  bytes: Buffer;
-}
-
-interface RasterDimensions {
-  width: number;
-  height: number;
-}
-
-export interface ValidatedLogoUpload {
-  bytes: Buffer;
-  extension: LogoExtension;
-  mimeType: string;
-  sizeBytes: number;
-  dimensions: RasterDimensions | null;
-}
+import type { RasterDimensions } from "@/types/logo/raster-dimensions";
+import { parseDataUrl } from "@/lib/helpers/parse-data-url";
+import { validateMagicBytes } from "@/lib/helpers/validate-magic-bytes";
+import { validateSvgSafeguards } from "@/lib/helpers/validate-svg-safeguards";
+import type { ValidatedLogoUpload } from "@/types/logo/validated-logo-upload";
 
 function getMaxBytesForExtension(extension: LogoExtension): number {
   if (extension === "png" || extension === "jpg" || extension === "jpeg") {
@@ -43,71 +29,6 @@ function getMaxBytesForExtension(extension: LogoExtension): number {
   }
 
   return MAX_BYTES_SVG;
-}
-
-export function parseDataUrl(dataUrl: string): ParsedDataUrl {
-  const match = /^data:([^;]+);base64,([\s\S]+)$/i.exec(dataUrl.trim());
-  if (!match) {
-    throw new Error("Invalid file payload. Expected a base64 data URL.");
-  }
-
-  const mimeType = normaliseLogoMimeType(match[1]);
-  const base64Payload = match[2].replace(/\s/g, "");
-
-  if (!base64Payload) {
-    throw new Error("File payload is empty.");
-  }
-
-  const bytes = Buffer.from(base64Payload, "base64");
-  if (bytes.length === 0) {
-    throw new Error("File payload could not be decoded.");
-  }
-
-  const normalisedInput = base64Payload.replace(/=+$/g, "");
-  const normalisedDecoded = bytes.toString("base64").replace(/=+$/g, "");
-  if (normalisedInput !== normalisedDecoded) {
-    throw new Error("File payload is not valid base64.");
-  }
-
-  return { mimeType, bytes };
-}
-
-export function validateMagicBytes(
-  bytes: Buffer,
-  extension: LogoExtension,
-): void {
-  if (extension === "png") {
-    const signature = [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a];
-    const isValid = signature.every((value, index) => bytes[index] === value);
-
-    if (!isValid) {
-      throw new Error("PNG signature check failed.");
-    }
-
-    return;
-  }
-
-  if (extension === "jpg" || extension === "jpeg") {
-    const hasJpegStart = bytes[0] === 0xff && bytes[1] === 0xd8;
-    if (!hasJpegStart) {
-      throw new Error("JPEG signature check failed.");
-    }
-
-    return;
-  }
-
-  if (extension === "ico") {
-    const hasIcoHeader =
-      bytes.length >= 4 &&
-      bytes[0] === 0x00 &&
-      bytes[1] === 0x00 &&
-      bytes[2] === 0x01 &&
-      bytes[3] === 0x00;
-
-    if (!hasIcoHeader) {
-      throw new Error("ICO signature check failed.");
-    }
-  }
 }
 
 function extractPngDimensions(bytes: Buffer): RasterDimensions {
@@ -201,7 +122,7 @@ function extractIcoDimensions(bytes: Buffer): RasterDimensions {
   };
 }
 
-export function extractRasterDimensions(
+function extractRasterDimensions(
   bytes: Buffer,
   extension: LogoExtension,
 ): RasterDimensions {
@@ -216,7 +137,7 @@ export function extractRasterDimensions(
   return extractIcoDimensions(bytes);
 }
 
-export function validateRasterDimensions(dimensions: RasterDimensions): void {
+function validateRasterDimensions(dimensions: RasterDimensions): void {
   const { width, height } = dimensions;
 
   if (width < MIN_DIMENSION_PX || height < MIN_DIMENSION_PX) {
@@ -235,45 +156,6 @@ export function validateRasterDimensions(dimensions: RasterDimensions): void {
   if (aspectRatio < MIN_ASPECT_RATIO || aspectRatio > MAX_ASPECT_RATIO) {
     throw new Error("Image aspect ratio is outside allowed limits.");
   }
-}
-
-export function validateSvgSafeguards(bytes: Buffer): void {
-  const content = bytes.toString("utf8");
-  if (!content) {
-    throw new Error("SVG content is empty.");
-  }
-
-  if (content.includes("\u0000")) {
-    throw new Error("SVG contains invalid binary content.");
-  }
-
-  if (!/<svg[\s>]/i.test(content)) {
-    throw new Error("SVG root element is missing.");
-  }
-
-  const blockedPatterns = [
-    /<script[\s>]/i,
-    /on[a-z]+\s*=/i,
-    /javascript:/i,
-    /<foreignObject[\s>]/i,
-    /<iframe[\s>]/i,
-    /<object[\s>]/i,
-    /<embed[\s>]/i,
-  ];
-
-  for (const pattern of blockedPatterns) {
-    if (pattern.test(content)) {
-      throw new Error("SVG contains blocked content.");
-    }
-  }
-}
-
-export function buildVersionedLogoPath(
-  dealershipId: string,
-  logoVersion: string,
-  extension: LogoExtension,
-): string {
-  return `dealership/${dealershipId}/logo-${logoVersion}.${extension}`;
 }
 
 export function validateAndPrepareLogoUpload(
