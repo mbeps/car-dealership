@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { v4 as uuidv4 } from "uuid";
 import { env } from "@/lib/env";
 import { createClient, createAdminClient } from "@/lib/supabase/supabase";
-import { checkStorageQuota } from "../storage";
+import { checkStorageQuota } from "../storage/check-storage-quota";
 import type { ActionResponse } from "@/types/common/action-response";
 import { UserRoleEnum as UserRole } from "@/enums/user-role";
 import { CarStatusEnum as CarStatus } from "@/enums/car-status";

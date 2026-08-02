@@ -1,6 +1,6 @@
 "use client";
 
-import { getStorageUsage } from "@/actions/storage";
+import { getStorageUsage } from "@/actions/storage/get-storage-usage";
 import { Badge } from "@/components/ui/badge";
 import {
   Card,

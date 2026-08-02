@@ -5,7 +5,7 @@ import { createClient } from "@/lib/supabase/supabase";
 import { createAdminClient } from "@/lib/supabase/supabase";
 import { env } from "@/lib/env";
 import { ROUTES } from "@/constants/routes";
-import { checkStorageQuota } from "../storage";
+import { checkStorageQuota } from "../storage/check-storage-quota";
 import { validateFileSizes } from "@/actions/cars/validate-file-sizes";
 import type { ActionResponse } from "@/types/common/action-response";
 import { CarStatusEnum as CarStatus } from "@/enums/car-status";
