@@ -1,37 +1,4 @@
-import {
-  ROUTES,
-  PROTECTED_ROUTES,
-  createCarSearchUrl,
-  createSignInRedirect,
-} from "@/constants/routes";
-
-describe("createSignInRedirect", () => {
-  it("returns sign-in path with encoded redirect", () => {
-    const redirect = "/cars/abc?make=tesla&featured=true";
-    const url = createSignInRedirect(redirect);
-
-    expect(url).toBe(
-      `${ROUTES.AUTH.SIGN_IN}?redirect=${encodeURIComponent(redirect)}`,
-    );
-  });
-});
-
-describe("createCarSearchUrl", () => {
-  it("builds query string with only truthy values", () => {
-    const url = createCarSearchUrl({
-      search: "model s",
-      make: "tesla",
-      bodyType: "",
-      fuelType: undefined,
-    });
-
-    expect(url).toBe(`${ROUTES.HOME.CARS}?search=model+s&make=tesla`);
-  });
-
-  it("returns base cars route when params are empty", () => {
-    expect(createCarSearchUrl({})).toBe(ROUTES.HOME.CARS);
-  });
-});
+import { ROUTES, PROTECTED_ROUTES } from "@/constants/routes";
 
 describe("ROUTES constants", () => {
   it("builds dynamic routes for cars and admin", () => {

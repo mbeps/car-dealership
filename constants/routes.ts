@@ -21,7 +21,6 @@ const ADMIN_SETTINGS = `${ADMIN_BASE}/settings`;
  * Dynamic routes are functions to ensure type safety.
  *
  * @see proxy.ts - Uses PROTECTED_ROUTES
- * @see createCarSearchUrl - Helper for cars listing URL generation
  */
 export const ROUTES = {
   HOME: {
@@ -63,39 +62,3 @@ export const PROTECTED_ROUTES = [
   ROUTES.SAVED_CARS,
   ROUTES.RESERVATIONS,
 ] as const;
-
-/**
- * Builds sign-in URL with return path.
- * Preserves original destination after auth.
- *
- * @param redirectPath - Where to redirect after sign-in
- * @returns Sign-in URL with redirect param
- * @see middleware.ts - Creates these redirects
- */
-export function createSignInRedirect(redirectPath: string): string {
-  return `${ROUTES.AUTH.SIGN_IN}?redirect=${encodeURIComponent(redirectPath)}`;
-}
-
-/**
- * Builds car listing URL with query params.
- * Filters out empty values for clean URLs.
- *
- * @param params - Filter params (make, bodyType, etc.)
- * @returns Cars URL with query string
- * @see ROUTES.HOME.CARS - Base car listing route
- */
-export function createCarSearchUrl(params: {
-  search?: string;
-  make?: string;
-  bodyType?: string;
-  [key: string]: string | undefined;
-}): string {
-  const searchParams = new URLSearchParams();
-  Object.entries(params).forEach(([key, value]) => {
-    if (value) {
-      searchParams.set(key, value);
-    }
-  });
-  const query = searchParams.toString();
-  return query ? `${ROUTES.HOME.CARS}?${query}` : ROUTES.HOME.CARS;
-}

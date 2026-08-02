@@ -12,7 +12,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { bodyTypes } from "@/constants/body-types";
 import { carMakes } from "@/constants/car-makes";
-import { ROUTES, createCarSearchUrl } from "@/constants/routes";
+import { ROUTES } from "@/constants/routes";
+import { createCarSearchUrl } from "@/lib/route/createCarSearchUrl";
 import { SignedOut } from "@/components/auth-helpers";
 import { Calendar, Car, ChevronRight, Shield } from "lucide-react";
 import Image from "next/image";

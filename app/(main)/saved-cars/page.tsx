@@ -2,7 +2,8 @@ import { getSavedCars } from "@/actions/cars/get-saved-cars";
 import { SavedCarsList } from "./_components/saved-cars-list";
 import { ensureProfile } from "@/actions/auth/ensure-profile";
 import { redirect } from "next/navigation";
-import { createSignInRedirect, ROUTES } from "@/constants/routes";
+import { createSignInRedirect } from "@/lib/route/createSignInRedirect";
+import { ROUTES } from "@/constants/routes";
 
 export const metadata = {
   title: "Saved Cars",

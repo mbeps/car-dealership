@@ -4,11 +4,8 @@ import type { CookieOptions } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 import { env } from "@/lib/env";
 
-import {
-  PROTECTED_ROUTES,
-  ROUTES,
-  createSignInRedirect,
-} from "./constants/routes";
+import { PROTECTED_ROUTES, ROUTES } from "./constants/routes";
+import { createSignInRedirect } from "@/lib/route/createSignInRedirect";
 
 // Protected routes that require authentication
 const protectedRoutes = PROTECTED_ROUTES;
