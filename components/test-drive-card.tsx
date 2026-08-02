@@ -81,7 +81,7 @@ export function TestDriveCard({
 
   // Type guard to check if booking has user property
   const hasUser = (
-    booking: TestDriveBookingWithCar | TestDriveBookingWithUser
+    booking: TestDriveBookingWithCar | TestDriveBookingWithUser,
   ): booking is TestDriveBookingWithUser => {
     return "user" in booking;
   };
@@ -163,13 +163,13 @@ export function TestDriveCard({
                 className="w-full"
                 render={
                   <Link
-                    href={ROUTES.CAR_DETAILS(booking.carId)}
+                    href={ROUTES.HOME.CAR_DETAILS(booking.carId)}
                     className="flex items-center justify-center"
                   />
                 }
               >
-                  View Car
-                  <ArrowRight className="ml-2 h-4 w-4" />
+                View Car
+                <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
               {(booking.status === BookingStatus.PENDING ||
                 booking.status === BookingStatus.CONFIRMED) && (
@@ -212,7 +212,7 @@ export function TestDriveCard({
                   <span>
                     {format(
                       new Date(booking.bookingDate),
-                      "EEEE, MMMM d, yyyy"
+                      "EEEE, MMMM d, yyyy",
                     )}
                   </span>
                 </div>

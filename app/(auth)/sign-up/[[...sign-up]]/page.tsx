@@ -69,7 +69,7 @@ export default function SignUpPage() {
 
       setSuccess("Account created! Please check your email to verify.");
       setTimeout(() => {
-        router.push(ROUTES.SIGN_IN);
+        router.push(ROUTES.AUTH.SIGN_IN);
       }, 2000);
     } catch (error) {
       setError("An unexpected error occurred");
@@ -113,7 +113,7 @@ export default function SignUpPage() {
           <CardDescription>
             Or{" "}
             <Link
-              href={ROUTES.SIGN_IN}
+              href={ROUTES.AUTH.SIGN_IN}
               className="text-blue-600 hover:underline"
             >
               sign in to your account

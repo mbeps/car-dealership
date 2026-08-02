@@ -15,7 +15,7 @@ import { BookingStatusEnum as BookingStatus } from "@/enums/booking-status";
  *
  * @param carId - Target car ID
  * @returns Car with nested test drive context
- * @see ROUTES.CAR_DETAILS - Detail page
+ * @see ROUTES.HOME.CAR_DETAILS - Detail page
  * @see ROUTES.TEST_DRIVE - Test drive booking page
  */
 export async function getCarById(carId: string): Promise<

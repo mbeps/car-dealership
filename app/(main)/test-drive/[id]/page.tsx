@@ -19,7 +19,7 @@ export default async function TestDrivePage({
   // Check if user is admin and redirect to admin panel
   const isAdmin = await isCurrentUserAdmin();
   if (isAdmin) {
-    redirect(ROUTES.ADMIN_TEST_DRIVES);
+    redirect(ROUTES.ADMIN.ADMIN_TEST_DRIVES);
   }
 
   // Fetch car details

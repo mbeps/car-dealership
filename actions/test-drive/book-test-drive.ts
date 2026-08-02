@@ -100,7 +100,7 @@ export async function bookTestDrive(
 
     // Revalidate relevant paths
     revalidatePath(ROUTES.TEST_DRIVE(carId));
-    revalidatePath(ROUTES.CAR_DETAILS(carId));
+    revalidatePath(ROUTES.HOME.CAR_DETAILS(carId));
 
     return {
       success: true,

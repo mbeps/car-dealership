@@ -95,7 +95,7 @@ export async function cancelTestDrive(
 
     // Revalidate paths
     revalidatePath(ROUTES.RESERVATIONS);
-    revalidatePath(ROUTES.ADMIN_TEST_DRIVES);
+    revalidatePath(ROUTES.ADMIN.ADMIN_TEST_DRIVES);
 
     return {
       success: true,

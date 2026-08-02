@@ -20,8 +20,8 @@ import type { CarFormData } from "@/types/car/car-form-data";
  *
  * @param formData - FormData with 'carId', 'carData' (JSON), 'newImages' (File[]), 'imagesToRemove' (string[])
  * @returns Success result or error
- * @see ROUTES.CAR_DETAILS - Public detail page
- * @see ROUTES.ADMIN_CARS - Admin car list
+ * @see ROUTES.HOME.CAR_DETAILS - Public detail page
+ * @see ROUTES.ADMIN.ADMIN_CARS - Admin car list
  */
 export async function updateCar(
   formData: FormData,
@@ -217,8 +217,8 @@ export async function updateCar(
     if (updateError) throw updateError;
 
     // Revalidate pages
-    revalidatePath(ROUTES.ADMIN_CARS);
-    revalidatePath(ROUTES.CAR_DETAILS(carId));
+    revalidatePath(ROUTES.ADMIN.ADMIN_CARS);
+    revalidatePath(ROUTES.HOME.CAR_DETAILS(carId));
 
     return {
       success: true,

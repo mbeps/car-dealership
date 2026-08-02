@@ -65,7 +65,7 @@ import { CarStatusEnum as CarStatus } from "@/enums/car-status";
  *
  * @see getCars - Server action for admin car list
  * @see useCarAdmin - Hook for delete/update actions
- * @see ROUTES.ADMIN_CAR_EDIT - Edit page route
+ * @see ROUTES.ADMIN.ADMIN_CAR_EDIT - Edit page route
  */
 export const CarsList = () => {
   const router = useRouter();
@@ -169,7 +169,7 @@ export const CarsList = () => {
       <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
         <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 w-full sm:w-auto">
           <Button
-            onClick={() => router.push(ROUTES.ADMIN_CAR_CREATE)}
+            onClick={() => router.push(ROUTES.ADMIN.ADMIN_CAR_CREATE)}
             className="flex items-center w-full sm:w-auto"
           >
             <Plus className="h-4 w-4" />
@@ -273,7 +273,7 @@ export const CarsList = () => {
                               <DropdownMenuLabel>Actions</DropdownMenuLabel>
                               <DropdownMenuItem
                                 onClick={() =>
-                                  router.push(ROUTES.CAR_DETAILS(car.id))
+                                  router.push(ROUTES.HOME.CAR_DETAILS(car.id))
                                 }
                               >
                                 <Eye className="mr-2 h-4 w-4" />
@@ -281,7 +281,9 @@ export const CarsList = () => {
                               </DropdownMenuItem>
                               <DropdownMenuItem
                                 onClick={() =>
-                                  router.push(ROUTES.ADMIN_CAR_EDIT(car.id))
+                                  router.push(
+                                    ROUTES.ADMIN.ADMIN_CAR_EDIT(car.id),
+                                  )
                                 }
                               >
                                 <Pencil className="mr-2 h-4 w-4" />
@@ -361,7 +363,9 @@ export const CarsList = () => {
                   ? "No cars match your search criteria"
                   : "Your inventory is empty. Add cars to get started."}
               </p>
-              <Button onClick={() => router.push(ROUTES.ADMIN_CAR_CREATE)}>
+              <Button
+                onClick={() => router.push(ROUTES.ADMIN.ADMIN_CAR_CREATE)}
+              >
                 Add Your First Car
               </Button>
             </div>

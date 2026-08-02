@@ -91,7 +91,7 @@ export default function SignInPage() {
           <CardDescription>
             Or{" "}
             <Link
-              href={ROUTES.SIGN_UP}
+              href={ROUTES.AUTH.SIGN_UP}
               className="text-blue-600 hover:underline"
             >
               create a new account
@@ -117,7 +117,7 @@ export default function SignInPage() {
               <div className="flex items-center justify-between">
                 <Label htmlFor="password">Password</Label>
                 <Link
-                  href={ROUTES.FORGOT_PASSWORD}
+                  href={ROUTES.AUTH.FORGOT_PASSWORD}
                   className="text-sm text-blue-600 hover:underline"
                 >
                   Forgot password?

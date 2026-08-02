@@ -41,13 +41,13 @@ export const MAIN_NAV_ITEMS: NavItem[] = [
   {
     label: "Home",
     icon: Home,
-    href: ROUTES.HOME,
+    href: ROUTES.HOME.HOME,
     showInMobile: true,
   },
   {
     label: "All Cars",
     icon: CarFront,
-    href: ROUTES.CARS,
+    href: ROUTES.HOME.CARS,
     showInMobile: true,
   },
   {
@@ -72,25 +72,25 @@ export const ADMIN_NAV_ITEMS: NavItem[] = [
   {
     label: "Dashboard",
     icon: LayoutDashboard,
-    href: ROUTES.ADMIN,
+    href: ROUTES.ADMIN.ADMIN,
     showInMobile: true,
   },
   {
     label: "Cars",
     icon: Car,
-    href: ROUTES.ADMIN_CARS,
+    href: ROUTES.ADMIN.ADMIN_CARS,
     showInMobile: true,
   },
   {
     label: "Test Drives",
     icon: Calendar,
-    href: ROUTES.ADMIN_TEST_DRIVES,
+    href: ROUTES.ADMIN.ADMIN_TEST_DRIVES,
     showInMobile: true,
   },
   {
     label: "Settings",
     icon: Cog,
-    href: ROUTES.ADMIN_SETTINGS,
+    href: ROUTES.ADMIN.ADMIN_SETTINGS,
     showInMobile: true,
   },
 ];
@@ -99,6 +99,6 @@ export const ADMIN_NAV_ITEMS: NavItem[] = [
 export const ADMIN_PORTAL_ITEM: NavItem = {
   label: "Admin Portal",
   icon: Layout,
-  href: ROUTES.ADMIN,
+  href: ROUTES.ADMIN.ADMIN,
   requiresAuth: true,
 };

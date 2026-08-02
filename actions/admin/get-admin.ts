@@ -9,7 +9,7 @@ import { UserRoleEnum as UserRole } from "@/enums/user-role";
  * Called by admin layout to enforce role-based access.
  *
  * @returns Authorization result with user data if admin, or reason if denied
- * @see ROUTES.ADMIN - Protected admin routes
+ * @see ROUTES.ADMIN.ADMIN - Protected admin routes
  */
 export async function getAdmin(): Promise<AdminAuthResult> {
   const supabase = await createClient();

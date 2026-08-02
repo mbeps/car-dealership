@@ -60,7 +60,7 @@ const HeaderClient = ({
 
   const signOut = async () => {
     await supabaseClient.auth.signOut();
-    router.push(ROUTES.HOME);
+    router.push(ROUTES.HOME.HOME);
   };
 
   const isAuthenticated = !!user;
@@ -79,7 +79,7 @@ const HeaderClient = ({
           {/* Logo */}
           <div className="flex items-center gap-2">
             <Link
-              href={isAdminPage ? ROUTES.ADMIN : ROUTES.HOME}
+              href={isAdminPage ? ROUTES.ADMIN.ADMIN : ROUTES.HOME.HOME}
               className="flex items-center gap-2"
             >
               <Image
@@ -108,7 +108,7 @@ const HeaderClient = ({
                   isAuthenticated={isAuthenticated}
                   userRole={userRole}
                 />
-                <Link href={ROUTES.HOME}>
+                <Link href={ROUTES.HOME.HOME}>
                   <Button variant="outline" className="flex items-center gap-2">
                     <ArrowLeft size={18} />
                     <span>Back to App</span>

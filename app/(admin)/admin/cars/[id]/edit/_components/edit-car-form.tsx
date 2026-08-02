@@ -85,7 +85,7 @@ export const EditCarForm = ({ car, carMakes, carColors }: EditCarFormProps) => {
   useEffect(() => {
     if (updateCarResult?.success) {
       toast.success("Car updated successfully");
-      router.push(ROUTES.ADMIN_CARS);
+      router.push(ROUTES.ADMIN.ADMIN_CARS);
     }
   }, [updateCarResult, router]);
 
@@ -164,7 +164,7 @@ export const EditCarForm = ({ car, carMakes, carColors }: EditCarFormProps) => {
             <Button
               type="button"
               variant="outline"
-              onClick={() => router.push(ROUTES.ADMIN_CARS)}
+              onClick={() => router.push(ROUTES.ADMIN.ADMIN_CARS)}
               disabled={updateCarLoading}
             >
               Cancel

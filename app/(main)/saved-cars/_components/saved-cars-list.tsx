@@ -35,7 +35,7 @@ export function SavedCarsList({
           You haven't saved any cars yet. Browse our listings and click the
           heart icon to save cars for later.
         </p>
-        <Button variant="default" render={<Link href={ROUTES.CARS} />}>
+        <Button variant="default" render={<Link href={ROUTES.HOME.CARS} />}>
           Browse Cars
         </Button>
       </div>

@@ -14,7 +14,7 @@ import { UserRoleEnum as UserRole } from "@/enums/user-role";
  * @param bookingId - Target booking ID
  * @param newStatus - New status to apply
  * @returns Success message or error
- * @see ROUTES.ADMIN_TEST_DRIVES - Admin test drives page
+ * @see ROUTES.ADMIN.ADMIN_TEST_DRIVES - Admin test drives page
  * @see ROUTES.RESERVATIONS - User reservations page
  */
 export async function updateTestDriveStatus(
@@ -76,7 +76,7 @@ export async function updateTestDriveStatus(
     if (updateError) throw updateError;
 
     // Revalidate paths
-    revalidatePath(ROUTES.ADMIN_TEST_DRIVES);
+    revalidatePath(ROUTES.ADMIN.ADMIN_TEST_DRIVES);
     revalidatePath(ROUTES.RESERVATIONS);
 
     return {

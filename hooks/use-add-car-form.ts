@@ -57,7 +57,7 @@ export const useAddCarForm = () => {
   useEffect(() => {
     if (addCarResult?.success) {
       toast.success("Car added successfully");
-      router.push(ROUTES.ADMIN_CARS);
+      router.push(ROUTES.ADMIN.ADMIN_CARS);
     }
   }, [addCarResult, router]);
 

@@ -14,7 +14,7 @@ export async function requestPasswordReset(
   try {
     const supabase = await createClient();
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${getSiteUrl()}${ROUTES.UPDATE_PASSWORD}`,
+      redirectTo: `${getSiteUrl()}${ROUTES.AUTH.UPDATE_PASSWORD}`,
     });
 
     if (error) {

@@ -68,7 +68,7 @@ export function ReservationsList({
           You don't have any test drive reservations yet. Browse our cars and
           book a test drive to get started.
         </p>
-        <Button variant="default" render={<Link href={ROUTES.CARS} />}>
+        <Button variant="default" render={<Link href={ROUTES.HOME.CARS} />}>
           Browse Cars
         </Button>
       </div>

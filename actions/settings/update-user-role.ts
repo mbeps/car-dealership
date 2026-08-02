@@ -38,7 +38,7 @@ export async function updateUserRole(
 
     if (updateError) throw updateError;
 
-    revalidatePath(ROUTES.ADMIN_SETTINGS);
+    revalidatePath(ROUTES.ADMIN.ADMIN_SETTINGS);
 
     return {
       success: true,

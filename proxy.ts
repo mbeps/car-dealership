@@ -103,8 +103,11 @@ async function supabaseProxy(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
 
   // Redirect authenticated users away from auth pages
-  if (user && (pathname === ROUTES.SIGN_IN || pathname === ROUTES.SIGN_UP)) {
-    return NextResponse.redirect(new URL(ROUTES.HOME, request.url));
+  if (
+    user &&
+    (pathname === ROUTES.AUTH.SIGN_IN || pathname === ROUTES.AUTH.SIGN_UP)
+  ) {
+    return NextResponse.redirect(new URL(ROUTES.HOME.HOME, request.url));
   }
 
   // Redirect to sign-in if accessing protected route without auth

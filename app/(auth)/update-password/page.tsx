@@ -26,7 +26,7 @@ import { updatePasswordSchema } from "@/schemas/update-password";
  * @returns Update password form page
  * @see updatePassword - Server action that updates password
  * @see updatePasswordSchema - Zod validation schema with password matching
- * @see ROUTES.SIGN_IN - Redirect destination after successful update
+ * @see ROUTES.AUTH.SIGN_IN - Redirect destination after successful update
  */
 export default function UpdatePasswordPage() {
   const [password, setPassword] = useState("");
@@ -65,7 +65,7 @@ export default function UpdatePasswordPage() {
       }
 
       // Redirect to sign-in page with success message
-      router.push(ROUTES.SIGN_IN);
+      router.push(ROUTES.AUTH.SIGN_IN);
     } catch (error) {
       setError("An unexpected error occurred");
       console.error(error);

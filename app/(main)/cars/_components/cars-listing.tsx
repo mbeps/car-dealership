@@ -166,7 +166,7 @@ export function CarListings() {
           We couldn't find any cars matching your search criteria. Try adjusting
           your filters or search term.
         </p>
-        <Button variant="outline" render={<Link href={ROUTES.CARS} />}>
+        <Button variant="outline" render={<Link href={ROUTES.HOME.CARS} />}>
           Clear all filters
         </Button>
       </div>

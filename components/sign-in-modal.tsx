@@ -303,7 +303,7 @@ export function SignInModal() {
             <p className="text-center text-sm text-gray-600 mt-4">
               Don&apos;t have an account?{" "}
               <Link
-                href={ROUTES.SIGN_UP}
+                href={ROUTES.AUTH.SIGN_UP}
                 className="text-blue-600 hover:underline font-medium"
                 onClick={onClose}
               >

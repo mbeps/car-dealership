@@ -50,7 +50,7 @@ export async function saveWorkingHours(
       if (insertError) throw insertError;
     }
 
-    revalidatePath(ROUTES.ADMIN_SETTINGS);
+    revalidatePath(ROUTES.ADMIN.ADMIN_SETTINGS);
     // Revalidate test-drive pages as working hours affect availability
     revalidatePath("/test-drive");
 

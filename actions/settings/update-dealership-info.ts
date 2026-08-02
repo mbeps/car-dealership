@@ -47,7 +47,7 @@ export async function updateDealershipInfo(
 
     if (updateError) throw updateError;
 
-    revalidatePath(ROUTES.ADMIN_SETTINGS);
+    revalidatePath(ROUTES.ADMIN.ADMIN_SETTINGS);
     // Revalidate test-drive pages as dealership info is shown there
     revalidatePath("/test-drive");
     revalidateBrandingPages();

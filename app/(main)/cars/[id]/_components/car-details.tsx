@@ -98,7 +98,7 @@ export function CarDetails({
   } = useCarAdmin({
     onDeleteSuccess: () => {
       setShowDeleteDialog(false);
-      router.push(ROUTES.ADMIN_CARS);
+      router.push(ROUTES.ADMIN.ADMIN_CARS);
     },
     onUpdateSuccess: () => {
       router.refresh();
@@ -158,12 +158,12 @@ export function CarDetails({
 
   // Handle admin redirect to test-drives page
   const handleAdminTestDrives = () => {
-    router.push(ROUTES.ADMIN_TEST_DRIVES);
+    router.push(ROUTES.ADMIN.ADMIN_TEST_DRIVES);
   };
 
   // Handle edit car
   const handleEditCar = () => {
-    router.push(ROUTES.ADMIN_CAR_EDIT(car.id));
+    router.push(ROUTES.ADMIN.ADMIN_CAR_EDIT(car.id));
   };
 
   // Handle delete car

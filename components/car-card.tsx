@@ -120,7 +120,7 @@ export const CarCard = ({ car }: CarCardProps) => {
           <Button
             className="flex-1"
             onClick={() => {
-              router.push(ROUTES.CAR_DETAILS(car.id));
+              router.push(ROUTES.HOME.CAR_DETAILS(car.id));
             }}
           >
             View Car

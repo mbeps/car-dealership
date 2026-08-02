@@ -26,7 +26,7 @@ import { forgotPasswordSchema } from "@/schemas/forgot-password";
  * @returns Forgot password form page
  * @see requestPasswordReset - Server action that sends reset email
  * @see forgotPasswordSchema - Zod validation schema
- * @see ROUTES.UPDATE_PASSWORD - Where user lands after clicking reset link
+ * @see ROUTES.AUTH.UPDATE_PASSWORD - Where user lands after clicking reset link
  */
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState("");
@@ -125,7 +125,7 @@ export default function ForgotPasswordPage() {
 
           <div className="mt-6 text-center text-sm">
             <Link
-              href={ROUTES.SIGN_IN}
+              href={ROUTES.AUTH.SIGN_IN}
               className="text-blue-600 hover:underline"
             >
               Back to sign in

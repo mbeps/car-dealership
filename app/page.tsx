@@ -71,7 +71,7 @@ export default async function Home() {
             <Button
               variant="ghost"
               className="flex items-center"
-              render={<Link href={ROUTES.CARS} />}
+              render={<Link href={ROUTES.HOME.CARS} />}
             >
               View All <ChevronRight className="ml-1 h-4 w-4" />
             </Button>
@@ -92,7 +92,7 @@ export default async function Home() {
             <Button
               variant="ghost"
               className="flex items-center"
-              render={<Link href={ROUTES.CARS} />}
+              render={<Link href={ROUTES.HOME.CARS} />}
             >
               View All <ChevronRight className="ml-1 h-4 w-4" />
             </Button>
@@ -159,7 +159,7 @@ export default async function Home() {
             <Button
               variant="ghost"
               className="flex items-center"
-              render={<Link href={ROUTES.CARS} />}
+              render={<Link href={ROUTES.HOME.CARS} />}
             >
               View All <ChevronRight className="ml-1 h-4 w-4" />
             </Button>
@@ -218,12 +218,12 @@ export default async function Home() {
             <Button
               size="lg"
               variant="secondary"
-              render={<Link href={ROUTES.CARS} />}
+              render={<Link href={ROUTES.HOME.CARS} />}
             >
               View All Cars
             </Button>
             <SignedOut>
-              <Button size="lg" render={<Link href={ROUTES.SIGN_UP} />}>
+              <Button size="lg" render={<Link href={ROUTES.AUTH.SIGN_UP} />}>
                 Sign Up Now
               </Button>
             </SignedOut>

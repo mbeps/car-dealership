@@ -244,7 +244,7 @@ export function TestDriveForm({
   // Close confirmation handler
   const handleCloseConfirmation = () => {
     setShowConfirmation(false);
-    router.push(ROUTES.CAR_DETAILS(car.id));
+    router.push(ROUTES.HOME.CAR_DETAILS(car.id));
   };
 
   return (
