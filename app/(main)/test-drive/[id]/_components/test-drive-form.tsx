@@ -36,7 +36,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
-import { bookTestDrive } from "@/actions/test-drive";
+import { bookTestDrive } from "@/actions/test-drive/book-test-drive";
 import { toast } from "sonner";
 import useFetch from "@/hooks/use-fetch";
 import { SerializedCar } from "@/types/car/serialized-car";

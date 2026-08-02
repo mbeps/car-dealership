@@ -25,7 +25,7 @@ import { TestDriveCard } from "@/components/test-drive-card";
 import useFetch from "@/hooks/use-fetch";
 import { getAdminTestDrives } from "@/actions/admin/get-admin-test-drives";
 import { updateTestDriveStatus } from "@/actions/admin/update-test-drive-status";
-import { cancelTestDrive } from "@/actions/test-drive";
+import { cancelTestDrive } from "@/actions/test-drive/cancel-test-drive";
 
 /**
  * Admin test drive management page.

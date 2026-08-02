@@ -1,4 +1,4 @@
-import { getUserTestDrives } from "@/actions/test-drive";
+import { getUserTestDrives } from "@/actions/test-drive/get-user-test-drives";
 import { ensureProfile } from "@/actions/auth/ensure-profile";
 import { redirect } from "next/navigation";
 import { ReservationsList } from "./_components/reservations-list";

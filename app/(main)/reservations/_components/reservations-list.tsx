@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Calendar } from "lucide-react";
 import { TestDriveCard } from "@/components/test-drive-card";
 import useFetch from "@/hooks/use-fetch";
-import { cancelTestDrive } from "@/actions/test-drive";
+import { cancelTestDrive } from "@/actions/test-drive/cancel-test-drive";
 import { ActionResponse } from "@/types/common/action-response";
 import { TestDriveBookingWithCar } from "@/types/test-drive/test-drive-booking-with-car";
 import { BookingStatusEnum as BookingStatus } from "@/enums/booking-status";
@@ -40,8 +40,8 @@ export function ReservationsList({
     initialData && initialData.success
       ? initialData.data.filter((booking: TestDriveBookingWithCar) =>
           [BookingStatus.PENDING, BookingStatus.CONFIRMED].includes(
-            booking.status as BookingStatus
-          )
+            booking.status as BookingStatus,
+          ),
         )
       : [];
 
@@ -52,7 +52,7 @@ export function ReservationsList({
             BookingStatus.COMPLETED,
             BookingStatus.CANCELLED,
             BookingStatus.NO_SHOW,
-          ].includes(booking.status as BookingStatus)
+          ].includes(booking.status as BookingStatus),
         )
       : [];
 
