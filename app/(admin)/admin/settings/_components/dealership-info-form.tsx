@@ -18,12 +18,10 @@ import {
 } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import useFetch from "@/hooks/use-fetch";
-import {
-  getDealershipInfo,
-  removeDealershipLogo,
-  updateDealershipInfo,
-  updateDealershipLogo,
-} from "@/actions/settings";
+import { getDealershipInfo } from "@/actions/settings/get-dealership-info";
+import { removeDealershipLogo } from "@/actions/settings/remove-dealership-logo";
+import { updateDealershipInfo } from "@/actions/settings/update-dealership-info";
+import { updateDealershipLogo } from "@/actions/settings/update-dealership-logo";
 import {
   dealershipInfoSchema,
   DealershipInfoFormData,

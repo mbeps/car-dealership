@@ -16,7 +16,8 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import useFetch from "@/hooks/use-fetch";
-import { getDealershipInfo, saveWorkingHours } from "@/actions/settings";
+import { getDealershipInfo } from "@/actions/settings/get-dealership-info";
+import { saveWorkingHours } from "@/actions/settings/save-working-hours";
 import { WorkingHourInput } from "@/types/dealership/working-hour-input";
 import { DayOfWeekEnum } from "@/enums/day-of-week";
 
@@ -38,7 +39,7 @@ export const WorkingHoursForm = () => {
       openTime: "09:00",
       closeTime: "18:00",
       isOpen: day.value !== DayOfWeekEnum.SUNDAY,
-    }))
+    })),
   );
 
   // Custom hooks for API calls
@@ -59,7 +60,7 @@ export const WorkingHoursForm = () => {
           const mappedHours = DAYS.map((day) => {
             // Find matching working hour
             const hourData = dealership.workingHours?.find(
-              (h) => h.dayOfWeek === day.value
+              (h) => h.dayOfWeek === day.value,
             );
 
             if (hourData) {
@@ -92,7 +93,7 @@ export const WorkingHoursForm = () => {
   const handleWorkingHourChange = (
     index: number,
     field: keyof WorkingHourInput,
-    value: string | boolean
+    value: string | boolean,
   ) => {
     const updatedHours = [...workingHours];
     updatedHours[index] = {
@@ -162,7 +163,7 @@ export const WorkingHoursForm = () => {
                           handleWorkingHourChange(
                             index,
                             "openTime",
-                            e.target.value
+                            e.target.value,
                           )
                         }
                         className="text-sm"
@@ -180,7 +181,7 @@ export const WorkingHoursForm = () => {
                         handleWorkingHourChange(
                           index,
                           "closeTime",
-                          e.target.value
+                          e.target.value,
                         )
                       }
                       className="text-sm"

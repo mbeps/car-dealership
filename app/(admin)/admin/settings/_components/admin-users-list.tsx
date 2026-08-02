@@ -41,7 +41,8 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import useFetch from "@/hooks/use-fetch";
-import { getUsers, updateUserRole } from "@/actions/settings";
+import { getUsers } from "@/actions/settings/get-users";
+import { updateUserRole } from "@/actions/settings/update-user-role";
 import { User } from "@/types/user/user";
 import { UserRoleEnum as UserRole } from "@/enums/user-role";
 import { useUser } from "@/hooks/useUser";
@@ -96,7 +97,7 @@ export const AdminUsersList = () => {
     ? usersData.data.filter(
         (user) =>
           user.name?.toLowerCase().includes(userSearch.toLowerCase()) ||
-          user.email.toLowerCase().includes(userSearch.toLowerCase())
+          user.email.toLowerCase().includes(userSearch.toLowerCase()),
       )
     : [];
 

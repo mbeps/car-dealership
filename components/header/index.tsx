@@ -1,5 +1,5 @@
 import { ensureProfile } from "@/actions/auth/ensure-profile";
-import { getPublicBranding } from "@/actions/settings";
+import { getPublicBranding } from "@/actions/settings/get-public-branding";
 import HeaderClient from "./header-client";
 
 interface HeaderProps {

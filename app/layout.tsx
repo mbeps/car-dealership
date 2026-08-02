@@ -1,6 +1,6 @@
 import Footer from "@/components/footer";
 import Header from "@/components/header";
-import { getPublicBranding } from "@/actions/settings";
+import { getPublicBranding } from "@/actions/settings/get-public-branding";
 import { DEALERSHIP_NAME } from "@/constants/dealership-name";
 import { resolveIconHrefs } from "@/lib/helpers/branding";
 import SupabaseProvider from "@/providers/SupabaseProvider";
