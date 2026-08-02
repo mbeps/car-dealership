@@ -39,7 +39,7 @@ import { Label } from "@/components/ui/label";
 import { FAQFormValues } from "@/schemas/home-content";
 import { FAQ } from "@/types/home-content/faq";
 import { SortableFAQItem } from "./sortable-faq-item";
-import { reorderFAQs } from "@/actions/home-content";
+import { reorderFAQs } from "@/actions/home/reorder-faqs";
 import { toast } from "sonner";
 
 interface FAQSectionProps {
@@ -75,7 +75,7 @@ export const FAQSection = ({
     useSensor(PointerSensor),
     useSensor(KeyboardSensor, {
       coordinateGetter: sortableKeyboardCoordinates,
-    })
+    }),
   );
 
   const handleDragEnd = async (event: DragEndEvent) => {

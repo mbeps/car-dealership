@@ -1,5 +1,6 @@
-import { getFeaturedCars } from "@/actions/home";
-import { getHomePageContent, getFAQs } from "@/actions/home-content";
+import { getFeaturedCars } from "@/actions/home/get-featured-cars";
+import { getHomePageContent } from "@/actions/home/get-home-page-content";
+import { getFAQs } from "@/actions/home/get-faqs";
 import { CarCard } from "@/components/car-card";
 import { HomeSearch } from "@/components/home-search";
 import {

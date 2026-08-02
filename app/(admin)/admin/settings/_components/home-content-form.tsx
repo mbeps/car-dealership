@@ -6,14 +6,12 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 
 import useFetch from "@/hooks/use-fetch";
-import {
-  getHomePageContent,
-  updateHomePageContent,
-  getFAQs,
-  addFAQ,
-  updateFAQ,
-  deleteFAQ,
-} from "@/actions/home-content";
+import { getHomePageContent } from "@/actions/home/get-home-page-content";
+import { updateHomePageContent } from "@/actions/home/update-home-page-content";
+import { getFAQs } from "@/actions/home/get-faqs";
+import { addFAQ } from "@/actions/home/add-faq";
+import { updateFAQ } from "@/actions/home/update-faq";
+import { deleteFAQ } from "@/actions/home/delete-faq";
 import {
   homePageContentSchema,
   faqSchema,
@@ -32,7 +30,7 @@ export const HomeContentForm = () => {
     useState<HomePageContentFormValues | null>(null);
   const { fn: fetchContent } = useFetch(getHomePageContent);
   const { loading: updatingContent, fn: updateContent } = useFetch(
-    updateHomePageContent
+    updateHomePageContent,
   );
 
   // Separate forms for each section
@@ -121,7 +119,7 @@ export const HomeContentForm = () => {
   };
 
   const handleReset = (
-    form: UseFormReturn<Partial<HomePageContentFormValues>>
+    form: UseFormReturn<Partial<HomePageContentFormValues>>,
   ) => {
     if (initialContent) {
       form.reset(initialContent);
@@ -133,7 +131,7 @@ export const HomeContentForm = () => {
       const res = await editFAQ(editingFAQ.id, data);
       if (res?.success && res.data) {
         setFaqs((prev) =>
-          prev.map((f) => (f.id === editingFAQ.id ? res.data! : f))
+          prev.map((f) => (f.id === editingFAQ.id ? res.data! : f)),
         );
         toast.success("FAQ updated");
         setIsFAQDialogOpen(false);
