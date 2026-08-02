@@ -1,10 +1,10 @@
 import {
   ICON_FALLBACK_SRC,
   ICON_SECONDARY_FALLBACK_SRC,
-  appendVersionToAssetUrl,
-  resolveHeaderLogoSrc,
-  resolveIconHrefs,
-} from "@/lib/helpers/branding";
+} from "@/lib/branding/branding-constants";
+import { appendVersionToAssetUrl } from "@/lib/branding/append-version-to-asset-url";
+import { resolveHeaderLogoSrc } from "@/lib/branding/resolve-header-logo-src";
+import { resolveIconHrefs } from "@/lib/branding/resolve-icon-hrefs";
 
 describe("branding fallback helpers", () => {
   it("appends version query to asset URL", () => {

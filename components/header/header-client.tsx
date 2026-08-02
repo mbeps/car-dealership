@@ -12,7 +12,7 @@ import { useRouter } from "next/navigation";
 import { ROUTES } from "@/constants/routes";
 import { DEALERSHIP_NAME } from "@/constants/dealership-name";
 import { UserRoleEnum as UserRole } from "@/enums/user-role";
-import { resolveHeaderLogoSrc } from "@/lib/helpers/branding";
+import { resolveHeaderLogoSrc } from "@/lib/branding/resolve-header-logo-src";
 import { DesktopNav } from "./desktop-nav";
 import { MobileNav } from "./mobile-nav";
 import { UserMenu } from "./user-menu";

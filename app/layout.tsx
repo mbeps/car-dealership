@@ -2,7 +2,7 @@ import Footer from "@/components/footer";
 import Header from "@/components/header";
 import { getPublicBranding } from "@/actions/settings/get-public-branding";
 import { DEALERSHIP_NAME } from "@/constants/dealership-name";
-import { resolveIconHrefs } from "@/lib/helpers/branding";
+import { resolveIconHrefs } from "@/lib/branding/resolve-icon-hrefs";
 import SupabaseProvider from "@/providers/SupabaseProvider";
 import UserProvider from "@/providers/UserProvider";
 import { SignInModal } from "@/components/sign-in-modal";

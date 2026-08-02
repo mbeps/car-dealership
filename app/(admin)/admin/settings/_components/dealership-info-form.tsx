@@ -34,7 +34,7 @@ import {
   MAX_BYTES_SVG,
   type LogoExtension,
 } from "@/schemas/logo-upload";
-import { resolveHeaderLogoSrc } from "@/lib/helpers/branding";
+import { resolveHeaderLogoSrc } from "@/lib/branding/resolve-header-logo-src";
 
 const ACCEPTED_FILE_TYPES = ".png,.jpg,.jpeg,.ico,.svg";
 
