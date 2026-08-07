@@ -6,8 +6,32 @@ import type { PasskeyEntry } from "./account-dialog";
 
 /**
  * Props for a single passkey row with edit and delete controls.
+ */
+interface PasskeyRowProps {
+  /** The passkey entry to display in the row. */
+  passkey: PasskeyEntry;
+  /** Whether the row is in edit mode for renaming. */
+  isEditing: boolean;
+  /** The current draft name for the passkey. */
+  draftName: string;
+  /** Whether an action (rename/delete) is pending for this passkey. */
+  pending: boolean;
+  /** Callback to update the draft name. */
+  onDraftChange: (value: string) => void;
+  /** Callback to initiate editing this passkey. */
+  onEditStart: () => void;
+  /** Callback to cancel editing this passkey. */
+  onEditCancel: () => void;
+  /** Callback to save the renamed passkey. */
+  onRenameSave: () => void;
+  /** Callback to delete this passkey. */
+  onDelete: () => void;
+}
+
+/**
+ * Renders a single passkey row with edit and delete controls.
  *
- * @param passkey - The passkey entry to display in the row
+ * @param passkey - The passkey entry to display
  * @param isEditing - Whether the row is in edit mode for renaming
  * @param draftName - The current draft name for the passkey
  * @param pending - Whether an action (rename/delete) is pending for this passkey
@@ -16,23 +40,6 @@ import type { PasskeyEntry } from "./account-dialog";
  * @param onEditCancel - Callback to cancel editing this passkey
  * @param onRenameSave - Callback to save the renamed passkey
  * @param onDelete - Callback to delete this passkey
- */
-interface PasskeyRowProps {
-  passkey: PasskeyEntry;
-  isEditing: boolean;
-  draftName: string;
-  pending: boolean;
-  onDraftChange: (value: string) => void;
-  onEditStart: () => void;
-  onEditCancel: () => void;
-  onRenameSave: () => void;
-  onDelete: () => void;
-}
-
-/**
- * Renders a single passkey row with edit and delete controls.
- *
- * @param props - The props for the passkey row
  * @returns A list item representing a passkey with edit and delete controls
  */
 export function PasskeyRow({

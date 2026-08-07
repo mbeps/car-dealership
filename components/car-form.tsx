@@ -58,18 +58,46 @@ const carStatuses = [
   CarStatus.SOLD,
 ];
 
+/**
+ * Props for the car edit form fields.
+ */
 interface CarFormFieldsProps {
+  /** React Hook Form instance for the car form. */
   form: UseFormReturn<CarFormData>;
+  /** Available makes for the make selector. */
   carMakes: CarMakeOption[];
+  /** Available colors for the color selector. */
   carColors: CarColorOption[];
+  /** Existing uploaded car image URLs. */
   existingImages?: string[];
+  /** Newly selected image files. */
   newImages: File[];
+  /** Callback for updated selected image files. */
   onNewImagesChange: (images: File[]) => void;
+  /** Optional callback for removing existing uploaded images. */
   onExistingImageRemove?: (imageUrl: string) => void;
+  /** Current image upload error message. */
   imageError: string;
+  /** Callback for clearing the image upload error message. */
   onImageErrorChange: (error: string) => void;
 }
 
+/**
+ * Renders fields for editing a car listing.
+ * Handles make, color, vehicle details, features, and image uploads.
+ *
+ * @param form - React Hook Form instance for the car form.
+ * @param carMakes - Available makes for the make selector.
+ * @param carColors - Available colors for the color selector.
+ * @param existingImages - Existing uploaded car image URLs.
+ * @param newImages - Newly selected image files.
+ * @param onNewImagesChange - Callback for updated image files.
+ * @param onExistingImageRemove - Optional callback for removing existing images.
+ * @param imageError - Current image upload error.
+ * @param onImageErrorChange - Callback for clearing the image upload error message.
+ * @returns Car form fields UI.
+ * @see CarFormData - Form schema used by this component
+ */
 export function CarFormFields({
   form,
   carMakes,

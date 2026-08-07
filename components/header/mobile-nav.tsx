@@ -6,13 +6,19 @@ import { cn } from "@/lib/utils";
 import { NavItem } from "./nav-items";
 import { UserRoleEnum as UserRole } from "@/enums/user-role";
 
+/**
+ * Props for the mobile navigation bar.
+ */
 interface MobileNavProps {
+  /** Navigation items to render. */
   items: NavItem[];
+  /** Whether the user is currently authenticated. */
   isAuthenticated: boolean;
+  /** Current user's role for role-based filtering. */
   userRole?: UserRole | null;
 }
 
-/*
+/**
  * Mobile bottom navigation component that renders tab-based navigation.
  * Filters navigation items based on authentication state and user role.
  * Shows active state for current route and only renders on mobile screens.
@@ -22,7 +28,6 @@ interface MobileNavProps {
  * @param userRole - Current user's role for role-based filtering
  * @returns Fixed bottom navigation bar with filtered tabs
  * @see NavItem - Navigation item structure with mobile visibility constraints
- * @author Maruf Bepary
  */
 export const MobileNav = ({
   items,
@@ -54,7 +59,7 @@ export const MobileNav = ({
             className={cn(
               "flex flex-col items-center justify-center text-slate-500 text-xs font-medium transition-all",
               isActive ? "text-blue-700" : "",
-              "py-1 flex-1"
+              "py-1 flex-1",
             )}
           >
             <item.icon

@@ -14,15 +14,23 @@ import { User } from "@supabase/supabase-js";
 import { useState } from "react";
 import { AccountDialog } from "./account-dialog";
 
+/**
+ * Props for the user authentication menu.
+ */
 interface UserMenuProps {
+  /** Current authenticated user object from Supabase. */
   user: User | null;
+  /** Whether the user is currently logged in. */
   isAuthenticated: boolean;
+  /** Callback function to handle user sign out. */
   onSignOut: () => void;
+  /** Callback function to open sign-in modal. */
   onOpenSignIn: () => void;
+  /** Whether to show login button (hidden on admin pages). */
   showSignInButton?: boolean;
 }
 
-/*
+/**
  * User authentication menu component that handles login/logout UI.
  * Shows login button for unauthenticated users or user dropdown with profile info and sign out.
  * Displays user avatar or initials with full name and email in dropdown.
@@ -34,7 +42,6 @@ interface UserMenuProps {
  * @param showSignInButton - Whether to show login button (hidden on admin pages)
  * @returns Login button or user dropdown menu based on auth state
  * @see AuthProvider - Context providing authentication state
- * @author Maruf Bepary
  */
 export const UserMenu = ({
   user,

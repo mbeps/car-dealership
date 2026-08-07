@@ -11,29 +11,31 @@ import {
 import { ROUTES } from "@/constants/routes";
 import { LucideIcon } from "lucide-react";
 
+/**
+ * Navigation item used by desktop and mobile navigation components.
+ * Optional auth and admin flags control which items are rendered.
+ */
 export interface NavItem {
+  /** Display text for the navigation item. */
   label: string;
+  /** Lucide icon component for visual representation. */
   icon: LucideIcon;
+  /** Route path for navigation. */
   href: string;
+  /** Whether to show this item in mobile bottom navigation. */
   showInMobile?: boolean;
+  /** Whether this item requires user authentication. */
   requiresAuth?: boolean;
+  /** Whether to hide this item for admin users. */
   hideForAdmin?: boolean;
 }
 
-/*
+/**
  * Navigation configuration file containing all navigation items for the application.
  * Centralizes navigation data to ensure consistency across desktop and mobile navigation.
  * Defines main site navigation, admin portal navigation, and special admin portal button.
  *
- * @interface NavItem - Structure for navigation items with optional auth and role constraints
- * @property label - Display text for the navigation item
- * @property icon - Lucide icon component for visual representation
- * @property href - Route path for navigation
- * @property showInMobile - Whether to show this item in mobile bottom navigation
- * @property requiresAuth - Whether this item requires user authentication
- * @property hideForAdmin - Whether to hide this item for admin users
  * @see ROUTES - Centralized route constants
- * @author Maruf Bepary
  */
 
 // Main site navigation

@@ -16,10 +16,20 @@ import { formatCurrency } from "@/lib/helpers/format-currency";
 import { ROUTES } from "@/constants/routes";
 import type { SerializedCar } from "@/types/car/serialized-car";
 
+/**
+ * Props for a car summary card.
+ */
 interface CarCardProps {
   car: SerializedCar;
 }
 
+/**
+ * Displays a car listing with save and details actions.
+ *
+ * @param car - Car data to render.
+ * @returns Car summary card.
+ * @see toggleSavedCar - Server action for updating saved cars.
+ */
 export const CarCard = ({ car }: CarCardProps) => {
   const { user } = useUser();
   const isSignedIn = !!user;

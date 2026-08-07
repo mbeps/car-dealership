@@ -8,6 +8,12 @@ import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { createCarSearchUrl } from "@/lib/route/createCarSearchUrl";
 
+/**
+ * Renders the homepage search form.
+ *
+ * @returns Homepage search form that routes to car search results.
+ * @see createCarSearchUrl - Helper that builds the search URL.
+ */
 export function HomeSearch() {
   const router = useRouter();
   const [searchTerm, setSearchTerm] = useState("");

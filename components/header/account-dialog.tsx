@@ -13,11 +13,16 @@ import { PasskeyRow } from "./passkey-row";
 
 /**
  * A passkey entry returned by the Supabase auth API.
+ * Used by account settings to manage device passkeys.
  */
 export interface PasskeyEntry {
+  /** Unique passkey identifier. */
   id: string;
+  /** Optional friendly name shown in the account settings list. */
   friendly_name?: string | null;
+  /** ISO timestamp for when the passkey was created. */
   created_at: string;
+  /** Optional ISO timestamp for the last time the passkey was used. */
   last_used_at?: string | null;
 }
 
@@ -49,9 +54,12 @@ interface AccountDialogProps {
  * Displays account details and manages passkeys in a responsive modal.
  * Fetches profile data from the user hook and supports add, rename, and delete flows.
  *
- * @param props - Control state and trigger for the account dialog
- * @returns A responsive account dialog with passkey management
+ * @param trigger - Optional element to trigger the dialog if not controlled from parent
+ * @param open - Whether the dialog is controlled as open
+ * @param onOpenChange - Callback to update the open state
+ * @returns Account dialog with passkey management
  * @see useUser for data fetching logic
+ * @see PasskeyRow for passkey row rendering
  */
 export function AccountDialog({
   trigger,

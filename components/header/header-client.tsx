@@ -22,15 +22,23 @@ import {
   ADMIN_PORTAL_ITEM,
 } from "./nav-items";
 
+/**
+ * Props for the client-side header component.
+ */
 interface HeaderClientProps {
+  /** Whether this is an admin page (shows admin navigation vs main site). */
   isAdminPage?: boolean;
+  /** Current user's role for role-based navigation filtering. */
   userRole?: UserRole | null;
+  /** Custom logo URL from branding settings. */
   logoUrl?: string | null;
+  /** Logo version for cache busting. */
   logoVersion?: string | null;
+  /** Dynamic dealership name for SEO and alt tags. */
   dealershipName?: string | null;
 }
 
-/*
+/**
  * Main client header component that orchestrates the entire navigation system.
  * Renders logo, navigation links, and user menu based on authentication state and page context.
  * Handles both main site and admin portal layouts with appropriate navigation items.
@@ -44,7 +52,6 @@ interface HeaderClientProps {
  * @see DesktopNav - Desktop navigation links component
  * @see MobileNav - Mobile bottom navigation component
  * @see UserMenu - Authentication and user dropdown component
- * @author Maruf Bepary
  */
 const HeaderClient = ({
   isAdminPage = false,
