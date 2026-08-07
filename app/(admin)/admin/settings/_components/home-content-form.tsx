@@ -24,6 +24,14 @@ import { FeaturesSection } from "./home-content/features-section";
 import { CTASection } from "./home-content/cta-section";
 import { FAQSection } from "./home-content/faq-section";
 
+/**
+ * Client form for homepage content and FAQ management.
+ * Tracks hero, feature, CTA, and FAQ state before saving changes.
+ *
+ * @returns Home content editor with hero, feature, CTA, and FAQ sections
+ * @see updateHomePageContent - Server action updating homepage content
+ * @see FAQSection - FAQ add, edit, delete, and reorder UI
+ */
 export const HomeContentForm = () => {
   // --- Home Page Content State ---
   const [initialContent, setInitialContent] =
@@ -88,6 +96,12 @@ export const HomeContentForm = () => {
 
   // --- Handlers ---
 
+  /**
+   * Save hero section content from the shared homepage form.
+   *
+   * @param data - Partial hero form values to persist
+   * @returns Nothing
+   */
   const onHeroSubmit = async (data: Partial<HomePageContentFormValues>) => {
     const res = await updateContent(data);
     if (res?.success) {
@@ -98,6 +112,12 @@ export const HomeContentForm = () => {
     }
   };
 
+  /**
+   * Save feature section content from the shared homepage form.
+   *
+   * @param data - Partial feature form values to persist
+   * @returns Nothing
+   */
   const onFeaturesSubmit = async (data: Partial<HomePageContentFormValues>) => {
     const res = await updateContent(data);
     if (res?.success) {
@@ -108,6 +128,12 @@ export const HomeContentForm = () => {
     }
   };
 
+  /**
+   * Save CTA section content from the shared homepage form.
+   *
+   * @param data - Partial CTA form values to persist
+   * @returns Nothing
+   */
   const onCTASubmit = async (data: Partial<HomePageContentFormValues>) => {
     const res = await updateContent(data);
     if (res?.success) {
@@ -118,6 +144,12 @@ export const HomeContentForm = () => {
     }
   };
 
+  /**
+   * Reset a section form to the last loaded homepage content.
+   *
+   * @param form - React Hook Form instance for the section
+   * @returns Nothing
+   */
   const handleReset = (
     form: UseFormReturn<Partial<HomePageContentFormValues>>,
   ) => {
@@ -126,6 +158,12 @@ export const HomeContentForm = () => {
     }
   };
 
+  /**
+   * Save FAQ add/edit submissions and update the FAQ list.
+   *
+   * @param data - Validated FAQ form values
+   * @returns Nothing
+   */
   const onFAQSubmit = async (data: FAQFormValues) => {
     if (editingFAQ) {
       const res = await editFAQ(editingFAQ.id, data);
@@ -149,6 +187,12 @@ export const HomeContentForm = () => {
     }
   };
 
+  /**
+   * Delete a FAQ and refresh the visible FAQ list.
+   *
+   * @param id - FAQ ID to remove
+   * @returns Nothing
+   */
   const handleDeleteFAQ = async (id: string) => {
     const res = await removeFAQ(id);
     if (res?.success) {
@@ -159,12 +203,23 @@ export const HomeContentForm = () => {
     }
   };
 
+  /**
+   * Open the FAQ dialog in add mode with the next order value.
+   *
+   * @returns Nothing
+   */
   const openAddFAQ = () => {
     setEditingFAQ(null);
     faqForm.reset({ question: "", answer: "", order: faqs.length + 1 });
     setIsFAQDialogOpen(true);
   };
 
+  /**
+   * Open the FAQ dialog in edit mode for the selected FAQ.
+   *
+   * @param faq - FAQ to edit
+   * @returns Nothing
+   */
   const openEditFAQ = (faq: FAQ) => {
     setEditingFAQ(faq);
     faqForm.reset({

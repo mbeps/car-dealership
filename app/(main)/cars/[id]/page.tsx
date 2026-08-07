@@ -3,6 +3,12 @@ import { CarDetails } from "./_components/car-details";
 import { notFound } from "next/navigation";
 import { isCurrentUserAdmin } from "@/actions/auth/is-current-user-admin";
 
+/**
+ * Generates SEO metadata for a car detail page.
+ * Reads the car id from route params, uses `getCarById` to derive title, description, and Open Graph image.
+ *
+ * @param params - Route params containing the car id.
+ */
 export async function generateMetadata({
   params,
 }: {
@@ -29,6 +35,12 @@ export async function generateMetadata({
   };
 }
 
+/**
+ * Server page for a single car detail page.
+ * Fetches car details, redirects to Next.js not-found when unavailable, checks admin access, then renders details with user-specific state.
+ *
+ * @param params - Route params containing the car id.
+ */
 export default async function CarDetailsPage({
   params,
 }: {

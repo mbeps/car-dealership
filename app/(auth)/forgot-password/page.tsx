@@ -37,6 +37,9 @@ export default function ForgotPasswordPage() {
   /**
    * Handles password reset request form submission.
    * Validates email and calls server action to send reset email.
+   *
+   * @param e - Form submit event
+   * @returns Nothing
    */
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

@@ -13,6 +13,13 @@ import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"] });
 
+/**
+ * Builds Next.js metadata from public branding data.
+ *
+ * Falls back to the configured dealership name when branding is missing and maps resolved icon URLs into the metadata icons field.
+ *
+ * @returns The page metadata.
+ */
 export async function generateMetadata(): Promise<Metadata> {
   const branding = await getPublicBranding();
   const iconHrefs = resolveIconHrefs(branding);
@@ -32,6 +39,14 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
+/**
+ * Renders the shared application shell.
+ *
+ * Provides Supabase and user context, then wraps the app route tree with the header, main content, footer, toast container, and sign-in modal.
+ *
+ * @param children Page content to render.
+ * @returns The rendered root layout.
+ */
 export default function RootLayout({
   children,
 }: {

@@ -17,13 +17,12 @@ interface CarGalleryProps {
 }
 
 /**
- * Image carousel for car detail page.
- * Main carousel with thumbnail navigation.
- * Uses Embla carousel via Shadcn component.
- * Highlights active thumbnail.
+ * Image carousel for car detail pages.
+ * Displays the selected car images with primary and thumbnail navigation.
+ * Uses Embla carousel via the Shadcn component.
  *
- * @param images - Array of image URLs
- * @param carName - Car name for alt text
+ * @param images - Array of image URLs.
+ * @param carName - Car name used for image alt text.
  * @see https://www.embla-carousel.com/
  */
 export function CarGallery({ images, carName }: CarGalleryProps) {

@@ -47,6 +47,14 @@ import { User } from "@/types/user/user";
 import { UserRoleEnum as UserRole } from "@/enums/user-role";
 import { useUser } from "@/hooks/useUser";
 
+/**
+ * Client table for managing admin privileges.
+ * Promotes users to admin, removes admin access from non-admin users, and prevents self-removal.
+ *
+ * @returns Admin user management table with search, role badges, and confirmation dialogs
+ * @see getUsers - Server action loading the admin user list
+ * @see updateUserRole - Server action changing user roles
+ */
 export const AdminUsersList = () => {
   const { user: authUser } = useUser();
   const [userSearch, setUserSearch] = useState("");
@@ -68,7 +76,7 @@ export const AdminUsersList = () => {
     fetchUsers();
   }, [fetchUsers]);
 
-  // Make user admin
+  /** Confirm promotion for the selected non-admin user. */
   const handleMakeAdmin = async () => {
     if (!userToPromote) return;
     const result = await updateRole(userToPromote.id, UserRole.ADMIN);
@@ -80,7 +88,7 @@ export const AdminUsersList = () => {
     }
   };
 
-  // Remove admin privileges
+  /** Confirm removal of admin privileges for the selected admin user. */
   const handleRemoveAdmin = async () => {
     if (!userToDemote) return;
     const result = await updateRole(userToDemote.id, UserRole.USER);

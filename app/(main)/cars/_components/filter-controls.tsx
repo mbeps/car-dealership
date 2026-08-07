@@ -20,16 +20,16 @@ interface CurrentFilters {
 }
 
 /**
- * Shared filter form controls.
- * Renders make/color/type dropdowns and price/mileage/age range inputs.
- * Manages local input state before applying to parent.
- * Used in both mobile sheet and desktop sidebar.
+ * Shared filter form controls for car inventory filters.
+ * Renders category dropdowns plus price, mileage, and age range inputs.
+ * Keeps local input state until a filter is applied by the parent.
+ * Used by both the mobile sheet drawer and desktop filter sidebar.
  *
- * @param filters - Available filter metadata
- * @param currentFilters - Current filter values
- * @param onFilterChange - Callback for filter changes
- * @param onClearFilter - Callback for clearing individual filter
- * @see CarFilters - Parent component using this
+ * @param filters - Available filter metadata, including category options and numeric ranges.
+ * @param currentFilters - Current filter values.
+ * @param onFilterChange - Callback for filter changes.
+ * @param onClearFilter - Callback for clearing individual filters.
+ * @see CarFilters - Parent component using this.
  */
 export const CarFilterControls = ({
   filters,

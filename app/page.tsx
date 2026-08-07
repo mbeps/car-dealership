@@ -19,6 +19,13 @@ import { Calendar, Car, ChevronRight, Shield } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
+/**
+ * Renders the public home page.
+ *
+ * Loads featured cars, homepage content, and FAQs from server actions, then composes the marketing sections, search entry points, and call-to-action links.
+ *
+ * @returns The rendered home page.
+ */
 export default async function Home() {
   const featuredCars = await getFeaturedCars();
   const homeContent = await getHomePageContent();

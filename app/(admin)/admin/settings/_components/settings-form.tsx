@@ -12,8 +12,15 @@ import { HomeContentForm } from "./home-content-form";
  * Admin settings page with tabs.
  * Dealership Info: Contact details form.
  * Working Hours: Weekly schedule editor.
- * User Management: Admin role assignment table.
- * Prevents admins from changing own role.
+ * Admin Users: Role assignment table.
+ * Home Data: Homepage copy and FAQ editor.
+ * Prevents admins from changing their own role.
+ *
+ * @returns Settings page with dealership configuration tabs
+ * @see DealershipInfoForm for contact and logo settings
+ * @see WorkingHoursForm for weekly schedule editing
+ * @see AdminUsersList for admin role management
+ * @see HomeContentForm for homepage content and FAQs
  */
 export const SettingsForm = () => {
   return (

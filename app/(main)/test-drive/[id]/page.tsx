@@ -4,6 +4,11 @@ import { TestDriveForm } from "./_components/test-drive-form";
 import { isCurrentUserAdmin } from "@/actions/auth/is-current-user-admin";
 import { ROUTES } from "@/constants/routes";
 
+/**
+ * Defines SEO metadata for the test-drive booking page.
+ *
+ * @see TestDrivePage - Server page that validates access and renders the booking form.
+ */
 export async function generateMetadata() {
   return {
     title: "Book Test Drive",
@@ -11,6 +16,12 @@ export async function generateMetadata() {
   };
 }
 
+/**
+ * Server page for booking a test drive.
+ * Redirects admins to the admin test-drive panel, fetches the car, and renders the booking form for customers.
+ *
+ * @param params - Route params containing the car id.
+ */
 export default async function TestDrivePage({
   params,
 }: {

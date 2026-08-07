@@ -100,14 +100,25 @@ export const TestDrivesList = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [updateResult, cancelResult]);
 
-  // Handle search submit
+  /**
+   * Submit search and status filters, then reload bookings.
+   *
+   * @param e - Form submit event
+   * @returns Nothing
+   */
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const actualStatus = statusFilter === "all" ? "" : statusFilter;
     fetchTestDrives({ search, status: actualStatus });
   };
 
-  // Handle status update
+  /**
+   * Update a booking status through the admin update action.
+   *
+   * @param bookingId - Booking ID to update
+   * @param newStatus - New booking status
+   * @returns Nothing
+   */
   const handleUpdateStatus = async (
     bookingId: string,
     newStatus: BookingStatus,
@@ -117,7 +128,12 @@ export const TestDrivesList = () => {
     }
   };
 
-  // Handle booking cancellation
+  /**
+   * Cancel a test-drive booking through the admin cancel action.
+   *
+   * @param bookingId - Booking ID to cancel
+   * @returns Nothing
+   */
   const handleCancel = async (bookingId: string) => {
     await cancelTestDriveFn(bookingId);
   };

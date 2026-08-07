@@ -14,11 +14,27 @@ import { CarMakeOption } from "@/types/car-make/car-make-option";
 import { CarFormFields } from "@/components/car-form";
 import { useAddCarForm } from "@/hooks/use-add-car-form";
 
+/**
+ * Props for the car creation form wrapper.
+ * Supplies selectable make and color options to the shared car fields.
+ */
 interface AddCarFormProps {
+  /** Available car makes for the form dropdown. */
   carMakes: CarMakeOption[];
+  /** Available car colors for the form dropdown. */
   carColors: CarColorOption[];
 }
 
+/**
+ * Client wrapper for creating a marketplace car.
+ * Delegates field validation and submission to the shared car form hook.
+ *
+ * @param carMakes - Available car makes for the form dropdown
+ * @param carColors - Available car colors for the form dropdown
+ * @returns Car creation form with uploaded image handling
+ * @see useAddCarForm for form logic and submission
+ * @see CarFormFields for shared car fields
+ */
 export const AddCarForm = ({ carMakes, carColors }: AddCarFormProps) => {
   const {
     form,

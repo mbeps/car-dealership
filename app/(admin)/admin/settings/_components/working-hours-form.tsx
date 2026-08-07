@@ -32,6 +32,14 @@ const DAYS: Array<{ value: DayOfWeekEnum; label: string }> = [
   { value: DayOfWeekEnum.SUNDAY, label: "Sunday" },
 ];
 
+/**
+ * Client form for dealership opening hours.
+ * Loads existing hours, applies default weekday hours, and saves changes.
+ *
+ * @returns Working hours editor with validation and save feedback
+ * @see saveWorkingHours - Server action persisting the hours
+ * @see DayOfWeekEnum - Supported weekday values
+ */
 export const WorkingHoursForm = () => {
   const [workingHours, setWorkingHours] = useState<WorkingHourInput[]>(
     DAYS.map((day) => ({
@@ -89,7 +97,14 @@ export const WorkingHoursForm = () => {
     loadSettings();
   }, [fetchDealershipInfo]);
 
-  // Handle working hours change
+  /**
+   * Update one working-hour field while keeping the other days unchanged.
+   *
+   * @param index - Working-day row index
+   * @param field - Working-hour field to update
+   * @param value - New field value
+   * @returns Nothing
+   */
   const handleWorkingHourChange = (
     index: number,
     field: keyof WorkingHourInput,
@@ -103,7 +118,11 @@ export const WorkingHoursForm = () => {
     setWorkingHours(updatedHours);
   };
 
-  // Save working hours
+  /**
+   * Save the current weekly hours for the dealership.
+   *
+   * @returns Nothing
+   */
   const handleSaveHours = async () => {
     if (!settingsData?.success || !settingsData.data?.id) {
       toast.error("No dealership found. Please create dealership info first.");

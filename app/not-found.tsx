@@ -2,6 +2,13 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ROUTES } from "@/constants/routes";
 
+/**
+ * Renders the custom 404 page.
+ *
+ * Gives visitors a clear error state and a direct link back to the home route.
+ *
+ * @returns The rendered not-found page.
+ */
 export default function NotFound() {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen px-4 text-center">

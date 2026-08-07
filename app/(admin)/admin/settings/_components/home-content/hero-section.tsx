@@ -13,12 +13,28 @@ import {
 import { HomePageContentFormValues } from "@/schemas/home-content";
 
 interface HeroSectionProps {
+  /** Shared form state for home content values. */
   form: UseFormReturn<Partial<HomePageContentFormValues>>;
+  /** Save callback for hero content. */
   onSubmit: (data: Partial<HomePageContentFormValues>) => Promise<void>;
+  /** Reset callback for hero fields. */
   onReset: () => void;
+  /** Whether the form is currently saving. */
   isLoading: boolean;
 }
 
+/**
+ * Reusable editor for homepage hero copy.
+ * Provides title and subtitle fields with maxlength validation.
+ *
+ * @param form - Shared form state for home content values
+ * @param onSubmit - Save callback for hero content
+ * @param onReset - Reset callback for hero fields
+ * @param isLoading - Whether the form is currently saving
+ * @returns Hero content editor
+ * @see CTASection - Homepage CTA editor
+ * @see FeaturesSection - Homepage features editor
+ */
 export const HeroSection = ({
   form,
   onSubmit,

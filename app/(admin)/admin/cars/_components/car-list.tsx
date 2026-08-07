@@ -112,24 +112,44 @@ export const CarsList = () => {
     }
   }, [carsError]);
 
-  // Handle search submit
+  /**
+   * Submit search form and refetch the car list.
+   *
+   * @param e - Form submit event
+   * @returns Nothing
+   */
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     fetchCars(search);
   };
 
-  // Handle delete car
+  /**
+   * Delete the selected car from the admin list.
+   *
+   * @returns Nothing
+   */
   const handleDeleteCarClick = async () => {
     if (!carToDelete) return;
     await deleteCarAction(carToDelete.id);
   };
 
-  // Handle toggle featured status
+  /**
+   * Toggle the featured status for a car.
+   *
+   * @param car - Car record whose featured status should change
+   * @returns Nothing
+   */
   const handleToggleFeaturedClick = async (car: SerializedCar) => {
     await handleToggleFeatured(car.id, car.featured);
   };
 
-  // Handle status change
+  /**
+   * Update the selected car status in the admin list.
+   *
+   * @param car - Car record whose status should change
+   * @param newStatus - New inventory status
+   * @returns Nothing
+   */
   const handleStatusUpdateClick = async (
     car: SerializedCar,
     newStatus: CarStatus,
@@ -137,7 +157,12 @@ export const CarsList = () => {
     await handleUpdateStatus(car.id, newStatus);
   };
 
-  // Get status badge color
+  /**
+   * Render a status badge with inventory-aware styling.
+   *
+   * @param status - Raw car status value
+   * @returns Status badge component
+   */
   const getStatusBadge = (status: string) => {
     switch (status) {
       case CarStatus.AVAILABLE:

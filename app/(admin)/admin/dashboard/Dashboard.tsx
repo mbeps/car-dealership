@@ -15,6 +15,7 @@ import { TestDrives } from "./TestDrives";
  * Tabbed interface for overview and test drive breakdowns.
  *
  * @param initialData - Dashboard data from server
+ * @returns Tabbed admin dashboard or an error state when data loading fails
  * @see getDashboardData - Server action fetching metrics
  * @see DashboardData - Type for dashboard metrics
  */

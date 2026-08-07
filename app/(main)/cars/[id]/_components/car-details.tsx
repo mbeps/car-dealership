@@ -58,16 +58,16 @@ import Link from "next/link";
 
 /**
  * Car detail page content.
- * Displays car specs, images, wishlist toggle, share, test drive CTA.
- * Admins see status selector, featured toggle, edit/delete actions.
- * Shows existing test drive booking if user has one.
- * Includes dealership contact info for inquiries.
+ * Displays car specs, images, wishlist toggle, share, and test-drive actions.
+ * Admins see status selector and edit/delete actions.
+ * Shows existing test-drive booking when present.
+ * Includes dealership contact and location information for inquiries.
  *
- * @param car - Full car details with wishlist status
- * @param testDriveInfo - User's booking and dealership data
- * @param isAdmin - Whether current user is admin
- * @see CarGallery - Image carousel component
- * @see toggleSavedCar - Server action for wishlist
+ * @param car - Full car details with wishlist status.
+ * @param testDriveInfo - User's booking, dealership contact, and location data.
+ * @param isAdmin - Whether the current user is an admin.
+ * @see CarGallery - Image carousel component.
+ * @see toggleSavedCar - Server action for wishlist.
  */
 export function CarDetails({
   car,

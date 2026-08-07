@@ -43,20 +43,52 @@ import { reorderFAQs } from "@/actions/home/reorder-faqs";
 import { toast } from "sonner";
 
 interface FAQSectionProps {
+  /** FAQ records displayed in the list. */
   faqs: FAQ[];
+  /** Callback for replacing FAQ state after mutations. */
   setFaqs: (faqs: FAQ[]) => void;
+  /** Callback for deleting a FAQ. */
   onDelete: (id: string) => Promise<void>;
+  /** Callback for editing a FAQ. */
   onEdit: (faq: FAQ) => void;
+  /** Callback for adding a new FAQ. */
   onAdd: () => void;
+  /** Whether the FAQ dialog is open. */
   isDialogOpen: boolean;
+  /** Callback for opening or closing the FAQ dialog. */
   setIsDialogOpen: (open: boolean) => void;
+  /** FAQ record currently being edited, or null when adding. */
   editingFAQ: FAQ | null;
+  /** React Hook Form state for FAQ add/edit dialogs. */
   faqForm: UseFormReturn<FAQFormValues>;
+  /** Save callback for FAQ add/edit submissions. */
   onFAQSubmit: (data: FAQFormValues) => Promise<void>;
+  /** Whether the FAQ form is currently saving. */
   isSubmitting: boolean;
+  /** Whether a FAQ is currently being deleted. */
   isDeleting: boolean;
 }
 
+/**
+ * Reusable FAQ list editor with add, edit, delete, and drag reorder actions.
+ * Optimistically reorders FAQs and falls back on failed server saves.
+ *
+ * @param faqs - FAQ records displayed in the list
+ * @param setFaqs - Callback for replacing FAQ state after mutations
+ * @param onDelete - Callback for deleting a FAQ
+ * @param onEdit - Callback for editing a FAQ
+ * @param onAdd - Callback for adding a new FAQ
+ * @param isDialogOpen - Whether the FAQ dialog is open
+ * @param setIsDialogOpen - Callback for opening or closing the FAQ dialog
+ * @param editingFAQ - FAQ record currently being edited, or null when adding
+ * @param faqForm - React Hook Form state for FAQ add/edit dialogs
+ * @param onFAQSubmit - Save callback for FAQ add/edit submissions
+ * @param isSubmitting - Whether the FAQ form is currently saving
+ * @param isDeleting - Whether a FAQ is currently being deleted
+ * @returns FAQ editor with drag-and-drop sorting
+ * @see reorderFAQs - Server action persisting FAQ order
+ * @see SortableFAQItem - Sortable FAQ rows
+ */
 export const FAQSection = ({
   faqs,
   setFaqs,
@@ -78,6 +110,7 @@ export const FAQSection = ({
     }),
   );
 
+  /** Persist optimistic FAQ reordering, reverting if the server action fails. */
   const handleDragEnd = async (event: DragEndEvent) => {
     const { active, over } = event;
 

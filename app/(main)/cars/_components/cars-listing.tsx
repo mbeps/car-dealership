@@ -29,8 +29,8 @@ import {
  * Displays search bar, car grid, and pagination controls.
  * Shows loading skeleton during fetches.
  *
- * @see getCars - Server action for filtered car query
- * @see CarCard - Individual car display component
+ * @see getCars - Server action for filtered car query.
+ * @see CarCard - Individual car display component.
  */
 export function CarListings() {
   const searchParams = useSearchParams();

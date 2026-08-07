@@ -39,6 +39,9 @@ export default function UpdatePasswordPage() {
    * Handles password update form submission.
    * Validates password matching and calls server action to update password.
    * Redirects to sign-in page on success.
+   *
+   * @param e - Form submit event
+   * @returns Nothing
    */
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

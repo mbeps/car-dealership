@@ -2,11 +2,24 @@ import { CarFilters } from "./_components/car-filters";
 import { getCarFilters } from "@/actions/cars/get-car-filters";
 import { CarListings } from "./_components/cars-listing";
 
+/**
+ * Defines SEO metadata for the car inventory page.
+ *
+ * @see CarsPage - Server page component that fetches filters and renders listings.
+ */
 export const metadata = {
   title: "Cars",
   description: "Browse and search for your dream car",
 };
 
+/**
+ * Server page for browsing car inventory.
+ * Fetches available filter options, shows an error state when filter loading fails, then renders filters beside the listing.
+ *
+ * @see getCarFilters - Server action for available inventory filters.
+ * @see CarFilters - Client component that renders filter controls.
+ * @see CarListings - Client component that renders searchable inventory.
+ */
 export default async function CarsPage() {
   // Fetch filters data on the server
   const filtersData = await getCarFilters();

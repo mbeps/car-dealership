@@ -13,12 +13,28 @@ import {
 import { HomePageContentFormValues } from "@/schemas/home-content";
 
 interface CTASectionProps {
+  /** Shared form state for home content values. */
   form: UseFormReturn<Partial<HomePageContentFormValues>>;
+  /** Save callback for CTA content. */
   onSubmit: (data: Partial<HomePageContentFormValues>) => Promise<void>;
+  /** Reset callback for CTA fields. */
   onReset: () => void;
+  /** Whether the form is currently saving. */
   isLoading: boolean;
 }
 
+/**
+ * Reusable editor for the homepage call-to-action copy.
+ * Provides a title and subtitle field with maxlength validation.
+ *
+ * @param form - Shared form state for home content values
+ * @param onSubmit - Save callback for CTA content
+ * @param onReset - Reset callback for CTA fields
+ * @param isLoading - Whether the form is currently saving
+ * @returns CTA content editor
+ * @see HeroSection - Homepage hero editor
+ * @see FeaturesSection - Homepage features editor
+ */
 export const CTASection = ({
   form,
   onSubmit,
