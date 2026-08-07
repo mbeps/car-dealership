@@ -2,15 +2,22 @@
 
 import { MyUserContextProvider } from "@/hooks/useUser";
 
+/**
+ * Provider props for UserProvider.
+ *
+ * @param children - Child components that consume user context.
+ */
 interface UserProviderProps {
   children: React.ReactNode;
 }
 
 /**
- * Allows for user data and related functionality to be accessible to all components in the tree.
+ * Provides user data and related functionality to all components in the tree.
  *
- * @param {UserProviderProps}
- * @returns (JSX.Element): provider for user data and related functionality
+ * Wraps the shared user context provider so authentication and user profile state can be accessed consistently across the app.
+ *
+ * @param children - Child components that consume user context.
+ * @returns Provider element for the application shell.
  */
 const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
   return <MyUserContextProvider>{children}</MyUserContextProvider>;
