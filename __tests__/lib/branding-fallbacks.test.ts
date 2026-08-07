@@ -1,7 +1,4 @@
-import {
-  ICON_FALLBACK_SRC,
-  ICON_SECONDARY_FALLBACK_SRC,
-} from "@/lib/branding/branding-constants";
+import { brandingConstants } from "@/constants/branding";
 import { appendVersionToAssetUrl } from "@/lib/branding/append-version-to-asset-url";
 import { resolveHeaderLogoSrc } from "@/lib/branding/resolve-header-logo-src";
 import { resolveIconHrefs } from "@/lib/branding/resolve-icon-hrefs";
@@ -27,7 +24,7 @@ describe("branding fallback helpers", () => {
 
   it("falls back to static header logo when no uploaded logo exists", () => {
     expect(resolveHeaderLogoSrc({ logoUrl: null, logoVersion: null })).toBe(
-      "/logo.png",
+      brandingConstants.HEADER_LOGO_FALLBACK_SRC,
     );
   });
 
@@ -38,13 +35,16 @@ describe("branding fallback helpers", () => {
     });
 
     expect(icons[0]).toBe("https://cdn.example.com/logo.png?v=1748100012");
-    expect(icons).toContain(ICON_FALLBACK_SRC);
-    expect(icons).toContain(ICON_SECONDARY_FALLBACK_SRC);
+    expect(icons).toContain(brandingConstants.ICON_FALLBACK_SRC);
+    expect(icons).toContain(brandingConstants.ICON_SECONDARY_FALLBACK_SRC);
   });
 
   it("returns only static icon fallbacks when no uploaded logo exists", () => {
     const icons = resolveIconHrefs(null);
 
-    expect(icons).toEqual([ICON_FALLBACK_SRC, ICON_SECONDARY_FALLBACK_SRC]);
+    expect(icons).toEqual([
+      brandingConstants.ICON_FALLBACK_SRC,
+      brandingConstants.ICON_SECONDARY_FALLBACK_SRC,
+    ]);
   });
 });

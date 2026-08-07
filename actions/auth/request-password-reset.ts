@@ -7,6 +7,9 @@ import type { ActionResponse } from "@/types/common/action-response";
 
 /**
  * Requests a password reset email.
+ *
+ * @param email - The email address of the user requesting a password reset.
+ * @returns An ActionResponse indicating success or failure of the request.
  */
 export async function requestPasswordReset(
   email: string,

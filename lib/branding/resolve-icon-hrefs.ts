@@ -1,7 +1,4 @@
-import {
-  ICON_FALLBACK_SRC,
-  ICON_SECONDARY_FALLBACK_SRC,
-} from "./branding-constants";
+import { brandingConstants } from "@/constants/branding";
 import { appendVersionToAssetUrl } from "./append-version-to-asset-url";
 import type { BrandingLogoSource } from "@/types/branding";
 
@@ -24,7 +21,10 @@ export function resolveIconHrefs(
     );
   }
 
-  resolved.push(ICON_FALLBACK_SRC, ICON_SECONDARY_FALLBACK_SRC);
+  resolved.push(
+    brandingConstants.ICON_FALLBACK_SRC,
+    brandingConstants.ICON_SECONDARY_FALLBACK_SRC,
+  );
 
   return Array.from(new Set(resolved));
 }
