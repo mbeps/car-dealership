@@ -1,5 +1,9 @@
 import { z } from "zod";
 
+/**
+ * Validates homepage CMS content for the marketing hero and feature callouts.
+ * Keeps copy within display limits used by the home page content editor.
+ */
 export const homePageContentSchema = z.object({
   heroTitle: z
     .string()
@@ -43,8 +47,16 @@ export const homePageContentSchema = z.object({
     .max(200, "CTA subtitle must be 200 characters or fewer"),
 });
 
+/**
+ * Parsed homepage CMS values produced by `homePageContentSchema`.
+ * Used by the home content editor and server actions that persist homepage copy.
+ */
 export type HomePageContentFormValues = z.infer<typeof homePageContentSchema>;
 
+/**
+ * Validates FAQ entry content and ordering for the homepage FAQ section.
+ * Numeric order is preserved as an integer for stable rendering.
+ */
 export const faqSchema = z.object({
   question: z
     .string()
@@ -57,4 +69,8 @@ export const faqSchema = z.object({
   order: z.number().int(),
 });
 
+/**
+ * Parsed FAQ entry data produced by `faqSchema`.
+ * Used by homepage content editors and server actions that persist FAQ rows.
+ */
 export type FAQFormValues = z.infer<typeof faqSchema>;

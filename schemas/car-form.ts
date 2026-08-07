@@ -1,6 +1,12 @@
 import * as z from "zod";
 import { CarStatusEnum as CarStatus } from "@/enums/car-status";
 
+/**
+ * Validates car listing form data before creating or updating a vehicle listing.
+ * Keeps form field values as strings where the UI submits text, then converts them server-side.
+ *
+ * @see CarFormData for the parsed car listing shape
+ */
 export const carFormSchema = z.object({
   carMakeId: z.string().min(1, "Make is required"),
   carColorId: z.string().min(1, "Color is required"),
@@ -47,4 +53,8 @@ export const carFormSchema = z.object({
   features: z.array(z.string()),
 });
 
+/**
+ * Parsed car listing data produced by `carFormSchema`.
+ * Used by car forms, server actions, and client components that handle vehicle listings.
+ */
 export type CarFormData = z.infer<typeof carFormSchema>;
