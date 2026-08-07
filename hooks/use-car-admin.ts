@@ -7,6 +7,9 @@ import { deleteCar } from "@/actions/cars/delete-car";
 import { updateCarStatus } from "@/actions/cars/update-car-status";
 import { CarStatusEnum as CarStatus } from "@/enums/car-status";
 
+/**
+ * Optional callbacks fired when a car operation succeeds.
+ */
 interface UseCarAdminOptions {
   onDeleteSuccess?: () => void;
   onUpdateSuccess?: () => void;

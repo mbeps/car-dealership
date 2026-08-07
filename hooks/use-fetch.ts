@@ -1,6 +1,10 @@
 import { useState, useCallback } from "react";
 import { toast } from "sonner";
 
+/**
+ * Result returned by {@link useFetch}.
+ * Holds the latest response data, loading state, and any error thrown by the callback.
+ */
 type UseFetchResult<T, Args extends unknown[]> = {
   data: T | undefined;
   loading: boolean;
@@ -21,7 +25,7 @@ type UseFetchResult<T, Args extends unknown[]> = {
  * await deleteFn(carId);
  */
 const useFetch = <T, Args extends unknown[] = []>(
-  cb: (...args: Args) => Promise<T>
+  cb: (...args: Args) => Promise<T>,
 ): UseFetchResult<T, Args> => {
   const [data, setData] = useState<T | undefined>(undefined);
   const [loading, setLoading] = useState<boolean>(false);
@@ -46,7 +50,7 @@ const useFetch = <T, Args extends unknown[] = []>(
         setLoading(false);
       }
     },
-    [cb]
+    [cb],
   );
 
   return { data, loading, error, fn, setData };
