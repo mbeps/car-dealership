@@ -1,6 +1,11 @@
 import type { LogoExtension } from "@/schemas/logo-upload";
 import type { RasterDimensions } from "@/types/logo/raster-dimensions";
 
+/**
+ * Extracts PNG dimensions from raw image bytes.
+ *
+ * @throws {Error} When the PNG payload is too small to contain valid dimensions.
+ */
 function extractPngDimensions(bytes: Buffer): RasterDimensions {
   if (bytes.length < 24) {
     throw new Error("PNG file is too small to contain dimensions.");
@@ -12,6 +17,11 @@ function extractPngDimensions(bytes: Buffer): RasterDimensions {
   return { width, height };
 }
 
+/**
+ * Extracts JPEG dimensions from raw image bytes.
+ *
+ * @throws {Error} When the JPEG header is invalid or dimensions cannot be found.
+ */
 function extractJpegDimensions(bytes: Buffer): RasterDimensions {
   if (bytes.length < 4 || bytes[0] !== 0xff || bytes[1] !== 0xd8) {
     throw new Error("JPEG header is invalid.");
@@ -73,6 +83,11 @@ function extractJpegDimensions(bytes: Buffer): RasterDimensions {
   throw new Error("JPEG dimensions could not be determined.");
 }
 
+/**
+ * Extracts ICO dimensions from raw image bytes.
+ *
+ * @throws {Error} When the ICO payload is too small or contains no images.
+ */
 function extractIcoDimensions(bytes: Buffer): RasterDimensions {
   if (bytes.length < 8) {
     throw new Error("ICO file is too small to contain dimensions.");
@@ -92,6 +107,16 @@ function extractIcoDimensions(bytes: Buffer): RasterDimensions {
   };
 }
 
+/**
+ * Extracts raster dimensions from a logo payload.
+ *
+ * Selects the decoder for PNG, JPEG, or ICO payloads before dimension validation runs.
+ *
+ * @param bytes - Raw logo bytes.
+ * @param extension - Logo file extension used to choose the decoder.
+ * @returns Image width and height in pixels.
+ * @throws {Error} When the payload is not a supported raster logo or dimensions cannot be read.
+ */
 export function extractRasterDimensions(
   bytes: Buffer,
   extension: LogoExtension,

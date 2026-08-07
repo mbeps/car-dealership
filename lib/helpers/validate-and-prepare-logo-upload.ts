@@ -19,6 +19,14 @@ import { validateMagicBytes } from "@/lib/helpers/validate-magic-bytes";
 import { validateSvgSafeguards } from "@/lib/helpers/validate-svg-safeguards";
 import type { ValidatedLogoUpload } from "@/types/logo/validated-logo-upload";
 
+/**
+ * Returns the maximum allowed logo size for a file extension.
+ *
+ * Keeps size limits in one place so schema validation and byte checks use the same constraints.
+ *
+ * @param extension - Logo extension to check.
+ * @returns Maximum allowed bytes for the extension.
+ */
 function getMaxBytesForExtension(extension: LogoExtension): number {
   if (extension === "png" || extension === "jpg" || extension === "jpeg") {
     return MAX_BYTES_PNG_JPEG;
@@ -31,6 +39,11 @@ function getMaxBytesForExtension(extension: LogoExtension): number {
   return MAX_BYTES_SVG;
 }
 
+/**
+ * Extracts PNG dimensions from raw logo bytes.
+ *
+ * @throws {Error} When the PNG payload is too small to contain valid dimensions.
+ */
 function extractPngDimensions(bytes: Buffer): RasterDimensions {
   if (bytes.length < 24) {
     throw new Error("PNG file is too small to contain dimensions.");
@@ -42,6 +55,11 @@ function extractPngDimensions(bytes: Buffer): RasterDimensions {
   return { width, height };
 }
 
+/**
+ * Extracts JPEG dimensions from raw logo bytes.
+ *
+ * @throws {Error} When the JPEG header is invalid or dimensions cannot be found.
+ */
 function extractJpegDimensions(bytes: Buffer): RasterDimensions {
   if (bytes.length < 4 || bytes[0] !== 0xff || bytes[1] !== 0xd8) {
     throw new Error("JPEG header is invalid.");
@@ -103,6 +121,11 @@ function extractJpegDimensions(bytes: Buffer): RasterDimensions {
   throw new Error("JPEG dimensions could not be determined.");
 }
 
+/**
+ * Extracts ICO dimensions from raw logo bytes.
+ *
+ * @throws {Error} When the ICO payload is too small or contains no images.
+ */
 function extractIcoDimensions(bytes: Buffer): RasterDimensions {
   if (bytes.length < 8) {
     throw new Error("ICO file is too small to contain dimensions.");
@@ -122,6 +145,16 @@ function extractIcoDimensions(bytes: Buffer): RasterDimensions {
   };
 }
 
+/**
+ * Extracts raster dimensions from logo bytes.
+ *
+ * Selects the decoder for PNG, JPEG, or ICO payloads before dimension validation runs.
+ *
+ * @param bytes - Raw logo bytes.
+ * @param extension - Logo file extension used to choose the decoder.
+ * @returns Image width and height in pixels.
+ * @throws {Error} When the payload is not a supported raster logo or dimensions cannot be read.
+ */
 function extractRasterDimensions(
   bytes: Buffer,
   extension: LogoExtension,
@@ -137,6 +170,11 @@ function extractRasterDimensions(
   return extractIcoDimensions(bytes);
 }
 
+/**
+ * Validates logo raster dimensions against project limits.
+ *
+ * @throws {Error} When dimensions are too small, too large, or outside the allowed aspect ratio.
+ */
 function validateRasterDimensions(dimensions: RasterDimensions): void {
   const { width, height } = dimensions;
 
@@ -158,6 +196,17 @@ function validateRasterDimensions(dimensions: RasterDimensions): void {
   }
 }
 
+/**
+ * Validates a logo upload payload and prepares it for storage.
+ *
+ * Applies schema validation, MIME and extension checks, byte limits, raster dimensions, and SVG safeguards before returning bytes ready for persistence.
+ *
+ * @param payload - Raw logo upload form data.
+ * @returns Validated logo upload data with bytes, metadata, and dimensions.
+ * @throws {Error} When the payload is malformed, unsupported, too large, invalid dimensions, or unsafe SVG content.
+ * @see validateMagicBytes for raster signature validation
+ * @see validateSvgSafeguards for SVG content restrictions
+ */
 export function validateAndPrepareLogoUpload(
   payload: LogoUploadPayload,
 ): ValidatedLogoUpload {

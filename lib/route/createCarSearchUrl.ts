@@ -1,10 +1,12 @@
 import { ROUTES } from "@/constants/routes";
 
 /**
- * Builds car listing URL with query params.
+ * Builds the car listing URL with preserved filter query parameters.
  *
- * @param params - Filter params (make, bodyType, etc.)
- * @returns Cars URL with query string
+ * Use this for navigation links that should keep current search, make, body type, or other listing filters active.
+ *
+ * @param params - Query parameters to include in the listing URL.
+ * @returns Car listing URL with the supplied query string.
  */
 export function createCarSearchUrl(params: {
   search?: string;

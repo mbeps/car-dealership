@@ -1,5 +1,14 @@
 import type { LogoExtension } from "@/schemas/logo-upload";
 
+/**
+ * Validates raster logo files by checking their magic byte signatures.
+ *
+ * Ensures PNG, JPEG, and ICO payloads start with the expected binary headers before dimensions are decoded.
+ *
+ * @param bytes - Raw logo bytes.
+ * @param extension - Logo file extension used to choose the signature check.
+ * @throws {Error} When the payload does not match the expected raster logo signature.
+ */
 export function validateMagicBytes(
   bytes: Buffer,
   extension: LogoExtension,

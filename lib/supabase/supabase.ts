@@ -6,11 +6,12 @@ import { cookies } from "next/headers";
 import { env } from "@/lib/env";
 
 /**
- * Creates a Supabase client for server-side operations.
- * Manages SSR sessions via cookies and enables passkey support.
+ * Creates a Supabase client for server components and server actions.
  *
- * @returns Supabase client with cookie-based auth and passkey support
- * @see https://supabase.com/docs/guides/auth/server-side/creating-a-client
+ * Uses Next.js cookies to preserve SSR sessions, refresh tokens, PKCE flows, and passkey support. Cookie writes are best-effort because some Server Components do not allow mutable cookies.
+ *
+ * @returns Supabase client with cookie-based auth and passkey support.
+ * @see createPublicClient for stateless RLS-aware reads.
  */
 export const createClient = async () => {
   const cookieStore = await cookies();
@@ -53,18 +54,17 @@ export const createClient = async () => {
 };
 
 /**
- * Re-export createBrowserClient from client-only module
+ * Re-exports the browser Supabase client for client-side code.
  */
 export { createBrowserClient } from "./supabase-client";
 
 /**
- * Creates Supabase admin client with service role.
- * Bypasses RLS policies for storage operations.
- * MUST only be used server-side - never expose to client.
+ * Creates a Supabase admin client with the service role key.
  *
- * @returns Supabase client with elevated privileges
- * @see addCar - Uses this for image uploads
- * @see deleteCar - Uses this for image deletions
+ * Bypasses RLS policies for trusted server-side operations such as storage management. Never expose this client or the service role key to client code.
+ *
+ * @returns Supabase client with elevated privileges.
+ * @see addCar for storage writes that use this client.
  * @see https://supabase.com/docs/guides/api/rest/authentication#the-service_role-key
  */
 export const createAdminClient = () => {
@@ -76,9 +76,10 @@ export const createAdminClient = () => {
 
 /**
  * Creates a stateless Supabase client with the anonymous key.
- * Does NOT use cookies or headers.
- * Safe to use inside unstable_cache or other static contexts.
- * Respects RLS for public/anon roles.
+ *
+ * Does not use cookies or headers, so it is safe for unstable_cache, static rendering, and public reads where RLS should apply.
+ *
+ * @returns Supabase client scoped to public/anon privileges.
  */
 export const createPublicClient = () => {
   return createSupabaseClient(

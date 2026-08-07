@@ -1,6 +1,14 @@
 import { UserRoleEnum as UserRole } from "@/enums/user-role";
 import { createClient } from "@/lib/supabase/supabase";
 
+/**
+ * Ensures the current authenticated user is an admin and returns a usable Supabase client.
+ *
+ * Reads the SSR auth session, looks up the app user row, and rejects non-admin users before returning credentials for admin-only operations.
+ *
+ * @returns Supabase client and admin user id for the authenticated session.
+ * @throws {Error} When no auth session exists or the session does not belong to an admin user.
+ */
 export async function ensureAdminUser(): Promise<{
   supabase: Awaited<ReturnType<typeof createClient>>;
   userId: string;

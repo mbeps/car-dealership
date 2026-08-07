@@ -2,10 +2,9 @@ import arcjet, { tokenBucket } from "@arcjet/next";
 import { env } from "@/lib/env";
 
 /**
- * Arcjet rate limiting config.
- * Token bucket for collection creation.
- * Tracks by IP address.
- * 10 collections per hour max.
+ * Arcjet rate limiting config for dealership collection creation.
+ *
+ * Applies a token bucket per IP address so abuse does not exhaust collection resources.
  *
  * @see https://docs.arcjet.com/rate-limiting/token-bucket
  */
@@ -23,4 +22,11 @@ const aj = arcjet({
   ],
 });
 
+/**
+ * Arcjet rate limiter for dealership collection creation.
+ *
+ * Applies a token bucket per IP address so abuse does not exhaust collection resources.
+ *
+ * @see https://docs.arcjet.com/rate-limiting/token-bucket
+ */
 export default aj;

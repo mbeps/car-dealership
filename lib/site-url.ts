@@ -2,8 +2,11 @@ import { env } from "@/lib/env";
 
 /**
  * Returns the absolute site URL based on environment.
+ *
  * Prioritizes NEXT_PUBLIC_SITE_URL, then Vercel URL, then localhost.
  * Ensures protocol (https/http) and no trailing slash.
+ *
+ * @returns Absolute site URL without a trailing slash.
  */
 export function getSiteUrl() {
   let url =

@@ -1,3 +1,11 @@
+/**
+ * Validates SVG logo content before storage or rendering.
+ *
+ * Rejects empty, binary, malformed, and unsafe SVG payloads while allowing simple SVG logos.
+ *
+ * @param bytes - Raw SVG bytes.
+ * @throws {Error} When the SVG is empty, binary, missing an SVG root, or contains blocked content.
+ */
 export function validateSvgSafeguards(bytes: Buffer): void {
   const content = bytes.toString("utf8");
   if (!content) {
