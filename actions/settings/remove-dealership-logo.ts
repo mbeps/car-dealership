@@ -8,6 +8,11 @@ import type { ActionResponse } from "@/types/common/action-response";
 
 /**
  * Removes uploaded dealership logo and restores static fallbacks.
+ * Clears database metadata and deletes the file from storage.
+ * Requires admin privileges. Revalidates branding cache after change.
+ *
+ * @param dealershipId - The ID of the dealership
+ * @returns Success message or error
  */
 export async function removeDealershipLogo(
   dealershipId: string,

@@ -7,8 +7,10 @@ import type { HomePageContent } from "@/types/home-content/home-page-content";
 const HOME_CONTENT_TAG = "home-content";
 
 /**
- * Fetches the singleton home page content.
- * Cached with unstable_cache.
+ * Fetches the singleton record containing homepage configuration data.
+ * Uses Next.js unstable_cache to serve cached content across requests.
+ *
+ * @returns The homepage configuration object or null on failure
  */
 export const getHomePageContent = unstable_cache(
   async (): Promise<HomePageContent | null> => {

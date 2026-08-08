@@ -7,8 +7,10 @@ import type { FAQ } from "@/types/home-content/faq";
 const FAQ_TAG = "faq";
 
 /**
- * Fetches all FAQs ordered by 'order'.
- * Cached with unstable_cache.
+ * Retrieves all FAQ entries, ordered by user-defined sequence.
+ * Uses Next.js unstable_cache to serve cached data efficiently.
+ *
+ * @returns A list of FAQs or an empty array on failure
  */
 export const getFAQs = unstable_cache(
   async (): Promise<FAQ[]> => {

@@ -6,14 +6,12 @@ import type { SerializedCar } from "@/types/car/serialized-car";
 import { CarStatusEnum as CarStatus } from "@/enums/car-status";
 
 /**
- * Retrieves featured cars for homepage.
- * Only returns AVAILABLE cars marked as featured.
- * Sorted by newest first.
+ * Retrieves featured cars for the public homepage.
+ * Only returns AVAILABLE cars flagged as featured, sorted by newest descending.
  *
- * @param limit - Max cars to return (default 3)
- * @returns Featured cars with make/color data
- * @see page.tsx - Homepage using this
- * @see Car.featured - Database flag
+ * @param limit - Max consecutive cars to return (default: 3)
+ * @returns An array of SerializedCar objects containing make and color metadata
+ * @see page.tsx - Homepage reference using this action
  */
 export async function getFeaturedCars(limit = 3): Promise<SerializedCar[]> {
   try {

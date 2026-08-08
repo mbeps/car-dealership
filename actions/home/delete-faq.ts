@@ -8,8 +8,11 @@ import { UserRoleEnum as UserRole } from "@/enums/user-role";
 const FAQ_TAG = "faq";
 
 /**
- * Deletes an FAQ.
- * Admin only.
+ * Deletes an existing FAQ entry by its ID and revalidates relevant caches.
+ * Requires admin authorization.
+ *
+ * @param id - The unique identifier of the FAQ to delete
+ * @returns An action response determining success or failure
  */
 export async function deleteFAQ(id: string): Promise<ActionResponse<void>> {
   try {

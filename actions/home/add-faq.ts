@@ -11,8 +11,11 @@ import { z } from "zod";
 const FAQ_TAG = "faq";
 
 /**
- * Adds a new FAQ.
- * Admin only.
+ * Adds a new FAQ entry to the database and revalidates relevant caches.
+ * Requires admin authorization.
+ *
+ * @param data - The validated FAQ form data
+ * @returns An action response containing the newly created FAQ or an error message
  */
 export async function addFAQ(
   data: z.infer<typeof faqSchema>,

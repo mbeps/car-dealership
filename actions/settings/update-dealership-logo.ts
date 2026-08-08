@@ -12,6 +12,12 @@ import type { ActionResponse } from "@/types/common/action-response";
 /**
  * Uploads and updates the dealership logo metadata.
  * Uses a versioned storage path and one-day cache headers for reliable cache busting.
+ * Automatically cleans up the old logo upon successful update and reverts on failure.
+ * Requires admin privileges.
+ *
+ * @param dealershipId - The ID of the dealership
+ * @param file - Base64 encoded logo payload (size, mimetype, name, base64)
+ * @returns Success message or error
  */
 export async function updateDealershipLogo(
   dealershipId: string,

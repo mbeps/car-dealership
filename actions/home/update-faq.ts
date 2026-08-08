@@ -11,8 +11,12 @@ import { z } from "zod";
 const FAQ_TAG = "faq";
 
 /**
- * Updates an existing FAQ.
- * Admin only.
+ * Updates an existing FAQ entry in the database.
+ * Requires admin authorization.
+ *
+ * @param id - The unique identifier of the FAQ to update
+ * @param data - The updated FAQ field values
+ * @returns An action response containing the updated FAQ or an error message
  */
 export async function updateFAQ(
   id: string,

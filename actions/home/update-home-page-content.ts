@@ -11,8 +11,11 @@ import { z } from "zod";
 const HOME_CONTENT_TAG = "home-content";
 
 /**
- * Updates the home page content.
- * Admin only. Supports partial updates.
+ * Updates singleton homepage configuration data in the database.
+ * Requires admin authorization and supports partial field updates.
+ *
+ * @param data - Partial homepage configuration fields to update
+ * @returns An action response containing the updated homepage content configuration
  */
 export async function updateHomePageContent(
   data: Partial<z.infer<typeof homePageContentSchema>>,

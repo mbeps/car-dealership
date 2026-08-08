@@ -9,8 +9,11 @@ import { UserRoleEnum as UserRole } from "@/enums/user-role";
 const FAQ_TAG = "faq";
 
 /**
- * Reorders FAQs by updating their order field.
- * Admin only. Accepts an array of {id, order} pairs.
+ * Updates the display sequence of multiple FAQs concurrently.
+ * Requires admin authorization.
+ *
+ * @param updates - Array of FAQ IDs mapped to their new order integers
+ * @returns An action response containing the updated ordered list of FAQs
  */
 export async function reorderFAQs(
   updates: Array<{ id: string; order: number }>,
