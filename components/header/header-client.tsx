@@ -12,7 +12,7 @@ import { useRouter } from "next/navigation";
 import { ROUTES } from "@/constants/routes";
 import { DEALERSHIP_NAME } from "@/constants/dealership-name";
 import { UserRoleEnum as UserRole } from "@/enums/user-role";
-import { resolveHeaderLogoSrc } from "@/lib/helpers/branding";
+import { resolveHeaderLogoSrc } from "@/lib/branding/resolve-header-logo-src";
 import { DesktopNav } from "./desktop-nav";
 import { MobileNav } from "./mobile-nav";
 import { UserMenu } from "./user-menu";
@@ -22,15 +22,23 @@ import {
   ADMIN_PORTAL_ITEM,
 } from "./nav-items";
 
+/**
+ * Props for the client-side header component.
+ */
 interface HeaderClientProps {
+  /** Whether this is an admin page (shows admin navigation vs main site). */
   isAdminPage?: boolean;
+  /** Current user's role for role-based navigation filtering. */
   userRole?: UserRole | null;
+  /** Custom logo URL from branding settings. */
   logoUrl?: string | null;
+  /** Logo version for cache busting. */
   logoVersion?: string | null;
+  /** Dynamic dealership name for SEO and alt tags. */
   dealershipName?: string | null;
 }
 
-/*
+/**
  * Main client header component that orchestrates the entire navigation system.
  * Renders logo, navigation links, and user menu based on authentication state and page context.
  * Handles both main site and admin portal layouts with appropriate navigation items.
@@ -44,7 +52,6 @@ interface HeaderClientProps {
  * @see DesktopNav - Desktop navigation links component
  * @see MobileNav - Mobile bottom navigation component
  * @see UserMenu - Authentication and user dropdown component
- * @author Maruf Bepary
  */
 const HeaderClient = ({
   isAdminPage = false,
@@ -60,7 +67,7 @@ const HeaderClient = ({
 
   const signOut = async () => {
     await supabaseClient.auth.signOut();
-    router.push(ROUTES.HOME);
+    router.push(ROUTES.HOME.HOME);
   };
 
   const isAuthenticated = !!user;
@@ -79,7 +86,7 @@ const HeaderClient = ({
           {/* Logo */}
           <div className="flex items-center gap-2">
             <Link
-              href={isAdminPage ? ROUTES.ADMIN : ROUTES.HOME}
+              href={isAdminPage ? ROUTES.ADMIN.ADMIN : ROUTES.HOME.HOME}
               className="flex items-center gap-2"
             >
               <Image
@@ -108,7 +115,7 @@ const HeaderClient = ({
                   isAuthenticated={isAuthenticated}
                   userRole={userRole}
                 />
-                <Link href={ROUTES.HOME}>
+                <Link href={ROUTES.HOME.HOME}>
                   <Button variant="outline" className="flex items-center gap-2">
                     <ArrowLeft size={18} />
                     <span>Back to App</span>

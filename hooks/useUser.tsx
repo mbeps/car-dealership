@@ -14,23 +14,30 @@ type UserContextType = {
   isLoading: boolean;
 };
 
+/**
+ * Context exposing authenticated user data.
+ * Resolves to undefined when accessed outside of {@link MyUserContextProvider}.
+ */
 export const UserContext = createContext<UserContextType | undefined>(
-  undefined
+  undefined,
 );
 
+/**
+ * Props for {@link MyUserContextProvider}.
+ * Accepts children and forwards any extra props to the provider element.
+ */
 export interface Props {
   children?: React.ReactNode;
   [propName: string]: unknown;
 }
 
 /**
- * Retrieves and manages user-related data including access token, user details, and loading state.
- * It makes sure that the necessary data is fetched when a user is logged in and
- * cleaned up when a user is logged out. The provided context allows easy access
- * to user data throughout the application.
+ * Provider that supplies authenticated user data via {@link UserContext}.
+ * Fetches user details from the "User" table when signed in and
+ * clears them when the user signs out.
  *
- * @param props: any props to be passed to the context provider
- * @returns user context provider
+ * @param props - Children and any extra props forwarded to the provider
+ * @returns The user context provider
  */
 export const MyUserContextProvider = (props: Props) => {
   const {
@@ -104,6 +111,12 @@ export const MyUserContextProvider = (props: Props) => {
   return <UserContext.Provider value={value} {...props} />;
 };
 
+/**
+ * Returns the user context value.
+ * Throws when used outside of {@link MyUserContextProvider}.
+ *
+ * @returns Access token, Supabase user, user details, and loading state
+ */
 export const useUser = () => {
   const context = useContext(UserContext);
   if (context === undefined) {

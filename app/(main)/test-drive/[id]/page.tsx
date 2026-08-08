@@ -1,9 +1,14 @@
-import { getCarById } from "@/actions/car-listing";
+import { getCarById } from "@/actions/cars/get-car-by-id";
 import { notFound, redirect } from "next/navigation";
 import { TestDriveForm } from "./_components/test-drive-form";
-import { isCurrentUserAdmin } from "@/actions/auth";
+import { isCurrentUserAdmin } from "@/actions/auth/is-current-user-admin";
 import { ROUTES } from "@/constants/routes";
 
+/**
+ * Defines SEO metadata for the test-drive booking page.
+ *
+ * @see TestDrivePage - Server page that validates access and renders the booking form.
+ */
 export async function generateMetadata() {
   return {
     title: "Book Test Drive",
@@ -11,6 +16,12 @@ export async function generateMetadata() {
   };
 }
 
+/**
+ * Server page for booking a test drive.
+ * Redirects admins to the admin test-drive panel, fetches the car, and renders the booking form for customers.
+ *
+ * @param params - Route params containing the car id.
+ */
 export default async function TestDrivePage({
   params,
 }: {
@@ -19,7 +30,7 @@ export default async function TestDrivePage({
   // Check if user is admin and redirect to admin panel
   const isAdmin = await isCurrentUserAdmin();
   if (isAdmin) {
-    redirect(ROUTES.ADMIN_TEST_DRIVES);
+    redirect(ROUTES.ADMIN.ADMIN_TEST_DRIVES);
   }
 
   // Fetch car details

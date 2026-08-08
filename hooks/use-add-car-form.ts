@@ -7,7 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import { ROUTES } from "@/constants/routes";
 
-import { addCar } from "@/actions/cars";
+import { addCar } from "@/actions/cars/add-car";
 import useFetch from "@/hooks/use-fetch";
 import { carFormSchema, CarFormData } from "@/schemas/car-form";
 import { CarStatusEnum as CarStatus } from "@/enums/car-status";
@@ -57,7 +57,7 @@ export const useAddCarForm = () => {
   useEffect(() => {
     if (addCarResult?.success) {
       toast.success("Car added successfully");
-      router.push(ROUTES.ADMIN_CARS);
+      router.push(ROUTES.ADMIN.ADMIN_CARS);
     }
   }, [addCarResult, router]);
 

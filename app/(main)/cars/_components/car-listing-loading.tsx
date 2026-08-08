@@ -1,5 +1,9 @@
 import { Skeleton } from "@/components/ui/skeleton";
 
+/**
+ * Loading skeleton for the car inventory grid.
+ * Provides the same card grid shape while listings are fetched.
+ */
 const CarListingsLoading = () => {
   return (
     <>

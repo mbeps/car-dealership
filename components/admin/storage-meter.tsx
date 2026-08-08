@@ -1,6 +1,6 @@
 "use client";
 
-import { getStorageUsage } from "@/actions/storage";
+import { getStorageUsage } from "@/actions/storage/get-storage-usage";
 import { Badge } from "@/components/ui/badge";
 import {
   Card,
@@ -19,6 +19,7 @@ import { useEffect, useMemo, useState } from "react";
 
 /**
  * Formats bytes into a human-readable storage unit string (GB/MB).
+ * Rounds MB values to whole numbers and formats GB values to two decimals.
  *
  * @param bytes - The number of bytes to format
  * @returns Formatted string with units

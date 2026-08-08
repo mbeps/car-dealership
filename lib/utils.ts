@@ -3,11 +3,12 @@ import { twMerge } from "tailwind-merge";
 
 /**
  * Merges Tailwind class names with conflict resolution.
+ *
  * Combines clsx for conditional classes and tailwind-merge for deduplication.
  *
- * @param inputs - Class names or conditional objects
- * @returns Merged class string
+ * @param inputs - Class names or conditional objects.
+ * @returns Merged class string.
  */
-export function cn(...inputs: ClassValue[]) {
+export function cn(...inputs: ClassValue[]): string {
   return twMerge(clsx(inputs));
 }

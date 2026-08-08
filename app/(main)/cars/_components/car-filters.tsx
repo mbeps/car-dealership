@@ -24,13 +24,13 @@ import { useCarFilters } from "@/hooks/use-car-filters";
 
 /**
  * Car inventory filter UI.
- * Mobile: Sheet drawer with apply button.
- * Desktop: Sticky sidebar with live filters.
+ * Mobile: Sheet drawer with active filter count and apply button.
+ * Desktop: Sticky sidebar with live filters and sort controls.
  * Manages filter state via useCarFilters hook.
  *
- * @param filters - Available filter options from server
- * @see useCarFilters - Hook managing filter state
- * @see CarFilterControls - Shared filter form controls
+ * @param filters - Available filter options from server.
+ * @see useCarFilters - Hook managing filter state.
+ * @see CarFilterControls - Shared filter form controls.
  */
 export const CarFilters = ({ filters }: { filters: CarFiltersData }) => {
   const {

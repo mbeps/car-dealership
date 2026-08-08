@@ -5,13 +5,19 @@ import { Button } from "@/components/ui/button";
 import { NavItem } from "./nav-items";
 import { UserRoleEnum as UserRole } from "@/enums/user-role";
 
+/**
+ * Props for the desktop navigation bar.
+ */
 interface DesktopNavProps {
+  /** Navigation items to render. */
   items: NavItem[];
+  /** Whether the user is currently authenticated. */
   isAuthenticated: boolean;
+  /** Current user's role for role-based filtering. */
   userRole?: UserRole | null;
 }
 
-/*
+/**
  * Desktop navigation component that renders horizontal navigation links.
  * Filters navigation items based on authentication state and user role.
  * Only renders on desktop screens (hidden on mobile via CSS).
@@ -21,7 +27,6 @@ interface DesktopNavProps {
  * @param userRole - Current user's role for role-based filtering
  * @returns Horizontal navigation bar with filtered links
  * @see NavItem - Navigation item structure with auth/role constraints
- * @author Maruf Bepary
  */
 export const DesktopNav = ({
   items,

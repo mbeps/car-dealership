@@ -1,7 +1,11 @@
 import { notFound } from "next/navigation";
-import { getAdmin } from "@/actions/admin";
+import { getAdmin } from "@/actions/admin/get-admin";
 import Header from "@/components/header";
 
+/**
+ * Wraps admin-only routes after verifying the current user is an authorized admin.
+ * Prevents normal users and unauthenticated visitors from loading the admin area.
+ */
 export default async function AdminLayout({
   children,
 }: {

@@ -4,10 +4,23 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Calendar, CheckCircle, Clock, XCircle } from "lucide-react";
 import { DashboardData } from "@/types/common/dashboard-data";
 
+/**
+ * Props for the test drive dashboard breakdown.
+ * Supplies normalized booking counts and conversion metrics.
+ */
 interface TestDrivesProps {
+  /** Dashboard metrics returned by the admin dashboard server action. */
   data: DashboardData;
 }
 
+/**
+ * Renders booking status counts and completion rates for test drives.
+ * Helps admins track pending, confirmed, completed, cancelled, and no-show bookings.
+ *
+ * @param data - Dashboard metrics loaded from the admin dashboard
+ * @returns Test drive status cards and percentage breakdowns
+ * @see DashboardData for the metrics shape
+ */
 export function TestDrives({ data }: TestDrivesProps) {
   const { testDrives } = data;
 
@@ -104,7 +117,7 @@ export function TestDrives({ data }: TestDrivesProps) {
                 <div className="text-3xl font-bold text-green-600">
                   {testDrives.total
                     ? ((testDrives.completed / testDrives.total) * 100).toFixed(
-                        1
+                        1,
                       )
                     : 0}
                   %
@@ -148,7 +161,7 @@ export function TestDrives({ data }: TestDrivesProps) {
                   <span className="font-medium">
                     {testDrives.confirmed} (
                     {((testDrives.confirmed / testDrives.total) * 100).toFixed(
-                      1
+                      1,
                     )}
                     %)
                   </span>
@@ -172,7 +185,7 @@ export function TestDrives({ data }: TestDrivesProps) {
                   <span className="font-medium">
                     {testDrives.completed} (
                     {((testDrives.completed / testDrives.total) * 100).toFixed(
-                      1
+                      1,
                     )}
                     %)
                   </span>
@@ -196,7 +209,7 @@ export function TestDrives({ data }: TestDrivesProps) {
                   <span className="font-medium">
                     {testDrives.cancelled} (
                     {((testDrives.cancelled / testDrives.total) * 100).toFixed(
-                      1
+                      1,
                     )}
                     %)
                   </span>

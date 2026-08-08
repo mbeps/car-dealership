@@ -4,10 +4,23 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Car, Calendar, TrendingUp, PoundSterling } from "lucide-react";
 import { DashboardData } from "@/types/common/dashboard-data";
 
+/**
+ * Props for the dashboard overview card grid.
+ * Supplies normalized inventory and test drive metrics from the admin dashboard.
+ */
 interface OverviewProps {
+  /** Dashboard metrics returned by the admin dashboard server action. */
   data: DashboardData;
 }
 
+/**
+ * Renders high-level dealership performance metrics.
+ * Summarizes inventory, sales, conversion, and test drive success for admin reporting.
+ *
+ * @param data - Dashboard metrics loaded from the admin dashboard
+ * @returns Inventory and test drive KPI cards
+ * @see DashboardData for the metrics shape
+ */
 export function Overview({ data }: OverviewProps) {
   const { cars, testDrives } = data;
 

@@ -1,10 +1,8 @@
-import {
-  buildVersionedLogoPath,
-  parseDataUrl,
-  validateAndPrepareLogoUpload,
-  validateMagicBytes,
-  validateSvgSafeguards,
-} from "@/lib/helpers/logo-upload";
+import { buildVersionedLogoPath } from "@/lib/helpers/build-versioned-logo-path";
+import { parseDataUrl } from "@/lib/helpers/parse-data-url";
+import { validateAndPrepareLogoUpload } from "@/lib/helpers/validate-and-prepare-logo-upload";
+import { validateMagicBytes } from "@/lib/helpers/validate-magic-bytes";
+import { validateSvgSafeguards } from "@/lib/helpers/validate-svg-safeguards";
 
 function toDataUrl(mimeType: string, bytes: Buffer): string {
   return `data:${mimeType};base64,${bytes.toString("base64")}`;

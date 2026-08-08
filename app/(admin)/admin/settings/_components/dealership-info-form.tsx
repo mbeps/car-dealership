@@ -18,12 +18,10 @@ import {
 } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import useFetch from "@/hooks/use-fetch";
-import {
-  getDealershipInfo,
-  removeDealershipLogo,
-  updateDealershipInfo,
-  updateDealershipLogo,
-} from "@/actions/settings";
+import { getDealershipInfo } from "@/actions/settings/get-dealership-info";
+import { removeDealershipLogo } from "@/actions/settings/remove-dealership-logo";
+import { updateDealershipInfo } from "@/actions/settings/update-dealership-info";
+import { updateDealershipLogo } from "@/actions/settings/update-dealership-logo";
 import {
   dealershipInfoSchema,
   DealershipInfoFormData,
@@ -36,10 +34,11 @@ import {
   MAX_BYTES_SVG,
   type LogoExtension,
 } from "@/schemas/logo-upload";
-import { resolveHeaderLogoSrc } from "@/lib/helpers/branding";
+import { resolveHeaderLogoSrc } from "@/lib/branding/resolve-header-logo-src";
 
 const ACCEPTED_FILE_TYPES = ".png,.jpg,.jpeg,.ico,.svg";
 
+/** Maximum logo size in bytes for the selected file type. */
 function getClientMaxBytes(extension: LogoExtension): number {
   if (extension === "png" || extension === "jpg" || extension === "jpeg") {
     return MAX_BYTES_PNG_JPEG;
@@ -52,6 +51,15 @@ function getClientMaxBytes(extension: LogoExtension): number {
   return MAX_BYTES_SVG;
 }
 
+/**
+ * Client form for dealership contact details and branding.
+ * Loads settings on mount, validates logo uploads, and persists changes.
+ *
+ * @returns Dealership settings editor with logo upload and removal controls
+ * @see updateDealershipInfo for contact information updates
+ * @see updateDealershipLogo for logo uploads
+ * @see removeDealershipLogo for logo removal
+ */
 export const DealershipInfoForm = () => {
   const [selectedLogoFile, setSelectedLogoFile] = useState<File | null>(null);
   const [logoPreview, setLogoPreview] = useState<string | null>(null);
@@ -129,6 +137,12 @@ export const DealershipInfoForm = () => {
     return "/logo.png";
   }, [logoPreview, selectedLogoFile, settingsData]);
 
+  /**
+   * Validate and preview a selected logo file before upload.
+   *
+   * @param event - Logo input change event
+   * @returns Nothing
+   */
   const onLogoFileChange = async (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0] ?? null;
 
@@ -171,6 +185,11 @@ export const DealershipInfoForm = () => {
     fileReader.readAsDataURL(file);
   };
 
+  /**
+   * Upload the selected logo file to the current dealership.
+   *
+   * @returns Nothing
+   */
   const onUploadLogo = async () => {
     if (!selectedLogoFile) {
       toast.error("Please select a file first.");
@@ -217,6 +236,11 @@ export const DealershipInfoForm = () => {
     }
   };
 
+  /**
+   * Remove the current dealership logo and refresh settings.
+   *
+   * @returns Nothing
+   */
   const onRemoveLogo = async () => {
     if (!settingsData?.success || !settingsData.data?.id) {
       toast.error("No dealership found.");
@@ -232,7 +256,12 @@ export const DealershipInfoForm = () => {
     }
   };
 
-  // Save dealership info
+  /**
+   * Save dealership contact details for the current dealership.
+   *
+   * @param data - Validated dealership information form values
+   * @returns Nothing
+   */
   const onSubmitDealershipInfo = async (data: DealershipInfoFormData) => {
     if (!settingsData?.success || !settingsData.data?.id) {
       toast.error("No dealership found.");

@@ -1,6 +1,6 @@
 "use client";
 
-import { toggleSavedCar } from "@/actions/car-listing";
+import { toggleSavedCar } from "@/actions/cars/toggle-saved-car";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -58,16 +58,16 @@ import Link from "next/link";
 
 /**
  * Car detail page content.
- * Displays car specs, images, wishlist toggle, share, test drive CTA.
- * Admins see status selector, featured toggle, edit/delete actions.
- * Shows existing test drive booking if user has one.
- * Includes dealership contact info for inquiries.
+ * Displays car specs, images, wishlist toggle, share, and test-drive actions.
+ * Admins see status selector and edit/delete actions.
+ * Shows existing test-drive booking when present.
+ * Includes dealership contact and location information for inquiries.
  *
- * @param car - Full car details with wishlist status
- * @param testDriveInfo - User's booking and dealership data
- * @param isAdmin - Whether current user is admin
- * @see CarGallery - Image carousel component
- * @see toggleSavedCar - Server action for wishlist
+ * @param car - Full car details with wishlist status.
+ * @param testDriveInfo - User's booking, dealership contact, and location data.
+ * @param isAdmin - Whether the current user is an admin.
+ * @see CarGallery - Image carousel component.
+ * @see toggleSavedCar - Server action for wishlist.
  */
 export function CarDetails({
   car,
@@ -98,7 +98,7 @@ export function CarDetails({
   } = useCarAdmin({
     onDeleteSuccess: () => {
       setShowDeleteDialog(false);
-      router.push(ROUTES.ADMIN_CARS);
+      router.push(ROUTES.ADMIN.ADMIN_CARS);
     },
     onUpdateSuccess: () => {
       router.refresh();
@@ -158,12 +158,12 @@ export function CarDetails({
 
   // Handle admin redirect to test-drives page
   const handleAdminTestDrives = () => {
-    router.push(ROUTES.ADMIN_TEST_DRIVES);
+    router.push(ROUTES.ADMIN.ADMIN_TEST_DRIVES);
   };
 
   // Handle edit car
   const handleEditCar = () => {
-    router.push(ROUTES.ADMIN_CAR_EDIT(car.id));
+    router.push(ROUTES.ADMIN.ADMIN_CAR_EDIT(car.id));
   };
 
   // Handle delete car

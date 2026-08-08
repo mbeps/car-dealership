@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
-import { toggleSavedCar } from "@/actions/car-listing";
+import { toggleSavedCar } from "@/actions/cars/toggle-saved-car";
 import { useUser } from "@/hooks/useUser";
 import useAuthModal from "@/hooks/useAuthModal";
 import { useRouter } from "next/navigation";
@@ -16,10 +16,20 @@ import { formatCurrency } from "@/lib/helpers/format-currency";
 import { ROUTES } from "@/constants/routes";
 import type { SerializedCar } from "@/types/car/serialized-car";
 
+/**
+ * Props for a car summary card.
+ */
 interface CarCardProps {
   car: SerializedCar;
 }
 
+/**
+ * Displays a car listing with save and details actions.
+ *
+ * @param car - Car data to render.
+ * @returns Car summary card.
+ * @see toggleSavedCar - Server action for updating saved cars.
+ */
 export const CarCard = ({ car }: CarCardProps) => {
   const { user } = useUser();
   const isSignedIn = !!user;
@@ -120,7 +130,7 @@ export const CarCard = ({ car }: CarCardProps) => {
           <Button
             className="flex-1"
             onClick={() => {
-              router.push(ROUTES.CAR_DETAILS(car.id));
+              router.push(ROUTES.HOME.CAR_DETAILS(car.id));
             }}
           >
             View Car

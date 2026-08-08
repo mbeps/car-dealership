@@ -16,7 +16,8 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import useFetch from "@/hooks/use-fetch";
-import { getDealershipInfo, saveWorkingHours } from "@/actions/settings";
+import { getDealershipInfo } from "@/actions/settings/get-dealership-info";
+import { saveWorkingHours } from "@/actions/settings/save-working-hours";
 import { WorkingHourInput } from "@/types/dealership/working-hour-input";
 import { DayOfWeekEnum } from "@/enums/day-of-week";
 
@@ -31,6 +32,14 @@ const DAYS: Array<{ value: DayOfWeekEnum; label: string }> = [
   { value: DayOfWeekEnum.SUNDAY, label: "Sunday" },
 ];
 
+/**
+ * Client form for dealership opening hours.
+ * Loads existing hours, applies default weekday hours, and saves changes.
+ *
+ * @returns Working hours editor with validation and save feedback
+ * @see saveWorkingHours - Server action persisting the hours
+ * @see DayOfWeekEnum - Supported weekday values
+ */
 export const WorkingHoursForm = () => {
   const [workingHours, setWorkingHours] = useState<WorkingHourInput[]>(
     DAYS.map((day) => ({
@@ -38,7 +47,7 @@ export const WorkingHoursForm = () => {
       openTime: "09:00",
       closeTime: "18:00",
       isOpen: day.value !== DayOfWeekEnum.SUNDAY,
-    }))
+    })),
   );
 
   // Custom hooks for API calls
@@ -59,7 +68,7 @@ export const WorkingHoursForm = () => {
           const mappedHours = DAYS.map((day) => {
             // Find matching working hour
             const hourData = dealership.workingHours?.find(
-              (h) => h.dayOfWeek === day.value
+              (h) => h.dayOfWeek === day.value,
             );
 
             if (hourData) {
@@ -88,11 +97,18 @@ export const WorkingHoursForm = () => {
     loadSettings();
   }, [fetchDealershipInfo]);
 
-  // Handle working hours change
+  /**
+   * Update one working-hour field while keeping the other days unchanged.
+   *
+   * @param index - Working-day row index
+   * @param field - Working-hour field to update
+   * @param value - New field value
+   * @returns Nothing
+   */
   const handleWorkingHourChange = (
     index: number,
     field: keyof WorkingHourInput,
-    value: string | boolean
+    value: string | boolean,
   ) => {
     const updatedHours = [...workingHours];
     updatedHours[index] = {
@@ -102,7 +118,11 @@ export const WorkingHoursForm = () => {
     setWorkingHours(updatedHours);
   };
 
-  // Save working hours
+  /**
+   * Save the current weekly hours for the dealership.
+   *
+   * @returns Nothing
+   */
   const handleSaveHours = async () => {
     if (!settingsData?.success || !settingsData.data?.id) {
       toast.error("No dealership found. Please create dealership info first.");
@@ -162,7 +182,7 @@ export const WorkingHoursForm = () => {
                           handleWorkingHourChange(
                             index,
                             "openTime",
-                            e.target.value
+                            e.target.value,
                           )
                         }
                         className="text-sm"
@@ -180,7 +200,7 @@ export const WorkingHoursForm = () => {
                         handleWorkingHourChange(
                           index,
                           "closeTime",
-                          e.target.value
+                          e.target.value,
                         )
                       }
                       className="text-sm"

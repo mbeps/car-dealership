@@ -18,12 +18,27 @@ import {
 import { FAQ } from "@/types/home-content/faq";
 
 interface SortableFAQItemProps {
+  /** FAQ record displayed in the sortable list. */
   faq: FAQ;
+  /** Callback for editing this FAQ. */
   onEdit: (faq: FAQ) => void;
+  /** Callback for deleting this FAQ. */
   onDelete: (id: string) => Promise<void>;
+  /** Whether this FAQ is currently being deleted. */
   isDeleting: boolean;
 }
 
+/**
+ * Reusable sortable FAQ row with inline edit and delete controls.
+ * Uses DnD sortable handles and a local edit dialog.
+ *
+ * @param faq - FAQ record displayed in the sortable list
+ * @param onEdit - Callback for editing this FAQ
+ * @param onDelete - Callback for deleting this FAQ
+ * @param isDeleting - Whether this FAQ is currently being deleted
+ * @returns Sortable FAQ list item
+ * @see FAQSection - Parent FAQ editor state
+ */
 export const SortableFAQItem = ({
   faq,
   onEdit,
@@ -80,7 +95,7 @@ export const SortableFAQItem = ({
               />
             }
           >
-              <Trash2 className="h-4 w-4" />
+            <Trash2 className="h-4 w-4" />
           </AlertDialogTrigger>
           <AlertDialogContent>
             <AlertDialogHeader>

@@ -23,7 +23,13 @@ import { TestDriveBookingWithUser } from "@/types/test-drive/test-drive-booking-
 import { BookingStatusEnum as BookingStatus } from "@/enums/booking-status";
 import { ROUTES } from "@/constants/routes";
 
-// Helper function to format time
+/**
+ * Formats a stored time string as a readable AM/PM value.
+ * Falls back to the original value when the time cannot be parsed.
+ *
+ * @param timeString - Time string in HH:mm format
+ * @returns Formatted time string, or the original string when parsing fails
+ */
 const formatTime = (timeString: string): string => {
   try {
     return format(parseISO(`2022-01-01T${timeString}`), "h:mm a");
@@ -32,7 +38,13 @@ const formatTime = (timeString: string): string => {
   }
 };
 
-// Helper function for status badge
+/**
+ * Returns a badge for a test drive booking status.
+ *
+ * @param status - Booking status to display.
+ * @returns React badge element for the status.
+ * @see BookingStatusEnum - Available booking statuses.
+ */
 const getStatusBadge = (status: BookingStatus) => {
   switch (status) {
     case BookingStatus.PENDING:
@@ -50,6 +62,9 @@ const getStatusBadge = (status: BookingStatus) => {
   }
 };
 
+/**
+ * Props for a test drive booking card.
+ */
 interface TestDriveCardProps {
   booking: TestDriveBookingWithCar | TestDriveBookingWithUser;
   onCancel?: (bookingId: string) => Promise<void>;
@@ -60,6 +75,19 @@ interface TestDriveCardProps {
   renderStatusSelector?: () => React.ReactNode;
 }
 
+/**
+ * Displays a test drive booking with car details and optional actions.
+ *
+ * @param booking - Booking data to render.
+ * @param onCancel - Optional callback for cancelling the booking.
+ * @param showActions - Whether action buttons and confirmation dialog are shown.
+ * @param isPast - Whether the booking should appear past.
+ * @param isAdmin - Whether customer details and admin actions should be shown.
+ * @param isCancelling - Whether cancellation is in progress.
+ * @param renderStatusSelector - Optional custom status selector.
+ * @returns Test drive booking card.
+ * @see BookingStatusEnum - Available booking statuses.
+ */
 export function TestDriveCard({
   booking,
   onCancel,
@@ -71,7 +99,9 @@ export function TestDriveCard({
 }: TestDriveCardProps) {
   const [cancelDialogOpen, setCancelDialogOpen] = useState(false);
 
-  // Handle cancel
+  /**
+   * Cancels the booking when a cancellation callback is available.
+   */
   const handleCancel = async () => {
     if (!onCancel) return;
 
@@ -79,9 +109,14 @@ export function TestDriveCard({
     setCancelDialogOpen(false);
   };
 
-  // Type guard to check if booking has user property
+  /**
+   * Checks whether a booking includes customer details.
+   *
+   * @param booking - Booking to inspect.
+   * @returns true when the booking includes user details.
+   */
   const hasUser = (
-    booking: TestDriveBookingWithCar | TestDriveBookingWithUser
+    booking: TestDriveBookingWithCar | TestDriveBookingWithUser,
   ): booking is TestDriveBookingWithUser => {
     return "user" in booking;
   };
@@ -163,13 +198,13 @@ export function TestDriveCard({
                 className="w-full"
                 render={
                   <Link
-                    href={ROUTES.CAR_DETAILS(booking.carId)}
+                    href={ROUTES.HOME.CAR_DETAILS(booking.carId)}
                     className="flex items-center justify-center"
                   />
                 }
               >
-                  View Car
-                  <ArrowRight className="ml-2 h-4 w-4" />
+                View Car
+                <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
               {(booking.status === BookingStatus.PENDING ||
                 booking.status === BookingStatus.CONFIRMED) && (
@@ -212,7 +247,7 @@ export function TestDriveCard({
                   <span>
                     {format(
                       new Date(booking.bookingDate),
-                      "EEEE, MMMM d, yyyy"
+                      "EEEE, MMMM d, yyyy",
                     )}
                   </span>
                 </div>

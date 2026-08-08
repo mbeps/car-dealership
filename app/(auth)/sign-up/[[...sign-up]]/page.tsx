@@ -20,6 +20,14 @@ import { ROUTES } from "@/constants/routes";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { getSiteUrl } from "@/lib/site-url";
 
+/**
+ * Client page for creating a new user account by email or Google OAuth.
+ * Performs client-side password checks, stores the full name, and redirects after success.
+ *
+ * @returns Sign-up form page
+ * @see handleEmailSignUp for email registration flow
+ * @see handleGoogleSignUp for Google OAuth sign-up flow
+ */
 export default function SignUpPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -33,6 +41,13 @@ export default function SignUpPage() {
   const redirect = searchParams.get("redirect") || "/";
   const supabase = createBrowserClient();
 
+  /**
+   * Handles email/password account creation.
+   * Validates password matching, registers with Supabase, then redirects after a short delay.
+   *
+   * @param e - Form submit event
+   * @returns Nothing
+   */
   const handleEmailSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
@@ -69,7 +84,7 @@ export default function SignUpPage() {
 
       setSuccess("Account created! Please check your email to verify.");
       setTimeout(() => {
-        router.push(ROUTES.SIGN_IN);
+        router.push(ROUTES.AUTH.SIGN_IN);
       }, 2000);
     } catch (error) {
       setError("An unexpected error occurred");
@@ -79,6 +94,12 @@ export default function SignUpPage() {
     }
   };
 
+  /**
+   * Starts Google OAuth sign-up.
+   * Redirects through the app callback route with the supplied redirect target.
+   *
+   * @returns Nothing
+   */
   const handleGoogleSignUp = async () => {
     setError("");
     setSuccess("");
@@ -113,7 +134,7 @@ export default function SignUpPage() {
           <CardDescription>
             Or{" "}
             <Link
-              href={ROUTES.SIGN_IN}
+              href={ROUTES.AUTH.SIGN_IN}
               className="text-blue-600 hover:underline"
             >
               sign in to your account

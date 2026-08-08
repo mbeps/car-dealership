@@ -20,6 +20,14 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useState } from "react";
 
+/**
+ * Client page for signing in with email/password or Google OAuth.
+ * Uses the configured redirect query when supplied and navigates after success.
+ *
+ * @returns Sign-in form page
+ * @see handleEmailSignIn for credential sign-in flow
+ * @see handleGoogleSignIn for Google OAuth sign-in flow
+ */
 export default function SignInPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -30,6 +38,13 @@ export default function SignInPage() {
   const redirect = searchParams.get("redirect") || "/";
   const supabase = createBrowserClient();
 
+  /**
+   * Handles email and password sign-in.
+   * Clears prior messages, authenticates with Supabase, then follows the redirect.
+   *
+   * @param e - Form submit event
+   * @returns Nothing
+   */
   const handleEmailSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -57,6 +72,12 @@ export default function SignInPage() {
     }
   };
 
+  /**
+   * Starts Google OAuth sign-in.
+   * Redirects through the app callback route with the supplied redirect target.
+   *
+   * @returns Nothing
+   */
   const handleGoogleSignIn = async () => {
     setError("");
     setSuccess("");
@@ -91,7 +112,7 @@ export default function SignInPage() {
           <CardDescription>
             Or{" "}
             <Link
-              href={ROUTES.SIGN_UP}
+              href={ROUTES.AUTH.SIGN_UP}
               className="text-blue-600 hover:underline"
             >
               create a new account
@@ -117,7 +138,7 @@ export default function SignInPage() {
               <div className="flex items-center justify-between">
                 <Label htmlFor="password">Password</Label>
                 <Link
-                  href={ROUTES.FORGOT_PASSWORD}
+                  href={ROUTES.AUTH.FORGOT_PASSWORD}
                   className="text-sm text-blue-600 hover:underline"
                 >
                   Forgot password?

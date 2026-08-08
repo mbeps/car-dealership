@@ -1,5 +1,11 @@
 import Link from "next/link";
 
+/**
+ * Renders the site footer with developer attribution.
+ *
+ * @returns Footer markup.
+ * @see Link - Navigation link to the developer website.
+ */
 export default function Footer() {
   return (
     <footer className="bg-blue-50 py-5">

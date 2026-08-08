@@ -50,7 +50,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { StorageMeter } from "@/components/admin/storage-meter";
 import useFetch from "@/hooks/use-fetch";
 import { useCarAdmin } from "@/hooks/use-car-admin";
-import { getCars } from "@/actions/cars";
+import { getCars } from "@/actions/cars/get-cars";
 import { formatCurrency } from "@/lib/helpers/format-currency";
 import Image from "next/image";
 import { SerializedCar } from "@/types/car/serialized-car";
@@ -65,7 +65,7 @@ import { CarStatusEnum as CarStatus } from "@/enums/car-status";
  *
  * @see getCars - Server action for admin car list
  * @see useCarAdmin - Hook for delete/update actions
- * @see ROUTES.ADMIN_CAR_EDIT - Edit page route
+ * @see ROUTES.ADMIN.ADMIN_CAR_EDIT - Edit page route
  */
 export const CarsList = () => {
   const router = useRouter();
@@ -112,24 +112,44 @@ export const CarsList = () => {
     }
   }, [carsError]);
 
-  // Handle search submit
+  /**
+   * Submit search form and refetch the car list.
+   *
+   * @param e - Form submit event
+   * @returns Nothing
+   */
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     fetchCars(search);
   };
 
-  // Handle delete car
+  /**
+   * Delete the selected car from the admin list.
+   *
+   * @returns Nothing
+   */
   const handleDeleteCarClick = async () => {
     if (!carToDelete) return;
     await deleteCarAction(carToDelete.id);
   };
 
-  // Handle toggle featured status
+  /**
+   * Toggle the featured status for a car.
+   *
+   * @param car - Car record whose featured status should change
+   * @returns Nothing
+   */
   const handleToggleFeaturedClick = async (car: SerializedCar) => {
     await handleToggleFeatured(car.id, car.featured);
   };
 
-  // Handle status change
+  /**
+   * Update the selected car status in the admin list.
+   *
+   * @param car - Car record whose status should change
+   * @param newStatus - New inventory status
+   * @returns Nothing
+   */
   const handleStatusUpdateClick = async (
     car: SerializedCar,
     newStatus: CarStatus,
@@ -137,7 +157,12 @@ export const CarsList = () => {
     await handleUpdateStatus(car.id, newStatus);
   };
 
-  // Get status badge color
+  /**
+   * Render a status badge with inventory-aware styling.
+   *
+   * @param status - Raw car status value
+   * @returns Status badge component
+   */
   const getStatusBadge = (status: string) => {
     switch (status) {
       case CarStatus.AVAILABLE:
@@ -169,7 +194,7 @@ export const CarsList = () => {
       <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
         <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 w-full sm:w-auto">
           <Button
-            onClick={() => router.push(ROUTES.ADMIN_CAR_CREATE)}
+            onClick={() => router.push(ROUTES.ADMIN.ADMIN_CAR_CREATE)}
             className="flex items-center w-full sm:w-auto"
           >
             <Plus className="h-4 w-4" />
@@ -273,7 +298,7 @@ export const CarsList = () => {
                               <DropdownMenuLabel>Actions</DropdownMenuLabel>
                               <DropdownMenuItem
                                 onClick={() =>
-                                  router.push(ROUTES.CAR_DETAILS(car.id))
+                                  router.push(ROUTES.HOME.CAR_DETAILS(car.id))
                                 }
                               >
                                 <Eye className="mr-2 h-4 w-4" />
@@ -281,7 +306,9 @@ export const CarsList = () => {
                               </DropdownMenuItem>
                               <DropdownMenuItem
                                 onClick={() =>
-                                  router.push(ROUTES.ADMIN_CAR_EDIT(car.id))
+                                  router.push(
+                                    ROUTES.ADMIN.ADMIN_CAR_EDIT(car.id),
+                                  )
                                 }
                               >
                                 <Pencil className="mr-2 h-4 w-4" />
@@ -361,7 +388,9 @@ export const CarsList = () => {
                   ? "No cars match your search criteria"
                   : "Your inventory is empty. Add cars to get started."}
               </p>
-              <Button onClick={() => router.push(ROUTES.ADMIN_CAR_CREATE)}>
+              <Button
+                onClick={() => router.push(ROUTES.ADMIN.ADMIN_CAR_CREATE)}
+              >
                 Add Your First Car
               </Button>
             </div>

@@ -9,14 +9,14 @@ import { SerializedCar } from "@/types/car/serialized-car";
 import { ROUTES } from "@/constants/routes";
 
 /**
- * User's wishlist page.
- * Displays grid of saved cars.
+ * Renders the user's saved cars.
+ * Displays saved cars in a responsive grid.
+ * Marks every displayed car as wishlisted for the shared card component.
  * Shows empty state with CTA to browse inventory.
- * All cars marked as wishlisted for CarCard.
  *
- * @param initialData - Server-fetched saved cars
- * @see getSavedCars - Server action fetching wishlist
- * @see CarCard - Reused car display component
+ * @param initialData - Server-fetched saved cars.
+ * @see getSavedCars - Server action fetching wishlist.
+ * @see CarCard - Reused car display component.
  */
 export function SavedCarsList({
   initialData,
@@ -35,7 +35,7 @@ export function SavedCarsList({
           You haven't saved any cars yet. Browse our listings and click the
           heart icon to save cars for later.
         </p>
-        <Button variant="default" render={<Link href={ROUTES.CARS} />}>
+        <Button variant="default" render={<Link href={ROUTES.HOME.CARS} />}>
           Browse Cars
         </Button>
       </div>

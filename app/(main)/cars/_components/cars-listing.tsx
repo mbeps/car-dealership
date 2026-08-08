@@ -9,7 +9,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Info, Search } from "lucide-react";
 import { CarCard } from "@/components/car-card";
 import useFetch from "@/hooks/use-fetch";
-import { getCars } from "@/actions/car-listing";
+import { getCars } from "@/actions/cars/get-public-cars";
 import CarListingsLoading from "./car-listing-loading";
 import { ROUTES } from "@/constants/routes";
 
@@ -29,8 +29,8 @@ import {
  * Displays search bar, car grid, and pagination controls.
  * Shows loading skeleton during fetches.
  *
- * @see getCars - Server action for filtered car query
- * @see CarCard - Individual car display component
+ * @see getCars - Server action for filtered car query.
+ * @see CarCard - Individual car display component.
  */
 export function CarListings() {
   const searchParams = useSearchParams();
@@ -166,7 +166,7 @@ export function CarListings() {
           We couldn't find any cars matching your search criteria. Try adjusting
           your filters or search term.
         </p>
-        <Button variant="outline" render={<Link href={ROUTES.CARS} />}>
+        <Button variant="outline" render={<Link href={ROUTES.HOME.CARS} />}>
           Clear all filters
         </Button>
       </div>
@@ -198,7 +198,7 @@ export function CarListings() {
 
   // Sort and deduplicate
   const uniquePageNumbers = [...new Set(visiblePageNumbers)].sort(
-    (a, b) => a - b
+    (a, b) => a - b,
   );
 
   // Create pagination items with ellipses
@@ -209,7 +209,7 @@ export function CarListings() {
       paginationItems.push(
         <PaginationItem key={`ellipsis-${pageNumber}`}>
           <PaginationEllipsis />
-        </PaginationItem>
+        </PaginationItem>,
       );
     }
 
@@ -225,7 +225,7 @@ export function CarListings() {
         >
           {pageNumber}
         </PaginationLink>
-      </PaginationItem>
+      </PaginationItem>,
     );
 
     lastPageNumber = pageNumber;

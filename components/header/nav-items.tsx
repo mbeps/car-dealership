@@ -11,29 +11,31 @@ import {
 import { ROUTES } from "@/constants/routes";
 import { LucideIcon } from "lucide-react";
 
+/**
+ * Navigation item used by desktop and mobile navigation components.
+ * Optional auth and admin flags control which items are rendered.
+ */
 export interface NavItem {
+  /** Display text for the navigation item. */
   label: string;
+  /** Lucide icon component for visual representation. */
   icon: LucideIcon;
+  /** Route path for navigation. */
   href: string;
+  /** Whether to show this item in mobile bottom navigation. */
   showInMobile?: boolean;
+  /** Whether this item requires user authentication. */
   requiresAuth?: boolean;
+  /** Whether to hide this item for admin users. */
   hideForAdmin?: boolean;
 }
 
-/*
+/**
  * Navigation configuration file containing all navigation items for the application.
  * Centralizes navigation data to ensure consistency across desktop and mobile navigation.
  * Defines main site navigation, admin portal navigation, and special admin portal button.
  *
- * @interface NavItem - Structure for navigation items with optional auth and role constraints
- * @property label - Display text for the navigation item
- * @property icon - Lucide icon component for visual representation
- * @property href - Route path for navigation
- * @property showInMobile - Whether to show this item in mobile bottom navigation
- * @property requiresAuth - Whether this item requires user authentication
- * @property hideForAdmin - Whether to hide this item for admin users
  * @see ROUTES - Centralized route constants
- * @author Maruf Bepary
  */
 
 // Main site navigation
@@ -41,13 +43,13 @@ export const MAIN_NAV_ITEMS: NavItem[] = [
   {
     label: "Home",
     icon: Home,
-    href: ROUTES.HOME,
+    href: ROUTES.HOME.HOME,
     showInMobile: true,
   },
   {
     label: "All Cars",
     icon: CarFront,
-    href: ROUTES.CARS,
+    href: ROUTES.HOME.CARS,
     showInMobile: true,
   },
   {
@@ -72,25 +74,25 @@ export const ADMIN_NAV_ITEMS: NavItem[] = [
   {
     label: "Dashboard",
     icon: LayoutDashboard,
-    href: ROUTES.ADMIN,
+    href: ROUTES.ADMIN.ADMIN,
     showInMobile: true,
   },
   {
     label: "Cars",
     icon: Car,
-    href: ROUTES.ADMIN_CARS,
+    href: ROUTES.ADMIN.ADMIN_CARS,
     showInMobile: true,
   },
   {
     label: "Test Drives",
     icon: Calendar,
-    href: ROUTES.ADMIN_TEST_DRIVES,
+    href: ROUTES.ADMIN.ADMIN_TEST_DRIVES,
     showInMobile: true,
   },
   {
     label: "Settings",
     icon: Cog,
-    href: ROUTES.ADMIN_SETTINGS,
+    href: ROUTES.ADMIN.ADMIN_SETTINGS,
     showInMobile: true,
   },
 ];
@@ -99,6 +101,6 @@ export const ADMIN_NAV_ITEMS: NavItem[] = [
 export const ADMIN_PORTAL_ITEM: NavItem = {
   label: "Admin Portal",
   icon: Layout,
-  href: ROUTES.ADMIN,
+  href: ROUTES.ADMIN.ADMIN,
   requiresAuth: true,
 };

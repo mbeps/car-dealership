@@ -1,5 +1,11 @@
 import { cn } from "@/lib/utils";
 
+/**
+ * Renders the Google logo icon.
+ *
+ * @param className - Optional classes applied to the SVG.
+ * @returns Google icon SVG.
+ */
 export function GoogleIcon({ className }: { className?: string }) {
   return (
     <svg className={cn("h-4 w-4", className)} viewBox="0 0 24 24">

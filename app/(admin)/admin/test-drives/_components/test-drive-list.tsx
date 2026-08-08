@@ -23,8 +23,9 @@ import { BookingStatusEnum as BookingStatus } from "@/enums/booking-status";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { TestDriveCard } from "@/components/test-drive-card";
 import useFetch from "@/hooks/use-fetch";
-import { getAdminTestDrives, updateTestDriveStatus } from "@/actions/admin";
-import { cancelTestDrive } from "@/actions/test-drive";
+import { getAdminTestDrives } from "@/actions/admin/get-admin-test-drives";
+import { updateTestDriveStatus } from "@/actions/admin/update-test-drive-status";
+import { cancelTestDrive } from "@/actions/test-drive/cancel-test-drive";
 
 /**
  * Admin test drive management page.
@@ -99,24 +100,40 @@ export const TestDrivesList = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [updateResult, cancelResult]);
 
-  // Handle search submit
+  /**
+   * Submit search and status filters, then reload bookings.
+   *
+   * @param e - Form submit event
+   * @returns Nothing
+   */
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const actualStatus = statusFilter === "all" ? "" : statusFilter;
     fetchTestDrives({ search, status: actualStatus });
   };
 
-  // Handle status update
+  /**
+   * Update a booking status through the admin update action.
+   *
+   * @param bookingId - Booking ID to update
+   * @param newStatus - New booking status
+   * @returns Nothing
+   */
   const handleUpdateStatus = async (
     bookingId: string,
-    newStatus: BookingStatus
+    newStatus: BookingStatus,
   ) => {
     if (newStatus) {
       await updateStatusFn(bookingId, newStatus);
     }
   };
 
-  // Handle booking cancellation
+  /**
+   * Cancel a test-drive booking through the admin cancel action.
+   *
+   * @param bookingId - Booking ID to cancel
+   * @returns Nothing
+   */
   const handleCancel = async (bookingId: string) => {
     await cancelTestDriveFn(bookingId);
   };
@@ -221,7 +238,7 @@ export const TestDrivesList = () => {
                             if (value) {
                               handleUpdateStatus(
                                 booking.id,
-                                value as BookingStatus
+                                value as BookingStatus,
                               );
                             }
                           }}

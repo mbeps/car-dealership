@@ -3,12 +3,16 @@ import { SerializedCar } from "@/types/car/serialized-car";
 
 /**
  * Normalizes car data from Supabase for client components.
- * Converts numeric strings to numbers, handles date serialization.
- * Flattens nested make/color relations into top-level fields.
+ *
+ * Converts numeric strings to numbers, serializes dates, and flattens nested make/color relations into top-level fields.
+ *
+ * @param car - Raw car row from Supabase, including optional relation objects.
+ * @param wishlisted - Client wishlist state to merge when present.
+ * @returns Car data normalized for client components.
  */
 export function serializeCarData(
   car: RawSupabaseCar,
-  wishlisted?: boolean
+  wishlisted?: boolean,
 ): SerializedCar {
   const carMakeRelation = car.carMake || car.CarMake || null;
   const carColorRelation = car.carColor || car.CarColor || null;

@@ -13,12 +13,28 @@ import {
 import { HomePageContentFormValues } from "@/schemas/home-content";
 
 interface FeaturesSectionProps {
+  /** Shared form state for home content values. */
   form: UseFormReturn<Partial<HomePageContentFormValues>>;
+  /** Save callback for feature content. */
   onSubmit: (data: Partial<HomePageContentFormValues>) => Promise<void>;
+  /** Reset callback for feature fields. */
   onReset: () => void;
+  /** Whether the form is currently saving. */
   isLoading: boolean;
 }
 
+/**
+ * Reusable editor for three homepage feature cards.
+ * Provides paired title and description fields with maxlength validation.
+ *
+ * @param form - Shared form state for home content values
+ * @param onSubmit - Save callback for feature content
+ * @param onReset - Reset callback for feature fields
+ * @param isLoading - Whether the form is currently saving
+ * @returns Features content editor
+ * @see HeroSection - Homepage hero editor
+ * @see CTASection - Homepage CTA editor
+ */
 export const FeaturesSection = ({
   form,
   onSubmit,

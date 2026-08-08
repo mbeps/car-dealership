@@ -15,7 +15,7 @@ import Link from "next/link";
 import { Loader2 } from "lucide-react";
 import { ROUTES } from "@/constants/routes";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { requestPasswordReset } from "@/actions/auth";
+import { requestPasswordReset } from "@/actions/auth/request-password-reset";
 import { forgotPasswordSchema } from "@/schemas/forgot-password";
 
 /**
@@ -26,7 +26,7 @@ import { forgotPasswordSchema } from "@/schemas/forgot-password";
  * @returns Forgot password form page
  * @see requestPasswordReset - Server action that sends reset email
  * @see forgotPasswordSchema - Zod validation schema
- * @see ROUTES.UPDATE_PASSWORD - Where user lands after clicking reset link
+ * @see ROUTES.AUTH.UPDATE_PASSWORD - Where user lands after clicking reset link
  */
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState("");
@@ -37,6 +37,9 @@ export default function ForgotPasswordPage() {
   /**
    * Handles password reset request form submission.
    * Validates email and calls server action to send reset email.
+   *
+   * @param e - Form submit event
+   * @returns Nothing
    */
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -60,7 +63,7 @@ export default function ForgotPasswordPage() {
       }
 
       setSuccess(
-        "Password reset email sent! Please check your inbox and spam folder."
+        "Password reset email sent! Please check your inbox and spam folder.",
       );
       setEmail("");
     } catch (error) {
@@ -125,7 +128,7 @@ export default function ForgotPasswordPage() {
 
           <div className="mt-6 text-center text-sm">
             <Link
-              href={ROUTES.SIGN_IN}
+              href={ROUTES.AUTH.SIGN_IN}
               className="text-blue-600 hover:underline"
             >
               Back to sign in

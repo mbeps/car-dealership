@@ -1,5 +1,6 @@
-import { getFeaturedCars } from "@/actions/home";
-import { getHomePageContent, getFAQs } from "@/actions/home-content";
+import { getFeaturedCars } from "@/actions/home/get-featured-cars";
+import { getHomePageContent } from "@/actions/home/get-home-page-content";
+import { getFAQs } from "@/actions/home/get-faqs";
 import { CarCard } from "@/components/car-card";
 import { HomeSearch } from "@/components/home-search";
 import {
@@ -11,12 +12,20 @@ import {
 import { Button } from "@/components/ui/button";
 import { bodyTypes } from "@/constants/body-types";
 import { carMakes } from "@/constants/car-makes";
-import { ROUTES, createCarSearchUrl } from "@/constants/routes";
+import { ROUTES } from "@/constants/routes";
+import { createCarSearchUrl } from "@/lib/route/createCarSearchUrl";
 import { SignedOut } from "@/components/auth-helpers";
 import { Calendar, Car, ChevronRight, Shield } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
+/**
+ * Renders the public home page.
+ *
+ * Loads featured cars, homepage content, and FAQs from server actions, then composes the marketing sections, search entry points, and call-to-action links.
+ *
+ * @returns The rendered home page.
+ */
 export default async function Home() {
   const featuredCars = await getFeaturedCars();
   const homeContent = await getHomePageContent();
@@ -70,7 +79,7 @@ export default async function Home() {
             <Button
               variant="ghost"
               className="flex items-center"
-              render={<Link href={ROUTES.CARS} />}
+              render={<Link href={ROUTES.HOME.CARS} />}
             >
               View All <ChevronRight className="ml-1 h-4 w-4" />
             </Button>
@@ -91,7 +100,7 @@ export default async function Home() {
             <Button
               variant="ghost"
               className="flex items-center"
-              render={<Link href={ROUTES.CARS} />}
+              render={<Link href={ROUTES.HOME.CARS} />}
             >
               View All <ChevronRight className="ml-1 h-4 w-4" />
             </Button>
@@ -158,7 +167,7 @@ export default async function Home() {
             <Button
               variant="ghost"
               className="flex items-center"
-              render={<Link href={ROUTES.CARS} />}
+              render={<Link href={ROUTES.HOME.CARS} />}
             >
               View All <ChevronRight className="ml-1 h-4 w-4" />
             </Button>
@@ -217,12 +226,12 @@ export default async function Home() {
             <Button
               size="lg"
               variant="secondary"
-              render={<Link href={ROUTES.CARS} />}
+              render={<Link href={ROUTES.HOME.CARS} />}
             >
               View All Cars
             </Button>
             <SignedOut>
-              <Button size="lg" render={<Link href={ROUTES.SIGN_UP} />}>
+              <Button size="lg" render={<Link href={ROUTES.AUTH.SIGN_UP} />}>
                 Sign Up Now
               </Button>
             </SignedOut>

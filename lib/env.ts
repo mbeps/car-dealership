@@ -69,7 +69,11 @@ const schema = isServer ? serverSchema : clientSchema;
 const skipValidation = process.env.SKIP_ENV_VALIDATION === "true";
 
 /**
- * Validates the environment variables and returns the typed data.
+ * Validated environment variables for client and server code.
+ *
+ * Server-only variables are undefined in browser builds.
+ *
+ * @returns Typed environment variables.
  */
 const validatedEnv = (() => {
   if (skipValidation) {
@@ -89,15 +93,14 @@ const validatedEnv = (() => {
   return parsed.data as z.infer<typeof serverSchema>;
 })();
 
-/**
- * Exported env object.
- * Note: Server-only variables will be undefined on the client.
- */
 export const env = validatedEnv;
 
 /**
  * Pre-calculated byte values for file size limits.
+ *
  * Safe to use on both client and server as it only depends on public vars.
+ *
+ * @returns File size limits in bytes for supported uploads.
  */
 export const FILE_LIMITS = {
   CAR_IMAGE: env.NEXT_PUBLIC_MAX_CAR_IMAGE_SIZE_MB * 1024 * 1024,

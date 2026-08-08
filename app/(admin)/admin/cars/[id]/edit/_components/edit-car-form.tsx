@@ -16,7 +16,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { updateCar } from "@/actions/cars";
+import { updateCar } from "@/actions/cars/update-car";
 import useFetch from "@/hooks/use-fetch";
 import { carFormSchema, CarFormData } from "@/schemas/car-form";
 import { CarColorOption } from "@/types/car-color/car-color-option";
@@ -24,24 +24,29 @@ import { CarMakeOption } from "@/types/car-make/car-make-option";
 import { SerializedCar } from "@/types/car/serialized-car";
 import { CarFormFields } from "@/components/car-form";
 
+/**
+ * Props for the car edit form.
+ * Supplies existing car data and selectable option lists.
+ */
 interface EditCarFormProps {
+  /** Existing car record to edit. */
   car: SerializedCar;
+  /** Available car makes for the form dropdown. */
   carMakes: CarMakeOption[];
+  /** Available car colors for the form dropdown. */
   carColors: CarColorOption[];
 }
 
 /**
- * Car edit form for admin.
- * Prepopulates form with existing car data.
- * Manages three image states: existing, new, removed.
- * Validates at least one image remains.
- * Redirects to admin cars list on success.
+ * Client form for editing an existing marketplace car.
+ * Prepopulates fields, tracks existing/new/removed images, and redirects after success.
  *
  * @param car - Existing car data to edit
  * @param carMakes - Available makes for dropdown
  * @param carColors - Available colors for dropdown
- * @see updateCar - Server action handling updates
- * @see CarFormFields - Shared form component
+ * @returns Car edit form with image removal handling
+ * @see updateCar for the server action handling updates
+ * @see CarFormFields for shared car fields
  */
 export const EditCarForm = ({ car, carMakes, carColors }: EditCarFormProps) => {
   const router = useRouter();
@@ -85,16 +90,27 @@ export const EditCarForm = ({ car, carMakes, carColors }: EditCarFormProps) => {
   useEffect(() => {
     if (updateCarResult?.success) {
       toast.success("Car updated successfully");
-      router.push(ROUTES.ADMIN_CARS);
+      router.push(ROUTES.ADMIN.ADMIN_CARS);
     }
   }, [updateCarResult, router]);
 
-  // Remove existing image
+  /**
+   * Remove an existing image from the edit form and queue it for deletion.
+   *
+   * @param imageUrl - Existing image URL to remove
+   * @returns Nothing
+   */
   const handleRemoveExistingImage = (imageUrl: string) => {
     setExistingImages((prev) => prev.filter((img) => img !== imageUrl));
     setImagesToRemove((prev) => [...prev, imageUrl]);
   };
 
+  /**
+   * Submit updated car data and image changes to the server action.
+   *
+   * @param data - Validated car form values
+   * @returns Nothing
+   */
   const onSubmit = async (data: CarFormData) => {
     // Check if at least one image remains
     const totalImages = existingImages.length + newImages.length;
@@ -164,7 +180,7 @@ export const EditCarForm = ({ car, carMakes, carColors }: EditCarFormProps) => {
             <Button
               type="button"
               variant="outline"
-              onClick={() => router.push(ROUTES.ADMIN_CARS)}
+              onClick={() => router.push(ROUTES.ADMIN.ADMIN_CARS)}
               disabled={updateCarLoading}
             >
               Cancel

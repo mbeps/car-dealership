@@ -16,19 +16,19 @@ import { Loader2 } from "lucide-react";
 import { useSignIn } from "@/hooks/use-sign-in";
 import { ROUTES } from "@/constants/routes";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { requestPasswordReset } from "@/actions/auth";
+import { requestPasswordReset } from "@/actions/auth/request-password-reset";
 import { forgotPasswordSchema } from "@/schemas/forgot-password";
 
 import useAuthModal from "@/hooks/useAuthModal";
 
 /**
- * Modal dialog for user authentication.
- * Supports email/password sign-in, Google OAuth, passkeys, and password reset.
+ * Modal dialog for sign-in, passkey sign-in, Google sign-in, and password reset.
  * Used globally to prompt authentication for protected actions.
  *
- * @returns Sign-in modal dialog
+ * @returns Sign-in modal dialog.
  * @see useSignIn - Hook handling sign-in logic
  * @see useAuthModal - Hook managing modal state
+ * @see requestPasswordReset - Server action used for reset emails
  */
 export function SignInModal() {
   const { isOpen, onClose, redirectUrl } = useAuthModal();
@@ -303,7 +303,7 @@ export function SignInModal() {
             <p className="text-center text-sm text-gray-600 mt-4">
               Don&apos;t have an account?{" "}
               <Link
-                href={ROUTES.SIGN_UP}
+                href={ROUTES.AUTH.SIGN_UP}
                 className="text-blue-600 hover:underline font-medium"
                 onClick={onClose}
               >

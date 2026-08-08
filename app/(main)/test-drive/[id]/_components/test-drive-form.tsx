@@ -36,7 +36,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
-import { bookTestDrive } from "@/actions/test-drive";
+import { bookTestDrive } from "@/actions/test-drive/book-test-drive";
 import { toast } from "sonner";
 import useFetch from "@/hooks/use-fetch";
 import { SerializedCar } from "@/types/car/serialized-car";
@@ -70,16 +70,15 @@ interface TimeSlot {
 
 /**
  * Test drive booking form.
- * Validates date against working hours and existing bookings.
- * Generates time slots based on dealership schedule.
- * Filters out unavailable slots.
- * Shows confirmation dialog before submitting.
- * Redirects to reservations on success.
+ * Validates date against dealership working hours and existing bookings.
+ * Generates available time slots from the dealership schedule.
+ * Filters out already-booked slots for the selected date.
+ * Shows a confirmation dialog after successful submission.
  *
- * @param car - Car to book test drive for
- * @param testDriveInfo - Existing booking, dealership, and booked slots
- * @see testDriveSchema - Form validation schema
- * @see bookTestDrive - Server action for booking
+ * @param car - Car to book a test drive for.
+ * @param testDriveInfo - Existing booking, dealership, and booked slots.
+ * @see testDriveSchema - Form validation schema.
+ * @see bookTestDrive - Server action for booking.
  */
 export function TestDriveForm({
   car,
@@ -244,7 +243,7 @@ export function TestDriveForm({
   // Close confirmation handler
   const handleCloseConfirmation = () => {
     setShowConfirmation(false);
-    router.push(ROUTES.CAR_DETAILS(car.id));
+    router.push(ROUTES.HOME.CAR_DETAILS(car.id));
   };
 
   return (
