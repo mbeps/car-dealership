@@ -5,5 +5,14 @@ import { User } from "./user";
  */
 export type UserSelection = Pick<
   User,
-  "id" | "name" | "email" | "imageUrl" | "phone"
+  /** User identifier. */
+  | "id"
+  /** Display name. */
+  | "name"
+  /** Account email address. */
+  | "email"
+  /** Profile image URL. */
+  | "imageUrl"
+  /** Contact phone number. */
+  | "phone"
 >;
