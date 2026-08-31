@@ -1,26 +1,10 @@
 "use client";
 
 import { format } from "date-fns";
-import {
-  Calendar,
-  Car,
-  Fuel,
-  Gauge,
-  Heart,
-  LocateFixed,
-  Mail,
-  MapPin,
-  MessageCircle,
-  Pencil,
-  Phone,
-  Share2,
-  Trash2,
-} from "lucide-react";
-import Link from "next/link";
+import { Calendar, Car, Fuel, Gauge, Pencil, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
-import { toggleSavedCar } from "@/actions/cars/toggle-saved-car";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import {
   AlertDialog,
@@ -34,7 +18,6 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import {
   Select,
   SelectContent,
@@ -44,17 +27,18 @@ import {
 } from "@/components/ui/select";
 import { ROUTES } from "@/constants/routes";
 import { CarStatusEnum as CarStatus } from "@/enums/car-status";
-import { DayOfWeekEnum as DayOfWeek } from "@/enums/day-of-week";
 import { useCarAdmin } from "@/hooks/use-car-admin";
-import useFetch from "@/hooks/use-fetch";
 import useAuthModal from "@/hooks/useAuthModal";
 import { useUser } from "@/hooks/useUser";
 import { formatCurrency } from "@/lib/helpers/format-currency";
 import type { SerializedCar } from "@/types/car/serialized-car";
 import type { SerializedDealershipInfo } from "@/types/dealership/serialized-dealership-info";
-import type { SerializedWorkingHour } from "@/types/dealership/serialized-working-hour";
 import type { UserTestDrive } from "@/types/test-drive/user-test-drive";
+import { CarDealershipInfo } from "./car-dealership-info";
 import { CarGallery } from "./car-gallery";
+import { CarInquiryCard } from "./car-inquiry-card";
+import { CarSecondaryActions } from "./car-secondary-actions";
+import { CarSpecifications } from "./car-specifications";
 
 /**
  * Car detail page content.
@@ -67,7 +51,6 @@ import { CarGallery } from "./car-gallery";
  * @param testDriveInfo - User's booking, dealership contact, and location data.
  * @param isAdmin - Whether the current user is an admin.
  * @see CarGallery - Image carousel component.
- * @see toggleSavedCar - Server action for wishlist.
  */
 export function CarDetails({
   car,
@@ -85,10 +68,7 @@ export function CarDetails({
   const { user } = useUser();
   const isSignedIn = !!user;
   const { onOpen: openSignInModal } = useAuthModal();
-  const [isWishlisted, setIsWishlisted] = useState(car.wishlisted);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
-
-  const { loading: savingCar, fn: toggleSavedCarFn } = useFetch(toggleSavedCar);
 
   const {
     deletingCar,
@@ -104,47 +84,6 @@ export function CarDetails({
       router.refresh();
     },
   });
-
-  // Handle save car
-  const handleSaveCar = async () => {
-    if (!isSignedIn) {
-      toast.error("Please sign in to save cars");
-      openSignInModal();
-      return;
-    }
-
-    if (savingCar) return;
-
-    // Use the toggleSavedCarFn from useFetch hook
-    const result = await toggleSavedCarFn(car.id);
-    if (result?.success) {
-      setIsWishlisted(result.data.saved);
-      toast.success(result.data.message);
-    }
-  };
-
-  // Handle share
-  const handleShare = () => {
-    if (navigator.share) {
-      navigator
-        .share({
-          title: `${car.year} ${car.make} ${car.model}`,
-          text: `Check out this ${car.year} ${car.make} ${car.model} on Dealer name!`,
-          url: window.location.href,
-        })
-        .catch((error) => {
-          console.log("Error sharing", error);
-          copyToClipboard();
-        });
-    } else {
-      copyToClipboard();
-    }
-  };
-
-  const copyToClipboard = () => {
-    navigator.clipboard.writeText(window.location.href);
-    toast.success("Link copied to clipboard");
-  };
 
   // Handle book test drive
   const handleBookTestDrive = () => {
@@ -177,17 +116,14 @@ export function CarDetails({
     await handleUpdateStatus(car.id, newStatus as CarStatus);
   };
 
+  const carTitle = `${car.year} ${car.make} ${car.model}`;
+
   return (
     <div>
       <div className="flex flex-col gap-8 lg:flex-row">
         {/* Image Gallery */}
         <div className="w-full lg:w-7/12">
-          <CarGallery
-            images={car.images || []}
-            carName={`${car.year} ${car.make} ${car.model}`}
-          />
-
-          {/* Secondary actions moved to details column (under Book Test Drive) */}
+          <CarGallery images={car.images || []} carName={carTitle} />
         </div>
 
         {/* Car Details */}
@@ -198,9 +134,7 @@ export function CarDetails({
             </Badge>
           </div>
 
-          <h1 className="mb-1 font-bold text-4xl">
-            {car.year} {car.make} {car.model}
-          </h1>
+          <h1 className="mb-1 font-bold text-4xl">{carTitle}</h1>
 
           <div className="font-bold text-2xl text-blue-600">
             {formatCurrency(car.price)}
@@ -223,57 +157,7 @@ export function CarDetails({
           </div>
 
           {/* Contact Information - Hidden for admins */}
-          {!isAdmin && (
-            <Card className="my-6">
-              <CardContent className="p-4">
-                <h3 className="mb-4 font-semibold text-lg">Have Questions?</h3>
-                <div className="grid grid-cols-3 gap-3">
-                  {/* Email Button */}
-                  <a
-                    href={`mailto:${testDriveInfo.dealership?.email || ""}`}
-                    className="flex flex-col items-center gap-2 rounded-lg border p-3 transition-colors hover:bg-gray-50"
-                  >
-                    <Mail className="h-5 w-5 text-blue-600" />
-                    <span className="font-medium text-xs">Email</span>
-                    <span className="break-all text-center text-gray-600 text-xs">
-                      {testDriveInfo.dealership?.email || "N/A"}
-                    </span>
-                  </a>
-
-                  {/* Phone Button */}
-                  <a
-                    href={`tel:${testDriveInfo.dealership?.phone || ""}`}
-                    className="flex flex-col items-center gap-2 rounded-lg border p-3 transition-colors hover:bg-gray-50"
-                  >
-                    <Phone className="h-5 w-5 text-blue-600" />
-                    <span className="font-medium text-xs">Phone</span>
-                    <span className="text-center text-gray-600 text-xs">
-                      {testDriveInfo.dealership?.phone || "N/A"}
-                    </span>
-                  </a>
-
-                  {/* WhatsApp Button */}
-                  <a
-                    href={`https://wa.me/${
-                      testDriveInfo.dealership?.whatsappPhone?.replace(
-                        /[^0-9]/g,
-                        "",
-                      ) || ""
-                    }`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex flex-col items-center gap-2 rounded-lg border p-3 transition-colors hover:bg-gray-50"
-                  >
-                    <MessageCircle className="h-5 w-5 text-blue-600" />
-                    <span className="font-medium text-xs">WhatsApp</span>
-                    <span className="text-center text-gray-600 text-xs">
-                      {testDriveInfo.dealership?.whatsappPhone || "N/A"}
-                    </span>
-                  </a>
-                </div>
-              </CardContent>
-            </Card>
-          )}
+          {!isAdmin && <CarInquiryCard dealership={testDriveInfo.dealership} />}
 
           {(car.status === CarStatus.SOLD ||
             car.status === CarStatus.UNAVAILABLE) && (
@@ -354,46 +238,13 @@ export function CarDetails({
               </Button>
             ))}
 
-          {/* Secondary Actions (moved) - take full available width */}
-          <div className="mt-4 grid w-full grid-cols-1 gap-4 sm:grid-cols-3">
-            <Button
-              variant="outline"
-              className={`flex w-full items-center justify-center gap-2 ${
-                isWishlisted ? "text-red-500" : ""
-              }`}
-              onClick={handleSaveCar}
-              disabled={savingCar}
-            >
-              <Heart
-                className={`h-5 w-5 ${isWishlisted ? "fill-red-500" : ""}`}
-              />
-              {isWishlisted ? "Saved" : "Save"}
-            </Button>
-
-            <Button
-              variant="outline"
-              className="flex w-full items-center justify-center gap-2"
-              onClick={handleShare}
-            >
-              <Share2 className="h-5 w-5" />
-              Share
-            </Button>
-
-            <Button
-              variant="outline"
-              className="flex w-full items-center justify-center gap-2"
-              render={
-                <Link
-                  href={`https://www.check-mot.service.gov.uk/results?registration=${car.numberPlate}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                />
-              }
-            >
-              <Car className="h-5 w-5" />
-              View MOT
-            </Button>
-          </div>
+          {/* Secondary Actions */}
+          <CarSecondaryActions
+            carId={car.id}
+            numberPlate={car.numberPlate}
+            carTitle={carTitle}
+            initialWishlisted={car.wishlisted}
+          />
         </div>
       </div>
 
@@ -448,182 +299,10 @@ export function CarDetails({
       </div>
 
       {/* Specifications Section */}
-      <div className="mt-8 rounded-lg bg-white p-6 shadow-sm">
-        <h2 className="mb-6 font-bold text-2xl">Specifications</h2>
-        <div className="rounded-lg bg-gray-50 p-6">
-          <div className="grid grid-cols-1 gap-x-8 gap-y-4 md:grid-cols-2">
-            <div className="flex justify-between border-b py-2">
-              <span className="text-gray-600">Make</span>
-              <span className="font-medium">{car.make}</span>
-            </div>
-            <div className="flex justify-between border-b py-2">
-              <span className="text-gray-600">Model</span>
-              <span className="font-medium">{car.model}</span>
-            </div>
-            <div className="flex justify-between border-b py-2">
-              <span className="text-gray-600">Year</span>
-              <span className="font-medium">{car.year}</span>
-            </div>
-            <div className="flex justify-between border-b py-2">
-              <span className="text-gray-600">Body Type</span>
-              <span className="font-medium">{car.bodyType}</span>
-            </div>
-            <div className="flex justify-between border-b py-2">
-              <span className="text-gray-600">Fuel Type</span>
-              <span className="font-medium">{car.fuelType}</span>
-            </div>
-            <div className="flex justify-between border-b py-2">
-              <span className="text-gray-600">Transmission</span>
-              <span className="font-medium">{car.transmission}</span>
-            </div>
-            <div className="flex justify-between border-b py-2">
-              <span className="text-gray-600">Mileage</span>
-              <span className="font-medium">
-                {car.mileage.toLocaleString()} miles
-              </span>
-            </div>
-            <div className="flex justify-between border-b py-2">
-              <span className="text-gray-600">Color</span>
-              <span className="font-medium">{car.color}</span>
-            </div>
-            {car.seats && (
-              <div className="flex justify-between border-b py-2">
-                <span className="text-gray-600">Seats</span>
-                <span className="font-medium">{car.seats}</span>
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
+      <CarSpecifications car={car} />
 
       {/* Dealership Location Section */}
-      <div className="mt-8 rounded-lg bg-white p-6 shadow-sm">
-        <h2 className="mb-6 font-bold text-2xl">Dealership Location</h2>
-        <div className="rounded-lg bg-gray-50 p-6">
-          <div className="flex flex-col justify-between gap-6 md:flex-row">
-            {/* Dealership Name and Address */}
-            <div className="flex w-full items-start gap-3">
-              <div className="flex flex-1 flex-col gap-5 text-lg">
-                <div className="flex items-start gap-3">
-                  <LocateFixed className="mt-0.5 h-5 w-5 shrink-0 text-blue-600" />
-                  <h4 className="font-medium">
-                    {testDriveInfo.dealership?.name}
-                  </h4>
-                </div>
-                <div className="flex items-start gap-3">
-                  <MapPin className="mt-0.5 h-5 w-5 shrink-0 text-gray-500" />
-                  {testDriveInfo.dealership?.address ? (
-                    <a
-                      href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
-                        testDriveInfo.dealership.address,
-                      )}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-gray-600 transition-colors hover:text-blue-600 hover:underline"
-                    >
-                      {testDriveInfo.dealership.address}
-                    </a>
-                  ) : (
-                    <p className="text-gray-600">Not Available</p>
-                  )}
-                </div>
-                <div className="flex items-center gap-3">
-                  <Phone className="h-5 w-5 shrink-0 text-gray-500" />
-                  {testDriveInfo.dealership?.phone ? (
-                    <a
-                      href={`tel:${testDriveInfo.dealership.phone}`}
-                      className="text-gray-600 transition-colors hover:text-blue-600 hover:underline"
-                    >
-                      {testDriveInfo.dealership.phone}
-                    </a>
-                  ) : (
-                    <p className="text-gray-600">Not Available</p>
-                  )}
-                </div>
-                <div className="flex items-center gap-3">
-                  <Mail className="h-5 w-5 shrink-0 text-gray-500" />
-                  {testDriveInfo.dealership?.email ? (
-                    <a
-                      href={`mailto:${testDriveInfo.dealership.email}`}
-                      className="text-gray-600 transition-colors hover:text-blue-600 hover:underline"
-                    >
-                      {testDriveInfo.dealership.email}
-                    </a>
-                  ) : (
-                    <p className="text-gray-600">Not Available</p>
-                  )}
-                </div>
-              </div>
-            </div>
-
-            {/* Working Hours */}
-            <div className="md:w-1/2 lg:w-1/3">
-              <h4 className="mb-2 font-medium text-lg">Working Hours</h4>
-              <div className="space-y-2">
-                {testDriveInfo.dealership?.workingHours
-                  ? testDriveInfo.dealership.workingHours
-                      .sort(
-                        (
-                          a: SerializedWorkingHour,
-                          b: SerializedWorkingHour,
-                        ) => {
-                          const days = [
-                            DayOfWeek.MONDAY,
-                            DayOfWeek.TUESDAY,
-                            DayOfWeek.WEDNESDAY,
-                            DayOfWeek.THURSDAY,
-                            DayOfWeek.FRIDAY,
-                            DayOfWeek.SATURDAY,
-                            DayOfWeek.SUNDAY,
-                          ];
-                          return (
-                            days.indexOf(a.dayOfWeek) -
-                            days.indexOf(b.dayOfWeek)
-                          );
-                        },
-                      )
-                      .map((day: SerializedWorkingHour) => (
-                        <div
-                          key={day.dayOfWeek}
-                          className="flex justify-between text-md"
-                        >
-                          <span className="text-gray-600">
-                            {day.dayOfWeek.charAt(0) +
-                              day.dayOfWeek.slice(1).toLowerCase()}
-                          </span>
-                          <span>
-                            {day.isOpen
-                              ? `${day.openTime} - ${day.closeTime}`
-                              : "Closed"}
-                          </span>
-                        </div>
-                      ))
-                  : // Default hours if none provided
-                    [
-                      { day: DayOfWeek.MONDAY, label: "Monday" },
-                      { day: DayOfWeek.TUESDAY, label: "Tuesday" },
-                      { day: DayOfWeek.WEDNESDAY, label: "Wednesday" },
-                      { day: DayOfWeek.THURSDAY, label: "Thursday" },
-                      { day: DayOfWeek.FRIDAY, label: "Friday" },
-                      { day: DayOfWeek.SATURDAY, label: "Saturday" },
-                      { day: DayOfWeek.SUNDAY, label: "Sunday" },
-                    ].map(({ day, label }, index) => (
-                      <div key={day} className="flex justify-between text-sm">
-                        <span className="text-gray-600">{label}</span>
-                        <span>
-                          {index < 5
-                            ? "9:00 - 18:00"
-                            : index === 5
-                              ? "10:00 - 16:00"
-                              : "Closed"}
-                        </span>
-                      </div>
-                    ))}
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+      <CarDealershipInfo dealership={testDriveInfo.dealership} />
     </div>
   );
 }
