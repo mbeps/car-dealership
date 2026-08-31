@@ -1,8 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { createClient } from "@/lib/supabase/supabase";
-import { createAdminClient } from "@/lib/supabase/supabase";
+import { createAdminClient, createClient } from "@/lib/supabase/supabase";
 import type { ActionResponse } from "@/types/common/action-response";
 
 /**

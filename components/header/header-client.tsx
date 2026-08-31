@@ -1,26 +1,25 @@
 "use client";
 
-import React from "react";
-import Link from "next/link";
-import Image from "next/image";
-import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
-import { useUser } from "@/hooks/useUser";
-import useAuthModal from "@/hooks/useAuthModal";
-import { useSupabaseClient } from "@/providers/SupabaseProvider";
+import Image from "next/image";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ROUTES } from "@/constants/routes";
+import { Button } from "@/components/ui/button";
 import { DEALERSHIP_NAME } from "@/constants/dealership-name";
+import { ROUTES } from "@/constants/routes";
 import { UserRoleEnum as UserRole } from "@/enums/user-role";
+import useAuthModal from "@/hooks/useAuthModal";
+import { useUser } from "@/hooks/useUser";
 import { resolveHeaderLogoSrc } from "@/lib/branding/resolve-header-logo-src";
+import { useSupabaseClient } from "@/providers/SupabaseProvider";
 import { DesktopNav } from "./desktop-nav";
 import { MobileNav } from "./mobile-nav";
-import { UserMenu } from "./user-menu";
 import {
-  MAIN_NAV_ITEMS,
   ADMIN_NAV_ITEMS,
   ADMIN_PORTAL_ITEM,
+  MAIN_NAV_ITEMS,
 } from "./nav-items";
+import { UserMenu } from "./user-menu";
 
 /**
  * Props for the client-side header component.
@@ -81,8 +80,8 @@ const HeaderClient = ({
 
   return (
     <>
-      <header className="fixed top-0 w-full bg-white z-50 border-b">
-        <nav className="mx-auto px-4 py-4 flex items-center justify-between">
+      <header className="fixed top-0 z-50 w-full border-b bg-white">
+        <nav className="mx-auto flex items-center justify-between px-4 py-4">
           {/* Logo */}
           <div className="flex items-center gap-2">
             <Link
@@ -98,7 +97,7 @@ const HeaderClient = ({
                 className="h-12 w-auto object-contain"
               />
               {isAdminPage && (
-                <span className="text-lg font-bold hidden md:inline">
+                <span className="hidden font-bold text-lg md:inline">
                   Admin
                 </span>
               )}

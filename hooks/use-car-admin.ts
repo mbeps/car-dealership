@@ -2,10 +2,10 @@
 
 import { useEffect } from "react";
 import { toast } from "sonner";
-import useFetch from "@/hooks/use-fetch";
 import { deleteCar } from "@/actions/cars/delete-car";
 import { updateCarStatus } from "@/actions/cars/update-car-status";
-import { CarStatusEnum as CarStatus } from "@/enums/car-status";
+import type { CarStatusEnum as CarStatus } from "@/enums/car-status";
+import useFetch from "@/hooks/use-fetch";
 
 /**
  * Optional callbacks fired when a car operation succeeds.
@@ -46,8 +46,7 @@ export function useCarAdmin(options: UseCarAdminOptions = {}) {
       toast.success("Car deleted successfully");
       options.onDeleteSuccess?.();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [deleteResult]);
+  }, [deleteResult, options.onDeleteSuccess]);
 
   // Handle delete error
   useEffect(() => {
@@ -62,8 +61,7 @@ export function useCarAdmin(options: UseCarAdminOptions = {}) {
       toast.success("Car status updated");
       options.onUpdateSuccess?.();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [updateResult]);
+  }, [updateResult, options.onUpdateSuccess]);
 
   // Handle update error
   useEffect(() => {

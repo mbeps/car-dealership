@@ -1,19 +1,19 @@
 "use client";
 
-import { useState } from "react";
+import { Car as CarIcon, Heart, Loader2 } from "lucide-react";
 import Image from "next/image";
-import { Heart, Car as CarIcon, Loader2 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { toast } from "sonner";
 import { toggleSavedCar } from "@/actions/cars/toggle-saved-car";
-import { useUser } from "@/hooks/useUser";
-import useAuthModal from "@/hooks/useAuthModal";
-import { useRouter } from "next/navigation";
-import useFetch from "@/hooks/use-fetch";
-import { formatCurrency } from "@/lib/helpers/format-currency";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import { ROUTES } from "@/constants/routes";
+import useFetch from "@/hooks/use-fetch";
+import useAuthModal from "@/hooks/useAuthModal";
+import { useUser } from "@/hooks/useUser";
+import { formatCurrency } from "@/lib/helpers/format-currency";
 import type { SerializedCar } from "@/types/car/serialized-car";
 
 /**
@@ -60,19 +60,19 @@ export const CarCard = ({ car }: CarCardProps) => {
   };
 
   return (
-    <Card className="overflow-hidden hover:shadow-lg transition group pt-0">
+    <Card className="group overflow-hidden pt-0 transition hover:shadow-lg">
       <div className="relative h-48">
         {car.images && car.images.length > 0 ? (
-          <div className="relative w-full h-full">
+          <div className="relative h-full w-full">
             <Image
               src={car.images[0]}
               alt={`${car.make} ${car.model}`}
               fill
-              className="object-cover group-hover:scale-105 transition duration-300"
+              className="object-cover transition duration-300 group-hover:scale-105"
             />
           </div>
         ) : (
-          <div className="w-full h-full bg-gray-200 flex items-center justify-center">
+          <div className="flex h-full w-full items-center justify-center bg-gray-200">
             <CarIcon className="h-12 w-12 text-gray-400" />
           </div>
         )}
@@ -80,7 +80,7 @@ export const CarCard = ({ car }: CarCardProps) => {
         <Button
           variant="ghost"
           size="icon"
-          className={`absolute top-2 right-2 bg-white/90 rounded-full p-1.5 ${
+          className={`absolute top-2 right-2 rounded-full bg-white/90 p-1.5 ${
             isSaved
               ? "text-red-500 hover:text-red-600"
               : "text-gray-600 hover:text-gray-900"
@@ -97,16 +97,16 @@ export const CarCard = ({ car }: CarCardProps) => {
       </div>
 
       <CardContent className="p-4">
-        <div className="flex flex-col mb-2">
-          <h3 className="text-lg font-bold line-clamp-1">
+        <div className="mb-2 flex flex-col">
+          <h3 className="line-clamp-1 font-bold text-lg">
             {car.make} {car.model}
           </h3>
-          <span className="text-xl font-bold text-blue-600">
+          <span className="font-bold text-blue-600 text-xl">
             {formatCurrency(car.price)}
           </span>
         </div>
 
-        <div className="text-gray-600 mb-2 flex items-center">
+        <div className="mb-2 flex items-center text-gray-600">
           <span>{car.year}</span>
           <span className="mx-2">•</span>
           <span>{car.transmission}</span>
@@ -114,7 +114,7 @@ export const CarCard = ({ car }: CarCardProps) => {
           <span>{car.fuelType}</span>
         </div>
 
-        <div className="flex flex-wrap gap-1 mb-4">
+        <div className="mb-4 flex flex-wrap gap-1">
           <Badge variant="outline" className="bg-gray-50">
             {car.bodyType}
           </Badge>

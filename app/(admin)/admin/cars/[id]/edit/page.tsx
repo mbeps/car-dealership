@@ -1,8 +1,8 @@
 import { notFound } from "next/navigation";
-import { EditCarForm } from "./_components/edit-car-form";
-import { getCarMakes } from "@/actions/cars/get-car-makes";
 import { getCarColors } from "@/actions/cars/get-car-colors";
+import { getCarMakes } from "@/actions/cars/get-car-makes";
 import { getCars } from "@/actions/cars/get-cars";
+import { EditCarForm } from "./_components/edit-car-form";
 
 /**
  * Edit car page metadata.
@@ -54,7 +54,7 @@ export default async function EditCarPage({ params }: EditCarPageProps) {
 
   return (
     <div className="p-6">
-      <h1 className="text-2xl font-bold mb-6">Edit Car</h1>
+      <h1 className="mb-6 font-bold text-2xl">Edit Car</h1>
       <EditCarForm car={car} carMakes={carMakes} carColors={carColors} />
     </div>
   );

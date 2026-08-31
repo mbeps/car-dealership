@@ -1,8 +1,8 @@
 "use client";
 
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useState } from "react";
-import { useRouter, usePathname, useSearchParams } from "next/navigation";
-import { CarFiltersData } from "@/types/filters/car-filters-data";
+import type { CarFiltersData } from "@/types/filters/car-filters-data";
 
 /**
  * Manages car listing filters with URL sync.
@@ -26,22 +26,22 @@ export const useCarFilters = (filters: CarFiltersData) => {
   const currentFuelType = searchParams.get("fuelType") || "";
   const currentTransmission = searchParams.get("transmission") || "";
   const currentMinPrice = searchParams.get("minPrice")
-    ? parseInt(searchParams.get("minPrice")!)
+    ? parseInt(searchParams.get("minPrice")!, 10)
     : filters.priceRange.min;
   const currentMaxPrice = searchParams.get("maxPrice")
-    ? parseInt(searchParams.get("maxPrice")!)
+    ? parseInt(searchParams.get("maxPrice")!, 10)
     : filters.priceRange.max;
   const currentMinMileage = searchParams.get("minMileage")
-    ? parseInt(searchParams.get("minMileage")!)
+    ? parseInt(searchParams.get("minMileage")!, 10)
     : filters.mileageRange.min;
   const currentMaxMileage = searchParams.get("maxMileage")
-    ? parseInt(searchParams.get("maxMileage")!)
+    ? parseInt(searchParams.get("maxMileage")!, 10)
     : filters.mileageRange.max;
   const currentMinAge = searchParams.get("minAge")
-    ? parseInt(searchParams.get("minAge")!)
+    ? parseInt(searchParams.get("minAge")!, 10)
     : filters.ageRange.min;
   const currentMaxAge = searchParams.get("maxAge")
-    ? parseInt(searchParams.get("maxAge")!)
+    ? parseInt(searchParams.get("maxAge")!, 10)
     : filters.ageRange.max;
   const currentSortBy = searchParams.get("sortBy") || "newest";
 
@@ -133,11 +133,11 @@ export const useCarFilters = (filters: CarFiltersData) => {
 
     let validMinPrice = Math.max(
       filters.priceRange.min,
-      Math.min(filters.priceRange.max, priceRange[0])
+      Math.min(filters.priceRange.max, priceRange[0]),
     );
     let validMaxPrice = Math.max(
       filters.priceRange.min,
-      Math.min(filters.priceRange.max, priceRange[1])
+      Math.min(filters.priceRange.max, priceRange[1]),
     );
 
     if (validMinPrice > validMaxPrice) {
@@ -151,11 +151,11 @@ export const useCarFilters = (filters: CarFiltersData) => {
 
     let validMinMileage = Math.max(
       filters.mileageRange.min,
-      Math.min(filters.mileageRange.max, mileageRange[0])
+      Math.min(filters.mileageRange.max, mileageRange[0]),
     );
     let validMaxMileage = Math.max(
       filters.mileageRange.min,
-      Math.min(filters.mileageRange.max, mileageRange[1])
+      Math.min(filters.mileageRange.max, mileageRange[1]),
     );
 
     if (validMinMileage > validMaxMileage) {
@@ -169,11 +169,11 @@ export const useCarFilters = (filters: CarFiltersData) => {
 
     let validMinAge = Math.max(
       filters.ageRange.min,
-      Math.min(filters.ageRange.max, ageRange[0])
+      Math.min(filters.ageRange.max, ageRange[0]),
     );
     let validMaxAge = Math.max(
       filters.ageRange.min,
-      Math.min(filters.ageRange.max, ageRange[1])
+      Math.min(filters.ageRange.max, ageRange[1]),
     );
 
     if (validMinAge > validMaxAge) {

@@ -38,30 +38,47 @@ const serverSchema = clientSchema.extend({
 
 const isServer = typeof window === "undefined";
 
+const normalize = (val: string | undefined): string | undefined =>
+  val === "" ? undefined : val;
+
+const FALLBACK_ENV = {
+  NEXT_PUBLIC_SUPABASE_URL: "https://placeholder.supabase.co",
+  NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: "placeholder-publishable-key",
+  SUPABASE_SECRET_KEY: "placeholder-secret-key",
+  ARCJET_KEY: "placeholder-arcjet-key",
+};
+
 // Map legacy variables and handle fallbacks before parsing
 const rawEnv = {
-  NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
+  NEXT_PUBLIC_SUPABASE_URL: normalize(process.env.NEXT_PUBLIC_SUPABASE_URL),
   NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY:
-    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ??
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+    normalize(process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY) ??
+    normalize(process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY),
 
   SUPABASE_SECRET_KEY:
-    process.env.SUPABASE_SECRET_KEY ?? process.env.SUPABASE_SERVICE_ROLE_KEY,
+    normalize(process.env.SUPABASE_SECRET_KEY) ??
+    normalize(process.env.SUPABASE_SERVICE_ROLE_KEY),
 
-  SUPABASE_JWT_SECRET: process.env.SUPABASE_JWT_SECRET,
-  ARCJET_KEY: process.env.ARCJET_KEY,
+  SUPABASE_JWT_SECRET: normalize(process.env.SUPABASE_JWT_SECRET),
+  ARCJET_KEY: normalize(process.env.ARCJET_KEY),
 
-  NEXT_PUBLIC_SITE_URL: process.env.NEXT_PUBLIC_SITE_URL,
-  NEXT_PUBLIC_VERCEL_URL: process.env.NEXT_PUBLIC_VERCEL_URL,
+  NEXT_PUBLIC_SITE_URL: normalize(process.env.NEXT_PUBLIC_SITE_URL),
+  NEXT_PUBLIC_VERCEL_URL: normalize(process.env.NEXT_PUBLIC_VERCEL_URL),
 
-  NODE_ENV: process.env.NODE_ENV,
+  NODE_ENV: normalize(process.env.NODE_ENV),
 
-  NEXT_PUBLIC_MAX_CAR_IMAGE_SIZE_MB:
+  NEXT_PUBLIC_MAX_CAR_IMAGE_SIZE_MB: normalize(
     process.env.NEXT_PUBLIC_MAX_CAR_IMAGE_SIZE_MB,
-  NEXT_PUBLIC_MAX_LOGO_SIZE_MB: process.env.NEXT_PUBLIC_MAX_LOGO_SIZE_MB,
-  NEXT_PUBLIC_MAX_FAVICON_SIZE_KB: process.env.NEXT_PUBLIC_MAX_FAVICON_SIZE_KB,
-  NEXT_PUBLIC_TOTAL_STORAGE_LIMIT_GB:
+  ),
+  NEXT_PUBLIC_MAX_LOGO_SIZE_MB: normalize(
+    process.env.NEXT_PUBLIC_MAX_LOGO_SIZE_MB,
+  ),
+  NEXT_PUBLIC_MAX_FAVICON_SIZE_KB: normalize(
+    process.env.NEXT_PUBLIC_MAX_FAVICON_SIZE_KB,
+  ),
+  NEXT_PUBLIC_TOTAL_STORAGE_LIMIT_GB: normalize(
     process.env.NEXT_PUBLIC_TOTAL_STORAGE_LIMIT_GB,
+  ),
 };
 
 // Validate using the appropriate schema for the environment
@@ -77,7 +94,30 @@ const skipValidation = process.env.SKIP_ENV_VALIDATION === "true";
  */
 const validatedEnv = (() => {
   if (skipValidation) {
-    return rawEnv as unknown as z.infer<typeof serverSchema>;
+    const envToValidate = {
+      ...rawEnv,
+      NEXT_PUBLIC_SUPABASE_URL:
+        rawEnv.NEXT_PUBLIC_SUPABASE_URL ??
+        FALLBACK_ENV.NEXT_PUBLIC_SUPABASE_URL,
+      NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY:
+        rawEnv.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ??
+        FALLBACK_ENV.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY,
+      SUPABASE_SECRET_KEY:
+        rawEnv.SUPABASE_SECRET_KEY ?? FALLBACK_ENV.SUPABASE_SECRET_KEY,
+      ARCJET_KEY: rawEnv.ARCJET_KEY ?? FALLBACK_ENV.ARCJET_KEY,
+    };
+
+    const parsed = schema.safeParse(envToValidate);
+
+    if (parsed.success) {
+      return parsed.data as z.infer<typeof serverSchema>;
+    }
+
+    console.warn(
+      `Warning: Environment validation skipped with errors on ${isServer ? "server" : "client"}:`,
+      JSON.stringify(z.treeifyError(parsed.error), null, 2),
+    );
+    return envToValidate as unknown as z.infer<typeof serverSchema>;
   }
 
   const parsed = schema.safeParse(rawEnv);

@@ -2,8 +2,8 @@
 
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { NavItem } from "./nav-items";
 import { UserRoleEnum as UserRole } from "@/enums/user-role";
+import type { NavItem } from "./nav-items";
 
 /**
  * Props for the desktop navigation bar.
@@ -36,7 +36,7 @@ export const DesktopNav = ({
   const isAdmin = userRole === UserRole.ADMIN;
 
   return (
-    <div className="hidden md:flex items-center gap-2">
+    <div className="hidden items-center gap-2 md:flex">
       {items.map((item) => {
         // Check if item should be shown based on auth and role
         if (item.requiresAuth && !isAuthenticated) return null;

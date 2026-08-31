@@ -1,11 +1,11 @@
 "use server";
 
+import { CarStatusEnum as CarStatus } from "@/enums/car-status";
 import { createPublicClient } from "@/lib/supabase/supabase";
-import type { ActionResponse } from "@/types/common/action-response";
-import type { CarFiltersData } from "@/types/filters/car-filters-data";
 import type { CarColorOption } from "@/types/car-color/car-color-option";
 import type { CarMakeOption } from "@/types/car-make/car-make-option";
-import { CarStatusEnum as CarStatus } from "@/enums/car-status";
+import type { ActionResponse } from "@/types/common/action-response";
+import type { CarFiltersData } from "@/types/filters/car-filters-data";
 
 type CarWithRelations = {
   carMake?: CarMakeOption | CarMakeOption[] | null;
@@ -157,6 +157,6 @@ export async function getCarFilters(): Promise<ActionResponse<CarFiltersData>> {
       },
     };
   } catch (error) {
-    throw new Error("Error fetching car filters:" + (error as Error).message);
+    throw new Error(`Error fetching car filters:${(error as Error).message}`);
   }
 }

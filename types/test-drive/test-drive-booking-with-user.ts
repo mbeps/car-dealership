@@ -1,5 +1,5 @@
-import { TestDriveBookingWithCar } from "./test-drive-booking-with-car";
-import { UserSelection } from "../user/user-selection";
+import type { UserSelection } from "../user/user-selection";
+import type { TestDriveBookingWithCar } from "./test-drive-booking-with-car";
 
 /**
  * Test drive booking with the associated car and user details.

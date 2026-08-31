@@ -1,9 +1,21 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { AlertCircle, CalendarRange, Loader2, Search } from "lucide-react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { Search, Loader2, CalendarRange, AlertCircle } from "lucide-react";
+import { getAdminTestDrives } from "@/actions/admin/get-admin-test-drives";
+import { updateTestDriveStatus } from "@/actions/admin/update-test-drive-status";
+import { cancelTestDrive } from "@/actions/test-drive/cancel-test-drive";
+import { TestDriveCard } from "@/components/test-drive-card";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -12,20 +24,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-} from "@/components/ui/card";
 import { BookingStatusEnum as BookingStatus } from "@/enums/booking-status";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { TestDriveCard } from "@/components/test-drive-card";
 import useFetch from "@/hooks/use-fetch";
-import { getAdminTestDrives } from "@/actions/admin/get-admin-test-drives";
-import { updateTestDriveStatus } from "@/actions/admin/update-test-drive-status";
-import { cancelTestDrive } from "@/actions/test-drive/cancel-test-drive";
 
 /**
  * Admin test drive management page.
@@ -69,8 +69,7 @@ export const TestDrivesList = () => {
   useEffect(() => {
     const actualStatus = statusFilter === "all" ? "" : statusFilter;
     fetchTestDrives({ search, status: actualStatus });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [search, statusFilter]);
+  }, [search, statusFilter, fetchTestDrives]);
 
   // Handle errors
   useEffect(() => {
@@ -97,8 +96,7 @@ export const TestDrivesList = () => {
       const actualStatus = statusFilter === "all" ? "" : statusFilter;
       fetchTestDrives({ search, status: actualStatus });
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [updateResult, cancelResult]);
+  }, [updateResult, cancelResult, statusFilter, search, fetchTestDrives]);
 
   /**
    * Submit search and status filters, then reload bookings.
@@ -141,8 +139,8 @@ export const TestDrivesList = () => {
   return (
     <div className="space-y-4">
       {/* Filters and Search */}
-      <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
-        <div className="flex flex-col sm:flex-row gap-4 w-full">
+      <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
+        <div className="flex w-full flex-col gap-4 sm:flex-row">
           {/* Status Filter */}
           <Select
             value={statusFilter}
@@ -164,11 +162,11 @@ export const TestDrivesList = () => {
           {/* Search Form */}
           <form onSubmit={handleSearchSubmit} className="flex w-full">
             <div className="relative flex-1">
-              <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500" />
+              <Search className="absolute top-2.5 left-2.5 h-4 w-4 text-gray-500" />
               <Input
                 type="search"
                 placeholder="Search by car or customer..."
-                className="pl-9 w-full"
+                className="w-full pl-9"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
               />
@@ -194,7 +192,7 @@ export const TestDrivesList = () => {
 
         <CardContent>
           {fetchingTestDrives && !testDrivesData ? (
-            <div className="flex justify-center items-center py-12">
+            <div className="flex items-center justify-center py-12">
               <Loader2 className="h-8 w-8 animate-spin text-gray-400" />
             </div>
           ) : testDrivesError ? (
@@ -206,12 +204,12 @@ export const TestDrivesList = () => {
               </AlertDescription>
             </Alert>
           ) : testDrivesData?.success && testDrivesData.data.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-12 px-4 text-center">
-              <CalendarRange className="h-12 w-12 text-gray-300 mb-4" />
-              <h3 className="text-lg font-medium text-gray-900 mb-1">
+            <div className="flex flex-col items-center justify-center px-4 py-12 text-center">
+              <CalendarRange className="mb-4 h-12 w-12 text-gray-300" />
+              <h3 className="mb-1 font-medium text-gray-900 text-lg">
                 No test drives found
               </h3>
-              <p className="text-gray-500 mb-4">
+              <p className="mb-4 text-gray-500">
                 {statusFilter || search
                   ? "No test drives match your search criteria"
                   : "There are no test drive bookings yet."}
@@ -244,7 +242,7 @@ export const TestDrivesList = () => {
                           }}
                           disabled={updatingStatus}
                         >
-                          <SelectTrigger className="w-full h-8">
+                          <SelectTrigger className="h-8 w-full">
                             <SelectValue placeholder="Update Status" />
                           </SelectTrigger>
                           <SelectContent>

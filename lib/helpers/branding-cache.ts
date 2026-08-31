@@ -1,5 +1,5 @@
-import { ROUTES } from "@/constants/routes";
 import { revalidatePath, revalidateTag } from "next/cache";
+import { ROUTES } from "@/constants/routes";
 
 /**
  * Cache tag used for pages that render public branding data.

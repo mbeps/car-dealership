@@ -1,8 +1,8 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { createClient } from "@/lib/supabase/supabase";
 import { ROUTES } from "@/constants/routes";
+import { createClient } from "@/lib/supabase/supabase";
 import type { ActionResponse } from "@/types/common/action-response";
 import { getOrCreateDbUser } from "./get-or-create-db-user";
 
@@ -97,6 +97,6 @@ export async function toggleSavedCar(
       },
     };
   } catch (error) {
-    throw new Error("Error toggling saved car:" + (error as Error).message);
+    throw new Error(`Error toggling saved car:${(error as Error).message}`);
   }
 }

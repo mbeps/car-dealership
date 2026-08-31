@@ -1,5 +1,5 @@
-import { DealershipInfo } from "./dealership-info";
-import { SerializedWorkingHour } from "./serialized-working-hour";
+import type { DealershipInfo } from "./dealership-info";
+import type { SerializedWorkingHour } from "./serialized-working-hour";
 
 /**
  * Serialized dealership info with working hours.

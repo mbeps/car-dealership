@@ -1,11 +1,11 @@
 "use server";
 
+import { serializeCarData } from "@/lib/helpers/serialize-car";
 import { createClient } from "@/lib/supabase/supabase";
+import type { SerializedCar } from "@/types/car/serialized-car";
+import type { ActionResponse } from "@/types/common/action-response";
 import { getColorIdsForTerm } from "./get-color-ids-for-term";
 import { getMakeIdsForTerm } from "./get-make-ids-for-term";
-import { serializeCarData } from "@/lib/helpers/serialize-car";
-import type { ActionResponse } from "@/types/common/action-response";
-import type { SerializedCar } from "@/types/car/serialized-car";
 
 /**
  * Fetches all cars for admin management.

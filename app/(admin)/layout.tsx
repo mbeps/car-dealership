@@ -21,7 +21,7 @@ export default async function AdminLayout({
   return (
     <div className="h-full">
       <Header isAdminPage={true} />
-      <main className="pt-[80px] h-full pb-20 md:pb-0">
+      <main className="h-full pt-[80px] pb-20 md:pb-0">
         <div className="container mx-auto px-4 py-6">{children}</div>
       </main>
     </div>

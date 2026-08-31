@@ -1,8 +1,6 @@
-import { UseFormReturn } from "react-hook-form";
-import { Save, Loader2, RotateCcw } from "lucide-react";
-import { Input } from "@/components/ui/input";
+import { Loader2, RotateCcw, Save } from "lucide-react";
+import type { UseFormReturn } from "react-hook-form";
 import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
 import {
   Card,
   CardContent,
@@ -10,7 +8,9 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { HomePageContentFormValues } from "@/schemas/home-content";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import type { HomePageContentFormValues } from "@/schemas/home-content";
 
 interface FeaturesSectionProps {
   /** Shared form state for home content values. */
@@ -53,8 +53,8 @@ export const FeaturesSection = ({
         </CardHeader>
         <CardContent className="space-y-6">
           <div className="space-y-4">
-            <Label className="text-base font-semibold">Feature 1</Label>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <Label className="font-semibold text-base">Feature 1</Label>
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
               <div className="space-y-2">
                 <Label htmlFor="feature1Title">Title</Label>
                 <Input
@@ -63,7 +63,7 @@ export const FeaturesSection = ({
                   {...form.register("feature1Title")}
                   maxLength={30}
                 />
-                <p className="text-xs text-muted-foreground text-right">
+                <p className="text-right text-muted-foreground text-xs">
                   {form.watch("feature1Title")?.length || 0}/30
                 </p>
               </div>
@@ -75,7 +75,7 @@ export const FeaturesSection = ({
                   {...form.register("feature1Description")}
                   maxLength={150}
                 />
-                <p className="text-xs text-muted-foreground text-right">
+                <p className="text-right text-muted-foreground text-xs">
                   {form.watch("feature1Description")?.length || 0}/150
                 </p>
               </div>
@@ -83,8 +83,8 @@ export const FeaturesSection = ({
           </div>
 
           <div className="space-y-4">
-            <Label className="text-base font-semibold">Feature 2</Label>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <Label className="font-semibold text-base">Feature 2</Label>
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
               <div className="space-y-2">
                 <Label htmlFor="feature2Title">Title</Label>
                 <Input
@@ -93,7 +93,7 @@ export const FeaturesSection = ({
                   {...form.register("feature2Title")}
                   maxLength={30}
                 />
-                <p className="text-xs text-muted-foreground text-right">
+                <p className="text-right text-muted-foreground text-xs">
                   {form.watch("feature2Title")?.length || 0}/30
                 </p>
               </div>
@@ -105,7 +105,7 @@ export const FeaturesSection = ({
                   {...form.register("feature2Description")}
                   maxLength={150}
                 />
-                <p className="text-xs text-muted-foreground text-right">
+                <p className="text-right text-muted-foreground text-xs">
                   {form.watch("feature2Description")?.length || 0}/150
                 </p>
               </div>
@@ -113,8 +113,8 @@ export const FeaturesSection = ({
           </div>
 
           <div className="space-y-4">
-            <Label className="text-base font-semibold">Feature 3</Label>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <Label className="font-semibold text-base">Feature 3</Label>
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
               <div className="space-y-2">
                 <Label htmlFor="feature3Title">Title</Label>
                 <Input
@@ -123,7 +123,7 @@ export const FeaturesSection = ({
                   {...form.register("feature3Title")}
                   maxLength={30}
                 />
-                <p className="text-xs text-muted-foreground text-right">
+                <p className="text-right text-muted-foreground text-xs">
                   {form.watch("feature3Title")?.length || 0}/30
                 </p>
               </div>
@@ -135,7 +135,7 @@ export const FeaturesSection = ({
                   {...form.register("feature3Description")}
                   maxLength={150}
                 />
-                <p className="text-xs text-muted-foreground text-right">
+                <p className="text-right text-muted-foreground text-xs">
                   {form.watch("feature3Description")?.length || 0}/150
                 </p>
               </div>

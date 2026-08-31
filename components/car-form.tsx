@@ -1,16 +1,9 @@
 "use client";
 
-import { useCallback, useState, useEffect } from "react";
-import { UseFormReturn } from "react-hook-form";
-import { toast } from "sonner";
-import { X, Upload, Check, ChevronsUpDown, Plus } from "lucide-react";
-import { useDropzone } from "react-dropzone";
-import Image from "next/image";
-
+import type { UseFormReturn } from "react-hook-form";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
-import { Badge } from "@/components/ui/badge";
+import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
@@ -18,27 +11,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Label } from "@/components/ui/label";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from "@/components/ui/command";
-import { cn } from "@/lib/utils";
-import { CarColorOption } from "@/types/car-color/car-color-option";
-import { CarMakeOption } from "@/types/car-make/car-make-option";
+import { Textarea } from "@/components/ui/textarea";
 import { CarStatusEnum as CarStatus } from "@/enums/car-status";
-import { CarFormData } from "@/schemas/car-form";
-import { env, FILE_LIMITS } from "@/lib/env";
+import type { CarFormData } from "@/schemas/car-form";
+import type { CarColorOption } from "@/types/car-color/car-color-option";
+import type { CarMakeOption } from "@/types/car-make/car-make-option";
+import { CarComboboxSelect } from "./car-form/car-combobox-select";
+import { CarFeaturesInput } from "./car-form/car-features-input";
+import { CarImageUploader } from "./car-form/car-image-uploader";
 
 // Predefined options
 const fuelTypes = ["Petrol", "Diesel", "Electric", "Hybrid", "Plug-in Hybrid"];
@@ -109,20 +89,6 @@ export function CarFormFields({
   imageError,
   onImageErrorChange,
 }: CarFormFieldsProps) {
-  const [uploadProgress, setUploadProgress] = useState(0);
-  const [makePopoverOpen, setMakePopoverOpen] = useState(false);
-  const [colorPopoverOpen, setColorPopoverOpen] = useState(false);
-  const [featureInput, setFeatureInput] = useState("");
-
-  const imagePreviews = newImages.map((file) => URL.createObjectURL(file));
-
-  // Clean up object URLs on unmount or when newImages changes
-  useEffect(() => {
-    return () => {
-      imagePreviews.forEach((url) => URL.revokeObjectURL(url));
-    };
-  }, [imagePreviews]);
-
   const {
     register,
     setValue,
@@ -133,159 +99,25 @@ export function CarFormFields({
 
   const selectedMakeId = watch("carMakeId");
   const selectedColorId = watch("carColorId");
-  const selectedMake = carMakes.find((make) => make.id === selectedMakeId);
-  const selectedColor = carColors.find((color) => color.id === selectedColorId);
   const carMakeIdField = register("carMakeId");
   const carColorIdField = register("carColorId");
-
-  // Handle multiple image uploads with Dropzone
-  const onMultiImagesDrop = useCallback(
-    (acceptedFiles: File[]) => {
-      const validFiles = acceptedFiles.filter((file) => {
-        if (file.size > FILE_LIMITS.CAR_IMAGE) {
-          toast.error(
-            `${file.name} exceeds the ${env.NEXT_PUBLIC_MAX_CAR_IMAGE_SIZE_MB}MB limit and will be skipped`,
-          );
-          return false;
-        }
-        return true;
-      });
-
-      if (validFiles.length === 0) return;
-
-      setUploadProgress(100);
-
-      onNewImagesChange([...newImages, ...validFiles]);
-      onImageErrorChange("");
-      toast.success(
-        `Added ${validFiles.length} image${validFiles.length > 1 ? "s" : ""}`,
-      );
-
-      setTimeout(() => setUploadProgress(0), 300);
-    },
-    [newImages, onImageErrorChange, onNewImagesChange],
-  );
-
-  const {
-    getRootProps: getMultiImageRootProps,
-    getInputProps: getMultiImageInputProps,
-  } = useDropzone({
-    onDrop: onMultiImagesDrop,
-    accept: {
-      "image/*": [".jpeg", ".jpg", ".png", ".webp"],
-    },
-    multiple: true,
-  });
-
-  // Remove new image from upload preview
-  const removeNewImage = (index: number) => {
-    onNewImagesChange(newImages.filter((_, i) => i !== index));
-  };
-
-  const totalImages = existingImages.length + newImages.length;
-
-  // Handle adding features
-  const handleAddFeature = () => {
-    const trimmedFeature = featureInput.trim();
-    if (!trimmedFeature) {
-      toast.error("Feature cannot be empty");
-      return;
-    }
-
-    const currentFeatures = watch("features") || [];
-    if (currentFeatures.includes(trimmedFeature)) {
-      toast.error("Feature already added");
-      return;
-    }
-
-    setValue("features", [...currentFeatures, trimmedFeature]);
-    setFeatureInput("");
-  };
-
-  // Handle removing features
-  const handleRemoveFeature = (index: number) => {
-    const currentFeatures = watch("features") || [];
-    setValue(
-      "features",
-      currentFeatures.filter((_, i) => i !== index),
-    );
-  };
-
-  // Handle key press for adding features
-  const handleFeatureKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter") {
-      e.preventDefault();
-      handleAddFeature();
-    }
-  };
 
   return (
     <>
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
         {/* Make */}
-        <div className="space-y-2">
-          <Label htmlFor="carMakeId">Make</Label>
-          <Popover open={makePopoverOpen} onOpenChange={setMakePopoverOpen}>
-            <PopoverTrigger
-              render={
-                <Button
-                  type="button"
-                  variant="outline"
-                  role="combobox"
-                  aria-expanded={makePopoverOpen}
-                  className={cn(
-                    "w-full justify-between",
-                    errors.carMakeId ? "border-red-500" : "",
-                  )}
-                />
-              }
-            >
-              {selectedMake ? selectedMake.name : "Select make"}
-              <ChevronsUpDown className="ml-1 h-4 w-4 shrink-0 opacity-50" />
-            </PopoverTrigger>
-            <PopoverContent className="w-[280px] p-0">
-              <Command>
-                <CommandInput placeholder="Search make..." />
-                <CommandList>
-                  <CommandEmpty>No make found.</CommandEmpty>
-                  <CommandGroup>
-                    {carMakes.map((make) => (
-                      <CommandItem
-                        key={make.id}
-                        value={make.name}
-                        onSelect={() => {
-                          setValue("carMakeId", make.id, {
-                            shouldValidate: true,
-                          });
-                          setMakePopoverOpen(false);
-                        }}
-                        className="text-sm"
-                      >
-                        <Check
-                          className={cn(
-                            "mr-2 h-4 w-4",
-                            make.id === selectedMakeId
-                              ? "opacity-100"
-                              : "opacity-0",
-                          )}
-                        />
-                        {make.name}
-                      </CommandItem>
-                    ))}
-                  </CommandGroup>
-                </CommandList>
-              </Command>
-            </PopoverContent>
-          </Popover>
-          <input
-            type="hidden"
-            {...carMakeIdField}
-            value={selectedMakeId || ""}
-          />
-          {errors.carMakeId && (
-            <p className="text-xs text-red-500">{errors.carMakeId.message}</p>
-          )}
-        </div>
+        <CarComboboxSelect
+          id="carMakeId"
+          label="Make"
+          options={carMakes}
+          value={selectedMakeId}
+          onChange={(id) => setValue("carMakeId", id, { shouldValidate: true })}
+          placeholder="Select make"
+          searchPlaceholder="Search make..."
+          emptyMessage="No make found."
+          error={errors.carMakeId?.message}
+          registrationProps={carMakeIdField}
+        />
 
         {/* Model */}
         <div className="space-y-2">
@@ -298,7 +130,7 @@ export function CarFormFields({
             suppressHydrationWarning
           />
           {errors.model && (
-            <p className="text-xs text-red-500">{errors.model.message}</p>
+            <p className="text-red-500 text-xs">{errors.model.message}</p>
           )}
         </div>
 
@@ -313,7 +145,7 @@ export function CarFormFields({
             suppressHydrationWarning
           />
           {errors.year && (
-            <p className="text-xs text-red-500">{errors.year.message}</p>
+            <p className="text-red-500 text-xs">{errors.year.message}</p>
           )}
         </div>
 
@@ -328,7 +160,7 @@ export function CarFormFields({
             suppressHydrationWarning
           />
           {errors.price && (
-            <p className="text-xs text-red-500">{errors.price.message}</p>
+            <p className="text-red-500 text-xs">{errors.price.message}</p>
           )}
         </div>
 
@@ -343,74 +175,25 @@ export function CarFormFields({
             suppressHydrationWarning
           />
           {errors.mileage && (
-            <p className="text-xs text-red-500">{errors.mileage.message}</p>
+            <p className="text-red-500 text-xs">{errors.mileage.message}</p>
           )}
         </div>
 
         {/* Color */}
-        <div className="space-y-2">
-          <Label htmlFor="carColorId">Color</Label>
-          <Popover open={colorPopoverOpen} onOpenChange={setColorPopoverOpen}>
-            <PopoverTrigger
-              render={
-                <Button
-                  type="button"
-                  variant="outline"
-                  role="combobox"
-                  aria-expanded={colorPopoverOpen}
-                  className={cn(
-                    "w-full justify-between",
-                    errors.carColorId ? "border-red-500" : "",
-                  )}
-                />
-              }
-            >
-              {selectedColor ? selectedColor.name : "Select color"}
-              <ChevronsUpDown className="ml-1 h-4 w-4 shrink-0 opacity-50" />
-            </PopoverTrigger>
-            <PopoverContent className="w-[280px] p-0">
-              <Command>
-                <CommandInput placeholder="Search color..." />
-                <CommandList>
-                  <CommandEmpty>No color found.</CommandEmpty>
-                  <CommandGroup>
-                    {carColors.map((color) => (
-                      <CommandItem
-                        key={color.id}
-                        value={color.name}
-                        onSelect={() => {
-                          setValue("carColorId", color.id, {
-                            shouldValidate: true,
-                          });
-                          setColorPopoverOpen(false);
-                        }}
-                        className="text-sm"
-                      >
-                        <Check
-                          className={cn(
-                            "mr-2 h-4 w-4",
-                            color.id === selectedColorId
-                              ? "opacity-100"
-                              : "opacity-0",
-                          )}
-                        />
-                        {color.name}
-                      </CommandItem>
-                    ))}
-                  </CommandGroup>
-                </CommandList>
-              </Command>
-            </PopoverContent>
-          </Popover>
-          <input
-            type="hidden"
-            {...carColorIdField}
-            value={selectedColorId || ""}
-          />
-          {errors.carColorId && (
-            <p className="text-xs text-red-500">{errors.carColorId.message}</p>
-          )}
-        </div>
+        <CarComboboxSelect
+          id="carColorId"
+          label="Color"
+          options={carColors}
+          value={selectedColorId}
+          onChange={(id) =>
+            setValue("carColorId", id, { shouldValidate: true })
+          }
+          placeholder="Select color"
+          searchPlaceholder="Search color..."
+          emptyMessage="No color found."
+          error={errors.carColorId?.message}
+          registrationProps={carColorIdField}
+        />
 
         {/* Fuel Type */}
         <div className="space-y-2">
@@ -434,7 +217,7 @@ export function CarFormFields({
             </SelectContent>
           </Select>
           {errors.fuelType && (
-            <p className="text-xs text-red-500">{errors.fuelType.message}</p>
+            <p className="text-red-500 text-xs">{errors.fuelType.message}</p>
           )}
         </div>
 
@@ -462,7 +245,7 @@ export function CarFormFields({
             </SelectContent>
           </Select>
           {errors.transmission && (
-            <p className="text-xs text-red-500">
+            <p className="text-red-500 text-xs">
               {errors.transmission.message}
             </p>
           )}
@@ -490,7 +273,7 @@ export function CarFormFields({
             </SelectContent>
           </Select>
           {errors.bodyType && (
-            <p className="text-xs text-red-500">{errors.bodyType.message}</p>
+            <p className="text-red-500 text-xs">{errors.bodyType.message}</p>
           )}
         </div>
 
@@ -505,7 +288,7 @@ export function CarFormFields({
             suppressHydrationWarning
           />
           {errors.numberPlate && (
-            <p className="text-xs text-red-500">{errors.numberPlate.message}</p>
+            <p className="text-red-500 text-xs">{errors.numberPlate.message}</p>
           )}
         </div>
 
@@ -513,7 +296,7 @@ export function CarFormFields({
         <div className="space-y-2">
           <Label htmlFor="seats">
             Number of Seats{" "}
-            <span className="text-sm text-gray-500">(Optional)</span>
+            <span className="text-gray-500 text-sm">(Optional)</span>
           </Label>
           <Input
             id="seats"
@@ -523,7 +306,7 @@ export function CarFormFields({
             suppressHydrationWarning
           />
           {errors.seats && (
-            <p className="text-xs text-red-500">{errors.seats.message}</p>
+            <p className="text-red-500 text-xs">{errors.seats.message}</p>
           )}
         </div>
 
@@ -562,7 +345,7 @@ export function CarFormFields({
           suppressHydrationWarning
         />
         {errors.description && (
-          <p className="text-xs text-red-500">{errors.description.message}</p>
+          <p className="text-red-500 text-xs">{errors.description.message}</p>
         )}
       </div>
 
@@ -577,173 +360,27 @@ export function CarFormFields({
         />
         <div className="space-y-1 leading-none">
           <Label htmlFor="featured">Feature this car</Label>
-          <p className="text-sm text-gray-500">
+          <p className="text-gray-500 text-sm">
             Featured cars appear on the homepage
           </p>
         </div>
       </div>
 
       {/* Features */}
-      <div className="space-y-2">
-        <Label htmlFor="features">Features</Label>
-        <div className="flex gap-2">
-          <Input
-            id="features"
-            value={featureInput}
-            onChange={(e) => setFeatureInput(e.target.value)}
-            onKeyDown={handleFeatureKeyPress}
-            placeholder="e.g. Bluetooth, Navigation System, Leather Seats"
-            suppressHydrationWarning
-          />
-          <Button
-            type="button"
-            onClick={handleAddFeature}
-            variant="outline"
-            size="icon"
-          >
-            <Plus className="h-4 w-4" />
-          </Button>
-        </div>
-        {watch("features") && watch("features").length > 0 && (
-          <div className="flex flex-wrap gap-2 mt-2">
-            {watch("features").map((feature, index) => (
-              <Badge
-                key={index}
-                variant="secondary"
-                className="flex items-center gap-1 px-3 py-1"
-              >
-                {feature}
-                <button
-                  type="button"
-                  onClick={() => handleRemoveFeature(index)}
-                  className="ml-1 hover:text-red-500"
-                >
-                  <X className="h-3 w-3" />
-                </button>
-              </Badge>
-            ))}
-          </div>
-        )}
-        <p className="text-sm text-gray-500">
-          Add features one by one. Press Enter or click + to add.
-        </p>
-      </div>
+      <CarFeaturesInput
+        features={watch("features")}
+        onChange={(features) => setValue("features", features)}
+      />
 
       {/* Image Management */}
-      <div>
-        <Label htmlFor="images" className={imageError ? "text-red-500" : ""}>
-          Images {imageError && <span className="text-red-500">*</span>}
-        </Label>
-
-        {/* Existing Images */}
-        {existingImages.length > 0 && (
-          <div className="mt-2">
-            <h3 className="mb-2 text-sm font-medium">
-              Current Images ({existingImages.length})
-            </h3>
-            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
-              {existingImages.map((image, index) => (
-                <div key={index} className="group relative">
-                  <Image
-                    src={image}
-                    alt={`Car image ${index + 1}`}
-                    height={50}
-                    width={50}
-                    className="h-28 w-full rounded-md object-cover"
-                    priority
-                  />
-                  {onExistingImageRemove && (
-                    <Button
-                      type="button"
-                      size="icon"
-                      variant="destructive"
-                      className="absolute right-1 top-1 h-6 w-6 opacity-0 transition-opacity group-hover:opacity-100"
-                      onClick={() => onExistingImageRemove(image)}
-                    >
-                      <X className="h-3 w-3" />
-                    </Button>
-                  )}
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Upload New Images */}
-        <div className={existingImages.length > 0 ? "mt-4" : "mt-2"}>
-          <div
-            {...getMultiImageRootProps()}
-            className={`border-2 border-dashed rounded-lg p-6 text-center cursor-pointer hover:bg-gray-50 transition ${
-              imageError ? "border-red-500" : "border-gray-300"
-            }`}
-          >
-            <input {...getMultiImageInputProps()} />
-            <div className="flex flex-col items-center justify-center">
-              <Upload className="mb-3 h-12 w-12 text-gray-400" />
-              <span className="text-sm text-gray-600">
-                Drag & drop or click to upload{" "}
-                {existingImages.length > 0 ? "new " : ""}images
-              </span>
-              <span className="mt-1 text-xs text-gray-500">
-                (JPG, PNG, WebP, max 1MB each)
-              </span>
-            </div>
-          </div>
-          {imageError && (
-            <p className="mt-1 text-xs text-red-500">{imageError}</p>
-          )}
-          {uploadProgress > 0 && (
-            <div className="mt-2 h-2.5 w-full rounded-full bg-gray-200">
-              <div
-                className="h-2.5 rounded-full bg-blue-600"
-                style={{ width: `${uploadProgress}%` }}
-              />
-            </div>
-          )}
-        </div>
-
-        {/* New Images Preview */}
-        {imagePreviews.length > 0 && (
-          <div className="mt-4">
-            <h3 className="mb-2 text-sm font-medium">
-              {existingImages.length > 0 ? "New " : "Uploaded "}Images (
-              {imagePreviews.length})
-            </h3>
-            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
-              {imagePreviews.map((previewUrl, index) => (
-                <div key={index} className="group relative">
-                  <Image
-                    src={previewUrl}
-                    alt={`${existingImages.length > 0 ? "New " : ""}car image ${
-                      index + 1
-                    }`}
-                    height={50}
-                    width={50}
-                    className="h-28 w-full rounded-md object-cover"
-                    priority
-                  />
-                  <Button
-                    type="button"
-                    size="icon"
-                    variant="destructive"
-                    className="absolute right-1 top-1 h-6 w-6 opacity-0 transition-opacity group-hover:opacity-100"
-                    onClick={() => removeNewImage(index)}
-                  >
-                    <X className="h-3 w-3" />
-                  </Button>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Total Images Count */}
-        {existingImages.length > 0 && (
-          <p className="mt-2 text-sm text-gray-600">
-            Total images: {totalImages}
-          </p>
-        )}
-      </div>
+      <CarImageUploader
+        existingImages={existingImages}
+        newImages={newImages}
+        onNewImagesChange={onNewImagesChange}
+        onExistingImageRemove={onExistingImageRemove}
+        imageError={imageError}
+        onImageErrorChange={onImageErrorChange}
+      />
     </>
   );
 }

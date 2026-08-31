@@ -1,4 +1,4 @@
-import { Car } from "./car";
+import type { Car } from "./car";
 
 /**
  * Raw car row returned from Supabase before relation normalisation.

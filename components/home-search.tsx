@@ -1,11 +1,11 @@
 "use client";
 
-import { useState } from "react";
 import { Search } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { toast } from "sonner";
-import { useRouter } from "next/navigation";
 import { createCarSearchUrl } from "@/lib/route/createCarSearchUrl";
 
 /**
@@ -30,20 +30,20 @@ export function HomeSearch() {
   return (
     <form
       onSubmit={handleTextSearch}
-      className="flex flex-col gap-3 sm:flex-row sm:items-center px-2"
+      className="flex flex-col gap-3 px-2 sm:flex-row sm:items-center"
     >
       <div className="relative flex-1">
-        <Search className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-500" />
+        <Search className="absolute top-1/2 left-3 h-5 w-5 -translate-y-1/2 text-gray-500" />
         <Input
           type="text"
           placeholder="Search by make, model, or keyword..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-full rounded-full border-gray-300 bg-white/95 py-6 pl-10 pr-20 text-base backdrop-blur-sm"
+          className="w-full rounded-full border-gray-300 bg-white/95 py-6 pr-20 pl-10 text-base backdrop-blur-sm"
         />
         <Button
           type="submit"
-          className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full px-3 py-3 h-auto"
+          className="absolute top-1/2 right-2 h-auto -translate-y-1/2 rounded-full px-3 py-3"
         >
           <Search className="h-4 w-4" />
         </Button>

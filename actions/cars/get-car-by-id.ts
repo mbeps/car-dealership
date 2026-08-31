@@ -1,12 +1,12 @@
 "use server";
 
-import { createClient } from "@/lib/supabase/supabase";
-import { serializeCarData } from "@/lib/helpers/serialize-car";
-import type { ActionResponse } from "@/types/common/action-response";
-import type { SerializedCar } from "@/types/car/serialized-car";
-import type { UserTestDrive } from "@/types/test-drive/user-test-drive";
-import type { SerializedDealershipInfo } from "@/types/dealership/serialized-dealership-info";
 import { BookingStatusEnum as BookingStatus } from "@/enums/booking-status";
+import { serializeCarData } from "@/lib/helpers/serialize-car";
+import { createClient } from "@/lib/supabase/supabase";
+import type { SerializedCar } from "@/types/car/serialized-car";
+import type { ActionResponse } from "@/types/common/action-response";
+import type { SerializedDealershipInfo } from "@/types/dealership/serialized-dealership-info";
+import type { UserTestDrive } from "@/types/test-drive/user-test-drive";
 
 /**
  * Fetches car details with test drive metadata.
@@ -146,6 +146,6 @@ export async function getCarById(carId: string): Promise<
       },
     };
   } catch (error) {
-    throw new Error("Error fetching car details:" + (error as Error).message);
+    throw new Error(`Error fetching car details:${(error as Error).message}`);
   }
 }

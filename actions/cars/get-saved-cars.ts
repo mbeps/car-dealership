@@ -1,9 +1,9 @@
 "use server";
 
-import { createClient } from "@/lib/supabase/supabase";
 import { serializeCarData } from "@/lib/helpers/serialize-car";
-import type { ActionResponse } from "@/types/common/action-response";
+import { createClient } from "@/lib/supabase/supabase";
 import type { SerializedCar } from "@/types/car/serialized-car";
+import type { ActionResponse } from "@/types/common/action-response";
 import { getOrCreateDbUser } from "./get-or-create-db-user";
 
 /**

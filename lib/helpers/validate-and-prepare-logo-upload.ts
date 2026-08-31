@@ -1,5 +1,12 @@
+import { parseDataUrl } from "@/lib/helpers/parse-data-url";
+import { validateMagicBytes } from "@/lib/helpers/validate-magic-bytes";
+import { validateSvgSafeguards } from "@/lib/helpers/validate-svg-safeguards";
 import type { LogoExtension, LogoUploadPayload } from "@/schemas/logo-upload";
 import {
+  getLogoExtensionFromFileName,
+  isAllowedLogoMimeType,
+  isCompatibleLogoExtensionAndMimeType,
+  logoUploadPayloadSchema,
   MAX_ASPECT_RATIO,
   MAX_BYTES_ICO,
   MAX_BYTES_PNG_JPEG,
@@ -7,16 +14,9 @@ import {
   MAX_DIMENSION_PX,
   MIN_ASPECT_RATIO,
   MIN_DIMENSION_PX,
-  getLogoExtensionFromFileName,
-  isAllowedLogoMimeType,
-  isCompatibleLogoExtensionAndMimeType,
-  logoUploadPayloadSchema,
   normaliseLogoMimeType,
 } from "@/schemas/logo-upload";
 import type { RasterDimensions } from "@/types/logo/raster-dimensions";
-import { parseDataUrl } from "@/lib/helpers/parse-data-url";
-import { validateMagicBytes } from "@/lib/helpers/validate-magic-bytes";
-import { validateSvgSafeguards } from "@/lib/helpers/validate-svg-safeguards";
 import type { ValidatedLogoUpload } from "@/types/logo/validated-logo-upload";
 
 /**

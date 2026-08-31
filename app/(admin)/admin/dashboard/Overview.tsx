@@ -1,8 +1,8 @@
 "use client";
 
+import { Calendar, Car, PoundSterling, TrendingUp } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Car, Calendar, TrendingUp, PoundSterling } from "lucide-react";
-import { DashboardData } from "@/types/common/dashboard-data";
+import type { DashboardData } from "@/types/common/dashboard-data";
 
 /**
  * Props for the dashboard overview card grid.
@@ -30,52 +30,52 @@ export function Overview({ data }: OverviewProps) {
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Cars</CardTitle>
+            <CardTitle className="font-medium text-sm">Total Cars</CardTitle>
             <Car className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{cars.total}</div>
-            <p className="text-xs text-muted-foreground">
+            <div className="font-bold text-2xl">{cars.total}</div>
+            <p className="text-muted-foreground text-xs">
               {cars.available} available, {cars.sold} sold
             </p>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Test Drives</CardTitle>
+            <CardTitle className="font-medium text-sm">Test Drives</CardTitle>
             <Calendar className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{testDrives.total}</div>
-            <p className="text-xs text-muted-foreground">
+            <div className="font-bold text-2xl">{testDrives.total}</div>
+            <p className="text-muted-foreground text-xs">
               {testDrives.pending} pending, {testDrives.confirmed} confirmed
             </p>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
+            <CardTitle className="font-medium text-sm">
               Conversion Rate
             </CardTitle>
             <TrendingUp className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">
+            <div className="font-bold text-2xl">
               {testDrives.conversionRate}%
             </div>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-muted-foreground text-xs">
               From test drives to sales
             </p>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Cars Sold</CardTitle>
+            <CardTitle className="font-medium text-sm">Cars Sold</CardTitle>
             <PoundSterling className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{cars.sold}</div>
-            <p className="text-xs text-muted-foreground">
+            <div className="font-bold text-2xl">{cars.sold}</div>
+            <p className="text-muted-foreground text-xs">
               {((cars.sold / cars.total) * 100).toFixed(1)}% of inventory
             </p>
           </CardContent>
@@ -89,13 +89,13 @@ export function Overview({ data }: OverviewProps) {
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div className="bg-gray-50 p-4 rounded-lg">
-                <h3 className="font-medium text-sm mb-2">Car Inventory</h3>
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <div className="rounded-lg bg-gray-50 p-4">
+                <h3 className="mb-2 font-medium text-sm">Car Inventory</h3>
                 <div className="flex items-center">
-                  <div className="w-full bg-gray-200 rounded-full h-2.5">
+                  <div className="h-2.5 w-full rounded-full bg-gray-200">
                     <div
-                      className="bg-green-600 h-2.5 rounded-full"
+                      className="h-2.5 rounded-full bg-green-600"
                       style={{
                         width: `${(cars.available / cars.total) * 100}%`,
                       }}
@@ -105,17 +105,17 @@ export function Overview({ data }: OverviewProps) {
                     {((cars.available / cars.total) * 100).toFixed(0)}%
                   </span>
                 </div>
-                <p className="text-xs text-gray-500 mt-2">
+                <p className="mt-2 text-gray-500 text-xs">
                   Available inventory capacity
                 </p>
               </div>
 
-              <div className="bg-gray-50 p-4 rounded-lg">
-                <h3 className="font-medium text-sm mb-2">Test Drive Success</h3>
+              <div className="rounded-lg bg-gray-50 p-4">
+                <h3 className="mb-2 font-medium text-sm">Test Drive Success</h3>
                 <div className="flex items-center">
-                  <div className="w-full bg-gray-200 rounded-full h-2.5">
+                  <div className="h-2.5 w-full rounded-full bg-gray-200">
                     <div
-                      className="bg-blue-600 h-2.5 rounded-full"
+                      className="h-2.5 rounded-full bg-blue-600"
                       style={{
                         width: `${
                           (testDrives.completed / (testDrives.total || 1)) * 100
@@ -131,32 +131,32 @@ export function Overview({ data }: OverviewProps) {
                     %
                   </span>
                 </div>
-                <p className="text-xs text-gray-500 mt-2">
+                <p className="mt-2 text-gray-500 text-xs">
                   Completed test drives
                 </p>
               </div>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-6">
+            <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
               <div className="text-center">
-                <span className="text-3xl font-bold text-blue-600">
+                <span className="font-bold text-3xl text-blue-600">
                   {cars.sold}
                 </span>
-                <p className="text-sm text-gray-600 mt-1">Cars Sold</p>
+                <p className="mt-1 text-gray-600 text-sm">Cars Sold</p>
               </div>
               <div className="text-center">
-                <span className="text-3xl font-bold text-amber-600">
+                <span className="font-bold text-3xl text-amber-600">
                   {testDrives.pending + testDrives.confirmed}
                 </span>
-                <p className="text-sm text-gray-600 mt-1">
+                <p className="mt-1 text-gray-600 text-sm">
                   Upcoming Test Drives
                 </p>
               </div>
               <div className="text-center">
-                <span className="text-3xl font-bold text-green-600">
+                <span className="font-bold text-3xl text-green-600">
                   {((cars.available / (cars.total || 1)) * 100).toFixed(0)}%
                 </span>
-                <p className="text-sm text-gray-600 mt-1">
+                <p className="mt-1 text-gray-600 text-sm">
                   Inventory Utilization
                 </p>
               </div>

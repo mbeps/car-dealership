@@ -1,15 +1,15 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import Image from "next/image";
 import { Car } from "lucide-react";
+import Image from "next/image";
+import { useEffect, useState } from "react";
+import { AspectRatio } from "@/components/ui/aspect-ratio";
 import {
   Carousel,
+  type CarouselApi,
   CarouselContent,
   CarouselItem,
-  type CarouselApi,
 } from "@/components/ui/carousel";
-import { AspectRatio } from "@/components/ui/aspect-ratio";
 
 interface CarGalleryProps {
   images: string[];
@@ -50,9 +50,9 @@ export function CarGallery({ images, carName }: CarGalleryProps) {
       <div className="mb-4">
         <AspectRatio
           ratio={4 / 3}
-          className="rounded-lg overflow-hidden relative"
+          className="relative overflow-hidden rounded-lg"
         >
-          <div className="w-full h-full bg-gray-200 flex items-center justify-center">
+          <div className="flex h-full w-full items-center justify-center bg-gray-200">
             <Car className="h-24 w-24 text-gray-400" />
           </div>
         </AspectRatio>
@@ -63,13 +63,13 @@ export function CarGallery({ images, carName }: CarGalleryProps) {
   return (
     <div>
       {/* Main Carousel */}
-      <Carousel setApi={setApi} className="w-full mb-4">
+      <Carousel setApi={setApi} className="mb-4 w-full">
         <CarouselContent>
           {images.map((image, index) => (
             <CarouselItem key={index}>
               <AspectRatio
                 ratio={4 / 3}
-                className="rounded-lg overflow-hidden relative bg-secondary"
+                className="relative overflow-hidden rounded-lg bg-secondary"
               >
                 <Image
                   src={image}
@@ -90,7 +90,7 @@ export function CarGallery({ images, carName }: CarGalleryProps) {
           {images.map((image, index) => (
             <div
               key={index}
-              className={`relative cursor-pointer rounded-md h-20 w-24 shrink-0 transition ${
+              className={`relative h-20 w-24 shrink-0 cursor-pointer rounded-md transition ${
                 index === currentImageIndex
                   ? "border-2 border-blue-600"
                   : "opacity-70 hover:opacity-100"
@@ -101,7 +101,7 @@ export function CarGallery({ images, carName }: CarGalleryProps) {
                 src={image}
                 alt={`${carName} - thumbnail ${index + 1}`}
                 fill
-                className="object-cover rounded-md"
+                className="rounded-md object-cover"
               />
             </div>
           ))}

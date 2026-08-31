@@ -1,6 +1,6 @@
-import { appendVersionToAssetUrl } from "./append-version-to-asset-url";
 import { brandingConstants } from "@/constants/branding";
 import type { BrandingLogoSource } from "@/types/branding";
+import { appendVersionToAssetUrl } from "./append-version-to-asset-url";
 
 /**
  * Resolves the header logo image source from branding metadata.

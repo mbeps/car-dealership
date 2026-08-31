@@ -1,8 +1,6 @@
-import { UseFormReturn } from "react-hook-form";
-import { Save, Loader2, RotateCcw } from "lucide-react";
-import { Input } from "@/components/ui/input";
+import { Loader2, RotateCcw, Save } from "lucide-react";
+import type { UseFormReturn } from "react-hook-form";
 import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
 import {
   Card,
   CardContent,
@@ -10,7 +8,9 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { HomePageContentFormValues } from "@/schemas/home-content";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import type { HomePageContentFormValues } from "@/schemas/home-content";
 
 interface CTASectionProps {
   /** Shared form state for home content values. */
@@ -52,7 +52,7 @@ export const CTASection = ({
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             <div className="space-y-2">
               <Label htmlFor="ctaTitle">CTA Title</Label>
               <Input
@@ -60,7 +60,7 @@ export const CTASection = ({
                 {...form.register("ctaTitle")}
                 maxLength={50}
               />
-              <p className="text-xs text-muted-foreground text-right">
+              <p className="text-right text-muted-foreground text-xs">
                 {form.watch("ctaTitle")?.length || 0}/50
               </p>
             </div>
@@ -71,7 +71,7 @@ export const CTASection = ({
                 {...form.register("ctaSubtitle")}
                 maxLength={200}
               />
-              <p className="text-xs text-muted-foreground text-right">
+              <p className="text-right text-muted-foreground text-xs">
                 {form.watch("ctaSubtitle")?.length || 0}/200
               </p>
             </div>

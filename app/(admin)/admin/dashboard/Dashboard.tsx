@@ -1,11 +1,11 @@
 "use client";
 
+import { Info } from "lucide-react";
 import { useState } from "react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Info } from "lucide-react";
-import { ActionResponse } from "@/types/common/action-response";
-import { DashboardData } from "@/types/common/dashboard-data";
+import type { ActionResponse } from "@/types/common/action-response";
+import type { DashboardData } from "@/types/common/dashboard-data";
 import { Overview } from "./Overview";
 import { TestDrives } from "./TestDrives";
 
@@ -27,7 +27,7 @@ export function Dashboard({
   const [activeTab, setActiveTab] = useState("overview");
 
   // Show error if data fetch failed
-  if (!initialData || !initialData.success) {
+  if (!initialData?.success) {
     return (
       <Alert variant="destructive">
         <Info className="h-4 w-4" />

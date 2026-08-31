@@ -3,7 +3,6 @@
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { GripVertical, Pencil, Trash2 } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -15,7 +14,8 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { FAQ } from "@/types/home-content/faq";
+import { Button } from "@/components/ui/button";
+import type { FAQ } from "@/types/home-content/faq";
 
 interface SortableFAQItemProps {
   /** FAQ record displayed in the sortable list. */
@@ -64,20 +64,20 @@ export const SortableFAQItem = ({
     <div
       ref={setNodeRef}
       style={style}
-      className="flex items-start justify-between p-4 border rounded-lg bg-background"
+      className="flex items-start justify-between rounded-lg border bg-background p-4"
     >
-      <div className="flex items-start gap-3 flex-1">
+      <div className="flex flex-1 items-start gap-3">
         <button
-          className="cursor-grab active:cursor-grabbing mt-1 touch-none"
+          className="mt-1 cursor-grab touch-none active:cursor-grabbing"
           {...attributes}
           {...listeners}
         >
           <GripVertical className="h-5 w-5 text-muted-foreground" />
         </button>
-        <div className="space-y-1 flex-1">
+        <div className="flex-1 space-y-1">
           <h4 className="font-medium">{faq.question}</h4>
-          <p className="text-sm text-muted-foreground">{faq.answer}</p>
-          <span className="text-xs text-gray-400">Order: {faq.order}</span>
+          <p className="text-muted-foreground text-sm">{faq.answer}</p>
+          <span className="text-gray-400 text-xs">Order: {faq.order}</span>
         </div>
       </div>
       <div className="flex gap-2">

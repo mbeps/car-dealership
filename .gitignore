@@ -49,7 +49,7 @@ AGENTS.md
 copilot-instructions.md
 .github/skills/**
 
-docs/**
+subagents/**
 wiki/**
 graphify-out/**
 

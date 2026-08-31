@@ -1,17 +1,8 @@
 "use client";
 
-import { Filter, X, Sliders } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Filter, Sliders, X } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-  SheetFooter,
-} from "@/components/ui/sheet";
-import { CarFilterControls } from "./filter-controls";
+import { Button } from "@/components/ui/button";
 import {
   Select,
   SelectContent,
@@ -19,8 +10,17 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { CarFiltersData } from "@/types/filters/car-filters-data";
+import {
+  Sheet,
+  SheetContent,
+  SheetFooter,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 import { useCarFilters } from "@/hooks/use-car-filters";
+import type { CarFiltersData } from "@/types/filters/car-filters-data";
+import { CarFilterControls } from "./filter-controls";
 
 /**
  * Car inventory filter UI.
@@ -47,9 +47,9 @@ export const CarFilters = ({ filters }: { filters: CarFiltersData }) => {
   } = useCarFilters(filters);
 
   return (
-    <div className="flex lg:flex-col justify-between gap-4">
+    <div className="flex justify-between gap-4 lg:flex-col">
       {/* Mobile Filters */}
-      <div className="lg:hidden mb-4">
+      <div className="mb-4 lg:hidden">
         <div className="flex items-center">
           <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
             <SheetTrigger
@@ -60,14 +60,14 @@ export const CarFilters = ({ filters }: { filters: CarFiltersData }) => {
               <Filter className="h-4 w-4" />
               Filters
               {activeFilterCount > 0 && (
-                <Badge className="ml-1 h-5 w-5 rounded-full p-0 flex items-center justify-center">
+                <Badge className="ml-1 flex h-5 w-5 items-center justify-center rounded-full p-0">
                   {activeFilterCount}
                 </Badge>
               )}
             </SheetTrigger>
             <SheetContent
               side="left"
-              className="w-full sm:max-w-md overflow-y-auto"
+              className="w-full overflow-y-auto sm:max-w-md"
             >
               <SheetHeader>
                 <SheetTitle>Filters</SheetTitle>
@@ -82,7 +82,7 @@ export const CarFilters = ({ filters }: { filters: CarFiltersData }) => {
                 />
               </div>
 
-              <SheetFooter className="sm:justify-between flex-row pt-2 border-t space-x-4 mt-auto">
+              <SheetFooter className="mt-auto flex-row space-x-4 border-t pt-2 sm:justify-between">
                 <Button
                   type="button"
                   variant="outline"
@@ -125,10 +125,10 @@ export const CarFilters = ({ filters }: { filters: CarFiltersData }) => {
       </Select>
 
       {/* Desktop Filters */}
-      <div className="hidden lg:block sticky top-24">
-        <div className="border rounded-lg overflow-hidden bg-white">
-          <div className="p-4 border-b bg-gray-50 flex justify-between items-center">
-            <h3 className="font-medium flex items-center">
+      <div className="sticky top-24 hidden lg:block">
+        <div className="overflow-hidden rounded-lg border bg-white">
+          <div className="flex items-center justify-between border-b bg-gray-50 p-4">
+            <h3 className="flex items-center font-medium">
               <Sliders className="mr-2 h-4 w-4" />
               Filters
             </h3>
@@ -136,7 +136,7 @@ export const CarFilters = ({ filters }: { filters: CarFiltersData }) => {
               <Button
                 variant="ghost"
                 size="sm"
-                className="h-8 text-sm text-gray-600"
+                className="h-8 text-gray-600 text-sm"
                 onClick={clearFilters}
               >
                 <X className="mr-1 h-3 w-3" />
@@ -154,7 +154,7 @@ export const CarFilters = ({ filters }: { filters: CarFiltersData }) => {
             />
           </div>
 
-          <div className="px-4 py-4 border-t">
+          <div className="border-t px-4 py-4">
             <Button onClick={applyFilters} className="w-full">
               Apply Filters
             </Button>

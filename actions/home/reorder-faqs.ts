@@ -1,10 +1,10 @@
 "use server";
 
-import { createClient } from "@/lib/supabase/supabase";
 import { revalidatePath, revalidateTag } from "next/cache";
+import { UserRoleEnum as UserRole } from "@/enums/user-role";
+import { createClient } from "@/lib/supabase/supabase";
 import type { ActionResponse } from "@/types/common/action-response";
 import type { FAQ } from "@/types/home-content/faq";
-import { UserRoleEnum as UserRole } from "@/enums/user-role";
 
 const FAQ_TAG = "faq";
 

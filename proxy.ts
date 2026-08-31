@@ -1,11 +1,10 @@
 import arcjet, { createMiddleware, detectBot, shield } from "@arcjet/next";
-import { createServerClient } from "@supabase/ssr";
 import type { CookieOptions } from "@supabase/ssr";
-import { NextResponse, type NextRequest } from "next/server";
+import { createServerClient } from "@supabase/ssr";
+import { type NextRequest, NextResponse } from "next/server";
 import { env } from "@/lib/env";
-
-import { PROTECTED_ROUTES, ROUTES } from "./constants/routes";
 import { createSignInRedirect } from "@/lib/route/createSignInRedirect";
+import { PROTECTED_ROUTES, ROUTES } from "./constants/routes";
 
 // Protected routes that require authentication
 const protectedRoutes = PROTECTED_ROUTES;
@@ -77,15 +76,15 @@ async function supabaseProxy(request: NextRequest) {
             options: CookieOptions;
           }>,
         ) {
-          cookiesToSet.forEach(({ name, value }) =>
-            request.cookies.set(name, value),
-          );
+          cookiesToSet.forEach(({ name, value }) => {
+            request.cookies.set(name, value);
+          });
           response = NextResponse.next({
             request,
           });
-          cookiesToSet.forEach(({ name, value, options }) =>
-            response.cookies.set(name, value, options),
-          );
+          cookiesToSet.forEach(({ name, value, options }) => {
+            response.cookies.set(name, value, options);
+          });
         },
       },
     },

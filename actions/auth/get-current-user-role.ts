@@ -1,8 +1,8 @@
 "use server";
 
+import type { UserRoleEnum as UserRole } from "@/enums/user-role";
 import { createClient } from "@/lib/supabase/supabase";
 import type { ActionResponse } from "@/types/common/action-response";
-import { UserRoleEnum as UserRole } from "@/enums/user-role";
 
 /**
  * Fetches user role from database.

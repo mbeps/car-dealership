@@ -1,6 +1,6 @@
-import { AddCarForm } from "./_components/add-car-form";
-import { getCarMakes } from "@/actions/cars/get-car-makes";
 import { getCarColors } from "@/actions/cars/get-car-colors";
+import { getCarMakes } from "@/actions/cars/get-car-makes";
+import { AddCarForm } from "./_components/add-car-form";
 
 /**
  * Add car page metadata.
@@ -28,7 +28,7 @@ export default async function AddCarPage() {
 
   return (
     <div className="p-6">
-      <h1 className="text-2xl font-bold mb-6">Add New Car</h1>
+      <h1 className="mb-6 font-bold text-2xl">Add New Car</h1>
       <AddCarForm carMakes={carMakes} carColors={carColors} />
     </div>
   );

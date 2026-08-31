@@ -1,14 +1,14 @@
+import type { Metadata } from "next";
+import { Inter } from "next/font/google";
+import { Toaster } from "sonner";
+import { getPublicBranding } from "@/actions/settings/get-public-branding";
 import Footer from "@/components/footer";
 import Header from "@/components/header";
-import { getPublicBranding } from "@/actions/settings/get-public-branding";
+import { SignInModal } from "@/components/sign-in-modal";
 import { DEALERSHIP_NAME } from "@/constants/dealership-name";
 import { resolveIconHrefs } from "@/lib/branding/resolve-icon-hrefs";
 import SupabaseProvider from "@/providers/SupabaseProvider";
 import UserProvider from "@/providers/UserProvider";
-import { SignInModal } from "@/components/sign-in-modal";
-import type { Metadata } from "next";
-import { Inter } from "next/font/google";
-import { Toaster } from "sonner";
 import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"] });

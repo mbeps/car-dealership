@@ -1,7 +1,7 @@
 "use server";
 
-import { createPublicClient } from "@/lib/supabase/supabase";
 import { unstable_cache } from "next/cache";
+import { createPublicClient } from "@/lib/supabase/supabase";
 import type { FAQ } from "@/types/home-content/faq";
 
 const FAQ_TAG = "faq";

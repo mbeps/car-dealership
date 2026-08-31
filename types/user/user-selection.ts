@@ -1,4 +1,4 @@
-import { User } from "./user";
+import type { User } from "./user";
 
 /**
  * User data selection for display

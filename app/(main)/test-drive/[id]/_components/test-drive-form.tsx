@@ -1,33 +1,22 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
-import { useRouter } from "next/navigation";
-import { format, parseISO } from "date-fns";
-import { useForm, Controller, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { format, parseISO } from "date-fns";
 import {
   Calendar as CalendarIcon,
   Car,
   CheckCircle2,
   Loader2,
 } from "lucide-react";
-import { ROUTES } from "@/constants/routes";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { useEffect, useMemo, useState } from "react";
+import { Controller, useForm, useWatch } from "react-hook-form";
+import { toast } from "sonner";
+import { bookTestDrive } from "@/actions/test-drive/book-test-drive";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { Card, CardContent } from "@/components/ui/card";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { Textarea } from "@/components/ui/textarea";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import {
   Dialog,
   DialogContent,
@@ -35,18 +24,29 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { cn } from "@/lib/utils";
-import { bookTestDrive } from "@/actions/test-drive/book-test-drive";
-import { toast } from "sonner";
-import useFetch from "@/hooks/use-fetch";
-import { SerializedCar } from "@/types/car/serialized-car";
-import { SerializedDealershipInfo } from "@/types/dealership/serialized-dealership-info";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
 import { DEALERSHIP_NAME } from "@/constants/dealership-name";
-import { UserTestDrive } from "@/types/test-drive/user-test-drive";
-import { DayOfWeekEnum } from "@/enums/day-of-week";
-import { testDriveSchema, TestDriveFormData } from "@/schemas/test-drive";
+import { ROUTES } from "@/constants/routes";
+import type { DayOfWeekEnum } from "@/enums/day-of-week";
+import useFetch from "@/hooks/use-fetch";
 import { formatCurrency } from "@/lib/helpers/format-currency";
-import Image from "next/image";
+import { cn } from "@/lib/utils";
+import { type TestDriveFormData, testDriveSchema } from "@/schemas/test-drive";
+import type { SerializedCar } from "@/types/car/serialized-car";
+import type { SerializedDealershipInfo } from "@/types/dealership/serialized-dealership-info";
+import type { UserTestDrive } from "@/types/test-drive/user-test-drive";
 
 interface BookingDetails {
   carId: string;
@@ -142,13 +142,13 @@ export function TestDriveForm({
       (day) => day.dayOfWeek === selectedDayOfWeek,
     );
 
-    if (!daySchedule || !daySchedule.isOpen) {
+    if (!daySchedule?.isOpen) {
       return [];
     }
 
     // Parse opening and closing hours
-    const openHour = parseInt(daySchedule.openTime.split(":")[0]);
-    const closeHour = parseInt(daySchedule.closeTime.split(":")[0]);
+    const openHour = parseInt(daySchedule.openTime.split(":")[0], 10);
+    const closeHour = parseInt(daySchedule.closeTime.split(":")[0], 10);
 
     // Generate time slots (every hour)
     const slots = [];
@@ -200,7 +200,7 @@ export function TestDriveForm({
     );
 
     // Disable if dealership is closed on this day
-    return !daySchedule || !daySchedule.isOpen;
+    return !daySchedule?.isOpen;
   };
 
   // Submit handler
@@ -247,53 +247,53 @@ export function TestDriveForm({
   };
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+    <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
       {/* Left Column - Car Summary */}
       <div className="md:col-span-1">
         <Card>
           <CardContent className="p-6">
-            <h2 className="text-xl font-bold mb-4">Car Details</h2>
+            <h2 className="mb-4 font-bold text-xl">Car Details</h2>
 
-            <div className="aspect-video rounded-lg overflow-hidden relative mb-4">
+            <div className="relative mb-4 aspect-video overflow-hidden rounded-lg">
               {car.images && car.images.length > 0 ? (
                 <Image
                   src={car.images[0]}
                   alt={`${car.year} ${car.make} ${car.model}`}
-                  className="object-cover w-full h-full"
+                  className="h-full w-full object-cover"
                   width={400}
                   height={225}
                 />
               ) : (
-                <div className="w-full h-full bg-gray-200 flex items-center justify-center">
+                <div className="flex h-full w-full items-center justify-center bg-gray-200">
                   <Car className="h-12 w-12 text-gray-400" />
                 </div>
               )}
             </div>
 
-            <h3 className="text-lg font-bold">
+            <h3 className="font-bold text-lg">
               {car.year} {car.make} {car.model}
             </h3>
 
-            <div className="mt-2 text-xl font-bold text-blue-600">
+            <div className="mt-2 font-bold text-blue-600 text-xl">
               {formatCurrency(car.price)}
             </div>
 
-            <div className="mt-4 text-sm text-gray-500">
-              <div className="flex justify-between py-1 border-b">
+            <div className="mt-4 text-gray-500 text-sm">
+              <div className="flex justify-between border-b py-1">
                 <span>Mileage</span>
                 <span className="font-medium">
                   {car.mileage.toLocaleString()} miles
                 </span>
               </div>
-              <div className="flex justify-between py-1 border-b">
+              <div className="flex justify-between border-b py-1">
                 <span>Fuel Type</span>
                 <span className="font-medium">{car.fuelType}</span>
               </div>
-              <div className="flex justify-between py-1 border-b">
+              <div className="flex justify-between border-b py-1">
                 <span>Transmission</span>
                 <span className="font-medium">{car.transmission}</span>
               </div>
-              <div className="flex justify-between py-1 border-b">
+              <div className="flex justify-between border-b py-1">
                 <span>Body Type</span>
                 <span className="font-medium">{car.bodyType}</span>
               </div>
@@ -308,15 +308,15 @@ export function TestDriveForm({
         {/* Dealership Info */}
         <Card className="mt-6">
           <CardContent className="p-6">
-            <h2 className="text-xl font-bold mb-4">Dealership Info</h2>
+            <h2 className="mb-4 font-bold text-xl">Dealership Info</h2>
             <div className="text-sm">
               <p className="font-medium">
                 {testDriveInfo.dealership?.name || DEALERSHIP_NAME}
               </p>
-              <p className="text-gray-600 mt-1">
+              <p className="mt-1 text-gray-600">
                 {dealership?.address || "Address not available"}
               </p>
-              <p className="text-gray-600 mt-3">
+              <p className="mt-3 text-gray-600">
                 <span className="font-medium">Phone:</span>{" "}
                 {dealership?.phone || "Not available"}
               </p>
@@ -333,12 +333,12 @@ export function TestDriveForm({
       <div className="md:col-span-2">
         <Card>
           <CardContent className="p-6">
-            <h2 className="text-xl font-bold mb-6">Schedule Your Test Drive</h2>
+            <h2 className="mb-6 font-bold text-xl">Schedule Your Test Drive</h2>
 
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
               {/* Date Selection */}
               <div className="space-y-2">
-                <label className="block text-sm font-medium">
+                <label className="block font-medium text-sm">
                   Select a Date
                 </label>
                 <Controller
@@ -373,7 +373,7 @@ export function TestDriveForm({
                         </PopoverContent>
                       </Popover>
                       {errors.date && (
-                        <p className="text-sm font-medium text-red-500 mt-1">
+                        <p className="mt-1 font-medium text-red-500 text-sm">
                           {errors.date.message}
                         </p>
                       )}
@@ -384,7 +384,7 @@ export function TestDriveForm({
 
               {/* Time Slot Selection */}
               <div className="space-y-2">
-                <label className="block text-sm font-medium">
+                <label className="block font-medium text-sm">
                   Select a Time Slot
                 </label>
                 <Controller
@@ -419,7 +419,7 @@ export function TestDriveForm({
                         </SelectContent>
                       </Select>
                       {errors.timeSlot && (
-                        <p className="text-sm font-medium text-red-500 mt-1">
+                        <p className="mt-1 font-medium text-red-500 text-sm">
                           {errors.timeSlot.message}
                         </p>
                       )}
@@ -430,7 +430,7 @@ export function TestDriveForm({
 
               {/* Notes */}
               <div className="space-y-2">
-                <label className="block text-sm font-medium">
+                <label className="block font-medium text-sm">
                   Additional Notes (Optional)
                 </label>
                 <Controller
@@ -464,19 +464,19 @@ export function TestDriveForm({
             </form>
 
             {/* Instructions */}
-            <div className="mt-8 bg-gray-50 p-4 rounded-lg">
-              <h3 className="font-medium mb-2">What to expect</h3>
-              <ul className="space-y-2 text-sm text-gray-600">
+            <div className="mt-8 rounded-lg bg-gray-50 p-4">
+              <h3 className="mb-2 font-medium">What to expect</h3>
+              <ul className="space-y-2 text-gray-600 text-sm">
                 <li className="flex items-start">
-                  <CheckCircle2 className="h-4 w-4 text-green-500 mr-2 mt-0.5" />
+                  <CheckCircle2 className="mt-0.5 mr-2 h-4 w-4 text-green-500" />
                   Bring your driver's license for verification
                 </li>
                 <li className="flex items-start">
-                  <CheckCircle2 className="h-4 w-4 text-green-500 mr-2 mt-0.5" />
+                  <CheckCircle2 className="mt-0.5 mr-2 h-4 w-4 text-green-500" />
                   Test drives typically last 30-60 minutes
                 </li>
                 <li className="flex items-start">
-                  <CheckCircle2 className="h-4 w-4 text-green-500 mr-2 mt-0.5" />
+                  <CheckCircle2 className="mt-0.5 mr-2 h-4 w-4 text-green-500" />
                   A dealership representative will accompany you
                 </li>
               </ul>
@@ -523,7 +523,7 @@ export function TestDriveForm({
                 </div>
               </div>
 
-              <div className="mt-4 bg-blue-50 p-3 rounded text-sm text-blue-700">
+              <div className="mt-4 rounded bg-blue-50 p-3 text-blue-700 text-sm">
                 Please arrive 10 minutes early with your driver's license.
               </div>
             </div>

@@ -1,16 +1,15 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
-import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
 import { toast } from "sonner";
-import { ROUTES } from "@/constants/routes";
-
 import { addCar } from "@/actions/cars/add-car";
-import useFetch from "@/hooks/use-fetch";
-import { carFormSchema, CarFormData } from "@/schemas/car-form";
+import { ROUTES } from "@/constants/routes";
 import { CarStatusEnum as CarStatus } from "@/enums/car-status";
+import useFetch from "@/hooks/use-fetch";
+import { type CarFormData, carFormSchema } from "@/schemas/car-form";
 
 /**
  * Hook for car creation form.
@@ -69,10 +68,10 @@ export const useAddCarForm = () => {
 
     const carData = {
       ...data,
-      year: parseInt(data.year),
+      year: parseInt(data.year, 10),
       price: parseFloat(data.price),
-      mileage: parseInt(data.mileage),
-      seats: data.seats ? parseInt(data.seats) : undefined,
+      mileage: parseInt(data.mileage, 10),
+      seats: data.seats ? parseInt(data.seats, 10) : undefined,
     };
 
     const formData = new FormData();

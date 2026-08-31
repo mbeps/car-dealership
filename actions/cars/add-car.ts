@@ -2,13 +2,13 @@
 
 import { revalidatePath } from "next/cache";
 import { v4 as uuidv4 } from "uuid";
-import { env } from "@/lib/env";
-import { createClient, createAdminClient } from "@/lib/supabase/supabase";
-import { checkStorageQuota } from "../storage/check-storage-quota";
-import type { ActionResponse } from "@/types/common/action-response";
+import type { CarStatusEnum as CarStatus } from "@/enums/car-status";
 import { UserRoleEnum as UserRole } from "@/enums/user-role";
-import { CarStatusEnum as CarStatus } from "@/enums/car-status";
+import { env } from "@/lib/env";
+import { createAdminClient, createClient } from "@/lib/supabase/supabase";
 import type { CarFormData } from "@/types/car/car-form-data";
+import type { ActionResponse } from "@/types/common/action-response";
+import { checkStorageQuota } from "../storage/check-storage-quota";
 
 const MAX_IMAGE_SIZE_MB = env.NEXT_PUBLIC_MAX_CAR_IMAGE_SIZE_MB;
 const MAX_IMAGE_SIZE_BYTES = MAX_IMAGE_SIZE_MB * 1024 * 1024;
@@ -163,6 +163,6 @@ export async function addCar(
       data: null,
     };
   } catch (error) {
-    throw new Error("Error adding car:" + (error as Error).message);
+    throw new Error(`Error adding car:${(error as Error).message}`);
   }
 }

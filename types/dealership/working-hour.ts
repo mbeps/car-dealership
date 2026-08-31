@@ -1,4 +1,4 @@
-import { DayOfWeek } from "@/enums/day-of-week";
+import type { DayOfWeek } from "@/enums/day-of-week";
 
 /**
  * Working hours for dealership.

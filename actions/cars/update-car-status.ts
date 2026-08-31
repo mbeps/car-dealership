@@ -1,9 +1,9 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import type { CarStatusEnum as CarStatus } from "@/enums/car-status";
 import { createClient } from "@/lib/supabase/supabase";
 import type { ActionResponse } from "@/types/common/action-response";
-import { CarStatusEnum as CarStatus } from "@/enums/car-status";
 
 /**
  * Updates car status or featured flag from admin table.

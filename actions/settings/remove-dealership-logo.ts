@@ -1,9 +1,9 @@
 "use server";
 
-import { createAdminClient } from "@/lib/supabase/supabase";
-import { ensureAdminUser } from "@/lib/supabase/ensure-admin-user";
-import { getErrorMessage } from "@/lib/helpers/get-error-message";
 import { revalidateBrandingPages } from "@/lib/helpers/branding-cache";
+import { getErrorMessage } from "@/lib/helpers/get-error-message";
+import { ensureAdminUser } from "@/lib/supabase/ensure-admin-user";
+import { createAdminClient } from "@/lib/supabase/supabase";
 import type { ActionResponse } from "@/types/common/action-response";
 
 /**

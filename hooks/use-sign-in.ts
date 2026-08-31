@@ -1,9 +1,9 @@
 "use client";
 
-import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { createBrowserClient } from "@/lib/supabase/supabase-client";
+import { useState } from "react";
 import { getSiteUrl } from "@/lib/site-url";
+import { createBrowserClient } from "@/lib/supabase/supabase-client";
 
 /**
  * Optional callbacks and navigation targets for the sign-in hook.

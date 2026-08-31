@@ -1,40 +1,23 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
-import { toast } from "sonner";
-import { ROUTES } from "@/constants/routes";
 import {
+  Car as CarIcon,
+  Eye,
+  Loader2,
+  MoreHorizontal,
+  Pencil,
   Plus,
   Search,
-  MoreHorizontal,
   Star,
   StarOff,
   Trash2,
-  Eye,
-  Loader2,
-  Car as CarIcon,
-  Pencil,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuGroup,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
+import { getCars } from "@/actions/cars/get-cars";
+import { StorageMeter } from "@/components/admin/storage-meter";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -46,15 +29,32 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { StorageMeter } from "@/components/admin/storage-meter";
-import useFetch from "@/hooks/use-fetch";
-import { useCarAdmin } from "@/hooks/use-car-admin";
-import { getCars } from "@/actions/cars/get-cars";
-import { formatCurrency } from "@/lib/helpers/format-currency";
-import Image from "next/image";
-import { SerializedCar } from "@/types/car/serialized-car";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Input } from "@/components/ui/input";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { ROUTES } from "@/constants/routes";
 import { CarStatusEnum as CarStatus } from "@/enums/car-status";
+import { useCarAdmin } from "@/hooks/use-car-admin";
+import useFetch from "@/hooks/use-fetch";
+import { formatCurrency } from "@/lib/helpers/format-currency";
+import type { SerializedCar } from "@/types/car/serialized-car";
 
 /**
  * Admin car management table.
@@ -191,11 +191,11 @@ export const CarsList = () => {
   return (
     <div className="space-y-4">
       {/* Actions and Search */}
-      <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
-        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 w-full sm:w-auto">
+      <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
+        <div className="flex w-full flex-col items-start gap-4 sm:w-auto sm:flex-row sm:items-center">
           <Button
             onClick={() => router.push(ROUTES.ADMIN.ADMIN_CAR_CREATE)}
-            className="flex items-center w-full sm:w-auto"
+            className="flex w-full items-center sm:w-auto"
           >
             <Plus className="h-4 w-4" />
             Add Car
@@ -205,11 +205,11 @@ export const CarsList = () => {
         {/* Simple Search Form */}
         <form onSubmit={handleSearchSubmit} className="flex w-full sm:w-auto">
           <div className="relative flex-1">
-            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500" />
+            <Search className="absolute top-2.5 left-2.5 h-4 w-4 text-gray-500" />
             <Input
               type="search"
               placeholder="Search cars..."
-              className="pl-9 w-full sm:w-60"
+              className="w-full pl-9 sm:w-60"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
@@ -221,7 +221,7 @@ export const CarsList = () => {
       <Card>
         <CardContent className="p-0">
           {loadingCars && !carsData ? (
-            <div className="flex justify-center items-center py-12">
+            <div className="flex items-center justify-center py-12">
               <Loader2 className="h-8 w-8 animate-spin text-gray-400" />
             </div>
           ) : carsData?.success && carsData.data.length > 0 ? (
@@ -242,18 +242,18 @@ export const CarsList = () => {
                   {carsData.data.map((car) => (
                     <TableRow key={car.id}>
                       <TableCell>
-                        <div className="w-10 h-10 rounded-md overflow-hidden">
+                        <div className="h-10 w-10 overflow-hidden rounded-md">
                           {car.images && car.images.length > 0 ? (
                             <Image
                               src={car.images[0]}
                               alt={`${car.make} ${car.model}`}
                               height={40}
                               width={40}
-                              className="w-full h-full object-cover"
+                              className="h-full w-full object-cover"
                               priority
                             />
                           ) : (
-                            <div className="w-full h-full bg-gray-200 flex items-center justify-center">
+                            <div className="flex h-full w-full items-center justify-center bg-gray-200">
                               <CarIcon className="h-6 w-6 text-gray-400" />
                             </div>
                           )}
@@ -269,12 +269,12 @@ export const CarsList = () => {
                         <Button
                           variant="ghost"
                           size="sm"
-                          className="p-0 h-9 w-9"
+                          className="h-9 w-9 p-0"
                           onClick={() => handleToggleFeaturedClick(car)}
                           disabled={updatingStatus}
                         >
                           {car.featured ? (
-                            <Star className="h-5 w-5 text-amber-500 fill-amber-500" />
+                            <Star className="h-5 w-5 fill-amber-500 text-amber-500" />
                           ) : (
                             <StarOff className="h-5 w-5 text-gray-400" />
                           )}
@@ -287,7 +287,7 @@ export const CarsList = () => {
                               <Button
                                 variant="ghost"
                                 size="sm"
-                                className="p-0 h-8 w-8"
+                                className="h-8 w-8 p-0"
                               />
                             }
                           >
@@ -378,12 +378,12 @@ export const CarsList = () => {
               </Table>
             </div>
           ) : (
-            <div className="flex flex-col items-center justify-center py-12 px-4 text-center">
-              <CarIcon className="h-12 w-12 text-gray-300 mb-4" />
-              <h3 className="text-lg font-medium text-gray-900 mb-1">
+            <div className="flex flex-col items-center justify-center px-4 py-12 text-center">
+              <CarIcon className="mb-4 h-12 w-12 text-gray-300" />
+              <h3 className="mb-1 font-medium text-gray-900 text-lg">
                 No cars found
               </h3>
-              <p className="text-gray-500 mb-4">
+              <p className="mb-4 text-gray-500">
                 {search
                   ? "No cars match your search criteria"
                   : "Your inventory is empty. Add cars to get started."}

@@ -1,4 +1,4 @@
-import { ROUTES, PROTECTED_ROUTES } from "@/constants/routes";
+import { PROTECTED_ROUTES, ROUTES } from "@/constants/routes";
 
 describe("ROUTES constants", () => {
   it("builds dynamic routes for cars and admin", () => {

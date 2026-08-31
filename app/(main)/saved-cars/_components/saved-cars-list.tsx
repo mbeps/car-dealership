@@ -1,12 +1,12 @@
 "use client";
 
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import { CarCard } from "@/components/car-card";
 import { Heart } from "lucide-react";
-import { ActionResponse } from "@/types/common/action-response";
-import { SerializedCar } from "@/types/car/serialized-car";
+import Link from "next/link";
+import { CarCard } from "@/components/car-card";
+import { Button } from "@/components/ui/button";
 import { ROUTES } from "@/constants/routes";
+import type { SerializedCar } from "@/types/car/serialized-car";
+import type { ActionResponse } from "@/types/common/action-response";
 
 /**
  * Renders the user's saved cars.
@@ -24,14 +24,14 @@ export function SavedCarsList({
   initialData: ActionResponse<SerializedCar[]>;
 }) {
   // No saved cars
-  if (!initialData || !initialData.success || initialData.data.length === 0) {
+  if (!initialData?.success || initialData.data.length === 0) {
     return (
-      <div className="min-h-[400px] flex flex-col items-center justify-center text-center p-8 border rounded-lg bg-gray-50">
-        <div className="bg-gray-100 p-4 rounded-full mb-4">
+      <div className="flex min-h-[400px] flex-col items-center justify-center rounded-lg border bg-gray-50 p-8 text-center">
+        <div className="mb-4 rounded-full bg-gray-100 p-4">
           <Heart className="h-8 w-8 text-gray-500" />
         </div>
-        <h3 className="text-lg font-medium mb-2">No Saved Cars</h3>
-        <p className="text-gray-500 mb-6 max-w-md">
+        <h3 className="mb-2 font-medium text-lg">No Saved Cars</h3>
+        <p className="mb-6 max-w-md text-gray-500">
           You haven't saved any cars yet. Browse our listings and click the
           heart icon to save cars for later.
         </p>
@@ -44,7 +44,7 @@ export function SavedCarsList({
 
   // Display saved cars
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
       {initialData.success &&
         initialData.data.map((car: SerializedCar) => (
           <CarCard key={car.id} car={{ ...car, wishlisted: true }} />

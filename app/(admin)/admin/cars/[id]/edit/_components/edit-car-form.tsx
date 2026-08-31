@@ -1,13 +1,13 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
-import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
-import { ROUTES } from "@/constants/routes";
-
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+import { updateCar } from "@/actions/cars/update-car";
+import { CarFormFields } from "@/components/car-form";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -16,13 +16,12 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { updateCar } from "@/actions/cars/update-car";
+import { ROUTES } from "@/constants/routes";
 import useFetch from "@/hooks/use-fetch";
-import { carFormSchema, CarFormData } from "@/schemas/car-form";
-import { CarColorOption } from "@/types/car-color/car-color-option";
-import { CarMakeOption } from "@/types/car-make/car-make-option";
-import { SerializedCar } from "@/types/car/serialized-car";
-import { CarFormFields } from "@/components/car-form";
+import { type CarFormData, carFormSchema } from "@/schemas/car-form";
+import type { SerializedCar } from "@/types/car/serialized-car";
+import type { CarColorOption } from "@/types/car-color/car-color-option";
+import type { CarMakeOption } from "@/types/car-make/car-make-option";
 
 /**
  * Props for the car edit form.
@@ -122,10 +121,10 @@ export const EditCarForm = ({ car, carMakes, carColors }: EditCarFormProps) => {
     // Prepare data for server action
     const carData = {
       ...data,
-      year: parseInt(data.year),
+      year: parseInt(data.year, 10),
       price: parseFloat(data.price),
-      mileage: parseInt(data.mileage),
-      seats: data.seats ? parseInt(data.seats) : undefined,
+      mileage: parseInt(data.mileage, 10),
+      seats: data.seats ? parseInt(data.seats, 10) : undefined,
     };
 
     const formData = new FormData();

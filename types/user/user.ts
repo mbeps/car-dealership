@@ -1,4 +1,4 @@
-import { UserRole } from "@/enums/user-role";
+import type { UserRole } from "@/enums/user-role";
 
 /**
  * User type (extended from Supabase auth)

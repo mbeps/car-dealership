@@ -1,13 +1,10 @@
 "use client";
 
-import { useState } from "react";
-import Link from "next/link";
-import Image from "next/image";
 import { format, parseISO } from "date-fns";
-import { Calendar, Car, Clock, User, Loader2, ArrowRight } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { ArrowRight, Calendar, Car, Clock, Loader2, User } from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
+import { useState } from "react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -18,10 +15,13 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { TestDriveBookingWithCar } from "@/types/test-drive/test-drive-booking-with-car";
-import { TestDriveBookingWithUser } from "@/types/test-drive/test-drive-booking-with-user";
-import { BookingStatusEnum as BookingStatus } from "@/enums/booking-status";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 import { ROUTES } from "@/constants/routes";
+import { BookingStatusEnum as BookingStatus } from "@/enums/booking-status";
+import type { TestDriveBookingWithCar } from "@/types/test-drive/test-drive-booking-with-car";
+import type { TestDriveBookingWithUser } from "@/types/test-drive/test-drive-booking-with-user";
 
 /**
  * Formats a stored time string as a readable AM/PM value.
@@ -125,14 +125,14 @@ export function TestDriveCard({
     <>
       <Card
         className={`overflow-hidden ${
-          isPast ? "opacity-80 hover:opacity-100 transition-opacity" : ""
+          isPast ? "opacity-80 transition-opacity hover:opacity-100" : ""
         }`}
       >
         <div className="flex flex-col sm:flex-row">
           {/* Car Image - Left */}
-          <div className="sm:w-1/4 relative h-40 sm:h-auto">
+          <div className="relative h-40 sm:h-auto sm:w-1/4">
             {booking.car.images && booking.car.images.length > 0 ? (
-              <div className="relative w-full h-full">
+              <div className="relative h-full w-full">
                 <Image
                   src={booking.car.images[0]}
                   alt={`${booking.car.make} ${booking.car.model}`}
@@ -141,7 +141,7 @@ export function TestDriveCard({
                 />
               </div>
             ) : (
-              <div className="w-full h-full bg-gray-200 flex items-center justify-center">
+              <div className="flex h-full w-full items-center justify-center bg-gray-200">
                 <Car className="h-12 w-12 text-gray-400" />
               </div>
             )}
@@ -152,29 +152,29 @@ export function TestDriveCard({
 
           {/* Booking Details - Middle */}
           <div className="p-4 sm:w-1/2 sm:flex-1">
-            <div className="hidden sm:block mb-2">
+            <div className="mb-2 hidden sm:block">
               {getStatusBadge(booking.status)}
             </div>
 
-            <h3 className="text-lg font-bold mb-1">
+            <h3 className="mb-1 font-bold text-lg">
               {booking.car.year} {booking.car.make} {booking.car.model}{" "}
             </h3>
             {renderStatusSelector()}
 
-            <div className="space-y-2 my-2">
+            <div className="my-2 space-y-2">
               <div className="flex items-center text-gray-600">
-                <Calendar className="h-4 w-4 mr-2" />
+                <Calendar className="mr-2 h-4 w-4" />
                 {format(new Date(booking.bookingDate), "EEEE, MMMM d, yyyy")}
               </div>
               <div className="flex items-center text-gray-600">
-                <Clock className="h-4 w-4 mr-2" />
+                <Clock className="mr-2 h-4 w-4" />
                 {formatTime(booking.startTime)} - {formatTime(booking.endTime)}
               </div>
 
               {/* Show customer info in admin view */}
               {isAdmin && hasUser(booking) && booking.user && (
                 <div className="flex items-center text-gray-600">
-                  <User className="h-4 w-4 mr-2" />
+                  <User className="mr-2 h-4 w-4" />
                   {booking.user.name || booking.user.email}
                 </div>
               )}
@@ -183,10 +183,10 @@ export function TestDriveCard({
 
           {/* Action Buttons - Right */}
           {showActions && (
-            <div className="p-4 border-t sm:border-t-0 sm:border-l sm:w-1/4 flex flex-col justify-center gap-2">
+            <div className="flex flex-col justify-center gap-2 border-t p-4 sm:w-1/4 sm:border-t-0 sm:border-l">
               {/* Show notes if any */}
               {booking.notes && (
-                <div className="bg-gray-50 p-2 rounded text-sm w-full">
+                <div className="w-full rounded bg-gray-50 p-2 text-sm">
                   <p className="font-medium">Notes:</p>
                   <p className="text-gray-600">{booking.notes}</p>
                 </div>
