@@ -244,7 +244,7 @@ export function CarFormFields({
               {selectedMake ? selectedMake.name : "Select make"}
               <ChevronsUpDown className="ml-1 h-4 w-4 shrink-0 opacity-50" />
             </PopoverTrigger>
-            <PopoverContent className="w-[280px] p-0">
+            <PopoverContent className="w-70 p-0">
               <Command>
                 <CommandInput placeholder="Search make..." />
                 <CommandList>
@@ -369,7 +369,7 @@ export function CarFormFields({
               {selectedColor ? selectedColor.name : "Select color"}
               <ChevronsUpDown className="ml-1 h-4 w-4 shrink-0 opacity-50" />
             </PopoverTrigger>
-            <PopoverContent className="w-[280px] p-0">
+            <PopoverContent className="w-70 p-0">
               <Command>
                 <CommandInput placeholder="Search color..." />
                 <CommandList>
