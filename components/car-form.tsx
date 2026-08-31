@@ -1,30 +1,14 @@
 "use client";
 
-import { useCallback, useState, useEffect } from "react";
-import { UseFormReturn } from "react-hook-form";
-import { toast } from "sonner";
-import { X, Upload, Check, ChevronsUpDown, Plus } from "lucide-react";
-import { useDropzone } from "react-dropzone";
+import { Check, ChevronsUpDown, Plus, Upload, X } from "lucide-react";
 import Image from "next/image";
-
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
+import { useCallback, useEffect, useState } from "react";
+import { useDropzone } from "react-dropzone";
+import type { UseFormReturn } from "react-hook-form";
+import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Label } from "@/components/ui/label";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
 import {
   Command,
   CommandEmpty,
@@ -33,12 +17,27 @@ import {
   CommandItem,
   CommandList,
 } from "@/components/ui/command";
-import { cn } from "@/lib/utils";
-import { CarColorOption } from "@/types/car-color/car-color-option";
-import { CarMakeOption } from "@/types/car-make/car-make-option";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
 import { CarStatusEnum as CarStatus } from "@/enums/car-status";
-import { CarFormData } from "@/schemas/car-form";
 import { env, FILE_LIMITS } from "@/lib/env";
+import { cn } from "@/lib/utils";
+import type { CarFormData } from "@/schemas/car-form";
+import type { CarColorOption } from "@/types/car-color/car-color-option";
+import type { CarMakeOption } from "@/types/car-make/car-make-option";
 
 // Predefined options
 const fuelTypes = ["Petrol", "Diesel", "Electric", "Hybrid", "Plug-in Hybrid"];
@@ -119,7 +118,9 @@ export function CarFormFields({
   // Clean up object URLs on unmount or when newImages changes
   useEffect(() => {
     return () => {
-      imagePreviews.forEach((url) => URL.revokeObjectURL(url));
+      imagePreviews.forEach((url) => {
+        URL.revokeObjectURL(url);
+      });
     };
   }, [imagePreviews]);
 
@@ -283,7 +284,7 @@ export function CarFormFields({
             value={selectedMakeId || ""}
           />
           {errors.carMakeId && (
-            <p className="text-xs text-red-500">{errors.carMakeId.message}</p>
+            <p className="text-red-500 text-xs">{errors.carMakeId.message}</p>
           )}
         </div>
 
@@ -298,7 +299,7 @@ export function CarFormFields({
             suppressHydrationWarning
           />
           {errors.model && (
-            <p className="text-xs text-red-500">{errors.model.message}</p>
+            <p className="text-red-500 text-xs">{errors.model.message}</p>
           )}
         </div>
 
@@ -313,7 +314,7 @@ export function CarFormFields({
             suppressHydrationWarning
           />
           {errors.year && (
-            <p className="text-xs text-red-500">{errors.year.message}</p>
+            <p className="text-red-500 text-xs">{errors.year.message}</p>
           )}
         </div>
 
@@ -328,7 +329,7 @@ export function CarFormFields({
             suppressHydrationWarning
           />
           {errors.price && (
-            <p className="text-xs text-red-500">{errors.price.message}</p>
+            <p className="text-red-500 text-xs">{errors.price.message}</p>
           )}
         </div>
 
@@ -343,7 +344,7 @@ export function CarFormFields({
             suppressHydrationWarning
           />
           {errors.mileage && (
-            <p className="text-xs text-red-500">{errors.mileage.message}</p>
+            <p className="text-red-500 text-xs">{errors.mileage.message}</p>
           )}
         </div>
 
@@ -408,7 +409,7 @@ export function CarFormFields({
             value={selectedColorId || ""}
           />
           {errors.carColorId && (
-            <p className="text-xs text-red-500">{errors.carColorId.message}</p>
+            <p className="text-red-500 text-xs">{errors.carColorId.message}</p>
           )}
         </div>
 
@@ -434,7 +435,7 @@ export function CarFormFields({
             </SelectContent>
           </Select>
           {errors.fuelType && (
-            <p className="text-xs text-red-500">{errors.fuelType.message}</p>
+            <p className="text-red-500 text-xs">{errors.fuelType.message}</p>
           )}
         </div>
 
@@ -462,7 +463,7 @@ export function CarFormFields({
             </SelectContent>
           </Select>
           {errors.transmission && (
-            <p className="text-xs text-red-500">
+            <p className="text-red-500 text-xs">
               {errors.transmission.message}
             </p>
           )}
@@ -490,7 +491,7 @@ export function CarFormFields({
             </SelectContent>
           </Select>
           {errors.bodyType && (
-            <p className="text-xs text-red-500">{errors.bodyType.message}</p>
+            <p className="text-red-500 text-xs">{errors.bodyType.message}</p>
           )}
         </div>
 
@@ -505,7 +506,7 @@ export function CarFormFields({
             suppressHydrationWarning
           />
           {errors.numberPlate && (
-            <p className="text-xs text-red-500">{errors.numberPlate.message}</p>
+            <p className="text-red-500 text-xs">{errors.numberPlate.message}</p>
           )}
         </div>
 
@@ -513,7 +514,7 @@ export function CarFormFields({
         <div className="space-y-2">
           <Label htmlFor="seats">
             Number of Seats{" "}
-            <span className="text-sm text-gray-500">(Optional)</span>
+            <span className="text-gray-500 text-sm">(Optional)</span>
           </Label>
           <Input
             id="seats"
@@ -523,7 +524,7 @@ export function CarFormFields({
             suppressHydrationWarning
           />
           {errors.seats && (
-            <p className="text-xs text-red-500">{errors.seats.message}</p>
+            <p className="text-red-500 text-xs">{errors.seats.message}</p>
           )}
         </div>
 
@@ -562,7 +563,7 @@ export function CarFormFields({
           suppressHydrationWarning
         />
         {errors.description && (
-          <p className="text-xs text-red-500">{errors.description.message}</p>
+          <p className="text-red-500 text-xs">{errors.description.message}</p>
         )}
       </div>
 
@@ -577,7 +578,7 @@ export function CarFormFields({
         />
         <div className="space-y-1 leading-none">
           <Label htmlFor="featured">Feature this car</Label>
-          <p className="text-sm text-gray-500">
+          <p className="text-gray-500 text-sm">
             Featured cars appear on the homepage
           </p>
         </div>
@@ -605,7 +606,7 @@ export function CarFormFields({
           </Button>
         </div>
         {watch("features") && watch("features").length > 0 && (
-          <div className="flex flex-wrap gap-2 mt-2">
+          <div className="mt-2 flex flex-wrap gap-2">
             {watch("features").map((feature, index) => (
               <Badge
                 key={index}
@@ -624,7 +625,7 @@ export function CarFormFields({
             ))}
           </div>
         )}
-        <p className="text-sm text-gray-500">
+        <p className="text-gray-500 text-sm">
           Add features one by one. Press Enter or click + to add.
         </p>
       </div>
@@ -638,7 +639,7 @@ export function CarFormFields({
         {/* Existing Images */}
         {existingImages.length > 0 && (
           <div className="mt-2">
-            <h3 className="mb-2 text-sm font-medium">
+            <h3 className="mb-2 font-medium text-sm">
               Current Images ({existingImages.length})
             </h3>
             <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
@@ -657,7 +658,7 @@ export function CarFormFields({
                       type="button"
                       size="icon"
                       variant="destructive"
-                      className="absolute right-1 top-1 h-6 w-6 opacity-0 transition-opacity group-hover:opacity-100"
+                      className="absolute top-1 right-1 h-6 w-6 opacity-0 transition-opacity group-hover:opacity-100"
                       onClick={() => onExistingImageRemove(image)}
                     >
                       <X className="h-3 w-3" />
@@ -673,24 +674,24 @@ export function CarFormFields({
         <div className={existingImages.length > 0 ? "mt-4" : "mt-2"}>
           <div
             {...getMultiImageRootProps()}
-            className={`border-2 border-dashed rounded-lg p-6 text-center cursor-pointer hover:bg-gray-50 transition ${
+            className={`cursor-pointer rounded-lg border-2 border-dashed p-6 text-center transition hover:bg-gray-50 ${
               imageError ? "border-red-500" : "border-gray-300"
             }`}
           >
             <input {...getMultiImageInputProps()} />
             <div className="flex flex-col items-center justify-center">
               <Upload className="mb-3 h-12 w-12 text-gray-400" />
-              <span className="text-sm text-gray-600">
+              <span className="text-gray-600 text-sm">
                 Drag & drop or click to upload{" "}
                 {existingImages.length > 0 ? "new " : ""}images
               </span>
-              <span className="mt-1 text-xs text-gray-500">
+              <span className="mt-1 text-gray-500 text-xs">
                 (JPG, PNG, WebP, max 1MB each)
               </span>
             </div>
           </div>
           {imageError && (
-            <p className="mt-1 text-xs text-red-500">{imageError}</p>
+            <p className="mt-1 text-red-500 text-xs">{imageError}</p>
           )}
           {uploadProgress > 0 && (
             <div className="mt-2 h-2.5 w-full rounded-full bg-gray-200">
@@ -705,7 +706,7 @@ export function CarFormFields({
         {/* New Images Preview */}
         {imagePreviews.length > 0 && (
           <div className="mt-4">
-            <h3 className="mb-2 text-sm font-medium">
+            <h3 className="mb-2 font-medium text-sm">
               {existingImages.length > 0 ? "New " : "Uploaded "}Images (
               {imagePreviews.length})
             </h3>
@@ -726,7 +727,7 @@ export function CarFormFields({
                     type="button"
                     size="icon"
                     variant="destructive"
-                    className="absolute right-1 top-1 h-6 w-6 opacity-0 transition-opacity group-hover:opacity-100"
+                    className="absolute top-1 right-1 h-6 w-6 opacity-0 transition-opacity group-hover:opacity-100"
                     onClick={() => removeNewImage(index)}
                   >
                     <X className="h-3 w-3" />
@@ -739,7 +740,7 @@ export function CarFormFields({
 
         {/* Total Images Count */}
         {existingImages.length > 0 && (
-          <p className="mt-2 text-sm text-gray-600">
+          <p className="mt-2 text-gray-600 text-sm">
             Total images: {totalImages}
           </p>
         )}

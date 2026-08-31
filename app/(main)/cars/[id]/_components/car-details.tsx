@@ -1,39 +1,5 @@
 "use client";
 
-import { toggleSavedCar } from "@/actions/cars/toggle-saved-car";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { useCarAdmin } from "@/hooks/use-car-admin";
-import useFetch from "@/hooks/use-fetch";
-import { useUser } from "@/hooks/useUser";
-import useAuthModal from "@/hooks/useAuthModal";
-import { formatCurrency } from "@/lib/helpers/format-currency";
-import { ROUTES } from "@/constants/routes";
-import { SerializedCar } from "@/types/car/serialized-car";
-import { SerializedDealershipInfo } from "@/types/dealership/serialized-dealership-info";
-import { SerializedWorkingHour } from "@/types/dealership/serialized-working-hour";
-import { UserTestDrive } from "@/types/test-drive/user-test-drive";
-import { DayOfWeekEnum as DayOfWeek } from "@/enums/day-of-week";
-import { CarStatusEnum as CarStatus } from "@/enums/car-status";
 import { format } from "date-fns";
 import {
   Calendar,
@@ -50,11 +16,45 @@ import {
   Share2,
   Trash2,
 } from "lucide-react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
+import { toggleSavedCar } from "@/actions/cars/toggle-saved-car";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { ROUTES } from "@/constants/routes";
+import { CarStatusEnum as CarStatus } from "@/enums/car-status";
+import { DayOfWeekEnum as DayOfWeek } from "@/enums/day-of-week";
+import { useCarAdmin } from "@/hooks/use-car-admin";
+import useFetch from "@/hooks/use-fetch";
+import useAuthModal from "@/hooks/useAuthModal";
+import { useUser } from "@/hooks/useUser";
+import { formatCurrency } from "@/lib/helpers/format-currency";
+import type { SerializedCar } from "@/types/car/serialized-car";
+import type { SerializedDealershipInfo } from "@/types/dealership/serialized-dealership-info";
+import type { SerializedWorkingHour } from "@/types/dealership/serialized-working-hour";
+import type { UserTestDrive } from "@/types/test-drive/user-test-drive";
 import { CarGallery } from "./car-gallery";
-import Link from "next/link";
 
 /**
  * Car detail page content.
@@ -179,7 +179,7 @@ export function CarDetails({
 
   return (
     <div>
-      <div className="flex flex-col lg:flex-row gap-8">
+      <div className="flex flex-col gap-8 lg:flex-row">
         {/* Image Gallery */}
         <div className="w-full lg:w-7/12">
           <CarGallery
@@ -193,31 +193,31 @@ export function CarDetails({
         {/* Car Details */}
         <div className="w-full lg:w-5/12">
           <div className="flex items-center justify-between">
-            <Badge className="mb-2 text-lg px-3 py-1.5 font-mono tracking-wider">
+            <Badge className="mb-2 px-3 py-1.5 font-mono text-lg tracking-wider">
               {car.numberPlate}
             </Badge>
           </div>
 
-          <h1 className="text-4xl font-bold mb-1">
+          <h1 className="mb-1 font-bold text-4xl">
             {car.year} {car.make} {car.model}
           </h1>
 
-          <div className="text-2xl font-bold text-blue-600">
+          <div className="font-bold text-2xl text-blue-600">
             {formatCurrency(car.price)}
           </div>
 
           {/* Quick Stats */}
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-4 my-6">
+          <div className="my-6 grid grid-cols-2 gap-4 md:grid-cols-3">
             <div className="flex items-center gap-2">
-              <Gauge className="text-gray-500 h-5 w-5" />
+              <Gauge className="h-5 w-5 text-gray-500" />
               <span>{car.mileage.toLocaleString()} miles</span>
             </div>
             <div className="flex items-center gap-2">
-              <Fuel className="text-gray-500 h-5 w-5" />
+              <Fuel className="h-5 w-5 text-gray-500" />
               <span>{car.fuelType}</span>
             </div>
             <div className="flex items-center gap-2">
-              <Car className="text-gray-500 h-5 w-5" />
+              <Car className="h-5 w-5 text-gray-500" />
               <span>{car.transmission}</span>
             </div>
           </div>
@@ -226,16 +226,16 @@ export function CarDetails({
           {!isAdmin && (
             <Card className="my-6">
               <CardContent className="p-4">
-                <h3 className="text-lg font-semibold mb-4">Have Questions?</h3>
+                <h3 className="mb-4 font-semibold text-lg">Have Questions?</h3>
                 <div className="grid grid-cols-3 gap-3">
                   {/* Email Button */}
                   <a
                     href={`mailto:${testDriveInfo.dealership?.email || ""}`}
-                    className="flex flex-col items-center gap-2 p-3 rounded-lg border hover:bg-gray-50 transition-colors"
+                    className="flex flex-col items-center gap-2 rounded-lg border p-3 transition-colors hover:bg-gray-50"
                   >
                     <Mail className="h-5 w-5 text-blue-600" />
-                    <span className="text-xs font-medium">Email</span>
-                    <span className="text-xs text-gray-600 text-center break-all">
+                    <span className="font-medium text-xs">Email</span>
+                    <span className="break-all text-center text-gray-600 text-xs">
                       {testDriveInfo.dealership?.email || "N/A"}
                     </span>
                   </a>
@@ -243,11 +243,11 @@ export function CarDetails({
                   {/* Phone Button */}
                   <a
                     href={`tel:${testDriveInfo.dealership?.phone || ""}`}
-                    className="flex flex-col items-center gap-2 p-3 rounded-lg border hover:bg-gray-50 transition-colors"
+                    className="flex flex-col items-center gap-2 rounded-lg border p-3 transition-colors hover:bg-gray-50"
                   >
                     <Phone className="h-5 w-5 text-blue-600" />
-                    <span className="text-xs font-medium">Phone</span>
-                    <span className="text-xs text-gray-600 text-center">
+                    <span className="font-medium text-xs">Phone</span>
+                    <span className="text-center text-gray-600 text-xs">
                       {testDriveInfo.dealership?.phone || "N/A"}
                     </span>
                   </a>
@@ -262,11 +262,11 @@ export function CarDetails({
                     }`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex flex-col items-center gap-2 p-3 rounded-lg border hover:bg-gray-50 transition-colors"
+                    className="flex flex-col items-center gap-2 rounded-lg border p-3 transition-colors hover:bg-gray-50"
                   >
                     <MessageCircle className="h-5 w-5 text-blue-600" />
-                    <span className="text-xs font-medium">WhatsApp</span>
-                    <span className="text-xs text-gray-600 text-center">
+                    <span className="font-medium text-xs">WhatsApp</span>
+                    <span className="text-center text-gray-600 text-xs">
                       {testDriveInfo.dealership?.whatsappPhone || "N/A"}
                     </span>
                   </a>
@@ -287,81 +287,78 @@ export function CarDetails({
 
           {/* Book Test Drive Button */}
           {car.status !== CarStatus.SOLD &&
-            car.status !== CarStatus.UNAVAILABLE && (
-              <>
-                {isAdmin ? (
-                  <div className="space-y-3">
-                    <Button
-                      className="w-full py-6 text-lg"
-                      onClick={handleAdminTestDrives}
-                    >
-                      <Calendar className="mr-2 h-5 w-5" />
-                      Manage Test Drives
-                    </Button>
+            car.status !== CarStatus.UNAVAILABLE &&
+            (isAdmin ? (
+              <div className="space-y-3">
+                <Button
+                  className="w-full py-6 text-lg"
+                  onClick={handleAdminTestDrives}
+                >
+                  <Calendar className="mr-2 h-5 w-5" />
+                  Manage Test Drives
+                </Button>
 
-                    {/* Admin Controls */}
-                    <div className="flex gap-2">
-                      <Button
-                        variant="outline"
-                        className="flex-1"
-                        onClick={handleEditCar}
-                      >
-                        <Pencil className="mr-2 h-4 w-4" />
-                        Edit Car
-                      </Button>
-
-                      <Select
-                        value={car.status}
-                        onValueChange={handleStatusChange}
-                        disabled={updatingStatus}
-                      >
-                        <SelectTrigger className="flex-1">
-                          <SelectValue placeholder="Status" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value={CarStatus.AVAILABLE}>
-                            Available
-                          </SelectItem>
-                          <SelectItem value={CarStatus.SOLD}>Sold</SelectItem>
-                          <SelectItem value={CarStatus.UNAVAILABLE}>
-                            Unavailable
-                          </SelectItem>
-                        </SelectContent>
-                      </Select>
-
-                      <Button
-                        variant="destructive"
-                        size="icon"
-                        onClick={() => setShowDeleteDialog(true)}
-                        disabled={deletingCar}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </div>
-                ) : (
+                {/* Admin Controls */}
+                <div className="flex gap-2">
                   <Button
-                    className="w-full py-6 text-lg"
-                    onClick={handleBookTestDrive}
-                    disabled={!!testDriveInfo.userTestDrive}
+                    variant="outline"
+                    className="flex-1"
+                    onClick={handleEditCar}
                   >
-                    <Calendar className="mr-2 h-5 w-5" />
-                    {testDriveInfo.userTestDrive
-                      ? `Booked for ${format(
-                          new Date(testDriveInfo.userTestDrive.bookingDate),
-                          "EEEE, MMMM d, yyyy",
-                        )}`
-                      : "Book Test Drive"}
+                    <Pencil className="mr-2 h-4 w-4" />
+                    Edit Car
                   </Button>
-                )}
-              </>
-            )}
+
+                  <Select
+                    value={car.status}
+                    onValueChange={handleStatusChange}
+                    disabled={updatingStatus}
+                  >
+                    <SelectTrigger className="flex-1">
+                      <SelectValue placeholder="Status" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value={CarStatus.AVAILABLE}>
+                        Available
+                      </SelectItem>
+                      <SelectItem value={CarStatus.SOLD}>Sold</SelectItem>
+                      <SelectItem value={CarStatus.UNAVAILABLE}>
+                        Unavailable
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
+
+                  <Button
+                    variant="destructive"
+                    size="icon"
+                    onClick={() => setShowDeleteDialog(true)}
+                    disabled={deletingCar}
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
+            ) : (
+              <Button
+                className="w-full py-6 text-lg"
+                onClick={handleBookTestDrive}
+                disabled={!!testDriveInfo.userTestDrive}
+              >
+                <Calendar className="mr-2 h-5 w-5" />
+                {testDriveInfo.userTestDrive
+                  ? `Booked for ${format(
+                      new Date(testDriveInfo.userTestDrive.bookingDate),
+                      "EEEE, MMMM d, yyyy",
+                    )}`
+                  : "Book Test Drive"}
+              </Button>
+            ))}
 
           {/* Secondary Actions (moved) - take full available width */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 mt-4 gap-4 w-full">
+          <div className="mt-4 grid w-full grid-cols-1 gap-4 sm:grid-cols-3">
             <Button
               variant="outline"
-              className={`w-full flex items-center justify-center gap-2 ${
+              className={`flex w-full items-center justify-center gap-2 ${
                 isWishlisted ? "text-red-500" : ""
               }`}
               onClick={handleSaveCar}
@@ -375,7 +372,7 @@ export function CarDetails({
 
             <Button
               variant="outline"
-              className="w-full flex items-center justify-center gap-2"
+              className="flex w-full items-center justify-center gap-2"
               onClick={handleShare}
             >
               <Share2 className="h-5 w-5" />
@@ -384,7 +381,7 @@ export function CarDetails({
 
             <Button
               variant="outline"
-              className="w-full flex items-center justify-center gap-2"
+              className="flex w-full items-center justify-center gap-2"
               render={
                 <Link
                   href={`https://www.check-mot.service.gov.uk/results?registration=${car.numberPlate}`}
@@ -424,21 +421,21 @@ export function CarDetails({
       </AlertDialog>
 
       {/* Details & Features Section */}
-      <div className="mt-12 p-6 bg-white rounded-lg shadow-sm">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+      <div className="mt-12 rounded-lg bg-white p-6 shadow-sm">
+        <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
           <div>
-            <h3 className="text-2xl font-bold mb-6">Description</h3>
+            <h3 className="mb-6 font-bold text-2xl">Description</h3>
             <p className="whitespace-pre-line text-gray-700">
               {car.description}
             </p>
           </div>
           <div>
-            <h3 className="text-2xl font-bold mb-6">Features</h3>
+            <h3 className="mb-6 font-bold text-2xl">Features</h3>
             {car.features && car.features.length > 0 ? (
               <ul className="grid grid-cols-1 gap-2">
                 {car.features.map((feature, index) => (
                   <li key={index} className="flex items-center gap-2">
-                    <span className="h-2 w-2 bg-blue-600 rounded-full"></span>
+                    <span className="h-2 w-2 rounded-full bg-blue-600"></span>
                     {feature}
                   </li>
                 ))}
@@ -451,46 +448,46 @@ export function CarDetails({
       </div>
 
       {/* Specifications Section */}
-      <div className="mt-8 p-6 bg-white rounded-lg shadow-sm">
-        <h2 className="text-2xl font-bold mb-6">Specifications</h2>
-        <div className="bg-gray-50 rounded-lg p-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-y-4 gap-x-8">
-            <div className="flex justify-between py-2 border-b">
+      <div className="mt-8 rounded-lg bg-white p-6 shadow-sm">
+        <h2 className="mb-6 font-bold text-2xl">Specifications</h2>
+        <div className="rounded-lg bg-gray-50 p-6">
+          <div className="grid grid-cols-1 gap-x-8 gap-y-4 md:grid-cols-2">
+            <div className="flex justify-between border-b py-2">
               <span className="text-gray-600">Make</span>
               <span className="font-medium">{car.make}</span>
             </div>
-            <div className="flex justify-between py-2 border-b">
+            <div className="flex justify-between border-b py-2">
               <span className="text-gray-600">Model</span>
               <span className="font-medium">{car.model}</span>
             </div>
-            <div className="flex justify-between py-2 border-b">
+            <div className="flex justify-between border-b py-2">
               <span className="text-gray-600">Year</span>
               <span className="font-medium">{car.year}</span>
             </div>
-            <div className="flex justify-between py-2 border-b">
+            <div className="flex justify-between border-b py-2">
               <span className="text-gray-600">Body Type</span>
               <span className="font-medium">{car.bodyType}</span>
             </div>
-            <div className="flex justify-between py-2 border-b">
+            <div className="flex justify-between border-b py-2">
               <span className="text-gray-600">Fuel Type</span>
               <span className="font-medium">{car.fuelType}</span>
             </div>
-            <div className="flex justify-between py-2 border-b">
+            <div className="flex justify-between border-b py-2">
               <span className="text-gray-600">Transmission</span>
               <span className="font-medium">{car.transmission}</span>
             </div>
-            <div className="flex justify-between py-2 border-b">
+            <div className="flex justify-between border-b py-2">
               <span className="text-gray-600">Mileage</span>
               <span className="font-medium">
                 {car.mileage.toLocaleString()} miles
               </span>
             </div>
-            <div className="flex justify-between py-2 border-b">
+            <div className="flex justify-between border-b py-2">
               <span className="text-gray-600">Color</span>
               <span className="font-medium">{car.color}</span>
             </div>
             {car.seats && (
-              <div className="flex justify-between py-2 border-b">
+              <div className="flex justify-between border-b py-2">
                 <span className="text-gray-600">Seats</span>
                 <span className="font-medium">{car.seats}</span>
               </div>
@@ -500,21 +497,21 @@ export function CarDetails({
       </div>
 
       {/* Dealership Location Section */}
-      <div className="mt-8 p-6 bg-white rounded-lg shadow-sm">
-        <h2 className="text-2xl font-bold mb-6">Dealership Location</h2>
-        <div className="bg-gray-50 rounded-lg p-6">
-          <div className="flex flex-col md:flex-row gap-6 justify-between">
+      <div className="mt-8 rounded-lg bg-white p-6 shadow-sm">
+        <h2 className="mb-6 font-bold text-2xl">Dealership Location</h2>
+        <div className="rounded-lg bg-gray-50 p-6">
+          <div className="flex flex-col justify-between gap-6 md:flex-row">
             {/* Dealership Name and Address */}
-            <div className="flex items-start gap-3 w-full">
-              <div className="flex flex-col gap-5 flex-1 text-lg">
+            <div className="flex w-full items-start gap-3">
+              <div className="flex flex-1 flex-col gap-5 text-lg">
                 <div className="flex items-start gap-3">
-                  <LocateFixed className="h-5 w-5 text-blue-600 mt-0.5 shrink-0" />
+                  <LocateFixed className="mt-0.5 h-5 w-5 shrink-0 text-blue-600" />
                   <h4 className="font-medium">
                     {testDriveInfo.dealership?.name}
                   </h4>
                 </div>
                 <div className="flex items-start gap-3">
-                  <MapPin className="h-5 w-5 text-gray-500 mt-0.5 shrink-0" />
+                  <MapPin className="mt-0.5 h-5 w-5 shrink-0 text-gray-500" />
                   {testDriveInfo.dealership?.address ? (
                     <a
                       href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
@@ -522,7 +519,7 @@ export function CarDetails({
                       )}`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-gray-600 hover:text-blue-600 hover:underline transition-colors"
+                      className="text-gray-600 transition-colors hover:text-blue-600 hover:underline"
                     >
                       {testDriveInfo.dealership.address}
                     </a>
@@ -531,11 +528,11 @@ export function CarDetails({
                   )}
                 </div>
                 <div className="flex items-center gap-3">
-                  <Phone className="h-5 w-5 text-gray-500 shrink-0" />
+                  <Phone className="h-5 w-5 shrink-0 text-gray-500" />
                   {testDriveInfo.dealership?.phone ? (
                     <a
                       href={`tel:${testDriveInfo.dealership.phone}`}
-                      className="text-gray-600 hover:text-blue-600 hover:underline transition-colors"
+                      className="text-gray-600 transition-colors hover:text-blue-600 hover:underline"
                     >
                       {testDriveInfo.dealership.phone}
                     </a>
@@ -544,11 +541,11 @@ export function CarDetails({
                   )}
                 </div>
                 <div className="flex items-center gap-3">
-                  <Mail className="h-5 w-5 text-gray-500 shrink-0" />
+                  <Mail className="h-5 w-5 shrink-0 text-gray-500" />
                   {testDriveInfo.dealership?.email ? (
                     <a
                       href={`mailto:${testDriveInfo.dealership.email}`}
-                      className="text-gray-600 hover:text-blue-600 hover:underline transition-colors"
+                      className="text-gray-600 transition-colors hover:text-blue-600 hover:underline"
                     >
                       {testDriveInfo.dealership.email}
                     </a>
@@ -561,7 +558,7 @@ export function CarDetails({
 
             {/* Working Hours */}
             <div className="md:w-1/2 lg:w-1/3">
-              <h4 className="font-medium text-lg mb-2">Working Hours</h4>
+              <h4 className="mb-2 font-medium text-lg">Working Hours</h4>
               <div className="space-y-2">
                 {testDriveInfo.dealership?.workingHours
                   ? testDriveInfo.dealership.workingHours

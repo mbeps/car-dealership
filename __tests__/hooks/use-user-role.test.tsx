@@ -1,7 +1,7 @@
 import { act, renderHook, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { useUserRole } from "@/hooks/use-user-role";
 import { UserRoleEnum as UserRole } from "@/enums/user-role";
+import { useUserRole } from "@/hooks/use-user-role";
 
 const mockGetCurrentUserRole = vi.fn();
 const mockUser = vi.fn();

@@ -1,13 +1,15 @@
 "use client";
 
-import { ChangeEvent, useEffect, useMemo, useState } from "react";
-import Image from "next/image";
-import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Loader2, Save, Trash2, Upload } from "lucide-react";
+import Image from "next/image";
+import { type ChangeEvent, useEffect, useMemo, useState } from "react";
+import { useForm } from "react-hook-form";
 import { toast } from "sonner";
-import { Save, Loader2, Upload, Trash2 } from "lucide-react";
-
-import { Input } from "@/components/ui/input";
+import { getDealershipInfo } from "@/actions/settings/get-dealership-info";
+import { removeDealershipLogo } from "@/actions/settings/remove-dealership-logo";
+import { updateDealershipInfo } from "@/actions/settings/update-dealership-info";
+import { updateDealershipLogo } from "@/actions/settings/update-dealership-logo";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -16,25 +18,22 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import useFetch from "@/hooks/use-fetch";
-import { getDealershipInfo } from "@/actions/settings/get-dealership-info";
-import { removeDealershipLogo } from "@/actions/settings/remove-dealership-logo";
-import { updateDealershipInfo } from "@/actions/settings/update-dealership-info";
-import { updateDealershipLogo } from "@/actions/settings/update-dealership-logo";
+import { resolveHeaderLogoSrc } from "@/lib/branding/resolve-header-logo-src";
 import {
+  type DealershipInfoFormData,
   dealershipInfoSchema,
-  DealershipInfoFormData,
 } from "@/schemas/dealership-info";
 import {
-  getMimeTypeFromFileName,
   getLogoExtensionFromFileName,
+  getMimeTypeFromFileName,
+  type LogoExtension,
   MAX_BYTES_ICO,
   MAX_BYTES_PNG_JPEG,
   MAX_BYTES_SVG,
-  type LogoExtension,
 } from "@/schemas/logo-upload";
-import { resolveHeaderLogoSrc } from "@/lib/branding/resolve-header-logo-src";
 
 const ACCEPTED_FILE_TYPES = ".png,.jpg,.jpeg,.ico,.svg";
 
@@ -288,12 +287,12 @@ export const DealershipInfoForm = () => {
             <div className="space-y-3 rounded-md border p-4">
               <div className="space-y-1">
                 <Label htmlFor="logo">Dealership Logo</Label>
-                <p className="text-sm text-muted-foreground">
+                <p className="text-muted-foreground text-sm">
                   Supported formats: PNG, JPG/JPEG, ICO, SVG.
                 </p>
               </div>
 
-              <div className="rounded-md border bg-muted/30 p-3 flex items-center gap-4">
+              <div className="flex items-center gap-4 rounded-md border bg-muted/30 p-3">
                 <Image
                   src={currentLogoSrc}
                   alt="Current dealership logo"
@@ -302,7 +301,7 @@ export const DealershipInfoForm = () => {
                   className="h-14 w-auto max-w-55 object-contain"
                   unoptimized={/\.svg($|\?)/i.test(currentLogoSrc)}
                 />
-                <div className="text-xs text-muted-foreground">
+                <div className="text-muted-foreground text-xs">
                   <div>Current logo preview</div>
                   <div>Static fallback is always kept as a backup.</div>
                 </div>
@@ -315,7 +314,7 @@ export const DealershipInfoForm = () => {
                   accept={ACCEPTED_FILE_TYPES}
                   onChange={onLogoFileChange}
                 />
-                <div className="text-xs text-muted-foreground">
+                <div className="text-muted-foreground text-xs">
                   PNG/JPG up to 1MB, ICO/SVG up to 256KB.
                 </div>
               </div>
@@ -368,7 +367,7 @@ export const DealershipInfoForm = () => {
                 {...register("name")}
               />
               {errors.name && (
-                <p className="text-sm text-red-600">{errors.name.message}</p>
+                <p className="text-red-600 text-sm">{errors.name.message}</p>
               )}
             </div>
 
@@ -380,7 +379,7 @@ export const DealershipInfoForm = () => {
                 {...register("address")}
               />
               {errors.address && (
-                <p className="text-sm text-red-600">{errors.address.message}</p>
+                <p className="text-red-600 text-sm">{errors.address.message}</p>
               )}
             </div>
 
@@ -393,7 +392,7 @@ export const DealershipInfoForm = () => {
                 {...register("email")}
               />
               {errors.email && (
-                <p className="text-sm text-red-600">{errors.email.message}</p>
+                <p className="text-red-600 text-sm">{errors.email.message}</p>
               )}
             </div>
 
@@ -405,7 +404,7 @@ export const DealershipInfoForm = () => {
                 {...register("phone")}
               />
               {errors.phone && (
-                <p className="text-sm text-red-600">{errors.phone.message}</p>
+                <p className="text-red-600 text-sm">{errors.phone.message}</p>
               )}
             </div>
 
@@ -417,7 +416,7 @@ export const DealershipInfoForm = () => {
                 {...register("whatsappPhone")}
               />
               {errors.whatsappPhone && (
-                <p className="text-sm text-red-600">
+                <p className="text-red-600 text-sm">
                   {errors.whatsappPhone.message}
                 </p>
               )}

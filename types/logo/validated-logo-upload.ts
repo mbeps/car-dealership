@@ -1,5 +1,5 @@
-import type { RasterDimensions } from "@/types/logo/raster-dimensions";
 import type { LogoExtension } from "@/schemas/logo-upload";
+import type { RasterDimensions } from "@/types/logo/raster-dimensions";
 
 /**
  * Logo upload data after validation and preparation.

@@ -1,15 +1,15 @@
 import {
-  Home,
-  CarFront,
-  Heart,
   Calendar,
-  LayoutDashboard,
   Car,
+  CarFront,
   Cog,
+  Heart,
+  Home,
   Layout,
+  LayoutDashboard,
+  type LucideIcon,
 } from "lucide-react";
 import { ROUTES } from "@/constants/routes";
-import { LucideIcon } from "lucide-react";
 
 /**
  * Navigation item used by desktop and mobile navigation components.

@@ -1,7 +1,7 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
 import { Check, Loader2, Pencil, Trash2, X } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import type { PasskeyEntry } from "./account-dialog";
 
 /**
@@ -96,10 +96,10 @@ export function PasskeyRow({
     <li className="rounded-md border border-border p-3">
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
-          <p className="text-sm font-medium">
+          <p className="font-medium text-sm">
             {passkey.friendly_name || "Unnamed passkey"}
           </p>
-          <p className="mt-1 text-xs text-muted-foreground">
+          <p className="mt-1 text-muted-foreground text-xs">
             Added {new Date(passkey.created_at).toLocaleDateString()}
           </p>
         </div>

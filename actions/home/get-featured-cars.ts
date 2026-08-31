@@ -1,9 +1,9 @@
 "use server";
 
-import { createPublicClient } from "@/lib/supabase/supabase";
-import { serializeCarData } from "@/lib/helpers/serialize-car";
-import type { SerializedCar } from "@/types/car/serialized-car";
 import { CarStatusEnum as CarStatus } from "@/enums/car-status";
+import { serializeCarData } from "@/lib/helpers/serialize-car";
+import { createPublicClient } from "@/lib/supabase/supabase";
+import type { SerializedCar } from "@/types/car/serialized-car";
 
 /**
  * Retrieves featured cars for the public homepage.
@@ -35,6 +35,6 @@ export async function getFeaturedCars(limit = 3): Promise<SerializedCar[]> {
 
     return (cars || []).map((car) => serializeCarData(car));
   } catch (error) {
-    throw new Error("Error fetching featured cars:" + (error as Error).message);
+    throw new Error(`Error fetching featured cars:${(error as Error).message}`);
   }
 }

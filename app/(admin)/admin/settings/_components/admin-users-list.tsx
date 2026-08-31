@@ -1,35 +1,18 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { toast } from "sonner";
-import Image from "next/image";
 import {
-  Loader2,
-  Users,
-  Shield,
-  UserX,
   CheckCircle,
+  Loader2,
   Search,
+  Shield,
+  Users,
+  UserX,
 } from "lucide-react";
-
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
+import Image from "next/image";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
+import { getUsers } from "@/actions/settings/get-users";
+import { updateUserRole } from "@/actions/settings/update-user-role";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -40,12 +23,28 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import useFetch from "@/hooks/use-fetch";
-import { getUsers } from "@/actions/settings/get-users";
-import { updateUserRole } from "@/actions/settings/update-user-role";
-import { User } from "@/types/user/user";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { UserRoleEnum as UserRole } from "@/enums/user-role";
+import useFetch from "@/hooks/use-fetch";
 import { useUser } from "@/hooks/useUser";
+import type { User } from "@/types/user/user";
 
 /**
  * Client table for managing admin privileges.
@@ -117,19 +116,19 @@ export const AdminUsersList = () => {
           <CardDescription>Manage users with admin privileges.</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="mb-6 relative">
-            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500" />
+          <div className="relative mb-6">
+            <Search className="absolute top-2.5 left-2.5 h-4 w-4 text-gray-500" />
             <Input
               type="search"
               placeholder="Search users..."
-              className="pl-9 w-full"
+              className="w-full pl-9"
               value={userSearch}
               onChange={(e) => setUserSearch(e.target.value)}
             />
           </div>
 
           {fetchingUsers ? (
-            <div className="py-12 flex justify-center">
+            <div className="flex justify-center py-12">
               <Loader2 className="h-8 w-8 animate-spin text-gray-400" />
             </div>
           ) : usersData?.success && filteredUsers.length > 0 ? (
@@ -150,14 +149,14 @@ export const AdminUsersList = () => {
                       <TableRow key={user.id}>
                         <TableCell className="font-medium">
                           <div className="flex items-center gap-2">
-                            <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden">
+                            <div className="flex h-8 w-8 items-center justify-center overflow-hidden rounded-full bg-gray-200">
                               {user.imageUrl ? (
                                 <Image
                                   src={user.imageUrl}
                                   alt={user.name || "User"}
                                   width={32}
                                   height={32}
-                                  className="w-full h-full object-cover"
+                                  className="h-full w-full object-cover"
                                 />
                               ) : (
                                 <Users className="h-4 w-4 text-gray-500" />
@@ -195,7 +194,7 @@ export const AdminUsersList = () => {
                                   : ""
                               }
                             >
-                              <UserX className="h-4 w-4 mr-2" />
+                              <UserX className="mr-2 h-4 w-4" />
                               Remove Admin
                             </Button>
                           ) : (
@@ -208,7 +207,7 @@ export const AdminUsersList = () => {
                               }}
                               disabled={updatingRole}
                             >
-                              <Shield className="h-4 w-4 mr-2" />
+                              <Shield className="mr-2 h-4 w-4" />
                               Make Admin
                             </Button>
                           )}
@@ -221,8 +220,8 @@ export const AdminUsersList = () => {
             </div>
           ) : (
             <div className="py-12 text-center">
-              <Users className="h-12 w-12 text-gray-300 mx-auto mb-4" />
-              <h3 className="text-lg font-medium text-gray-900 mb-1">
+              <Users className="mx-auto mb-4 h-12 w-12 text-gray-300" />
+              <h3 className="mb-1 font-medium text-gray-900 text-lg">
                 No users found
               </h3>
               <p className="text-gray-500">

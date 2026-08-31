@@ -1,6 +1,6 @@
 "use server";
 
-import { createClient } from "@/lib/supabase/supabase";
+import type { createClient } from "@/lib/supabase/supabase";
 
 /**
  * Searches colors for admin car list filtering.

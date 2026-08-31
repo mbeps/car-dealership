@@ -1,18 +1,14 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Info, Search } from "lucide-react";
 import Link from "next/link";
-import { useSearchParams, useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
+import { getCars } from "@/actions/cars/get-public-cars";
+import { CarCard } from "@/components/car-card";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Info, Search } from "lucide-react";
-import { CarCard } from "@/components/car-card";
-import useFetch from "@/hooks/use-fetch";
-import { getCars } from "@/actions/cars/get-public-cars";
-import CarListingsLoading from "./car-listing-loading";
-import { ROUTES } from "@/constants/routes";
-
 import {
   Pagination,
   PaginationContent,
@@ -22,6 +18,9 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
+import { ROUTES } from "@/constants/routes";
+import useFetch from "@/hooks/use-fetch";
+import CarListingsLoading from "./car-listing-loading";
 
 /**
  * Main car inventory listing with search and pagination.
@@ -47,16 +46,16 @@ export function CarListings() {
   const fuelType = searchParams.get("fuelType") || "";
   const transmission = searchParams.get("transmission") || "";
   const minPrice = searchParams.get("minPrice")
-    ? parseInt(searchParams.get("minPrice")!)
+    ? parseInt(searchParams.get("minPrice")!, 10)
     : 0;
   const maxPrice = searchParams.get("maxPrice")
-    ? parseInt(searchParams.get("maxPrice")!)
+    ? parseInt(searchParams.get("maxPrice")!, 10)
     : Number.MAX_SAFE_INTEGER;
   const sortBy = (searchParams.get("sortBy") || "newest") as
     | "newest"
     | "priceAsc"
     | "priceDesc";
-  const page = parseInt(searchParams.get("page") || "1");
+  const page = parseInt(searchParams.get("page") || "1", 10);
 
   // Use the useFetch hook
   const { loading, fn: fetchCars, data: result, error } = useFetch(getCars);
@@ -148,7 +147,7 @@ export function CarListings() {
   }
 
   // If no results yet, return empty placeholder
-  if (!result || !result.success) {
+  if (!result?.success) {
     return null;
   }
 
@@ -157,12 +156,12 @@ export function CarListings() {
   // No results
   if (cars.length === 0) {
     return (
-      <div className="min-h-[400px] flex flex-col items-center justify-center text-center p-8 border rounded-lg bg-gray-50">
-        <div className="bg-gray-100 p-4 rounded-full mb-4">
+      <div className="flex min-h-[400px] flex-col items-center justify-center rounded-lg border bg-gray-50 p-8 text-center">
+        <div className="mb-4 rounded-full bg-gray-100 p-4">
           <Info className="h-8 w-8 text-gray-500" />
         </div>
-        <h3 className="text-lg font-medium mb-2">No cars found</h3>
-        <p className="text-gray-500 mb-6 max-w-md">
+        <h3 className="mb-2 font-medium text-lg">No cars found</h3>
+        <p className="mb-6 max-w-md text-gray-500">
           We couldn't find any cars matching your search criteria. Try adjusting
           your filters or search term.
         </p>
@@ -234,7 +233,7 @@ export function CarListings() {
   return (
     <div>
       {/* Search Bar and Results count on same row */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+      <div className="mb-6 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
         <p className="text-gray-600">
           Showing{" "}
           <span className="font-medium">
@@ -245,11 +244,11 @@ export function CarListings() {
 
         <form onSubmit={handleSearchSubmit} className="w-full sm:w-auto">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
+            <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-gray-500" />
             <Input
               type="search"
               placeholder="Search cars..."
-              className="pl-9 w-full sm:w-60"
+              className="w-full pl-9 sm:w-60"
               value={searchInput}
               onChange={(e) => setSearchInput(e.target.value)}
             />
@@ -258,7 +257,7 @@ export function CarListings() {
       </div>
 
       {/* Car grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
         {cars.map((car) => (
           <CarCard key={car.id} car={car} />
         ))}

@@ -1,8 +1,10 @@
 "use client";
 
-import Image from "next/image";
-import { Button } from "@/components/ui/button";
+import type { User } from "@supabase/supabase-js";
 import { LogOut, User as UserIcon } from "lucide-react";
+import Image from "next/image";
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -10,8 +12,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { User } from "@supabase/supabase-js";
-import { useState } from "react";
 import { AccountDialog } from "./account-dialog";
 
 /**
@@ -77,16 +77,16 @@ export const UserMenu = ({
               className="rounded-full"
             />
           ) : (
-            <div className="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center text-white font-semibold">
+            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-500 font-semibold text-white">
               {user?.email?.charAt(0).toUpperCase() || "U"}
             </div>
           )}
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-64 max-w-xs">
-          <div className="px-2 py-1.5 text-sm font-medium">
+          <div className="px-2 py-1.5 font-medium text-sm">
             {user?.user_metadata?.full_name || user?.email}
           </div>
-          <div className="px-2 py-1.5 text-xs text-gray-500">{user?.email}</div>
+          <div className="px-2 py-1.5 text-gray-500 text-xs">{user?.email}</div>
           <DropdownMenuSeparator />
           <DropdownMenuItem onClick={() => setIsAccountOpen(true)}>
             <UserIcon className="mr-2 h-4 w-4" />

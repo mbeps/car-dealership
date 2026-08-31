@@ -1,12 +1,12 @@
 "use client";
 
-import { useState } from "react";
 import { Check, X } from "lucide-react";
+import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { CarFiltersData } from "@/types/filters/car-filters-data";
 import { formatCurrency } from "@/lib/helpers/format-currency";
+import type { CarFiltersData } from "@/types/filters/car-filters-data";
 
 interface CurrentFilters {
   make: string;
@@ -172,27 +172,27 @@ export const CarFilterControls = ({
   // Update parent state on blur to trigger validation on submit
   const handlePriceBlur = () => {
     const min = minPriceInput
-      ? parseInt(minPriceInput)
+      ? parseInt(minPriceInput, 10)
       : filters.priceRange.min;
     const max = maxPriceInput
-      ? parseInt(maxPriceInput)
+      ? parseInt(maxPriceInput, 10)
       : filters.priceRange.max;
     onFilterChange("priceRange", [min, max]);
   };
 
   const handleMileageBlur = () => {
     const min = minMileageInput
-      ? parseInt(minMileageInput)
+      ? parseInt(minMileageInput, 10)
       : filters.mileageRange.min;
     const max = maxMileageInput
-      ? parseInt(maxMileageInput)
+      ? parseInt(maxMileageInput, 10)
       : filters.mileageRange.max;
     onFilterChange("mileageRange", [min, max]);
   };
 
   const handleAgeBlur = () => {
-    const min = minAgeInput ? parseInt(minAgeInput) : filters.ageRange.min;
-    const max = maxAgeInput ? parseInt(maxAgeInput) : filters.ageRange.max;
+    const min = minAgeInput ? parseInt(minAgeInput, 10) : filters.ageRange.min;
+    const max = maxAgeInput ? parseInt(maxAgeInput, 10) : filters.ageRange.max;
     onFilterChange("ageRange", [min, max]);
   };
 
@@ -203,11 +203,11 @@ export const CarFilterControls = ({
         <h3 className="font-medium">Price Range</h3>
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-2">
-            <Label htmlFor="minPrice" className="text-xs text-gray-600">
+            <Label htmlFor="minPrice" className="text-gray-600 text-xs">
               Minimum
             </Label>
             <div className="relative">
-              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-gray-500">
+              <span className="absolute top-1/2 left-3 -translate-y-1/2 text-gray-500 text-sm">
                 £
               </span>
               <Input
@@ -221,16 +221,16 @@ export const CarFilterControls = ({
                 className="pl-6"
               />
             </div>
-            <p className="text-xs text-gray-500">
+            <p className="text-gray-500 text-xs">
               Min: {formatCurrency(filters.priceRange.min)}
             </p>
           </div>
           <div className="space-y-2">
-            <Label htmlFor="maxPrice" className="text-xs text-gray-600">
+            <Label htmlFor="maxPrice" className="text-gray-600 text-xs">
               Maximum
             </Label>
             <div className="relative">
-              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-gray-500">
+              <span className="absolute top-1/2 left-3 -translate-y-1/2 text-gray-500 text-sm">
                 £
               </span>
               <Input
@@ -244,7 +244,7 @@ export const CarFilterControls = ({
                 className="pl-6"
               />
             </div>
-            <p className="text-xs text-gray-500">
+            <p className="text-gray-500 text-xs">
               Max: {formatCurrency(filters.priceRange.max)}
             </p>
           </div>
@@ -256,7 +256,7 @@ export const CarFilterControls = ({
         <h3 className="font-medium">Mileage Range</h3>
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-2">
-            <Label htmlFor="minMileage" className="text-xs text-gray-600">
+            <Label htmlFor="minMileage" className="text-gray-600 text-xs">
               Minimum
             </Label>
             <div className="relative">
@@ -270,16 +270,16 @@ export const CarFilterControls = ({
                 placeholder={filters.mileageRange.min.toLocaleString()}
                 className="pr-8"
               />
-              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-gray-500">
+              <span className="absolute top-1/2 right-3 -translate-y-1/2 text-gray-500 text-sm">
                 mi
               </span>
             </div>
-            <p className="text-xs text-gray-500">
+            <p className="text-gray-500 text-xs">
               Min: {filters.mileageRange.min.toLocaleString()} mi
             </p>
           </div>
           <div className="space-y-2">
-            <Label htmlFor="maxMileage" className="text-xs text-gray-600">
+            <Label htmlFor="maxMileage" className="text-gray-600 text-xs">
               Maximum
             </Label>
             <div className="relative">
@@ -293,11 +293,11 @@ export const CarFilterControls = ({
                 placeholder={filters.mileageRange.max.toLocaleString()}
                 className="pr-8"
               />
-              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-gray-500">
+              <span className="absolute top-1/2 right-3 -translate-y-1/2 text-gray-500 text-sm">
                 mi
               </span>
             </div>
-            <p className="text-xs text-gray-500">
+            <p className="text-gray-500 text-xs">
               Max: {filters.mileageRange.max.toLocaleString()} mi
             </p>
           </div>
@@ -309,7 +309,7 @@ export const CarFilterControls = ({
         <h3 className="font-medium">Age Range (Years)</h3>
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-2">
-            <Label htmlFor="minAge" className="text-xs text-gray-600">
+            <Label htmlFor="minAge" className="text-gray-600 text-xs">
               Minimum
             </Label>
             <div className="relative">
@@ -323,16 +323,16 @@ export const CarFilterControls = ({
                 placeholder={filters.ageRange.min.toString()}
                 className="pr-10"
               />
-              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-gray-500">
+              <span className="absolute top-1/2 right-3 -translate-y-1/2 text-gray-500 text-sm">
                 yrs
               </span>
             </div>
-            <p className="text-xs text-gray-500">
+            <p className="text-gray-500 text-xs">
               Min: {filters.ageRange.min} years
             </p>
           </div>
           <div className="space-y-2">
-            <Label htmlFor="maxAge" className="text-xs text-gray-600">
+            <Label htmlFor="maxAge" className="text-gray-600 text-xs">
               Maximum
             </Label>
             <div className="relative">
@@ -346,11 +346,11 @@ export const CarFilterControls = ({
                 placeholder={filters.ageRange.max.toString()}
                 className="pr-10"
               />
-              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-gray-500">
+              <span className="absolute top-1/2 right-3 -translate-y-1/2 text-gray-500 text-sm">
                 yrs
               </span>
             </div>
-            <p className="text-xs text-gray-500">
+            <p className="text-gray-500 text-xs">
               Max: {filters.ageRange.max} years
             </p>
           </div>
@@ -360,11 +360,11 @@ export const CarFilterControls = ({
       {/* Filter Categories */}
       {filterSections.map((section) => (
         <div key={section.id} className="space-y-3">
-          <h4 className="text-sm font-medium flex justify-between">
+          <h4 className="flex justify-between font-medium text-sm">
             <span>{section.title}</span>
             {section.currentValue && (
               <button
-                className="text-xs text-gray-600 flex items-center"
+                className="flex items-center text-gray-600 text-xs"
                 onClick={() => onClearFilter(section.id)}
               >
                 <X className="mr-1 h-3 w-3" />
@@ -372,7 +372,7 @@ export const CarFilterControls = ({
               </button>
             )}
           </h4>
-          <div className="flex flex-wrap gap-2 max-h-60 overflow-y-auto pr-1 custom-scrollbar">
+          <div className="custom-scrollbar flex max-h-60 flex-wrap gap-2 overflow-y-auto pr-1">
             {section.options.map((option) => (
               <Badge
                 key={option.value}
@@ -381,8 +381,8 @@ export const CarFilterControls = ({
                 }
                 className={`cursor-pointer px-3 py-1 ${
                   section.currentValue === option.value
-                    ? "bg-blue-100 hover:bg-blue-200 text-blue-900 border-blue-200"
-                    : "bg-white hover:bg-gray-100 text-gray-700"
+                    ? "border-blue-200 bg-blue-100 text-blue-900 hover:bg-blue-200"
+                    : "bg-white text-gray-700 hover:bg-gray-100"
                 }`}
                 onClick={() => {
                   section.onChange(
@@ -392,7 +392,7 @@ export const CarFilterControls = ({
               >
                 {option.label}
                 {section.currentValue === option.value && (
-                  <Check className="ml-1 h-3 w-3 inline" />
+                  <Check className="ml-1 inline h-3 w-3" />
                 )}
               </Badge>
             ))}

@@ -112,8 +112,8 @@ vi.mock("@/actions/storage/check-storage-quota", () => ({
 
 import { revalidatePath } from "next/cache";
 import { addCar } from "@/actions/cars/add-car";
-import { updateCar } from "@/actions/cars/update-car";
 import { deleteCar } from "@/actions/cars/delete-car";
+import { updateCar } from "@/actions/cars/update-car";
 import { updateCarStatus } from "@/actions/cars/update-car-status";
 
 const adminUser = { id: "auth-1" };
@@ -143,7 +143,7 @@ const carData = {
 /** Sets up the two-step auth lookup (auth user -> db profile) as ADMIN. */
 const authenticateAsAdmin = () => {
   h.authUser.value = adminUser;
-  h.singleQueues["User"] = [{ data: dbAdmin, error: null }];
+  h.singleQueues.User = [{ data: dbAdmin, error: null }];
 };
 
 describe("addCar", () => {
@@ -174,7 +174,7 @@ describe("addCar", () => {
       expect.any(Buffer),
       { contentType: "image/jpeg" },
     );
-    expect(h.builders["Car"].insert).toHaveBeenCalledWith(
+    expect(h.builders.Car.insert).toHaveBeenCalledWith(
       expect.objectContaining({
         id: "generated-car-id",
         model: "Model S",
@@ -200,22 +200,21 @@ describe("addCar", () => {
 
   it("throws when unauthenticated", async () => {
     await expect(addCar(makeFormData())).rejects.toThrow(/Unauthorized/);
-    expect(h.builders["Car"].insert).not.toHaveBeenCalled();
+    expect(h.builders.Car.insert).not.toHaveBeenCalled();
   });
 
   it("throws when user is not an admin", async () => {
     h.authUser.value = adminUser;
-    h.singleQueues["User"] = [
-      { data: { id: "db-1", role: "USER" }, error: null },
-    ];
+    h.singleQueues.User = [{ data: { id: "db-1", role: "USER" }, error: null }];
 
     await expect(addCar(makeFormData())).rejects.toThrow(/Unauthorized/);
   });
 
   it("throws when storage quota is exceeded", async () => {
     authenticateAsAdmin();
-    const { checkStorageQuota } =
-      await import("@/actions/storage/check-storage-quota");
+    const { checkStorageQuota } = await import(
+      "@/actions/storage/check-storage-quota"
+    );
     vi.mocked(checkStorageQuota).mockResolvedValueOnce({
       allowed: false,
       remainingBytes: 0,
@@ -240,7 +239,7 @@ describe("addCar", () => {
 
   it("throws when insert fails", async () => {
     authenticateAsAdmin();
-    h.results["Car"] = { data: null, error: { message: "dup key" } };
+    h.results.Car = { data: null, error: { message: "dup key" } };
 
     await expect(addCar(makeFormData())).rejects.toThrow(/dup key/);
   });
@@ -271,7 +270,7 @@ describe("updateCar", () => {
 
   it("removes images, updates car and revalidates both pages", async () => {
     authenticateAsAdmin();
-    h.singleQueues["Car"] = [
+    h.singleQueues.Car = [
       {
         data: {
           images: [
@@ -295,7 +294,7 @@ describe("updateCar", () => {
 
     expect(res.success).toBe(true);
     expect(h.adminStorage.remove).toHaveBeenCalledWith(["cars/car-1/old.jpg"]);
-    expect(h.builders["Car"].update).toHaveBeenCalledWith(
+    expect(h.builders.Car.update).toHaveBeenCalledWith(
       expect.objectContaining({
         model: "Model S",
         images: [
@@ -304,7 +303,7 @@ describe("updateCar", () => {
         storage_bytes: 90,
       }),
     );
-    expect(h.builders["Car"].eq).toHaveBeenCalledWith("id", "car-1");
+    expect(h.builders.Car.eq).toHaveBeenCalledWith("id", "car-1");
     expect(revalidatePath).toHaveBeenCalledWith("/admin/cars");
     expect(revalidatePath).toHaveBeenCalledWith(
       expect.stringContaining("cars/car-1"),
@@ -313,7 +312,7 @@ describe("updateCar", () => {
 
   it("returns error when car does not exist", async () => {
     authenticateAsAdmin();
-    h.singleQueues["Car"] = [{ data: null, error: null }];
+    h.singleQueues.Car = [{ data: null, error: null }];
 
     const res = await updateCar(makeFormData());
 
@@ -323,7 +322,7 @@ describe("updateCar", () => {
 
   it("returns error when removing all images would leave none", async () => {
     authenticateAsAdmin();
-    h.singleQueues["Car"] = [
+    h.singleQueues.Car = [
       {
         data: {
           images: [
@@ -362,12 +361,13 @@ describe("updateCar", () => {
 
   it("throws when quota exceeded", async () => {
     authenticateAsAdmin();
-    h.singleQueues["Car"] = [
+    h.singleQueues.Car = [
       { data: { images: ["kept.jpg"] }, error: null },
       { data: { storage_bytes: 0 }, error: null },
     ];
-    const { checkStorageQuota } =
-      await import("@/actions/storage/check-storage-quota");
+    const { checkStorageQuota } = await import(
+      "@/actions/storage/check-storage-quota"
+    );
     vi.mocked(checkStorageQuota).mockResolvedValueOnce({
       allowed: false,
       remainingBytes: 0,
@@ -396,13 +396,13 @@ describe("deleteCar", () => {
     const res = await deleteCar("car-1");
 
     expect(res.success).toBe(true);
-    expect(h.builders["TestDriveBooking"].delete).toHaveBeenCalled();
-    expect(h.builders["TestDriveBooking"].eq).toHaveBeenCalledWith(
+    expect(h.builders.TestDriveBooking.delete).toHaveBeenCalled();
+    expect(h.builders.TestDriveBooking.eq).toHaveBeenCalledWith(
       "carId",
       "car-1",
     );
-    expect(h.builders["Car"].delete).toHaveBeenCalled();
-    expect(h.builders["Car"].eq).toHaveBeenCalledWith("id", "car-1");
+    expect(h.builders.Car.delete).toHaveBeenCalled();
+    expect(h.builders.Car.eq).toHaveBeenCalledWith("id", "car-1");
     expect(h.adminStorage.remove).toHaveBeenCalledWith(["cars/car-1/img.jpg"]);
     expect(revalidatePath).toHaveBeenCalledWith("/admin/cars");
   });
@@ -417,7 +417,7 @@ describe("deleteCar", () => {
   });
 
   it("returns error when booking deletion fails", async () => {
-    h.results["TestDriveBooking"] = {
+    h.results.TestDriveBooking = {
       data: null,
       error: { message: "fk boom" },
     };
@@ -426,7 +426,7 @@ describe("deleteCar", () => {
 
     expect(res.success).toBe(false);
     expect(res.error).toContain("fk boom");
-    expect(h.builders["Car"].delete).not.toHaveBeenCalled();
+    expect(h.builders.Car.delete).not.toHaveBeenCalled();
   });
 
   it("returns error when unauthenticated", async () => {
@@ -451,8 +451,8 @@ describe("updateCarStatus", () => {
     const res = await updateCarStatus("car-1", { status: "SOLD" as never });
 
     expect(res.success).toBe(true);
-    expect(h.builders["Car"].update).toHaveBeenCalledWith({ status: "SOLD" });
-    expect(h.builders["Car"].eq).toHaveBeenCalledWith("id", "car-1");
+    expect(h.builders.Car.update).toHaveBeenCalledWith({ status: "SOLD" });
+    expect(h.builders.Car.eq).toHaveBeenCalledWith("id", "car-1");
     expect(revalidatePath).toHaveBeenCalledWith("/admin/cars");
   });
 
@@ -460,7 +460,7 @@ describe("updateCarStatus", () => {
     const res = await updateCarStatus("car-1", { featured: true });
 
     expect(res.success).toBe(true);
-    expect(h.builders["Car"].update).toHaveBeenCalledWith({ featured: true });
+    expect(h.builders.Car.update).toHaveBeenCalledWith({ featured: true });
   });
 
   it("updates both status and featured together", async () => {
@@ -470,14 +470,14 @@ describe("updateCarStatus", () => {
     });
 
     expect(res.success).toBe(true);
-    expect(h.builders["Car"].update).toHaveBeenCalledWith({
+    expect(h.builders.Car.update).toHaveBeenCalledWith({
       status: "AVAILABLE",
       featured: false,
     });
   });
 
   it("returns error when update fails", async () => {
-    h.results["Car"] = { data: null, error: { message: "row locked" } };
+    h.results.Car = { data: null, error: { message: "row locked" } };
 
     const res = await updateCarStatus("car-1", { status: "SOLD" as never });
 

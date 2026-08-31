@@ -2,9 +2,9 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { cn } from "@/lib/utils";
-import { NavItem } from "./nav-items";
 import { UserRoleEnum as UserRole } from "@/enums/user-role";
+import { cn } from "@/lib/utils";
+import type { NavItem } from "./nav-items";
 
 /**
  * Props for the mobile navigation bar.
@@ -48,7 +48,7 @@ export const MobileNav = ({
   if (visibleItems.length === 0) return null;
 
   return (
-    <div className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-white border-t flex justify-around items-center h-16">
+    <div className="fixed right-0 bottom-0 left-0 z-50 flex h-16 items-center justify-around border-t bg-white md:hidden">
       {visibleItems.map((item) => {
         const isActive = pathname === item.href;
 
@@ -57,13 +57,13 @@ export const MobileNav = ({
             key={item.href}
             href={item.href}
             className={cn(
-              "flex flex-col items-center justify-center text-slate-500 text-xs font-medium transition-all",
+              "flex flex-col items-center justify-center font-medium text-slate-500 text-xs transition-all",
               isActive ? "text-blue-700" : "",
-              "py-1 flex-1",
+              "flex-1 py-1",
             )}
           >
             <item.icon
-              className={cn("h-5 w-5 mb-1", isActive ? "text-blue-700" : "")}
+              className={cn("mb-1 h-5 w-5", isActive ? "text-blue-700" : "")}
             />
             {item.label}
           </Link>

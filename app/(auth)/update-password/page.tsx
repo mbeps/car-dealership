@@ -1,10 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { updatePassword } from "@/actions/auth/update-password";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import {
   Card,
   CardContent,
@@ -12,10 +13,9 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Loader2 } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { ROUTES } from "@/constants/routes";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { updatePassword } from "@/actions/auth/update-password";
 import { updatePasswordSchema } from "@/schemas/update-password";
 
 /**
@@ -78,10 +78,10 @@ export default function UpdatePasswordPage() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center px-4 py-12 bg-gray-50">
+    <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4 py-12">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
-          <CardTitle className="text-3xl font-bold">Set new password</CardTitle>
+          <CardTitle className="font-bold text-3xl">Set new password</CardTitle>
           <CardDescription>Enter your new password below</CardDescription>
         </CardHeader>
         <CardContent>

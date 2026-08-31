@@ -25,7 +25,7 @@ export default async function AdminDashboardPage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold mb-6">Dashboard</h1>
+      <h1 className="mb-6 font-bold text-2xl">Dashboard</h1>
       <Dashboard initialData={dashboardData} />
     </div>
   );

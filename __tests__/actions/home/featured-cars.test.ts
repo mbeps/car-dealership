@@ -43,7 +43,7 @@ beforeEach(() => {
 
 describe("getFeaturedCars", () => {
   it("queries available featured cars with make/color relations, newest first", async () => {
-    h.results["Car"] = { data: [rawCar], error: null };
+    h.results.Car = { data: [rawCar], error: null };
 
     const cars = await getFeaturedCars();
 
@@ -59,13 +59,13 @@ describe("getFeaturedCars", () => {
   });
 
   it("applies a custom limit", async () => {
-    h.results["Car"] = { data: [], error: null };
+    h.results.Car = { data: [], error: null };
     await getFeaturedCars(5);
     expect(h.getBuilder("Car").limit).toHaveBeenCalledWith(5);
   });
 
   it("serializes numeric strings to numbers and flattens relations", async () => {
-    h.results["Car"] = { data: [rawCar], error: null };
+    h.results.Car = { data: [rawCar], error: null };
 
     const [car] = await getFeaturedCars();
     expect(car.price).toBe(25000);
@@ -76,17 +76,17 @@ describe("getFeaturedCars", () => {
   });
 
   it("returns an empty array when no cars match", async () => {
-    h.results["Car"] = { data: [], error: null };
+    h.results.Car = { data: [], error: null };
     expect(await getFeaturedCars()).toEqual([]);
   });
 
   it("treats null data as empty array", async () => {
-    h.results["Car"] = { data: null, error: null };
+    h.results.Car = { data: null, error: null };
     expect(await getFeaturedCars()).toEqual([]);
   });
 
   it("throws a wrapped error on db failure", async () => {
-    h.results["Car"] = { data: null, error: { message: "db down" } };
+    h.results.Car = { data: null, error: { message: "db down" } };
 
     await expect(getFeaturedCars()).rejects.toThrow(
       "Error fetching featured cars:db down",

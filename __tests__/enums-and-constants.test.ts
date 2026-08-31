@@ -1,13 +1,12 @@
-import { describe, it, expect } from "vitest";
-
+import { describe, expect, it } from "vitest";
+import { bodyTypes } from "@/constants/body-types";
+import { carMakes } from "@/constants/car-makes";
+import { DEALERSHIP_NAME } from "@/constants/dealership-name";
+import { PROTECTED_ROUTES, ROUTES } from "@/constants/routes";
 import { BookingStatusEnum } from "@/enums/booking-status";
 import { CarStatusEnum } from "@/enums/car-status";
 import { DayOfWeekEnum } from "@/enums/day-of-week";
 import { UserRoleEnum } from "@/enums/user-role";
-import { ROUTES, PROTECTED_ROUTES } from "@/constants/routes";
-import { bodyTypes } from "@/constants/body-types";
-import { carMakes } from "@/constants/car-makes";
-import { DEALERSHIP_NAME } from "@/constants/dealership-name";
 
 describe("enums", () => {
   it("BookingStatusEnum has all five lifecycle states", () => {

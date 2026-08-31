@@ -1,4 +1,4 @@
-import { BookingStatus } from "@/enums/booking-status";
+import type { BookingStatus } from "@/enums/booking-status";
 
 /**
  * Test drive booking entity stored in the database.

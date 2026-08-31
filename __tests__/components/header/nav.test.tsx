@@ -1,12 +1,12 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { DesktopNav } from "@/components/header/desktop-nav";
+import { MobileNav } from "@/components/header/mobile-nav";
 import {
   ADMIN_NAV_ITEMS,
   ADMIN_PORTAL_ITEM,
   MAIN_NAV_ITEMS,
 } from "@/components/header/nav-items";
-import { DesktopNav } from "@/components/header/desktop-nav";
-import { MobileNav } from "@/components/header/mobile-nav";
 import { UserMenu } from "@/components/header/user-menu";
 
 const mockPathname = vi.fn();

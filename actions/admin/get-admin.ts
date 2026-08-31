@@ -1,8 +1,8 @@
 "use server";
 
+import { UserRoleEnum as UserRole } from "@/enums/user-role";
 import { createClient } from "@/lib/supabase/supabase";
 import type { AdminAuthResult } from "@/types/common/admin-auth-result";
-import { UserRoleEnum as UserRole } from "@/enums/user-role";
 
 /**
  * Verifies admin access for protected routes.

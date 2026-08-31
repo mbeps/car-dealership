@@ -1,9 +1,11 @@
 "use client";
 
+import { Loader2 } from "lucide-react";
+import Link from "next/link";
 import { useState } from "react";
+import { requestPasswordReset } from "@/actions/auth/request-password-reset";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import {
   Dialog,
   DialogContent,
@@ -11,15 +13,12 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import Link from "next/link";
-import { Loader2 } from "lucide-react";
-import { useSignIn } from "@/hooks/use-sign-in";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { ROUTES } from "@/constants/routes";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { requestPasswordReset } from "@/actions/auth/request-password-reset";
-import { forgotPasswordSchema } from "@/schemas/forgot-password";
-
+import { useSignIn } from "@/hooks/use-sign-in";
 import useAuthModal from "@/hooks/useAuthModal";
+import { forgotPasswordSchema } from "@/schemas/forgot-password";
 
 /**
  * Modal dialog for sign-in, passkey sign-in, Google sign-in, and password reset.
@@ -119,7 +118,7 @@ export function SignInModal() {
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle className="text-2xl font-bold">
+          <DialogTitle className="font-bold text-2xl">
             {showForgotPassword ? "Reset your password" : "Sign in to continue"}
           </DialogTitle>
           <DialogDescription>
@@ -130,7 +129,7 @@ export function SignInModal() {
         </DialogHeader>
 
         {showForgotPassword ? (
-          <form onSubmit={handlePasswordReset} className="space-y-4 mt-4">
+          <form onSubmit={handlePasswordReset} className="mt-4 space-y-4">
             <div className="space-y-2">
               <Label htmlFor="reset-email">Email address</Label>
               <Input
@@ -173,7 +172,7 @@ export function SignInModal() {
               <button
                 type="button"
                 onClick={toggleForgotPassword}
-                className="text-sm text-blue-600 hover:underline"
+                className="text-blue-600 text-sm hover:underline"
               >
                 Back to sign in
               </button>
@@ -181,7 +180,7 @@ export function SignInModal() {
           </form>
         ) : (
           <>
-            <form onSubmit={handleEmailSignIn} className="space-y-4 mt-4">
+            <form onSubmit={handleEmailSignIn} className="mt-4 space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="modal-email">Email address</Label>
                 <Input
@@ -202,7 +201,7 @@ export function SignInModal() {
                   <button
                     type="button"
                     onClick={toggleForgotPassword}
-                    className="text-sm text-blue-600 hover:underline"
+                    className="text-blue-600 text-sm hover:underline"
                   >
                     Forgot password?
                   </button>
@@ -245,7 +244,7 @@ export function SignInModal() {
 
             <div className="relative my-4">
               <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-gray-300" />
+                <div className="w-full border-gray-300 border-t" />
               </div>
               <div className="relative flex justify-center text-sm">
                 <span className="bg-white px-2 text-gray-500">
@@ -300,11 +299,11 @@ export function SignInModal() {
               Sign in with Google
             </Button>
 
-            <p className="text-center text-sm text-gray-600 mt-4">
+            <p className="mt-4 text-center text-gray-600 text-sm">
               Don&apos;t have an account?{" "}
               <Link
                 href={ROUTES.AUTH.SIGN_UP}
-                className="text-blue-600 hover:underline font-medium"
+                className="font-medium text-blue-600 hover:underline"
                 onClick={onClose}
               >
                 Sign up

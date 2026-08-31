@@ -1,8 +1,8 @@
 "use server";
 
-import { createClient } from "@/lib/supabase/supabase";
-import { ROUTES } from "@/constants/routes";
 import { redirect } from "next/navigation";
+import { ROUTES } from "@/constants/routes";
+import { createClient } from "@/lib/supabase/supabase";
 
 /**
  * Signs out user and redirects to home.

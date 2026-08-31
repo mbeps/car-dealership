@@ -42,7 +42,7 @@ beforeEach(() => {
 describe("reorderFAQs", () => {
   it("updates each FAQ's order and returns the ordered list", async () => {
     setupAdmin();
-    h.results["FAQ"] = { data: ordered, error: null };
+    h.results.FAQ = { data: ordered, error: null };
 
     const res = await reorderFAQs(updates);
 
@@ -58,7 +58,7 @@ describe("reorderFAQs", () => {
 
   it("refetches FAQs ordered ascending after updating", async () => {
     setupAdmin();
-    h.results["FAQ"] = { data: ordered, error: null };
+    h.results.FAQ = { data: ordered, error: null };
     await reorderFAQs(updates);
 
     const b = h.getBuilder("FAQ");
@@ -68,7 +68,7 @@ describe("reorderFAQs", () => {
 
   it("handles an empty updates array without failing", async () => {
     setupAdmin();
-    h.results["FAQ"] = { data: [], error: null };
+    h.results.FAQ = { data: [], error: null };
 
     const res = await reorderFAQs([]);
     expect(res).toEqual({ success: true, data: [] });
@@ -91,7 +91,7 @@ describe("reorderFAQs", () => {
 
   it("returns error when the refetch fails", async () => {
     setupAdmin();
-    h.results["FAQ"] = { data: null, error: { message: "refetch boom" } };
+    h.results.FAQ = { data: null, error: { message: "refetch boom" } };
 
     const res = await reorderFAQs(updates);
     expect(res).toEqual({ success: false, error: "refetch boom" });
@@ -101,7 +101,7 @@ describe("reorderFAQs", () => {
   it("still succeeds when individual update promises reject silently (fire-and-forget)", async () => {
     // ponytail: documents current behaviour — Promise.all result is not awaited/checked
     setupAdmin();
-    h.results["FAQ"] = { data: ordered, error: null };
+    h.results.FAQ = { data: ordered, error: null };
     const b = h.getBuilder("FAQ");
     b.eq.mockImplementationOnce(() => {
       throw new Error("update boom");

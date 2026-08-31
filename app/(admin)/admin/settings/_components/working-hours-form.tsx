@@ -1,10 +1,10 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { Clock, Loader2, Save } from "lucide-react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { Save, Clock, Loader2 } from "lucide-react";
-
-import { Input } from "@/components/ui/input";
+import { getDealershipInfo } from "@/actions/settings/get-dealership-info";
+import { saveWorkingHours } from "@/actions/settings/save-working-hours";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -14,12 +14,11 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import useFetch from "@/hooks/use-fetch";
-import { getDealershipInfo } from "@/actions/settings/get-dealership-info";
-import { saveWorkingHours } from "@/actions/settings/save-working-hours";
-import { WorkingHourInput } from "@/types/dealership/working-hour-input";
 import { DayOfWeekEnum } from "@/enums/day-of-week";
+import useFetch from "@/hooks/use-fetch";
+import type { WorkingHourInput } from "@/types/dealership/working-hour-input";
 
 // Day names for display
 const DAYS: Array<{ value: DayOfWeekEnum; label: string }> = [
@@ -148,13 +147,13 @@ export const WorkingHoursForm = () => {
           {DAYS.map((day, index) => (
             <div
               key={day.value}
-              className="grid grid-cols-12 gap-4 items-center py-3 px-4 rounded-lg hover:bg-slate-50"
+              className="grid grid-cols-12 items-center gap-4 rounded-lg px-4 py-3 hover:bg-slate-50"
             >
               <div className="col-span-3 md:col-span-2">
                 <div className="font-medium">{day.label}</div>
               </div>
 
-              <div className="col-span-9 md:col-span-2 flex items-center justify-end md:justify-start">
+              <div className="col-span-9 flex items-center justify-end md:col-span-2 md:justify-start">
                 <Checkbox
                   id={`is-open-${day.value}`}
                   checked={workingHours[index]?.isOpen}
@@ -174,7 +173,7 @@ export const WorkingHoursForm = () => {
                 <>
                   <div className="col-span-5 md:col-span-4">
                     <div className="flex items-center">
-                      <Clock className="h-4 w-4 text-gray-400 mr-2" />
+                      <Clock className="mr-2 h-4 w-4 text-gray-400" />
                       <Input
                         type="time"
                         value={workingHours[index]?.openTime}
@@ -190,7 +189,7 @@ export const WorkingHoursForm = () => {
                     </div>
                   </div>
 
-                  <div className="text-center col-span-2 md:col-span-1">to</div>
+                  <div className="col-span-2 text-center md:col-span-1">to</div>
 
                   <div className="col-span-5 md:col-span-3">
                     <Input
@@ -210,7 +209,7 @@ export const WorkingHoursForm = () => {
               )}
 
               {!workingHours[index]?.isOpen && (
-                <div className="col-span-11 md:col-span-8 text-gray-500 italic text-sm">
+                <div className="col-span-11 text-gray-500 text-sm italic md:col-span-8">
                   Closed all day
                 </div>
               )}

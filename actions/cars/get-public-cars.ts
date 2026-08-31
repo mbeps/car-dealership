@@ -1,12 +1,12 @@
 "use server";
 
-import { createClient } from "@/lib/supabase/supabase";
-import { serializeCarData } from "@/lib/helpers/serialize-car";
-import type { ActionResponse } from "@/types/common/action-response";
-import type { SerializedCar } from "@/types/car/serialized-car";
-import type { CarFilters } from "@/types/filters/car-filters";
-import type { PaginationInfo } from "@/types/common/pagination-info";
 import { CarStatusEnum as CarStatus } from "@/enums/car-status";
+import { serializeCarData } from "@/lib/helpers/serialize-car";
+import { createClient } from "@/lib/supabase/supabase";
+import type { SerializedCar } from "@/types/car/serialized-car";
+import type { ActionResponse } from "@/types/common/action-response";
+import type { PaginationInfo } from "@/types/common/pagination-info";
+import type { CarFilters } from "@/types/filters/car-filters";
 import { getColorIdBySlug } from "./get-color-id-by-slug";
 import { getColorIdsForSearch } from "./get-color-ids-for-search";
 import { getMakeIdBySlug } from "./get-make-id-by-slug";
@@ -167,7 +167,6 @@ export async function getCars(
       case "priceDesc":
         query = query.order("price", { ascending: false });
         break;
-      case "newest":
       default:
         query = query.order("createdAt", { ascending: false });
         break;
@@ -211,6 +210,6 @@ export async function getCars(
       },
     };
   } catch (error) {
-    throw new Error("Error fetching cars:" + (error as Error).message);
+    throw new Error(`Error fetching cars:${(error as Error).message}`);
   }
 }

@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { getCurrentUserRole } from "@/actions/auth/get-current-user-role";
-import { useUser } from "@/hooks/useUser";
 import { UserRoleEnum as UserRole } from "@/enums/user-role";
+import { useUser } from "@/hooks/useUser";
 
 /**
  * Hook to fetch and track user role.
@@ -16,13 +16,12 @@ import { UserRoleEnum as UserRole } from "@/enums/user-role";
  */
 export function useUserRole() {
   const { user } = useUser();
-  const isSignedIn = !!user;
   const [role, setRole] = useState<UserRole | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchRole = async () => {
-      if (!isSignedIn) {
+      if (!user) {
         setRole(null);
         setLoading(false);
         return;
@@ -42,7 +41,7 @@ export function useUserRole() {
     };
 
     fetchRole();
-  }, [isSignedIn, user]);
+  }, [user]);
 
   return {
     role,

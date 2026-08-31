@@ -1,13 +1,13 @@
 "use client";
 
+import { Loader2 } from "lucide-react";
 import * as React from "react";
-import { useUser } from "@/hooks/useUser";
-import { ResponsiveDrawerDialog } from "@/components/ui/responsive-drawer-dialog";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Loader2 } from "lucide-react";
+import { ResponsiveDrawerDialog } from "@/components/ui/responsive-drawer-dialog";
 import { useSignIn } from "@/hooks/use-sign-in";
+import { useUser } from "@/hooks/useUser";
 import { createBrowserClient } from "@/lib/supabase/supabase-client";
 import { PasskeyRow } from "./passkey-row";
 
@@ -265,7 +265,7 @@ export function AccountDialog({
       <div className="grid gap-6 py-4">
         {isLoading ? (
           <div className="flex items-center justify-center py-8">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
+            <div className="h-8 w-8 animate-spin rounded-full border-primary border-b-2" />
           </div>
         ) : (
           <>
@@ -275,7 +275,7 @@ export function AccountDialog({
                 <AvatarFallback>{initials}</AvatarFallback>
               </Avatar>
               <div className="flex flex-col">
-                <span className="text-base font-semibold">{displayName}</span>
+                <span className="font-semibold text-base">{displayName}</span>
                 <span className="text-muted-foreground text-xs">
                   {userDetails?.email || user?.email || "N/A"}
                 </span>
@@ -283,11 +283,11 @@ export function AccountDialog({
             </div>
 
             {user && (
-              <div className="rounded-lg border border-border p-4 space-y-3">
+              <div className="space-y-3 rounded-lg border border-border p-4">
                 <div className="flex items-center justify-between gap-3">
                   <div>
-                    <p className="text-sm font-semibold">Passkeys</p>
-                    <p className="text-sm text-muted-foreground">
+                    <p className="font-semibold text-sm">Passkeys</p>
+                    <p className="text-muted-foreground text-sm">
                       Sign in with a device authenticator when available.
                     </p>
                   </div>
@@ -309,7 +309,7 @@ export function AccountDialog({
                       )}
                     </Button>
                   ) : (
-                    <span className="text-sm text-muted-foreground">
+                    <span className="text-muted-foreground text-sm">
                       Unsupported
                     </span>
                   )}
@@ -337,7 +337,7 @@ export function AccountDialog({
                 {supportsPasskeys ? (
                   <div className="space-y-3">
                     {passkeysLoading ? (
-                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <div className="flex items-center gap-2 text-muted-foreground text-sm">
                         <Loader2 className="h-4 w-4 animate-spin" />
                         Loading passkeys...
                       </div>
@@ -362,14 +362,14 @@ export function AccountDialog({
                         ))}
                       </ul>
                     ) : (
-                      <div className="rounded-md border border-dashed border-border bg-muted/30 p-3 text-sm text-muted-foreground">
+                      <div className="rounded-md border border-border border-dashed bg-muted/30 p-3 text-muted-foreground text-sm">
                         No passkeys yet. Add one from this device to sign in
                         faster.
                       </div>
                     )}
                   </div>
                 ) : (
-                  <div className="rounded-md border border-dashed border-border bg-muted/30 p-3 text-sm text-muted-foreground">
+                  <div className="rounded-md border border-border border-dashed bg-muted/30 p-3 text-muted-foreground text-sm">
                     Passkeys are not supported in this browser. You can still
                     use email sign-in.
                   </div>

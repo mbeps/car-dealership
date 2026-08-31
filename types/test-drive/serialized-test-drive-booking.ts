@@ -1,4 +1,4 @@
-import { TestDriveBooking } from "./test-drive-booking";
+import type { TestDriveBooking } from "./test-drive-booking";
 
 /**
  * Serializable test drive booking used when data crosses the server-client boundary.

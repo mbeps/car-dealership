@@ -1,7 +1,6 @@
 import { act, renderHook, waitFor } from "@testing-library/react";
-import { beforeEach, describe, expect, it, vi } from "vitest";
 import { toast } from "sonner";
-import { useRouter } from "next/navigation";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { useAddCarForm } from "@/hooks/use-add-car-form";
 
 const mockRouterPush = vi.fn();

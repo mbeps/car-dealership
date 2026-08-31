@@ -57,8 +57,8 @@ vi.mock("next/navigation", () => ({
 }));
 vi.mock("@/lib/arcjet", () => ({ default: {} }));
 
-import { updateUserRole } from "@/actions/settings/update-user-role";
 import { getUsers } from "@/actions/settings/get-users";
+import { updateUserRole } from "@/actions/settings/update-user-role";
 
 function relinkDefaults() {
   // Touch the proxies so lazy mocks exist before configuration

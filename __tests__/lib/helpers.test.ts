@@ -1,7 +1,7 @@
+import { CarStatusEnum } from "@/enums/car-status";
 import { formatCurrency } from "@/lib/helpers/format-currency";
 import { serializeCarData } from "@/lib/helpers/serialize-car";
 import type { RawSupabaseCar } from "@/types/car/raw-supabase-car";
-import { CarStatusEnum } from "@/enums/car-status";
 
 describe("serializeCarData", () => {
   it("normalizes nested relations and string-based numeric fields", () => {
@@ -30,7 +30,7 @@ describe("serializeCarData", () => {
         createdAt: new Date("2024-01-01T12:00:00Z"),
         updatedAt: new Date("2024-01-02T12:00:00Z"),
       } as unknown as RawSupabaseCar,
-      true
+      true,
     );
 
     expect(result).toMatchObject({
@@ -47,9 +47,7 @@ describe("serializeCarData", () => {
     });
     expect(result.createdAt).toBe("2024-01-01T12:00:00.000Z");
     expect(result.updatedAt).toBe("2024-01-02T12:00:00.000Z");
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     expect((result as any).carMake).toBeUndefined();
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     expect((result as any).carColor).toBeUndefined();
   });
 

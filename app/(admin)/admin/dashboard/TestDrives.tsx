@@ -1,8 +1,8 @@
 "use client";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Calendar, CheckCircle, Clock, XCircle } from "lucide-react";
-import { DashboardData } from "@/types/common/dashboard-data";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import type { DashboardData } from "@/types/common/dashboard-data";
 
 /**
  * Props for the test drive dashboard breakdown.
@@ -29,23 +29,23 @@ export function TestDrives({ data }: TestDrivesProps) {
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
+            <CardTitle className="font-medium text-sm">
               Total Bookings
             </CardTitle>
             <Calendar className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{testDrives.total}</div>
+            <div className="font-bold text-2xl">{testDrives.total}</div>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Pending</CardTitle>
+            <CardTitle className="font-medium text-sm">Pending</CardTitle>
             <Clock className="h-4 w-4 text-amber-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{testDrives.pending}</div>
-            <p className="text-xs text-muted-foreground">
+            <div className="font-bold text-2xl">{testDrives.pending}</div>
+            <p className="text-muted-foreground text-xs">
               {((testDrives.pending / testDrives.total) * 100).toFixed(1)}% of
               bookings
             </p>
@@ -53,12 +53,12 @@ export function TestDrives({ data }: TestDrivesProps) {
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Confirmed</CardTitle>
+            <CardTitle className="font-medium text-sm">Confirmed</CardTitle>
             <CheckCircle className="h-4 w-4 text-green-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{testDrives.confirmed}</div>
-            <p className="text-xs text-muted-foreground">
+            <div className="font-bold text-2xl">{testDrives.confirmed}</div>
+            <p className="text-muted-foreground text-xs">
               {((testDrives.confirmed / testDrives.total) * 100).toFixed(1)}% of
               bookings
             </p>
@@ -66,12 +66,12 @@ export function TestDrives({ data }: TestDrivesProps) {
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Completed</CardTitle>
+            <CardTitle className="font-medium text-sm">Completed</CardTitle>
             <CheckCircle className="h-4 w-4 text-blue-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{testDrives.completed}</div>
-            <p className="text-xs text-muted-foreground">
+            <div className="font-bold text-2xl">{testDrives.completed}</div>
+            <p className="text-muted-foreground text-xs">
               {((testDrives.completed / testDrives.total) * 100).toFixed(1)}% of
               bookings
             </p>
@@ -79,12 +79,12 @@ export function TestDrives({ data }: TestDrivesProps) {
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Cancelled</CardTitle>
+            <CardTitle className="font-medium text-sm">Cancelled</CardTitle>
             <XCircle className="h-4 w-4 text-red-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{testDrives.cancelled}</div>
-            <p className="text-xs text-muted-foreground">
+            <div className="font-bold text-2xl">{testDrives.cancelled}</div>
+            <p className="text-muted-foreground text-xs">
               {((testDrives.cancelled / testDrives.total) * 100).toFixed(1)}% of
               bookings
             </p>
@@ -99,22 +99,22 @@ export function TestDrives({ data }: TestDrivesProps) {
         </CardHeader>
         <CardContent>
           <div className="space-y-6">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
               {/* Conversion Rate Card */}
-              <div className="bg-gray-50 rounded-lg p-4">
-                <h3 className="text-lg font-medium mb-2">Conversion Rate</h3>
-                <div className="text-3xl font-bold text-blue-600">
+              <div className="rounded-lg bg-gray-50 p-4">
+                <h3 className="mb-2 font-medium text-lg">Conversion Rate</h3>
+                <div className="font-bold text-3xl text-blue-600">
                   {testDrives.conversionRate}%
                 </div>
-                <p className="text-sm text-gray-600 mt-1">
+                <p className="mt-1 text-gray-600 text-sm">
                   Test drives resulting in car purchases
                 </p>
               </div>
 
               {/* Test Drive Success Rate */}
-              <div className="bg-gray-50 rounded-lg p-4">
-                <h3 className="text-lg font-medium mb-2">Completion Rate</h3>
-                <div className="text-3xl font-bold text-green-600">
+              <div className="rounded-lg bg-gray-50 p-4">
+                <h3 className="mb-2 font-medium text-lg">Completion Rate</h3>
+                <div className="font-bold text-3xl text-green-600">
                   {testDrives.total
                     ? ((testDrives.completed / testDrives.total) * 100).toFixed(
                         1,
@@ -122,14 +122,14 @@ export function TestDrives({ data }: TestDrivesProps) {
                     : 0}
                   %
                 </div>
-                <p className="text-sm text-gray-600 mt-1">
+                <p className="mt-1 text-gray-600 text-sm">
                   Test drives successfully completed
                 </p>
               </div>
             </div>
 
             {/* Status Breakdown */}
-            <div className="space-y-4 mt-4">
+            <div className="mt-4 space-y-4">
               <h3 className="font-medium">Booking Status Breakdown</h3>
 
               {/* Pending */}
@@ -142,9 +142,9 @@ export function TestDrives({ data }: TestDrivesProps) {
                     %)
                   </span>
                 </div>
-                <div className="w-full bg-gray-200 rounded-full h-2.5">
+                <div className="h-2.5 w-full rounded-full bg-gray-200">
                   <div
-                    className="bg-amber-500 h-2.5 rounded-full"
+                    className="h-2.5 rounded-full bg-amber-500"
                     style={{
                       width: `${
                         (testDrives.pending / testDrives.total) * 100
@@ -166,9 +166,9 @@ export function TestDrives({ data }: TestDrivesProps) {
                     %)
                   </span>
                 </div>
-                <div className="w-full bg-gray-200 rounded-full h-2.5">
+                <div className="h-2.5 w-full rounded-full bg-gray-200">
                   <div
-                    className="bg-green-500 h-2.5 rounded-full"
+                    className="h-2.5 rounded-full bg-green-500"
                     style={{
                       width: `${
                         (testDrives.confirmed / testDrives.total) * 100
@@ -190,9 +190,9 @@ export function TestDrives({ data }: TestDrivesProps) {
                     %)
                   </span>
                 </div>
-                <div className="w-full bg-gray-200 rounded-full h-2.5">
+                <div className="h-2.5 w-full rounded-full bg-gray-200">
                   <div
-                    className="bg-blue-600 h-2.5 rounded-full"
+                    className="h-2.5 rounded-full bg-blue-600"
                     style={{
                       width: `${
                         (testDrives.completed / testDrives.total) * 100
@@ -214,9 +214,9 @@ export function TestDrives({ data }: TestDrivesProps) {
                     %)
                   </span>
                 </div>
-                <div className="w-full bg-gray-200 rounded-full h-2.5">
+                <div className="h-2.5 w-full rounded-full bg-gray-200">
                   <div
-                    className="bg-red-500 h-2.5 rounded-full"
+                    className="h-2.5 rounded-full bg-red-500"
                     style={{
                       width: `${
                         (testDrives.cancelled / testDrives.total) * 100
@@ -236,9 +236,9 @@ export function TestDrives({ data }: TestDrivesProps) {
                     %)
                   </span>
                 </div>
-                <div className="w-full bg-gray-200 rounded-full h-2.5">
+                <div className="h-2.5 w-full rounded-full bg-gray-200">
                   <div
-                    className="bg-gray-500 h-2.5 rounded-full"
+                    className="h-2.5 rounded-full bg-gray-500"
                     style={{
                       width: `${(testDrives.noShow / testDrives.total) * 100}%`,
                     }}

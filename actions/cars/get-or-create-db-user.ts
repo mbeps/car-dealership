@@ -1,8 +1,8 @@
 "use server";
 
 import type {
-  SupabaseClient,
   User as SupabaseAuthUser,
+  SupabaseClient,
 } from "@supabase/supabase-js";
 import type { User as DbUser } from "@/types/user/user";
 

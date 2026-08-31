@@ -1,5 +1,5 @@
-import { describe, it, expect } from "vitest";
-import { homePageContentSchema, faqSchema } from "@/schemas/home-content";
+import { describe, expect, it } from "vitest";
+import { faqSchema, homePageContentSchema } from "@/schemas/home-content";
 
 const validContent = {
   heroTitle: "Find your dream car",

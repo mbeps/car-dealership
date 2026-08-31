@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { UserRoleEnum as UserRole } from "@/enums/user-role";
 import { getAdmin } from "@/actions/admin/get-admin";
 import { getDashboardData } from "@/actions/admin/get-dashboard-data";
+import { UserRoleEnum as UserRole } from "@/enums/user-role";
 
 const mocks = vi.hoisted(() => {
   const makeBuilder = () => {

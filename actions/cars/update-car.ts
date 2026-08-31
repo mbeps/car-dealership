@@ -1,16 +1,15 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { createClient } from "@/lib/supabase/supabase";
-import { createAdminClient } from "@/lib/supabase/supabase";
-import { env } from "@/lib/env";
-import { ROUTES } from "@/constants/routes";
-import { checkStorageQuota } from "../storage/check-storage-quota";
 import { validateFileSizes } from "@/actions/cars/validate-file-sizes";
-import type { ActionResponse } from "@/types/common/action-response";
-import { CarStatusEnum as CarStatus } from "@/enums/car-status";
+import { ROUTES } from "@/constants/routes";
+import type { CarStatusEnum as CarStatus } from "@/enums/car-status";
 import { UserRoleEnum as UserRole } from "@/enums/user-role";
+import { env } from "@/lib/env";
+import { createAdminClient, createClient } from "@/lib/supabase/supabase";
 import type { CarFormData } from "@/types/car/car-form-data";
+import type { ActionResponse } from "@/types/common/action-response";
+import { checkStorageQuota } from "../storage/check-storage-quota";
 
 /**
  * Updates existing car with data and image changes.
@@ -225,6 +224,6 @@ export async function updateCar(
       data: null,
     };
   } catch (error) {
-    throw new Error("Error updating car: " + (error as Error).message);
+    throw new Error(`Error updating car: ${(error as Error).message}`);
   }
 }

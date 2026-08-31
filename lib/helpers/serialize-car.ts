@@ -1,5 +1,5 @@
-import { RawSupabaseCar } from "@/types/car/raw-supabase-car";
-import { SerializedCar } from "@/types/car/serialized-car";
+import type { RawSupabaseCar } from "@/types/car/raw-supabase-car";
+import type { SerializedCar } from "@/types/car/serialized-car";
 
 /**
  * Normalizes car data from Supabase for client components.
@@ -35,9 +35,12 @@ export function serializeCarData(
     ...rest,
     price: typeof rest.price === "string" ? parseFloat(rest.price) : rest.price,
     mileage:
-      typeof rest.mileage === "string" ? parseInt(rest.mileage) : rest.mileage,
-    year: typeof rest.year === "string" ? parseInt(rest.year) : rest.year,
-    seats: typeof rest.seats === "string" ? parseInt(rest.seats) : rest.seats,
+      typeof rest.mileage === "string"
+        ? parseInt(rest.mileage, 10)
+        : rest.mileage,
+    year: typeof rest.year === "string" ? parseInt(rest.year, 10) : rest.year,
+    seats:
+      typeof rest.seats === "string" ? parseInt(rest.seats, 10) : rest.seats,
     createdAt:
       typeof rest.createdAt === "string"
         ? rest.createdAt

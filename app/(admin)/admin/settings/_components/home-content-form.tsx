@@ -1,28 +1,27 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useForm, UseFormReturn } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useEffect, useState } from "react";
+import { type UseFormReturn, useForm } from "react-hook-form";
 import { toast } from "sonner";
-
-import useFetch from "@/hooks/use-fetch";
-import { getHomePageContent } from "@/actions/home/get-home-page-content";
-import { updateHomePageContent } from "@/actions/home/update-home-page-content";
-import { getFAQs } from "@/actions/home/get-faqs";
 import { addFAQ } from "@/actions/home/add-faq";
-import { updateFAQ } from "@/actions/home/update-faq";
 import { deleteFAQ } from "@/actions/home/delete-faq";
+import { getFAQs } from "@/actions/home/get-faqs";
+import { getHomePageContent } from "@/actions/home/get-home-page-content";
+import { updateFAQ } from "@/actions/home/update-faq";
+import { updateHomePageContent } from "@/actions/home/update-home-page-content";
+import useFetch from "@/hooks/use-fetch";
 import {
-  homePageContentSchema,
+  type FAQFormValues,
   faqSchema,
-  HomePageContentFormValues,
-  FAQFormValues,
+  type HomePageContentFormValues,
+  homePageContentSchema,
 } from "@/schemas/home-content";
-import { FAQ } from "@/types/home-content/faq";
-import { HeroSection } from "./home-content/hero-section";
-import { FeaturesSection } from "./home-content/features-section";
+import type { FAQ } from "@/types/home-content/faq";
 import { CTASection } from "./home-content/cta-section";
 import { FAQSection } from "./home-content/faq-section";
+import { FeaturesSection } from "./home-content/features-section";
+import { HeroSection } from "./home-content/hero-section";
 
 /**
  * Client form for homepage content and FAQ management.

@@ -47,7 +47,7 @@ beforeEach(() => {
 
 describe("getHomePageContent", () => {
   it("fetches the singleton row", async () => {
-    h.singleQueues["HomePageContent"] = [{ data: content, error: null }];
+    h.singleQueues.HomePageContent = [{ data: content, error: null }];
 
     expect(await getHomePageContent()).toEqual(content);
     const b = h.getBuilder("HomePageContent");
@@ -57,7 +57,7 @@ describe("getHomePageContent", () => {
 
   it("returns null on error", async () => {
     const errSpy = vi.spyOn(console, "error").mockImplementation(() => {});
-    h.singleQueues["HomePageContent"] = [
+    h.singleQueues.HomePageContent = [
       { data: null, error: { message: "boom" } },
     ];
 
@@ -70,7 +70,7 @@ describe("getHomePageContent", () => {
 describe("updateHomePageContent", () => {
   it("updates the singleton with validated partial data", async () => {
     setupAdmin();
-    h.singleQueues["HomePageContent"] = [{ data: content, error: null }];
+    h.singleQueues.HomePageContent = [{ data: content, error: null }];
 
     const res = await updateHomePageContent({ heroTitle: "New title" });
 
@@ -107,7 +107,7 @@ describe("updateHomePageContent", () => {
 
   it("checks role scoped to the auth user's supabaseAuthUserId", async () => {
     setupAdmin();
-    h.singleQueues["HomePageContent"] = [{ data: content, error: null }];
+    h.singleQueues.HomePageContent = [{ data: content, error: null }];
     await updateHomePageContent({ heroTitle: "X" });
 
     const ub = h.getBuilder("User");
@@ -116,7 +116,7 @@ describe("updateHomePageContent", () => {
 
   it("returns error when update fails and skips revalidation", async () => {
     setupAdmin();
-    h.singleQueues["HomePageContent"] = [
+    h.singleQueues.HomePageContent = [
       { data: null, error: { message: "update boom" } },
     ];
 

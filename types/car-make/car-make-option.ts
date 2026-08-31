@@ -1,4 +1,4 @@
-import { CarMake } from "./car-make";
+import type { CarMake } from "./car-make";
 
 /**
  * Car make option for dropdowns/selects.

@@ -1,4 +1,4 @@
-import { CarStatus } from "@/enums/car-status";
+import type { CarStatus } from "@/enums/car-status";
 
 /**
  * Normalised car listing entity used by app routes, cards, and client components.

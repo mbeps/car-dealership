@@ -1,9 +1,9 @@
+import { CarStatusEnum } from "@/enums/car-status";
 import { carFormSchema } from "@/schemas/car-form";
 import { dealershipInfoSchema } from "@/schemas/dealership-info";
 import { forgotPasswordSchema } from "@/schemas/forgot-password";
 import { testDriveSchema } from "@/schemas/test-drive";
 import { updatePasswordSchema } from "@/schemas/update-password";
-import { CarStatusEnum } from "@/enums/car-status";
 
 const baseCarFormData = {
   carMakeId: "make-1",
@@ -32,7 +32,7 @@ describe("testDriveSchema", () => {
     expect(result.success).toBe(false);
     if (!result.success) {
       expect(result.error.issues[0].message).toBe(
-        "Please select a date for your test drive"
+        "Please select a date for your test drive",
       );
     }
   });
@@ -66,7 +66,7 @@ describe("carFormSchema", () => {
         expect.arrayContaining([
           "Valid year required",
           "Price must be a valid number greater than 0",
-        ])
+        ]),
       );
     }
   });
@@ -81,8 +81,8 @@ describe("carFormSchema", () => {
     if (!result.success) {
       expect(
         result.error.issues.some((issue) =>
-          issue.message.includes("Number plate must be 2-10 uppercase letters")
-        )
+          issue.message.includes("Number plate must be 2-10 uppercase letters"),
+        ),
       ).toBe(true);
     }
   });
@@ -117,7 +117,7 @@ describe("dealershipInfoSchema", () => {
           "Valid email is required",
           "Phone number is required",
           "WhatsApp number is required",
-        ])
+        ]),
       );
     }
   });

@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+import { describe, expect, it } from "vitest";
 import { extractRasterDimensions } from "@/lib/helpers/extract-raster-dimensions";
 
 function createPngBuffer(width: number, height: number): Buffer {

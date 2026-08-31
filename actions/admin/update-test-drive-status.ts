@@ -1,11 +1,11 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { createClient } from "@/lib/supabase/supabase";
 import { ROUTES } from "@/constants/routes";
-import type { ActionResponse } from "@/types/common/action-response";
 import { BookingStatusEnum as BookingStatus } from "@/enums/booking-status";
 import { UserRoleEnum as UserRole } from "@/enums/user-role";
+import { createClient } from "@/lib/supabase/supabase";
+import type { ActionResponse } from "@/types/common/action-response";
 
 /**
  * Updates booking status from admin panel.
@@ -85,7 +85,7 @@ export async function updateTestDriveStatus(
     };
   } catch (error) {
     throw new Error(
-      "Error updating test drive status:" + (error as Error).message,
+      `Error updating test drive status:${(error as Error).message}`,
     );
   }
 }

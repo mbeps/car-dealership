@@ -115,7 +115,7 @@ describe("getCars (admin)", () => {
   });
 
   it("returns serialized cars sorted newest first without search", async () => {
-    h.results["Car"] = { data: [{ id: "c1" }, { id: "c2" }], error: null };
+    h.results.Car = { data: [{ id: "c1" }, { id: "c2" }], error: null };
 
     const res = await getCars();
 
@@ -124,13 +124,13 @@ describe("getCars (admin)", () => {
       { id: "c1", isWishlisted: false },
       { id: "c2", isWishlisted: false },
     ]);
-    expect(h.builders["Car"].select).toHaveBeenCalledWith(
+    expect(h.builders.Car.select).toHaveBeenCalledWith(
       expect.stringContaining("carMake"),
     );
-    expect(h.builders["Car"].order).toHaveBeenCalledWith("createdAt", {
+    expect(h.builders.Car.order).toHaveBeenCalledWith("createdAt", {
       ascending: false,
     });
-    expect(h.builders["Car"].or).not.toHaveBeenCalled();
+    expect(h.builders.Car.or).not.toHaveBeenCalled();
   });
 
   it("builds an .or clause including model/description/plate and matched ids when searching", async () => {
@@ -139,7 +139,7 @@ describe("getCars (admin)", () => {
 
     await getCars("blue");
 
-    expect(h.builders["Car"].or).toHaveBeenCalledWith(
+    expect(h.builders.Car.or).toHaveBeenCalledWith(
       [
         "model.ilike.%blue%",
         "description.ilike.%blue%",
@@ -151,7 +151,7 @@ describe("getCars (admin)", () => {
   });
 
   it("returns empty list when query errors", async () => {
-    h.results["Car"] = { data: null, error: { message: "denied" } };
+    h.results.Car = { data: null, error: { message: "denied" } };
 
     const res = await getCars();
 
@@ -173,7 +173,7 @@ describe("getPublicCars", () => {
   });
 
   it("filters AVAILABLE cars with pagination and default sort", async () => {
-    h.results["Car"] = { data: [{ id: "p1" }], error: null, count: 11 };
+    h.results.Car = { data: [{ id: "p1" }], error: null, count: 11 };
 
     const res = await getPublicCars();
 
@@ -184,12 +184,12 @@ describe("getPublicCars", () => {
       limit: 6,
       pages: 2,
     });
-    expect(h.builders["Car"].eq).toHaveBeenCalledWith("status", "AVAILABLE");
-    expect(h.builders["Car"].range).toHaveBeenCalledWith(0, 5);
-    expect(h.builders["Car"].order).toHaveBeenCalledWith("createdAt", {
+    expect(h.builders.Car.eq).toHaveBeenCalledWith("status", "AVAILABLE");
+    expect(h.builders.Car.range).toHaveBeenCalledWith(0, 5);
+    expect(h.builders.Car.order).toHaveBeenCalledWith("createdAt", {
       ascending: false,
     });
-    expect(h.builders["Car"].select).toHaveBeenCalledWith(expect.anything(), {
+    expect(h.builders.Car.select).toHaveBeenCalledWith(expect.anything(), {
       count: "exact",
     });
   });
@@ -200,8 +200,8 @@ describe("getPublicCars", () => {
 
     await getPublicCars({ make: "bmw", color: "red" });
 
-    expect(h.builders["Car"].eq).toHaveBeenCalledWith("carMakeId", "make-1");
-    expect(h.builders["Car"].eq).toHaveBeenCalledWith("carColorId", "color-2");
+    expect(h.builders.Car.eq).toHaveBeenCalledWith("carMakeId", "make-1");
+    expect(h.builders.Car.eq).toHaveBeenCalledWith("carColorId", "color-2");
   });
 
   it("returns empty result when slug filter matches nothing", async () => {
@@ -210,7 +210,7 @@ describe("getPublicCars", () => {
     expect(res.success).toBe(true);
     expect(res.data?.cars).toEqual([]);
     expect(res.data?.pagination.total).toBe(0);
-    expect(h.builders["Car"].select).not.toHaveBeenCalled();
+    expect(h.builders.Car.select).not.toHaveBeenCalled();
   });
 
   it("adds search clauses incl. matched make/color ids when searching", async () => {
@@ -219,7 +219,7 @@ describe("getPublicCars", () => {
 
     await getPublicCars({ search: "tesla" });
 
-    expect(h.builders["Car"].or).toHaveBeenCalledWith(
+    expect(h.builders.Car.or).toHaveBeenCalledWith(
       [
         "model.ilike.%tesla%",
         "description.ilike.%tesla%",
@@ -234,11 +234,11 @@ describe("getPublicCars", () => {
   it("applies price/mileage bounds only when finite", async () => {
     await getPublicCars({ minPrice: 1000, maxPrice: 50000, minMileage: 10 });
 
-    expect(h.builders["Car"].gte).toHaveBeenCalledWith("price", 1000);
-    expect(h.builders["Car"].lte).toHaveBeenCalledWith("price", 50000);
-    expect(h.builders["Car"].gte).toHaveBeenCalledWith("mileage", 10);
+    expect(h.builders.Car.gte).toHaveBeenCalledWith("price", 1000);
+    expect(h.builders.Car.lte).toHaveBeenCalledWith("price", 50000);
+    expect(h.builders.Car.gte).toHaveBeenCalledWith("mileage", 10);
     // maxMileage defaults to MAX_SAFE_INTEGER -> no upper bound applied
-    expect(h.builders["Car"].lte).not.toHaveBeenCalledWith(
+    expect(h.builders.Car.lte).not.toHaveBeenCalledWith(
       "mileage",
       Number.MAX_SAFE_INTEGER,
     );
@@ -250,8 +250,8 @@ describe("getPublicCars", () => {
     try {
       await getPublicCars({ minAge: 1, maxAge: 5 });
 
-      expect(h.builders["Car"].lte).toHaveBeenCalledWith("year", 2025);
-      expect(h.builders["Car"].gte).toHaveBeenCalledWith("year", 2021);
+      expect(h.builders.Car.lte).toHaveBeenCalledWith("year", 2025);
+      expect(h.builders.Car.gte).toHaveBeenCalledWith("year", 2021);
     } finally {
       vi.useRealTimers();
     }
@@ -260,7 +260,7 @@ describe("getPublicCars", () => {
   it("sorts by price ascending when requested", async () => {
     await getPublicCars({ sortBy: "priceAsc" });
 
-    expect(h.builders["Car"].order).toHaveBeenCalledWith("price", {
+    expect(h.builders.Car.order).toHaveBeenCalledWith("price", {
       ascending: true,
     });
   });
@@ -268,17 +268,17 @@ describe("getPublicCars", () => {
   it("paginates to the requested page", async () => {
     await getPublicCars({ page: 3, limit: 6 });
 
-    expect(h.builders["Car"].range).toHaveBeenCalledWith(12, 17);
+    expect(h.builders.Car.range).toHaveBeenCalledWith(12, 17);
   });
 
   it("flags wishlisted cars for authenticated users", async () => {
     h.authUser.value = { id: "auth-1" };
-    h.singleQueues["User"] = [{ data: { id: "db-1" }, error: null }];
-    h.results["UserSavedCar"] = {
+    h.singleQueues.User = [{ data: { id: "db-1" }, error: null }];
+    h.results.UserSavedCar = {
       data: [{ carId: "p1" }],
       error: null,
     };
-    h.results["Car"] = {
+    h.results.Car = {
       data: [{ id: "p1" }, { id: "p2" }],
       error: null,
       count: 2,
@@ -288,14 +288,11 @@ describe("getPublicCars", () => {
 
     expect(res.data?.cars[0]).toMatchObject({ id: "p1", isWishlisted: true });
     expect(res.data?.cars[1]).toMatchObject({ id: "p2", isWishlisted: false });
-    expect(h.builders["UserSavedCar"].eq).toHaveBeenCalledWith(
-      "userId",
-      "db-1",
-    );
+    expect(h.builders.UserSavedCar.eq).toHaveBeenCalledWith("userId", "db-1");
   });
 
   it("throws on query error", async () => {
-    h.results["Car"] = { data: null, error: { message: "boom" }, count: 0 };
+    h.results.Car = { data: null, error: { message: "boom" }, count: 0 };
 
     await expect(getPublicCars()).rejects.toThrow(/Error fetching cars:.*boom/);
   });
@@ -307,12 +304,9 @@ describe("getPublicCars", () => {
       transmission: "Automatic",
     });
 
-    expect(h.builders["Car"].ilike).toHaveBeenCalledWith("bodyType", "SUV");
-    expect(h.builders["Car"].ilike).toHaveBeenCalledWith(
-      "fuelType",
-      "Electric",
-    );
-    expect(h.builders["Car"].ilike).toHaveBeenCalledWith(
+    expect(h.builders.Car.ilike).toHaveBeenCalledWith("bodyType", "SUV");
+    expect(h.builders.Car.ilike).toHaveBeenCalledWith("fuelType", "Electric");
+    expect(h.builders.Car.ilike).toHaveBeenCalledWith(
       "transmission",
       "Automatic",
     );

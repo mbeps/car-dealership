@@ -1,7 +1,7 @@
 "use server";
 
-import { createClient } from "@/lib/supabase/supabase";
 import { UserRoleEnum as UserRole } from "@/enums/user-role";
+import { createClient } from "@/lib/supabase/supabase";
 
 /**
  * Quick admin role check for conditional rendering.

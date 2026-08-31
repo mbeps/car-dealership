@@ -23,9 +23,9 @@ vi.mock("next/cache", () => ({
 
 import { revalidatePath, revalidateTag } from "next/cache";
 import { addFAQ } from "@/actions/home/add-faq";
-import { updateFAQ } from "@/actions/home/update-faq";
 import { deleteFAQ } from "@/actions/home/delete-faq";
 import { getFAQs } from "@/actions/home/get-faqs";
+import { updateFAQ } from "@/actions/home/update-faq";
 
 const validFAQ = { question: "Q?", answer: "A", order: 1 };
 const faqRow = { id: "faq-1", ...validFAQ };
@@ -39,7 +39,7 @@ beforeEach(() => {
 describe("addFAQ", () => {
   it("creates a FAQ for an admin and returns the row", async () => {
     setupAdmin();
-    h.singleQueues["FAQ"] = [{ data: faqRow, error: null }];
+    h.singleQueues.FAQ = [{ data: faqRow, error: null }];
 
     const res = await addFAQ(validFAQ);
 
@@ -76,7 +76,7 @@ describe("addFAQ", () => {
 
   it("returns error when insert fails", async () => {
     setupAdmin();
-    h.singleQueues["FAQ"] = [{ data: null, error: { message: "insert boom" } }];
+    h.singleQueues.FAQ = [{ data: null, error: { message: "insert boom" } }];
 
     const res = await addFAQ(validFAQ);
     expect(res).toEqual({ success: false, error: "insert boom" });
@@ -85,7 +85,7 @@ describe("addFAQ", () => {
 
   it("queries the user role scoped to the auth id", async () => {
     setupAdmin();
-    h.singleQueues["FAQ"] = [{ data: faqRow, error: null }];
+    h.singleQueues.FAQ = [{ data: faqRow, error: null }];
     await addFAQ(validFAQ);
 
     const ub = h.getBuilder("User");
@@ -97,7 +97,7 @@ describe("addFAQ", () => {
 describe("updateFAQ", () => {
   it("updates and returns the FAQ for an admin", async () => {
     setupAdmin();
-    h.singleQueues["FAQ"] = [{ data: faqRow, error: null }];
+    h.singleQueues.FAQ = [{ data: faqRow, error: null }];
 
     const res = await updateFAQ("faq-1", validFAQ);
 
@@ -131,7 +131,7 @@ describe("updateFAQ", () => {
 
   it("returns error when update fails", async () => {
     setupAdmin();
-    h.singleQueues["FAQ"] = [{ data: null, error: { message: "update boom" } }];
+    h.singleQueues.FAQ = [{ data: null, error: { message: "update boom" } }];
     const res = await updateFAQ("faq-1", validFAQ);
     expect(res).toEqual({ success: false, error: "update boom" });
   });
@@ -140,7 +140,7 @@ describe("updateFAQ", () => {
 describe("deleteFAQ", () => {
   it("deletes by id for an admin", async () => {
     setupAdmin();
-    h.results["FAQ"] = { data: [], error: null };
+    h.results.FAQ = { data: [], error: null };
 
     const res = await deleteFAQ("faq-9");
 
@@ -167,7 +167,7 @@ describe("deleteFAQ", () => {
 
   it("returns error when delete fails", async () => {
     setupAdmin();
-    h.results["FAQ"] = { data: null, error: { message: "delete boom" } };
+    h.results.FAQ = { data: null, error: { message: "delete boom" } };
     const res = await deleteFAQ("faq-9");
     expect(res).toEqual({ success: false, error: "delete boom" });
     expect(revalidatePath).not.toHaveBeenCalled();
@@ -176,7 +176,7 @@ describe("deleteFAQ", () => {
 
 describe("getFAQs", () => {
   it("fetches FAQs ordered ascending", async () => {
-    h.results["FAQ"] = { data: [faqRow], error: null };
+    h.results.FAQ = { data: [faqRow], error: null };
 
     const faqs = await getFAQs();
 
@@ -188,7 +188,7 @@ describe("getFAQs", () => {
 
   it("returns empty array on error", async () => {
     const errSpy = vi.spyOn(console, "error").mockImplementation(() => {});
-    h.results["FAQ"] = { data: null, error: { message: "boom" } };
+    h.results.FAQ = { data: null, error: { message: "boom" } };
 
     expect(await getFAQs()).toEqual([]);
     expect(errSpy).toHaveBeenCalled();

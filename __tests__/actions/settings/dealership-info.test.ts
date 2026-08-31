@@ -70,8 +70,8 @@ vi.mock("@/lib/helpers/branding-cache", () => ({
 }));
 
 import { getDealershipInfo } from "@/actions/settings/get-dealership-info";
-import { updateDealershipInfo } from "@/actions/settings/update-dealership-info";
 import { saveWorkingHours } from "@/actions/settings/save-working-hours";
+import { updateDealershipInfo } from "@/actions/settings/update-dealership-info";
 
 function relinkDefaults() {
   // Route by table: "User" → admin builder, everything else → dealership

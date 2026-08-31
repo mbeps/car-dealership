@@ -84,13 +84,13 @@ vi.mock("@/lib/env", () => ({
 export function setupAdmin() {
   h.authUser.value = { id: "auth-1" };
   h.getUserError.value = null;
-  h.singleQueues["User"] = [{ data: { role: "ADMIN" }, error: null }];
+  h.singleQueues.User = [{ data: { role: "ADMIN" }, error: null }];
 }
 
 export function setupNonAdmin() {
   h.authUser.value = { id: "auth-2" };
   h.getUserError.value = null;
-  h.singleQueues["User"] = [{ data: { role: "USER" }, error: null }];
+  h.singleQueues.User = [{ data: { role: "USER" }, error: null }];
 }
 
 export function setupNoUser() {

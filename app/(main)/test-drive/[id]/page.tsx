@@ -1,8 +1,8 @@
-import { getCarById } from "@/actions/cars/get-car-by-id";
 import { notFound, redirect } from "next/navigation";
-import { TestDriveForm } from "./_components/test-drive-form";
 import { isCurrentUserAdmin } from "@/actions/auth/is-current-user-admin";
+import { getCarById } from "@/actions/cars/get-car-by-id";
 import { ROUTES } from "@/constants/routes";
+import { TestDriveForm } from "./_components/test-drive-form";
 
 /**
  * Defines SEO metadata for the test-drive booking page.
@@ -44,7 +44,7 @@ export default async function TestDrivePage({
 
   return (
     <div className="py-12">
-      <h1 className="text-6xl mb-6 gradient-title">Book a Test Drive</h1>
+      <h1 className="gradient-title mb-6 text-6xl">Book a Test Drive</h1>
       <TestDriveForm
         car={result.data}
         testDriveInfo={result.data.testDriveInfo}

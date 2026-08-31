@@ -1,11 +1,10 @@
-import { createContext, useContext, useEffect, useState } from "react";
 import type { User as SupabaseUser } from "@supabase/supabase-js";
-
-import { User as UserDetails } from "@/types/user/user";
+import { createContext, useContext, useEffect, useState } from "react";
 import {
   useSessionContext,
   useSupabaseUser,
 } from "@/providers/SupabaseProvider";
+import type { User as UserDetails } from "@/types/user/user";
 
 type UserContextType = {
   accessToken: string | null;

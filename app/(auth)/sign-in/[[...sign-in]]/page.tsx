@@ -1,5 +1,10 @@
 "use client";
 
+import { Loader2 } from "lucide-react";
+import Link from "next/link";
+import { useSearchParams } from "next/navigation";
+import { useState } from "react";
+import { GoogleIcon } from "@/components/google-icon";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import {
@@ -11,14 +16,9 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { GoogleIcon } from "@/components/google-icon";
 import { ROUTES } from "@/constants/routes";
-import { createBrowserClient } from "@/lib/supabase/supabase-client";
 import { getSiteUrl } from "@/lib/site-url";
-import { Loader2 } from "lucide-react";
-import Link from "next/link";
-import { useSearchParams } from "next/navigation";
-import { useState } from "react";
+import { createBrowserClient } from "@/lib/supabase/supabase-client";
 
 /**
  * Client page for signing in with email/password or Google OAuth.
@@ -103,10 +103,10 @@ export default function SignInPage() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center px-4 py-12 bg-gray-50">
+    <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4 py-12">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
-          <CardTitle className="text-3xl font-bold">
+          <CardTitle className="font-bold text-3xl">
             Sign in to your account
           </CardTitle>
           <CardDescription>
@@ -139,7 +139,7 @@ export default function SignInPage() {
                 <Label htmlFor="password">Password</Label>
                 <Link
                   href={ROUTES.AUTH.FORGOT_PASSWORD}
-                  className="text-sm text-blue-600 hover:underline"
+                  className="text-blue-600 text-sm hover:underline"
                 >
                   Forgot password?
                 </Link>
@@ -181,7 +181,7 @@ export default function SignInPage() {
 
           <div className="relative my-6">
             <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-gray-300" />
+              <div className="w-full border-gray-300 border-t" />
             </div>
             <div className="relative flex justify-center text-sm">
               <span className="bg-white px-2 text-gray-500">

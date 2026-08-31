@@ -18,7 +18,7 @@ export const metadata = {
 export default function SettingsPage() {
   return (
     <div>
-      <h1 className="text-2xl font-bold mb-6">Settings</h1>
+      <h1 className="mb-6 font-bold text-2xl">Settings</h1>
       <SettingsForm />
     </div>
   );

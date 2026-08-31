@@ -52,14 +52,14 @@ vi.mock("next/navigation", () => ({
 }));
 vi.mock("@/lib/arcjet", () => ({ default: {} }));
 
-import { getColorIdBySlug } from "@/actions/cars/get-color-id-by-slug";
-import { getMakeIdBySlug } from "@/actions/cars/get-make-id-by-slug";
-import { getColorIdsForTerm } from "@/actions/cars/get-color-ids-for-term";
-import { getMakeIdsForTerm } from "@/actions/cars/get-make-ids-for-term";
-import { getColorIdsForSearch } from "@/actions/cars/get-color-ids-for-search";
-import { getMakeIdsForSearch } from "@/actions/cars/get-make-ids-for-search";
-import { getCarMakes } from "@/actions/cars/get-car-makes";
 import { getCarColors } from "@/actions/cars/get-car-colors";
+import { getCarMakes } from "@/actions/cars/get-car-makes";
+import { getColorIdBySlug } from "@/actions/cars/get-color-id-by-slug";
+import { getColorIdsForSearch } from "@/actions/cars/get-color-ids-for-search";
+import { getColorIdsForTerm } from "@/actions/cars/get-color-ids-for-term";
+import { getMakeIdBySlug } from "@/actions/cars/get-make-id-by-slug";
+import { getMakeIdsForSearch } from "@/actions/cars/get-make-ids-for-search";
+import { getMakeIdsForTerm } from "@/actions/cars/get-make-ids-for-term";
 
 /** Minimal mock Supabase client wired to the shared builders. */
 const mockClient = {
@@ -90,8 +90,8 @@ describe("id-by-slug lookups", () => {
     "returns null without querying when slug is empty (%#)",
     async (fn) => {
       expect(await fn(mockClient, "")).toBeNull();
-      expect(h.builders["CarMake"].select).not.toHaveBeenCalled();
-      expect(h.builders["CarColor"].select).not.toHaveBeenCalled();
+      expect(h.builders.CarMake.select).not.toHaveBeenCalled();
+      expect(h.builders.CarColor.select).not.toHaveBeenCalled();
     },
   );
 
@@ -105,10 +105,10 @@ describe("id-by-slug lookups", () => {
   it.each([getMakeIdBySlug, getColorIdBySlug])(
     "throws on non-PGRST116 errors (%#)",
     async (fn) => {
-      h.maybeQueues["CarMake"] = [
+      h.maybeQueues.CarMake = [
         { data: null, error: { code: "XX000", message: "boom" } },
       ];
-      h.maybeQueues["CarColor"] = [
+      h.maybeQueues.CarColor = [
         { data: null, error: { code: "XX000", message: "boom" } },
       ];
       await expect(fn(mockClient, "x")).rejects.toMatchObject({
@@ -120,10 +120,10 @@ describe("id-by-slug lookups", () => {
   it.each([getMakeIdBySlug, getColorIdBySlug])(
     "swallows PGRST116 errors and returns null (%#)",
     async (fn) => {
-      h.maybeQueues["CarMake"] = [
+      h.maybeQueues.CarMake = [
         { data: null, error: { code: "PGRST116", message: "no rows" } },
       ];
-      h.maybeQueues["CarColor"] = [
+      h.maybeQueues.CarColor = [
         { data: null, error: { code: "PGRST116", message: "no rows" } },
       ];
       expect(await fn(mockClient, "x")).toBeNull();
@@ -164,7 +164,7 @@ describe("ids-for-term / ids-for-search lookups", () => {
     getColorIdsForSearch,
   ])("returns [] without querying when term is empty (%#)", async (fn) => {
     expect(await fn(mockClient, "")).toEqual([]);
-    expect(h.builders["CarMake"].select).not.toHaveBeenCalled();
+    expect(h.builders.CarMake.select).not.toHaveBeenCalled();
   });
 
   it.each([
@@ -182,8 +182,8 @@ describe("ids-for-term / ids-for-search lookups", () => {
     getMakeIdsForSearch,
     getColorIdsForSearch,
   ])("throws when the query errors (%#)", async (fn) => {
-    h.results["CarMake"] = { data: null, error: { message: "db down" } };
-    h.results["CarColor"] = { data: null, error: { message: "db down" } };
+    h.results.CarMake = { data: null, error: { message: "db down" } };
+    h.results.CarColor = { data: null, error: { message: "db down" } };
     await expect(fn(mockClient, "x")).rejects.toMatchObject({
       message: "db down",
     });
@@ -197,7 +197,7 @@ describe("option list actions", () => {
   });
 
   it("lists makes sorted by name", async () => {
-    h.results["CarMake"] = {
+    h.results.CarMake = {
       data: [{ id: "m1", name: "BMW", slug: "bmw", country: "Germany" }],
       error: null,
     };
@@ -208,13 +208,13 @@ describe("option list actions", () => {
     expect(res.data).toEqual([
       { id: "m1", name: "BMW", slug: "bmw", country: "Germany" },
     ]);
-    expect(h.builders["CarMake"].order).toHaveBeenCalledWith("name", {
+    expect(h.builders.CarMake.order).toHaveBeenCalledWith("name", {
       ascending: true,
     });
   });
 
   it("lists colors sorted by name", async () => {
-    h.results["CarColor"] = {
+    h.results.CarColor = {
       data: [{ id: "c1", name: "Red", slug: "red" }],
       error: null,
     };
@@ -223,7 +223,7 @@ describe("option list actions", () => {
 
     expect(res.success).toBe(true);
     expect(res.data).toEqual([{ id: "c1", name: "Red", slug: "red" }]);
-    expect(h.builders["CarColor"].order).toHaveBeenCalledWith("name", {
+    expect(h.builders.CarColor.order).toHaveBeenCalledWith("name", {
       ascending: true,
     });
   });
@@ -236,7 +236,7 @@ describe("option list actions", () => {
   });
 
   it("returns error result when make query fails", async () => {
-    h.results["CarMake"] = { data: null, error: { message: "denied" } };
+    h.results.CarMake = { data: null, error: { message: "denied" } };
 
     const res = await getCarMakes();
 

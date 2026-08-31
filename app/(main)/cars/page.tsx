@@ -1,5 +1,5 @@
-import { CarFilters } from "./_components/car-filters";
 import { getCarFilters } from "@/actions/cars/get-car-filters";
+import { CarFilters } from "./_components/car-filters";
 import { CarListings } from "./_components/cars-listing";
 
 /**
@@ -34,11 +34,11 @@ export default async function CarsPage() {
 
   return (
     <div className="py-12">
-      <h1 className="text-6xl mb-4 gradient-title">Browse Cars</h1>
+      <h1 className="gradient-title mb-4 text-6xl">Browse Cars</h1>
 
-      <div className="flex flex-col lg:flex-row gap-8">
+      <div className="flex flex-col gap-8 lg:flex-row">
         {/* Filters Section */}
-        <div className="w-full lg:w-80 shrink-0">
+        <div className="w-full shrink-0 lg:w-80">
           <CarFilters filters={filtersData.data} />
         </div>
 

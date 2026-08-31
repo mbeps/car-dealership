@@ -92,8 +92,8 @@ vi.mock("@/lib/helpers/build-versioned-logo-path", () => ({
   buildVersionedLogoPath: mocks.buildVersionedLogoPath,
 }));
 
-import { updateDealershipLogo } from "@/actions/settings/update-dealership-logo";
 import { removeDealershipLogo } from "@/actions/settings/remove-dealership-logo";
+import { updateDealershipLogo } from "@/actions/settings/update-dealership-logo";
 
 function relinkDefaults() {
   mocks.authGetUser.mockResolvedValue({

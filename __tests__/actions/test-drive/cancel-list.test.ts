@@ -1,8 +1,8 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { BookingStatusEnum as BookingStatus } from "@/enums/booking-status";
-import { UserRoleEnum as UserRole } from "@/enums/user-role";
 import { cancelTestDrive } from "@/actions/test-drive/cancel-test-drive";
 import { getUserTestDrives } from "@/actions/test-drive/get-user-test-drives";
+import { BookingStatusEnum as BookingStatus } from "@/enums/booking-status";
+import { UserRoleEnum as UserRole } from "@/enums/user-role";
 
 const mocks = vi.hoisted(() => {
   const makeBuilder = () => {

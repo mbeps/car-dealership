@@ -1,13 +1,13 @@
-import { describe, it, expect } from "vitest";
+import { describe, expect, it } from "vitest";
 import {
-  logoUploadPayloadSchema,
-  normaliseLogoMimeType,
   getLogoExtensionFromFileName,
+  getMimeTypeFromFileName,
   isAllowedLogoMimeType,
   isCompatibleLogoExtensionAndMimeType,
-  getMimeTypeFromFileName,
   LOGO_ALLOWED_EXTENSIONS,
   LOGO_MIME_BY_EXTENSION,
+  logoUploadPayloadSchema,
+  normaliseLogoMimeType,
 } from "@/schemas/logo-upload";
 
 describe("logoUploadPayloadSchema", () => {

@@ -20,8 +20,8 @@ vi.mock("next/navigation", () => ({ redirect: vi.fn() }));
 vi.mock("next/cache", () => ({ revalidatePath: vi.fn() }));
 vi.mock("@/lib/arcjet", () => ({ default: {} }));
 
-import { listUserPasskeys } from "@/actions/auth/list-user-passkeys";
 import { deleteUserPasskey } from "@/actions/auth/delete-user-passkey";
+import { listUserPasskeys } from "@/actions/auth/list-user-passkeys";
 
 describe("listUserPasskeys", () => {
   beforeEach(() => {

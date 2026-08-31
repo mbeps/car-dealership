@@ -1,9 +1,9 @@
-import { getSavedCars } from "@/actions/cars/get-saved-cars";
-import { SavedCarsList } from "./_components/saved-cars-list";
-import { ensureProfile } from "@/actions/auth/ensure-profile";
 import { redirect } from "next/navigation";
-import { createSignInRedirect } from "@/lib/route/createSignInRedirect";
+import { ensureProfile } from "@/actions/auth/ensure-profile";
+import { getSavedCars } from "@/actions/cars/get-saved-cars";
 import { ROUTES } from "@/constants/routes";
+import { createSignInRedirect } from "@/lib/route/createSignInRedirect";
+import { SavedCarsList } from "./_components/saved-cars-list";
 
 /**
  * Defines SEO metadata for the saved cars page.
@@ -35,7 +35,7 @@ export default async function SavedCarsPage() {
 
   return (
     <div className="py-12">
-      <h1 className="text-6xl mb-6 gradient-title">Your Saved Cars</h1>
+      <h1 className="gradient-title mb-6 text-6xl">Your Saved Cars</h1>
       <SavedCarsList initialData={savedCarsResult} />
     </div>
   );

@@ -16,7 +16,7 @@ export function SignedIn({ children }: { children: React.ReactNode }) {
     return null;
   }
 
-  return user ? <>{children}</> : null;
+  return user ? children : null;
 }
 
 /**
@@ -33,5 +33,5 @@ export function SignedOut({ children }: { children: React.ReactNode }) {
     return null;
   }
 
-  return !user ? <>{children}</> : null;
+  return !user ? children : null;
 }

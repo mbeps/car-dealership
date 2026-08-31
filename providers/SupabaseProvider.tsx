@@ -1,8 +1,8 @@
 "use client";
 
-import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import type { Session, SupabaseClient, User } from "@supabase/supabase-js";
 import { useRouter } from "next/navigation";
+import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import { createBrowserClient } from "@/lib/supabase/supabase-client";
 
 /**
@@ -11,7 +11,8 @@ import { createBrowserClient } from "@/lib/supabase/supabase-client";
  * Tracks the authenticated client, current session, current user, and loading state managed by the provider.
  */
 type SupabaseContextType = {
-  supabaseClient: SupabaseClient<any, "public", any>; // eslint-disable-line @typescript-eslint/no-explicit-any
+  // biome-ignore lint/suspicious/noExplicitAny: Generic Supabase database schema type fallback
+  supabaseClient: SupabaseClient<any, "public", any>;
   session: Session | null;
   user: User | null;
   isLoading: boolean;

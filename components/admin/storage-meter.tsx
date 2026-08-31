@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useMemo, useState } from "react";
 import { getStorageUsage } from "@/actions/storage/get-storage-usage";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -15,7 +16,6 @@ import {
   ProgressTrack,
 } from "@/components/ui/progress";
 import { env } from "@/lib/env";
-import { useEffect, useMemo, useState } from "react";
 
 /**
  * Formats bytes into a human-readable storage unit string (GB/MB).
@@ -90,7 +90,7 @@ export function StorageMeter() {
     <Card size="sm" className="cursor-help transition-colors hover:bg-muted/5">
       <CardHeader className="flex-row items-center justify-between space-y-0 text-left">
         <div className="grid gap-1">
-          <CardTitle className="text-sm font-semibold leading-none">
+          <CardTitle className="font-semibold text-sm leading-none">
             Storage Usage
           </CardTitle>
           <CardDescription className="text-xs">

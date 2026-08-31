@@ -31,7 +31,9 @@ describe("useIsMobile", () => {
       configurable: true,
       value: width,
     });
-    listeners.forEach((cb) => cb());
+    listeners.forEach((cb) => {
+      cb();
+    });
   }
 
   it("queries the mobile breakpoint media query", () => {

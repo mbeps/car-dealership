@@ -1,9 +1,11 @@
 "use client";
 
+import { Loader2 } from "lucide-react";
+import Link from "next/link";
 import { useState } from "react";
+import { requestPasswordReset } from "@/actions/auth/request-password-reset";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import {
   Card,
   CardContent,
@@ -11,11 +13,9 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import Link from "next/link";
-import { Loader2 } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { ROUTES } from "@/constants/routes";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { requestPasswordReset } from "@/actions/auth/request-password-reset";
 import { forgotPasswordSchema } from "@/schemas/forgot-password";
 
 /**
@@ -75,10 +75,10 @@ export default function ForgotPasswordPage() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center px-4 py-12 bg-gray-50">
+    <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4 py-12">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
-          <CardTitle className="text-3xl font-bold">
+          <CardTitle className="font-bold text-3xl">
             Reset your password
           </CardTitle>
           <CardDescription>

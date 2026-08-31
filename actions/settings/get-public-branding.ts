@@ -1,10 +1,10 @@
 "use server";
 
+import { unstable_cache } from "next/cache";
 import { DEALERSHIP_NAME } from "@/constants/dealership-name";
 import { BRANDING_CACHE_TAG } from "@/lib/helpers/branding-cache";
 import { createPublicClient } from "@/lib/supabase/supabase";
 import type { PublicBranding } from "@/types/dealership/public-branding";
-import { unstable_cache } from "next/cache";
 
 /**
  * Time-to-live for branding cache in seconds (24 hours).

@@ -100,8 +100,8 @@ describe("toggleSavedCar", () => {
   });
 
   it("saves a car when not previously saved", async () => {
-    h.singleQueues["Car"] = [{ data: { id: "car-1" }, error: null }];
-    h.maybeQueues["UserSavedCar"] = [{ data: null, error: null }];
+    h.singleQueues.Car = [{ data: { id: "car-1" }, error: null }];
+    h.maybeQueues.UserSavedCar = [{ data: null, error: null }];
 
     const res = await toggleSavedCar("car-1");
 
@@ -110,7 +110,7 @@ describe("toggleSavedCar", () => {
       saved: true,
       message: "Car added to favorites",
     });
-    expect(h.builders["UserSavedCar"].insert).toHaveBeenCalledWith({
+    expect(h.builders.UserSavedCar.insert).toHaveBeenCalledWith({
       userId: "db-user-1",
       carId: "car-1",
     });
@@ -118,8 +118,8 @@ describe("toggleSavedCar", () => {
   });
 
   it("unsaves a car when already saved", async () => {
-    h.singleQueues["Car"] = [{ data: { id: "car-1" }, error: null }];
-    h.maybeQueues["UserSavedCar"] = [
+    h.singleQueues.Car = [{ data: { id: "car-1" }, error: null }];
+    h.maybeQueues.UserSavedCar = [
       { data: { userId: "db-user-1", carId: "car-1" }, error: null },
     ];
 
@@ -130,26 +130,23 @@ describe("toggleSavedCar", () => {
       saved: false,
       message: "Car removed from favorites",
     });
-    expect(h.builders["UserSavedCar"].delete).toHaveBeenCalled();
-    expect(h.builders["UserSavedCar"].eq).toHaveBeenCalledWith(
+    expect(h.builders.UserSavedCar.delete).toHaveBeenCalled();
+    expect(h.builders.UserSavedCar.eq).toHaveBeenCalledWith(
       "userId",
       "db-user-1",
     );
-    expect(h.builders["UserSavedCar"].eq).toHaveBeenCalledWith(
-      "carId",
-      "car-1",
-    );
-    expect(h.builders["UserSavedCar"].insert).not.toHaveBeenCalled();
+    expect(h.builders.UserSavedCar.eq).toHaveBeenCalledWith("carId", "car-1");
+    expect(h.builders.UserSavedCar.insert).not.toHaveBeenCalled();
   });
 
   it("returns error when car does not exist", async () => {
-    h.singleQueues["Car"] = [{ data: null, error: null }];
+    h.singleQueues.Car = [{ data: null, error: null }];
 
     const res = await toggleSavedCar("missing");
 
     expect(res.success).toBe(false);
     expect(res.error).toBe("Car not found");
-    expect(h.builders["UserSavedCar"].insert).not.toHaveBeenCalled();
+    expect(h.builders.UserSavedCar.insert).not.toHaveBeenCalled();
   });
 
   it("throws when unauthenticated", async () => {
@@ -167,9 +164,9 @@ describe("toggleSavedCar", () => {
   });
 
   it("throws when insert fails", async () => {
-    h.singleQueues["Car"] = [{ data: { id: "car-1" }, error: null }];
-    h.maybeQueues["UserSavedCar"] = [{ data: null, error: null }];
-    h.results["UserSavedCar"] = {
+    h.singleQueues.Car = [{ data: { id: "car-1" }, error: null }];
+    h.maybeQueues.UserSavedCar = [{ data: null, error: null }];
+    h.results.UserSavedCar = {
       data: null,
       error: { message: "insert fail" },
     };
@@ -178,11 +175,11 @@ describe("toggleSavedCar", () => {
   });
 
   it("throws when delete of existing save fails", async () => {
-    h.singleQueues["Car"] = [{ data: { id: "car-1" }, error: null }];
-    h.maybeQueues["UserSavedCar"] = [
+    h.singleQueues.Car = [{ data: { id: "car-1" }, error: null }];
+    h.maybeQueues.UserSavedCar = [
       { data: { userId: "db-user-1", carId: "car-1" }, error: null },
     ];
-    h.results["UserSavedCar"] = {
+    h.results.UserSavedCar = {
       data: null,
       error: { message: "delete fail" },
     };
@@ -191,8 +188,8 @@ describe("toggleSavedCar", () => {
   });
 
   it("treats PGRST116 on existing-save lookup as not-saved", async () => {
-    h.singleQueues["Car"] = [{ data: { id: "car-1" }, error: null }];
-    h.maybeQueues["UserSavedCar"] = [
+    h.singleQueues.Car = [{ data: { id: "car-1" }, error: null }];
+    h.maybeQueues.UserSavedCar = [
       { data: null, error: { code: "PGRST116", message: "no rows" } },
     ];
 
@@ -203,8 +200,8 @@ describe("toggleSavedCar", () => {
   });
 
   it("throws on non-PGRST116 existing-save lookup errors", async () => {
-    h.singleQueues["Car"] = [{ data: { id: "car-1" }, error: null }];
-    h.maybeQueues["UserSavedCar"] = [
+    h.singleQueues.Car = [{ data: { id: "car-1" }, error: null }];
+    h.maybeQueues.UserSavedCar = [
       { data: null, error: { code: "XX000", message: "connection lost" } },
     ];
 
