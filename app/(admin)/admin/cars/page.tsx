@@ -1,4 +1,4 @@
-import { CarsList } from "./_components/car-list";
+import { CarsList } from "@/app/(admin)/admin/cars/_components/car-list";
 
 /**
  * Cars management page metadata.

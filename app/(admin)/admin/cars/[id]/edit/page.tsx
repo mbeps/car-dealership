@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 import { getCarColors } from "@/actions/cars/get-car-colors";
 import { getCarMakes } from "@/actions/cars/get-car-makes";
 import { getCars } from "@/actions/cars/get-cars";
-import { EditCarForm } from "./_components/edit-car-form";
+import { EditCarForm } from "@/app/(admin)/admin/cars/[id]/edit/_components/edit-car-form";
 
 /**
  * Edit car page metadata.

@@ -1,6 +1,6 @@
 "use server";
 
-import { ROUTES } from "@/constants/routes";
+import { ROUTES } from "@/config/routes";
 import { getLogger } from "@/lib/logger";
 import { getSiteUrl } from "@/lib/site-url";
 import { createClient } from "@/lib/supabase/supabase";

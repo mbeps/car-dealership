@@ -2,11 +2,11 @@
 
 import { Loader2 } from "lucide-react";
 import * as React from "react";
+import { PasskeyRow } from "@/components/header/passkey-row";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { useSignIn } from "@/hooks/use-sign-in";
 import { createBrowserClient } from "@/lib/supabase/supabase-client";
-import { PasskeyRow } from "./passkey-row";
 
 export interface PasskeyEntry {
   id: string;

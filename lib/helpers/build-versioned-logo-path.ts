@@ -1,4 +1,4 @@
-import type { LogoExtension } from "@/schemas/logo-upload";
+import type { LogoExtension } from "@/schemas/dealership/logo-upload.schema";
 
 /**
  * Builds the public logo path with the asset version baked into the filename.

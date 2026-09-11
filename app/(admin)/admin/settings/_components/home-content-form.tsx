@@ -10,18 +10,17 @@ import { getFAQs } from "@/actions/home/get-faqs";
 import { getHomePageContent } from "@/actions/home/get-home-page-content";
 import { updateFAQ } from "@/actions/home/update-faq";
 import { updateHomePageContent } from "@/actions/home/update-home-page-content";
+import { CTASection } from "@/app/(admin)/admin/settings/_components/home-content/cta-section";
+import { FAQSection } from "@/app/(admin)/admin/settings/_components/home-content/faq-section";
+import { FeaturesSection } from "@/app/(admin)/admin/settings/_components/home-content/features-section";
+import { HeroSection } from "@/app/(admin)/admin/settings/_components/home-content/hero-section";
 import useFetch from "@/hooks/use-fetch";
+import { type FAQFormValues, faqSchema } from "@/schemas/home/faq.schema";
 import {
-  type FAQFormValues,
-  faqSchema,
   type HomePageContentFormValues,
   homePageContentSchema,
-} from "@/schemas/home-content";
+} from "@/schemas/home/home-content.schema";
 import type { FAQ } from "@/types/home-content/faq";
-import { CTASection } from "./home-content/cta-section";
-import { FAQSection } from "./home-content/faq-section";
-import { FeaturesSection } from "./home-content/features-section";
-import { HeroSection } from "./home-content/hero-section";
 
 /**
  * Client form for homepage content and FAQ management.

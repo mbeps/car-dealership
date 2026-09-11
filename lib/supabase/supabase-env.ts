@@ -1,4 +1,4 @@
-import { env } from "@/lib/env";
+import { env } from "@/config/env";
 
 /**
  * Retrieves the public Supabase project URL from environment variables.

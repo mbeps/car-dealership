@@ -1,5 +1,5 @@
 import type { NextConfig } from "next";
-import { env } from "./lib/env";
+import { env } from "@/config/env";
 
 const SUPABASE_REMOTE_PATTERNS: {
   protocol: "http" | "https";

@@ -1,12 +1,11 @@
 "use client";
 
 import { Building2, Clock, Home, Shield } from "lucide-react";
-
+import { AdminUsersList } from "@/app/(admin)/admin/settings/_components/admin-users-list";
+import { DealershipInfoForm } from "@/app/(admin)/admin/settings/_components/dealership-info-form";
+import { HomeContentForm } from "@/app/(admin)/admin/settings/_components/home-content-form";
+import { WorkingHoursForm } from "@/app/(admin)/admin/settings/_components/working-hours-form";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { AdminUsersList } from "./admin-users-list";
-import { DealershipInfoForm } from "./dealership-info-form";
-import { HomeContentForm } from "./home-content-form";
-import { WorkingHoursForm } from "./working-hours-form";
 
 /**
  * Admin settings page with tabs.

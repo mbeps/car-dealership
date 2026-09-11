@@ -1,6 +1,9 @@
-import { env } from "@/lib/env";
+import { env } from "@/config/env";
 
-export { getSupabasePublishableKey, getSupabaseUrl } from "./supabase-env";
+export {
+  getSupabasePublishableKey,
+  getSupabaseUrl,
+} from "@/lib/supabase/supabase-env";
 
 /**
  * Exposes server-only Supabase environment helpers.

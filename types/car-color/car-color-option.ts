@@ -1,4 +1,4 @@
-import type { CarColor } from "./car-color";
+import type { CarColor } from "@/types/car-color/car-color";
 
 /**
  * Car color option for dropdowns/selects.

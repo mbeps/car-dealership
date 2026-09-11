@@ -1,9 +1,9 @@
 import { redirect } from "next/navigation";
 import { ensureProfile } from "@/actions/auth/ensure-profile";
 import { getSavedCars } from "@/actions/cars/get-saved-cars";
-import { ROUTES } from "@/constants/routes";
-import { createSignInRedirect } from "@/lib/route/createSignInRedirect";
-import { SavedCarsList } from "./_components/saved-cars-list";
+import { SavedCarsList } from "@/app/(main)/saved-cars/_components/saved-cars-list";
+import { ROUTES } from "@/config/routes";
+import { createSignInRedirect } from "@/lib/route/create-sign-in-redirect";
 
 /**
  * Defines SEO metadata for the saved cars page.

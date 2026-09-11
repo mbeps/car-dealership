@@ -4,7 +4,7 @@ import { revalidatePath, revalidateTag } from "next/cache";
 import type { z } from "zod";
 import { UserRoleEnum as UserRole } from "@/enums/user-role";
 import { createClient } from "@/lib/supabase/supabase";
-import { homePageContentSchema } from "@/schemas/home-content";
+import { homePageContentSchema } from "@/schemas/home/home-content.schema";
 import type { ActionResponse } from "@/types/common/action-response";
 import type { HomePageContent } from "@/types/home-content/home-page-content";
 

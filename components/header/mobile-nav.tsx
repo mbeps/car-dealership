@@ -2,9 +2,9 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import type { NavItem } from "@/components/header/nav-items";
 import { UserRoleEnum as UserRole } from "@/enums/user-role";
 import { cn } from "@/lib/utils";
-import type { NavItem } from "./nav-items";
 
 /**
  * Props for the mobile navigation bar.

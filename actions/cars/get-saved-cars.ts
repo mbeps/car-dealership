@@ -1,11 +1,11 @@
 "use server";
 
+import { getOrCreateDbUser } from "@/actions/cars/get-or-create-db-user";
 import { serializeCarData } from "@/lib/helpers/serialize-car";
 import { getLogger } from "@/lib/logger";
 import { createClient } from "@/lib/supabase/supabase";
 import type { SerializedCar } from "@/types/car/serialized-car";
 import type { ActionResponse } from "@/types/common/action-response";
-import { getOrCreateDbUser } from "./get-or-create-db-user";
 
 const log = getLogger(["app", "actions", "cars"]);
 

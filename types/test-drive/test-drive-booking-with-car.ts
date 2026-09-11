@@ -1,5 +1,5 @@
-import type { SerializedCar } from "../car/serialized-car";
-import type { SerializedTestDriveBooking } from "./serialized-test-drive-booking";
+import type { SerializedCar } from "@/types/car/serialized-car";
+import type { SerializedTestDriveBooking } from "@/types/test-drive/serialized-test-drive-booking";
 
 /**
  * Test drive booking with the associated car details.

@@ -4,6 +4,7 @@ import type { User } from "@supabase/supabase-js";
 import { LogOut, User as UserIcon } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
+import { AccountDialog } from "@/components/header/account-dialog";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -12,7 +13,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { AccountDialog } from "./account-dialog";
 
 /**
  * Props for the user authentication menu.

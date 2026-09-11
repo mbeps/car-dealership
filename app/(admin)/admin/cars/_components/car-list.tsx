@@ -49,7 +49,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { ROUTES } from "@/constants/routes";
+import { ROUTES } from "@/config/routes";
 import { CarStatusEnum as CarStatus } from "@/enums/car-status";
 import { useCarAdmin } from "@/hooks/use-car-admin";
 import useFetch from "@/hooks/use-fetch";

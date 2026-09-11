@@ -4,12 +4,12 @@ import { Toaster } from "sonner";
 import { getPublicBranding } from "@/actions/settings/get-public-branding";
 import Footer from "@/components/footer";
 import Header from "@/components/header";
-import { SignInModal } from "@/components/sign-in-modal";
-import { DEALERSHIP_NAME } from "@/constants/dealership-name";
+import { SignInModal } from "@/components/modals/sign-in-modal";
+import { DEALERSHIP_NAME } from "@/config/constants";
 import { resolveIconHrefs } from "@/lib/branding/resolve-icon-hrefs";
-import SupabaseProvider from "@/providers/SupabaseProvider";
-import UserProvider from "@/providers/UserProvider";
-import "./globals.css";
+import SupabaseProvider from "@/providers/supabase-provider";
+import UserProvider from "@/providers/user-provider";
+import "@/app/globals.css";
 
 const inter = Inter({ subsets: ["latin"] });
 

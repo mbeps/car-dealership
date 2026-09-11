@@ -1,4 +1,4 @@
-import type { Car } from "./car";
+import type { Car } from "@/types/car/car";
 
 /**
  * JSON-serialisable car listing shape used by client-side car cards and search results.

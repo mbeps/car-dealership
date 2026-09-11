@@ -4,22 +4,22 @@ import { ArrowLeft } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button";
-import { DEALERSHIP_NAME } from "@/constants/dealership-name";
-import { ROUTES } from "@/constants/routes";
-import { UserRoleEnum as UserRole } from "@/enums/user-role";
-import useAuthModal from "@/hooks/useAuthModal";
-import { useUser } from "@/hooks/useUser";
-import { resolveHeaderLogoSrc } from "@/lib/branding/resolve-header-logo-src";
-import { useSupabaseClient } from "@/providers/SupabaseProvider";
-import { DesktopNav } from "./desktop-nav";
-import { MobileNav } from "./mobile-nav";
+import { DesktopNav } from "@/components/header/desktop-nav";
+import { MobileNav } from "@/components/header/mobile-nav";
 import {
   ADMIN_NAV_ITEMS,
   ADMIN_PORTAL_ITEM,
   MAIN_NAV_ITEMS,
-} from "./nav-items";
-import { UserMenu } from "./user-menu";
+} from "@/components/header/nav-items";
+import { UserMenu } from "@/components/header/user-menu";
+import { Button } from "@/components/ui/button";
+import { DEALERSHIP_NAME } from "@/config/constants";
+import { ROUTES } from "@/config/routes";
+import { UserRoleEnum as UserRole } from "@/enums/user-role";
+import useAuthModal from "@/hooks/use-auth-modal";
+import { useUser } from "@/hooks/use-user";
+import { resolveHeaderLogoSrc } from "@/lib/branding/resolve-header-logo-src";
+import { useSupabaseClient } from "@/providers/supabase-provider";
 
 /**
  * Props for the client-side header component.

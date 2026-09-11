@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import type { HomePageContentFormValues } from "@/schemas/home-content";
+import type { HomePageContentFormValues } from "@/schemas/home/home-content.schema";
 
 interface FeaturesSectionProps {
   /** Shared form state for home content values. */

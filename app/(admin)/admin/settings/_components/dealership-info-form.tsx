@@ -25,7 +25,7 @@ import { resolveHeaderLogoSrc } from "@/lib/branding/resolve-header-logo-src";
 import {
   type DealershipInfoFormData,
   dealershipInfoSchema,
-} from "@/schemas/dealership-info";
+} from "@/schemas/dealership/dealership-info.schema";
 import {
   getLogoExtensionFromFileName,
   getMimeTypeFromFileName,
@@ -33,7 +33,7 @@ import {
   MAX_BYTES_ICO,
   MAX_BYTES_PNG_JPEG,
   MAX_BYTES_SVG,
-} from "@/schemas/logo-upload";
+} from "@/schemas/dealership/logo-upload.schema";
 
 const ACCEPTED_FILE_TYPES = ".png,.jpg,.jpeg,.ico,.svg";
 

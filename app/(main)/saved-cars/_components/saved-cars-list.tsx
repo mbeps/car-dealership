@@ -2,9 +2,9 @@
 
 import { Heart } from "lucide-react";
 import Link from "next/link";
-import { CarCard } from "@/components/car-card";
+import { CarCard } from "@/components/car/car-card";
 import { Button } from "@/components/ui/button";
-import { ROUTES } from "@/constants/routes";
+import { ROUTES } from "@/config/routes";
 import type { SerializedCar } from "@/types/car/serialized-car";
 import type { ActionResponse } from "@/types/common/action-response";
 

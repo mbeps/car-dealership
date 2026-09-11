@@ -1,5 +1,9 @@
 "use server";
 
+import { getColorIdBySlug } from "@/actions/cars/get-color-id-by-slug";
+import { getColorIdsForSearch } from "@/actions/cars/get-color-ids-for-search";
+import { getMakeIdBySlug } from "@/actions/cars/get-make-id-by-slug";
+import { getMakeIdsForSearch } from "@/actions/cars/get-make-ids-for-search";
 import { CarStatusEnum as CarStatus } from "@/enums/car-status";
 import { serializeCarData } from "@/lib/helpers/serialize-car";
 import { createClient } from "@/lib/supabase/supabase";
@@ -7,10 +11,6 @@ import type { SerializedCar } from "@/types/car/serialized-car";
 import type { ActionResponse } from "@/types/common/action-response";
 import type { PaginationInfo } from "@/types/common/pagination-info";
 import type { CarFilters } from "@/types/filters/car-filters";
-import { getColorIdBySlug } from "./get-color-id-by-slug";
-import { getColorIdsForSearch } from "./get-color-ids-for-search";
-import { getMakeIdBySlug } from "./get-make-id-by-slug";
-import { getMakeIdsForSearch } from "./get-make-ids-for-search";
 
 /**
  * Main inventory query with filtering, sorting, and pagination.

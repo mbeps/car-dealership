@@ -1,10 +1,13 @@
 "use client";
 
 import type * as React from "react";
+import {
+  type PasskeyEntry,
+  PasskeyManager,
+} from "@/components/header/passkey-manager";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ResponsiveDrawerDialog } from "@/components/ui/responsive-drawer-dialog";
-import { useUser } from "@/hooks/useUser";
-import { type PasskeyEntry, PasskeyManager } from "./passkey-manager";
+import { useUser } from "@/hooks/use-user";
 
 export type { PasskeyEntry };
 

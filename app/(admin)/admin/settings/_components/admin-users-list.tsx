@@ -43,7 +43,7 @@ import {
 } from "@/components/ui/table";
 import { UserRoleEnum as UserRole } from "@/enums/user-role";
 import useFetch from "@/hooks/use-fetch";
-import { useUser } from "@/hooks/useUser";
+import { useUser } from "@/hooks/use-user";
 import type { User } from "@/types/user/user";
 
 /**

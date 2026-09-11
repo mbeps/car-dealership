@@ -2,9 +2,9 @@ import arcjet, { createMiddleware, detectBot, shield } from "@arcjet/next";
 import type { CookieOptions } from "@supabase/ssr";
 import { createServerClient } from "@supabase/ssr";
 import { type NextRequest, NextResponse } from "next/server";
-import { env } from "@/lib/env";
-import { createSignInRedirect } from "@/lib/route/createSignInRedirect";
-import { PROTECTED_ROUTES, ROUTES } from "./constants/routes";
+import { env } from "@/config/env";
+import { PROTECTED_ROUTES, ROUTES } from "@/config/routes";
+import { createSignInRedirect } from "@/lib/route/create-sign-in-redirect";
 
 // Protected routes that require authentication
 const protectedRoutes = PROTECTED_ROUTES;

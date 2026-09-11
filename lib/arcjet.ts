@@ -1,5 +1,5 @@
 import arcjet, { tokenBucket } from "@arcjet/next";
-import { env } from "@/lib/env";
+import { env } from "@/config/env";
 
 /**
  * Arcjet rate limiting config for dealership collection creation.

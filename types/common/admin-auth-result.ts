@@ -1,4 +1,4 @@
-import type { User } from "../user/user";
+import type { User } from "@/types/user/user";
 
 /**
  * Admin authorization result.

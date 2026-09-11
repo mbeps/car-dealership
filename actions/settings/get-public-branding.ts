@@ -1,7 +1,7 @@
 "use server";
 
 import { unstable_cache } from "next/cache";
-import { DEALERSHIP_NAME } from "@/constants/dealership-name";
+import { DEALERSHIP_NAME } from "@/config/constants";
 import { BRANDING_CACHE_TAG } from "@/lib/helpers/branding-cache";
 import { getLogger } from "@/lib/logger";
 import { createPublicClient } from "@/lib/supabase/supabase";

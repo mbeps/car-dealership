@@ -1,7 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { ROUTES } from "@/constants/routes";
+import { ROUTES } from "@/config/routes";
 import { BookingStatusEnum as BookingStatus } from "@/enums/booking-status";
 import { UserRoleEnum as UserRole } from "@/enums/user-role";
 import { getLogger } from "@/lib/logger";

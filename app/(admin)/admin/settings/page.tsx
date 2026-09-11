@@ -1,4 +1,4 @@
-import { SettingsForm } from "./_components/settings-form";
+import { SettingsForm } from "@/app/(admin)/admin/settings/_components/settings-form";
 
 /**
  * Settings page metadata.

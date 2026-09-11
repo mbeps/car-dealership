@@ -1,12 +1,12 @@
 "use server";
 
+import { getColorIdsForTerm } from "@/actions/cars/get-color-ids-for-term";
+import { getMakeIdsForTerm } from "@/actions/cars/get-make-ids-for-term";
 import { serializeCarData } from "@/lib/helpers/serialize-car";
 import { getLogger } from "@/lib/logger";
 import { createClient } from "@/lib/supabase/supabase";
 import type { SerializedCar } from "@/types/car/serialized-car";
 import type { ActionResponse } from "@/types/common/action-response";
-import { getColorIdsForTerm } from "./get-color-ids-for-term";
-import { getMakeIdsForTerm } from "./get-make-ids-for-term";
 
 const log = getLogger(["app", "actions", "cars"]);
 

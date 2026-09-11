@@ -1,6 +1,6 @@
-import { brandingConstants } from "@/constants/branding";
+import { brandingConstants } from "@/config/assets";
+import { appendVersionToAssetUrl } from "@/lib/branding/append-version-to-asset-url";
 import type { BrandingLogoSource } from "@/types/branding";
-import { appendVersionToAssetUrl } from "./append-version-to-asset-url";
 
 /**
  * Resolves favicon and secondary icon sources for the document head.

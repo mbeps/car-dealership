@@ -6,7 +6,7 @@ import { toast } from "sonner";
 import { getAdminTestDrives } from "@/actions/admin/get-admin-test-drives";
 import { updateTestDriveStatus } from "@/actions/admin/update-test-drive-status";
 import { cancelTestDrive } from "@/actions/test-drive/cancel-test-drive";
-import { TestDriveCard } from "@/components/test-drive-card";
+import { TestDriveCard } from "@/components/test-drive/test-drive-card";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import {

@@ -1,11 +1,11 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { ROUTES } from "@/constants/routes";
+import { getOrCreateDbUser } from "@/actions/cars/get-or-create-db-user";
+import { ROUTES } from "@/config/routes";
 import { getLogger } from "@/lib/logger";
 import { createClient } from "@/lib/supabase/supabase";
 import type { ActionResponse } from "@/types/common/action-response";
-import { getOrCreateDbUser } from "./get-or-create-db-user";
 
 const log = getLogger(["app", "actions", "cars"]);
 

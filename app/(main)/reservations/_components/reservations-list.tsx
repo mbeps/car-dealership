@@ -3,9 +3,9 @@
 import { Calendar } from "lucide-react";
 import Link from "next/link";
 import { cancelTestDrive } from "@/actions/test-drive/cancel-test-drive";
-import { TestDriveCard } from "@/components/test-drive-card";
+import { TestDriveCard } from "@/components/test-drive/test-drive-card";
 import { Button } from "@/components/ui/button";
-import { ROUTES } from "@/constants/routes";
+import { ROUTES } from "@/config/routes";
 import { BookingStatusEnum as BookingStatus } from "@/enums/booking-status";
 import useFetch from "@/hooks/use-fetch";
 import type { ActionResponse } from "@/types/common/action-response";

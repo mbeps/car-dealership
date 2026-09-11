@@ -1,6 +1,7 @@
 "use client";
 
 import { Filter, Sliders, X } from "lucide-react";
+import { CarFilterControls } from "@/app/(main)/cars/_components/filter-controls";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -20,7 +21,6 @@ import {
 } from "@/components/ui/sheet";
 import { useCarFilters } from "@/hooks/use-car-filters";
 import type { CarFiltersData } from "@/types/filters/car-filters-data";
-import { CarFilterControls } from "./filter-controls";
 
 /**
  * Car inventory filter UI.

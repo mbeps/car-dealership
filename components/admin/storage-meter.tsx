@@ -15,7 +15,7 @@ import {
   ProgressIndicator,
   ProgressTrack,
 } from "@/components/ui/progress";
-import { env } from "@/lib/env";
+import { env } from "@/config/env";
 
 /**
  * Formats bytes into a human-readable storage unit string (GB/MB).

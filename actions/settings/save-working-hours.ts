@@ -1,7 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { ROUTES } from "@/constants/routes";
+import { ROUTES } from "@/config/routes";
 import { getLogger } from "@/lib/logger";
 import { ensureAdminUser } from "@/lib/supabase/ensure-admin-user";
 import type { ActionResponse } from "@/types/common/action-response";

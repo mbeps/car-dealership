@@ -1,11 +1,11 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { ROUTES } from "@/constants/routes";
+import { ROUTES } from "@/config/routes";
 import { revalidateBrandingPages } from "@/lib/helpers/branding-cache";
 import { getLogger } from "@/lib/logger";
 import { ensureAdminUser } from "@/lib/supabase/ensure-admin-user";
-import { dealershipInfoSchema } from "@/schemas/dealership-info";
+import { dealershipInfoSchema } from "@/schemas/dealership/dealership-info.schema";
 import type { ActionResponse } from "@/types/common/action-response";
 
 const log = getLogger(["app", "actions", "settings"]);
