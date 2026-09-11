@@ -4,8 +4,11 @@ import { revalidatePath } from "next/cache";
 import { ROUTES } from "@/constants/routes";
 import { BookingStatusEnum as BookingStatus } from "@/enums/booking-status";
 import { UserRoleEnum as UserRole } from "@/enums/user-role";
+import { getLogger } from "@/lib/logger";
 import { createClient } from "@/lib/supabase/supabase";
 import type { ActionResponse } from "@/types/common/action-response";
+
+const log = getLogger(["app", "actions", "test-drive"]);
 
 /**
  * Cancels test drive booking.
@@ -28,6 +31,10 @@ export async function cancelTestDrive(
       error: authError,
     } = await supabase.auth.getUser();
     if (authError || !authUser) {
+      log.warn(
+        "Unauthorized attempt to cancel test drive (bookingId: {bookingId})",
+        { bookingId },
+      );
       return {
         success: false,
         error: "Unauthorized",
@@ -42,6 +49,12 @@ export async function cancelTestDrive(
       .single();
 
     if (!user) {
+      log.warn(
+        "User profile not found when cancelling booking (bookingId: {bookingId})",
+        {
+          bookingId,
+        },
+      );
       return {
         success: false,
         error: "User not found",
@@ -56,6 +69,9 @@ export async function cancelTestDrive(
       .single();
 
     if (!booking) {
+      log.warn("Booking not found to cancel (bookingId: {bookingId})", {
+        bookingId,
+      });
       return {
         success: false,
         error: "Booking not found",
@@ -64,6 +80,10 @@ export async function cancelTestDrive(
 
     // Check if user owns this booking
     if (booking.userId !== user.id && user.role !== UserRole.ADMIN) {
+      log.warn(
+        "Unauthorized user attempted to cancel booking (bookingId: {bookingId}, userId: {userId})",
+        { bookingId, userId: user.id },
+      );
       return {
         success: false,
         error: "Unauthorized to cancel this booking",
@@ -93,6 +113,10 @@ export async function cancelTestDrive(
 
     if (updateError) throw updateError;
 
+    log.info("Test drive cancelled successfully (bookingId: {bookingId})", {
+      bookingId,
+    });
+
     // Revalidate paths
     revalidatePath(ROUTES.RESERVATIONS);
     revalidatePath(ROUTES.ADMIN.ADMIN_TEST_DRIVES);
@@ -102,7 +126,10 @@ export async function cancelTestDrive(
       data: "Test drive cancelled successfully",
     };
   } catch (error) {
-    console.error("Error cancelling test drive:", error);
+    log.error("Error cancelling test drive (bookingId: {bookingId}): {error}", {
+      bookingId,
+      error: (error as Error).message,
+    });
     return {
       success: false,
       error: (error as Error).message,

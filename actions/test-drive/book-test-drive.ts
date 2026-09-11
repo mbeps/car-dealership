@@ -5,10 +5,13 @@ import { ROUTES } from "@/constants/routes";
 import { BookingStatusEnum as BookingStatus } from "@/enums/booking-status";
 import { CarStatusEnum as CarStatus } from "@/enums/car-status";
 import { UserRoleEnum as UserRole } from "@/enums/user-role";
+import { getLogger } from "@/lib/logger";
 import { createClient } from "@/lib/supabase/supabase";
 import type { ActionResponse } from "@/types/common/action-response";
 import type { TestDriveBooking } from "@/types/test-drive/test-drive-booking";
 import type { TestDriveFormData } from "@/types/test-drive/test-drive-form-data";
+
+const log = getLogger(["app", "actions", "test-drive"]);
 
 /**
  * Creates test drive booking from user form.
@@ -35,8 +38,12 @@ export async function bookTestDrive(
       data: { user: authUser },
       error: authError,
     } = await supabase.auth.getUser();
-    if (authError || !authUser)
+    if (authError || !authUser) {
+      log.warn("Unauthorized attempt to book test drive (carId: {carId})", {
+        carId,
+      });
       throw new Error("You must be logged in to book a test drive");
+    }
 
     // Find user in our database
     const { data: user } = await supabase
@@ -45,10 +52,24 @@ export async function bookTestDrive(
       .eq("supabaseAuthUserId", authUser.id)
       .single();
 
-    if (!user) throw new Error("User not found in database");
+    if (!user) {
+      log.warn(
+        "User profile not found when booking test drive (carId: {carId})",
+        {
+          carId,
+        },
+      );
+      throw new Error("User not found in database");
+    }
 
     // Prevent admins from making bookings through the regular form
     if (user.role === UserRole.ADMIN) {
+      log.warn(
+        "Admin attempted to book test drive via public form (userId: {userId})",
+        {
+          userId: user.id,
+        },
+      );
       throw new Error(
         "Admins cannot book test drives. Please use the admin panel to manage bookings.",
       );
@@ -62,7 +83,10 @@ export async function bookTestDrive(
       .eq("status", CarStatus.AVAILABLE)
       .single();
 
-    if (!car) throw new Error("Car not available for test drive");
+    if (!car) {
+      log.warn("Attempted to book unavailable car (carId: {carId})", { carId });
+      throw new Error("Car not available for test drive");
+    }
 
     // Check if slot is already booked
     const { data: existingBooking } = await supabase
@@ -75,6 +99,13 @@ export async function bookTestDrive(
       .single();
 
     if (existingBooking) {
+      log.warn(
+        "Test drive slot already booked (carId: {carId}, slot: {slot})",
+        {
+          carId,
+          slot: `${bookingDate} ${startTime}`,
+        },
+      );
       return {
         success: false,
         error: "This time slot is already booked. Please select another time.",
@@ -98,6 +129,11 @@ export async function bookTestDrive(
 
     if (insertError) throw insertError;
 
+    log.info(
+      "Test drive booked successfully (bookingId: {bookingId}, carId: {carId})",
+      { bookingId: booking.id, carId },
+    );
+
     // Revalidate relevant paths
     revalidatePath(ROUTES.TEST_DRIVE(carId));
     revalidatePath(ROUTES.HOME.CAR_DETAILS(carId));
@@ -107,7 +143,9 @@ export async function bookTestDrive(
       data: booking,
     };
   } catch (error) {
-    console.error("Error booking test drive:", error);
+    log.error("Error booking test drive: {error}", {
+      error: (error as Error).message,
+    });
     return {
       success: false,
       error: (error as Error).message || "Failed to book test drive",

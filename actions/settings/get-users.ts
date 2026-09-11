@@ -1,8 +1,11 @@
 "use server";
 
+import { getLogger } from "@/lib/logger";
 import { ensureAdminUser } from "@/lib/supabase/ensure-admin-user";
 import type { ActionResponse } from "@/types/common/action-response";
 import type { User } from "@/types/user/user";
+
+const log = getLogger(["app", "actions", "settings"]);
 
 /**
  * Fetches all users for admin user management.
@@ -13,6 +16,7 @@ import type { User } from "@/types/user/user";
  * @see User - Database user table
  */
 export async function getUsers(): Promise<ActionResponse<User[]>> {
+  log.debug("Fetching all users for admin management");
   try {
     const { supabase } = await ensureAdminUser();
 
@@ -29,7 +33,9 @@ export async function getUsers(): Promise<ActionResponse<User[]>> {
       data: users || [],
     };
   } catch (error) {
-    console.error("Error fetching users:", error);
+    log.error("Error fetching users: {error}", {
+      error: error instanceof Error ? error.message : String(error),
+    });
     return {
       success: false,
       error: error instanceof Error ? error.message : "Unexpected error",

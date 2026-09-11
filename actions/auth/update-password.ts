@@ -1,7 +1,10 @@
 "use server";
 
+import { getLogger } from "@/lib/logger";
 import { createClient } from "@/lib/supabase/supabase";
 import type { ActionResponse } from "@/types/common/action-response";
+
+const log = getLogger(["app", "actions", "auth"]);
 
 /**
  * Updates user's password after reset flow.
@@ -23,6 +26,7 @@ export async function updatePassword(
     } = await supabase.auth.getUser();
 
     if (!user) {
+      log.warn("Unauthorized password update attempt: not authenticated");
       return {
         success: false,
         error: "Not authenticated",
@@ -34,18 +38,31 @@ export async function updatePassword(
     });
 
     if (error) {
+      log.error(
+        "Failed to update password for user (userId: {userId}): {message}",
+        {
+          userId: user.id,
+          message: error.message,
+        },
+      );
       return {
         success: false,
         error: error.message,
       };
     }
 
+    log.info("Password updated successfully for user (userId: {userId})", {
+      userId: user.id,
+    });
+
     return {
       success: true,
       data: null,
     };
   } catch (error) {
-    console.error("Error updating password:", error);
+    log.error("Unexpected error updating password: {error}", {
+      error: (error as Error).message,
+    });
     return {
       success: false,
       error: (error as Error).message,

@@ -1,11 +1,14 @@
 "use server";
 
 import { serializeCarData } from "@/lib/helpers/serialize-car";
+import { getLogger } from "@/lib/logger";
 import { createClient } from "@/lib/supabase/supabase";
 import type { SerializedCar } from "@/types/car/serialized-car";
 import type { ActionResponse } from "@/types/common/action-response";
 import { getColorIdsForTerm } from "./get-color-ids-for-term";
 import { getMakeIdsForTerm } from "./get-make-ids-for-term";
+
+const log = getLogger(["app", "actions", "cars"]);
 
 /**
  * Fetches all cars for admin management.
@@ -18,6 +21,7 @@ import { getMakeIdsForTerm } from "./get-make-ids-for-term";
 export async function getCars(
   search = "",
 ): Promise<ActionResponse<SerializedCar[]>> {
+  log.debug("Fetching all cars (search: '{search}')", { search });
   try {
     const supabase = await createClient();
 
@@ -64,7 +68,9 @@ export async function getCars(
       data: serializedCars,
     };
   } catch (error) {
-    console.error("Error fetching cars:", error);
+    log.error("Error fetching cars: {error}", {
+      error: (error as Error).message,
+    });
     return {
       success: false,
       error: (error as Error).message,

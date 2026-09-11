@@ -2,9 +2,12 @@
 
 import { revalidateBrandingPages } from "@/lib/helpers/branding-cache";
 import { getErrorMessage } from "@/lib/helpers/get-error-message";
+import { getLogger } from "@/lib/logger";
 import { ensureAdminUser } from "@/lib/supabase/ensure-admin-user";
 import { createAdminClient } from "@/lib/supabase/supabase";
 import type { ActionResponse } from "@/types/common/action-response";
+
+const log = getLogger(["app", "actions", "settings"]);
 
 /**
  * Removes uploaded dealership logo and restores static fallbacks.
@@ -53,9 +56,21 @@ export async function removeDealershipLogo(
           .from("branding-assets")
           .remove([dealership.logoPath]);
       } catch (removeError) {
-        console.error("Error deleting logo file:", removeError);
+        log.error("Error deleting logo file: {error}", {
+          error:
+            removeError instanceof Error
+              ? removeError.message
+              : String(removeError),
+        });
       }
     }
+
+    log.info(
+      "Dealership logo removed successfully (dealershipId: {dealershipId})",
+      {
+        dealershipId,
+      },
+    );
 
     revalidateBrandingPages();
 
@@ -64,7 +79,9 @@ export async function removeDealershipLogo(
       data: "Dealership logo removed successfully",
     };
   } catch (error) {
-    console.error("Error removing dealership logo:", error);
+    log.error("Error removing dealership logo: {error}", {
+      error: getErrorMessage(error),
+    });
     return {
       success: false,
       error: getErrorMessage(error),

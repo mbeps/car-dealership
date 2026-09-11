@@ -1,8 +1,11 @@
 "use server";
 
+import { getLogger } from "@/lib/logger";
 import { createClient } from "@/lib/supabase/supabase";
 import type { ActionResponse } from "@/types/common/action-response";
 import type { DealershipInfo } from "@/types/dealership/dealership-info";
+
+const log = getLogger(["app", "actions", "settings"]);
 
 /**
  * Fetches dealership contact info and working hours.
@@ -16,6 +19,7 @@ import type { DealershipInfo } from "@/types/dealership/dealership-info";
 export async function getDealershipInfo(): Promise<
   ActionResponse<DealershipInfo | null>
 > {
+  log.debug("Fetching dealership info");
   try {
     const supabase = await createClient();
 
@@ -39,7 +43,9 @@ export async function getDealershipInfo(): Promise<
       data: dealership || null,
     };
   } catch (error) {
-    console.error("Error fetching dealership info:", error);
+    log.error("Error fetching dealership info: {error}", {
+      error: error instanceof Error ? error.message : String(error),
+    });
     return {
       success: false,
       error: error instanceof Error ? error.message : "Unexpected error",

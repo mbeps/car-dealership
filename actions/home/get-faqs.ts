@@ -1,8 +1,11 @@
 "use server";
 
 import { unstable_cache } from "next/cache";
+import { getLogger } from "@/lib/logger";
 import { createPublicClient } from "@/lib/supabase/supabase";
 import type { FAQ } from "@/types/home-content/faq";
+
+const log = getLogger(["app", "actions", "home"]);
 
 const FAQ_TAG = "faq";
 
@@ -14,6 +17,7 @@ const FAQ_TAG = "faq";
  */
 export const getFAQs = unstable_cache(
   async (): Promise<FAQ[]> => {
+    log.debug("Fetching FAQs");
     const supabase = createPublicClient();
     const { data, error } = await supabase
       .from("FAQ")
@@ -21,7 +25,7 @@ export const getFAQs = unstable_cache(
       .order("order", { ascending: true });
 
     if (error) {
-      console.error("Error fetching FAQs:", error);
+      log.error("Error fetching FAQs: {message}", { message: error.message });
       return [];
     }
 

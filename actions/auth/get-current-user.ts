@@ -1,8 +1,11 @@
 "use server";
 
+import { getLogger } from "@/lib/logger";
 import { createClient } from "@/lib/supabase/supabase";
 import type { ActionResponse } from "@/types/common/action-response";
 import type { User } from "@/types/user/user";
+
+const log = getLogger(["app", "actions", "auth"]);
 
 /**
  * Retrieves full user profile from database.
@@ -12,6 +15,7 @@ import type { User } from "@/types/user/user";
  * @see User - Database user table
  */
 export async function getCurrentUser(): Promise<ActionResponse<User | null>> {
+  log.debug("Fetching current user profile");
   try {
     const supabase = await createClient();
     const {
@@ -38,7 +42,9 @@ export async function getCurrentUser(): Promise<ActionResponse<User | null>> {
       data: user as User,
     };
   } catch (error) {
-    console.error("Error getting current user:", error);
+    log.error("Error getting current user: {error}", {
+      error: (error as Error).message,
+    });
     return {
       success: false,
       error: (error as Error).message,

@@ -1,9 +1,12 @@
 "use server";
 
 import { serializeCarData } from "@/lib/helpers/serialize-car";
+import { getLogger } from "@/lib/logger";
 import { createClient } from "@/lib/supabase/supabase";
 import type { ActionResponse } from "@/types/common/action-response";
 import type { TestDriveBookingWithCar } from "@/types/test-drive/test-drive-booking-with-car";
+
+const log = getLogger(["app", "actions", "test-drive"]);
 
 /**
  * Retrieves user's test drive bookings for reservations page.
@@ -17,6 +20,7 @@ import type { TestDriveBookingWithCar } from "@/types/test-drive/test-drive-book
 export async function getUserTestDrives(): Promise<
   ActionResponse<TestDriveBookingWithCar[]>
 > {
+  log.debug("Fetching user test drives");
   try {
     const supabase = await createClient();
 
@@ -25,6 +29,7 @@ export async function getUserTestDrives(): Promise<
       error: authError,
     } = await supabase.auth.getUser();
     if (authError || !authUser) {
+      log.warn("Unauthorized attempt to fetch user test drives");
       return {
         success: false,
         error: "Unauthorized",
@@ -85,7 +90,9 @@ export async function getUserTestDrives(): Promise<
       data: formattedBookings,
     };
   } catch (error) {
-    console.error("Error fetching test drives:", error);
+    log.error("Error fetching test drives: {error}", {
+      error: (error as Error).message,
+    });
     return {
       success: false,
       error: (error as Error).message,

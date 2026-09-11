@@ -1,8 +1,11 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { getLogger } from "@/lib/logger";
 import { createAdminClient, createClient } from "@/lib/supabase/supabase";
 import type { ActionResponse } from "@/types/common/action-response";
+
+const log = getLogger(["app", "actions", "cars"]);
 
 /**
  * Deletes car and associated images from storage.
@@ -23,7 +26,10 @@ export async function deleteCar(id: string): Promise<ActionResponse<null>> {
       data: { user: authUser },
       error: authError,
     } = await supabase.auth.getUser();
-    if (authError || !authUser) throw new Error("Unauthorized");
+    if (authError || !authUser) {
+      log.warn("Unauthorized attempt to delete car (id: {id})", { id });
+      throw new Error("Unauthorized");
+    }
 
     // Delete associated test drive bookings first to avoid FK constraint violation
     const { error: bookingsError } = await supabase
@@ -32,7 +38,13 @@ export async function deleteCar(id: string): Promise<ActionResponse<null>> {
       .eq("carId", id);
 
     if (bookingsError) {
-      console.error("Error deleting test drive bookings:", bookingsError);
+      log.error(
+        "Error deleting test drive bookings for car (id: {id}): {message}",
+        {
+          id,
+          message: bookingsError.message,
+        },
+      );
       throw bookingsError;
     }
 
@@ -42,7 +54,13 @@ export async function deleteCar(id: string): Promise<ActionResponse<null>> {
       .delete()
       .eq("id", id);
 
-    if (deleteError) throw deleteError;
+    if (deleteError) {
+      log.error("Database error deleting car (id: {id}): {message}", {
+        id,
+        message: deleteError.message,
+      });
+      throw deleteError;
+    }
 
     // Delete the car's image folder from Supabase storage
     try {
@@ -55,7 +73,13 @@ export async function deleteCar(id: string): Promise<ActionResponse<null>> {
         .list(folderPath);
 
       if (listError) {
-        console.error("Error listing car images:", listError);
+        log.error(
+          "Error listing car images for deletion (id: {id}): {message}",
+          {
+            id,
+            message: listError.message,
+          },
+        );
       } else if (files && files.length > 0) {
         // Build paths to all files in the folder
         const filePaths = files.map((file) => `${folderPath}/${file.name}`);
@@ -66,13 +90,27 @@ export async function deleteCar(id: string): Promise<ActionResponse<null>> {
           .remove(filePaths);
 
         if (removeError) {
-          console.error("Error deleting car images:", removeError);
+          log.error(
+            "Error deleting car images from storage (id: {id}): {message}",
+            {
+              id,
+              message: removeError.message,
+            },
+          );
         }
       }
     } catch (storageError) {
-      console.error("Error with storage operations:", storageError);
+      log.error(
+        "Error with storage operations during car delete (id: {id}): {error}",
+        {
+          id,
+          error: (storageError as Error).message,
+        },
+      );
       // Continue with the function even if storage operations fail
     }
+
+    log.info("Car deleted successfully (id: {id})", { id });
 
     // Revalidate the cars list page
     revalidatePath("/admin/cars");
@@ -82,7 +120,10 @@ export async function deleteCar(id: string): Promise<ActionResponse<null>> {
       data: null,
     };
   } catch (error) {
-    console.error("Error deleting car:", error);
+    log.error("Error deleting car (id: {id}): {error}", {
+      id,
+      error: (error as Error).message,
+    });
     return {
       success: false,
       error: (error as Error).message,

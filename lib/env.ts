@@ -34,6 +34,12 @@ const serverSchema = clientSchema.extend({
 
   // Security
   ARCJET_KEY: z.string().min(1),
+
+  // Logging
+  LOG_LEVEL: z
+    .enum(["debug", "info", "warn", "warning", "error", "fatal"])
+    .default("info")
+    .transform((val) => (val === "warn" ? "warning" : val)),
 });
 
 const isServer = typeof window === "undefined";
@@ -79,6 +85,8 @@ const rawEnv = {
   NEXT_PUBLIC_TOTAL_STORAGE_LIMIT_GB: normalize(
     process.env.NEXT_PUBLIC_TOTAL_STORAGE_LIMIT_GB,
   ),
+
+  LOG_LEVEL: normalize(process.env.LOG_LEVEL),
 };
 
 // Validate using the appropriate schema for the environment

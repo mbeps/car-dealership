@@ -5,10 +5,13 @@ import { v4 as uuidv4 } from "uuid";
 import type { CarStatusEnum as CarStatus } from "@/enums/car-status";
 import { UserRoleEnum as UserRole } from "@/enums/user-role";
 import { env } from "@/lib/env";
+import { getLogger } from "@/lib/logger";
 import { createAdminClient, createClient } from "@/lib/supabase/supabase";
 import type { CarFormData } from "@/types/car/car-form-data";
 import type { ActionResponse } from "@/types/common/action-response";
 import { checkStorageQuota } from "../storage/check-storage-quota";
+
+const log = getLogger(["app", "actions", "cars"]);
 
 const MAX_IMAGE_SIZE_MB = env.NEXT_PUBLIC_MAX_CAR_IMAGE_SIZE_MB;
 const MAX_IMAGE_SIZE_BYTES = MAX_IMAGE_SIZE_MB * 1024 * 1024;
@@ -117,7 +120,9 @@ export async function addCar(
         });
 
       if (error) {
-        console.error("Error uploading image:", error);
+        log.error("Error uploading image: {message}", {
+          message: error.message,
+        });
         throw new Error(`Failed to upload image: ${error.message}`);
       }
 
@@ -153,7 +158,14 @@ export async function addCar(
       storage_bytes: totalSize,
     });
 
-    if (insertError) throw insertError;
+    if (insertError) {
+      log.error("Database error inserting car: {message}", {
+        message: insertError.message,
+      });
+      throw insertError;
+    }
+
+    log.info("Car created successfully (id: {carId})", { carId });
 
     // Revalidate the cars list page
     revalidatePath("/admin/cars");
@@ -163,6 +175,9 @@ export async function addCar(
       data: null,
     };
   } catch (error) {
+    log.error("Failed to add car: {error}", {
+      error: (error as Error).message,
+    });
     throw new Error(`Error adding car:${(error as Error).message}`);
   }
 }
