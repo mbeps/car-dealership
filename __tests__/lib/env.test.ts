@@ -17,6 +17,7 @@ const REQUIRED_ENV_VARS = [
   "NEXT_PUBLIC_MAX_FAVICON_SIZE_KB",
   "NEXT_PUBLIC_TOTAL_STORAGE_LIMIT_GB",
   "SKIP_ENV_VALIDATION",
+  "LOG_LEVEL",
 ] as const;
 
 const ORIGINAL_ENV = { ...process.env };
@@ -207,6 +208,30 @@ describe("lib/env", () => {
 
       expect(env.NEXT_PUBLIC_SITE_URL).toBeUndefined();
       expect(env.SUPABASE_JWT_SECRET).toBeUndefined();
+    });
+
+    it("defaults LOG_LEVEL to info and transforms warn to warning", async () => {
+      setValidRequiredEnv();
+
+      const { env: defaultEnv } = await loadEnvModule();
+      expect(defaultEnv.LOG_LEVEL).toBe("info");
+
+      process.env.LOG_LEVEL = "warn";
+      const { env: warnEnv } = await loadEnvModule();
+      expect(warnEnv.LOG_LEVEL).toBe("warning");
+
+      process.env.LOG_LEVEL = "debug";
+      const { env: debugEnv } = await loadEnvModule();
+      expect(debugEnv.LOG_LEVEL).toBe("debug");
+    });
+
+    it("throws an error when LOG_LEVEL is invalid", async () => {
+      setValidRequiredEnv();
+      process.env.LOG_LEVEL = "verbose";
+
+      await expect(loadEnvModule()).rejects.toThrow(
+        "Invalid environment variables",
+      );
     });
 
     it("throws an error when NEXT_PUBLIC_SUPABASE_URL is missing", async () => {

@@ -6,10 +6,13 @@ import { ROUTES } from "@/constants/routes";
 import type { CarStatusEnum as CarStatus } from "@/enums/car-status";
 import { UserRoleEnum as UserRole } from "@/enums/user-role";
 import { env } from "@/lib/env";
+import { getLogger } from "@/lib/logger";
 import { createAdminClient, createClient } from "@/lib/supabase/supabase";
 import type { CarFormData } from "@/types/car/car-form-data";
 import type { ActionResponse } from "@/types/common/action-response";
 import { checkStorageQuota } from "../storage/check-storage-quota";
+
+const log = getLogger(["app", "actions", "cars"]);
 
 /**
  * Updates existing car with data and image changes.
@@ -120,7 +123,9 @@ export async function updateCar(
           .remove(filePaths);
 
         if (error) {
-          console.error("Error deleting images:", error);
+          log.error("Error deleting images: {message}", {
+            message: error.message,
+          });
         }
       }
 
@@ -159,7 +164,9 @@ export async function updateCar(
           });
 
         if (error) {
-          console.error("Error uploading image:", error);
+          log.error("Error uploading image: {message}", {
+            message: error.message,
+          });
           throw new Error(`Failed to upload image: ${error.message}`);
         }
 
@@ -172,6 +179,9 @@ export async function updateCar(
 
     // Ensure at least one image remains
     if (finalImages.length === 0) {
+      log.warn("Attempted to update car without any images (id: {carId})", {
+        carId,
+      });
       return {
         success: false,
         error: "At least one image is required",
@@ -213,7 +223,14 @@ export async function updateCar(
       })
       .eq("id", carId);
 
-    if (updateError) throw updateError;
+    if (updateError) {
+      log.error("Database error updating car: {message}", {
+        message: updateError.message,
+      });
+      throw updateError;
+    }
+
+    log.info("Car updated successfully (id: {carId})", { carId });
 
     // Revalidate pages
     revalidatePath(ROUTES.ADMIN.ADMIN_CARS);
@@ -224,6 +241,9 @@ export async function updateCar(
       data: null,
     };
   } catch (error) {
+    log.error("Failed to update car: {error}", {
+      error: (error as Error).message,
+    });
     throw new Error(`Error updating car: ${(error as Error).message}`);
   }
 }

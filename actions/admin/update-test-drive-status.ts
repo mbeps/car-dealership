@@ -4,8 +4,11 @@ import { revalidatePath } from "next/cache";
 import { ROUTES } from "@/constants/routes";
 import { BookingStatusEnum as BookingStatus } from "@/enums/booking-status";
 import { UserRoleEnum as UserRole } from "@/enums/user-role";
+import { getLogger } from "@/lib/logger";
 import { createClient } from "@/lib/supabase/supabase";
 import type { ActionResponse } from "@/types/common/action-response";
+
+const log = getLogger(["app", "actions", "admin"]);
 
 /**
  * Updates booking status from admin panel.
@@ -28,7 +31,10 @@ export async function updateTestDriveStatus(
       data: { user: authUser },
       error: authError,
     } = await supabase.auth.getUser();
-    if (authError || !authUser) throw new Error("Unauthorized");
+    if (authError || !authUser) {
+      log.warn("Unauthorized attempt to update test drive status");
+      throw new Error("Unauthorized");
+    }
 
     // Verify admin status
     const { data: user } = await supabase
@@ -38,6 +44,7 @@ export async function updateTestDriveStatus(
       .single();
 
     if (!user || user.role !== UserRole.ADMIN) {
+      log.warn("Forbidden attempt to update test drive status");
       throw new Error("Unauthorized access");
     }
 
@@ -75,6 +82,11 @@ export async function updateTestDriveStatus(
 
     if (updateError) throw updateError;
 
+    log.info(
+      "Test drive status updated successfully (bookingId: {bookingId}, status: {newStatus})",
+      { bookingId, newStatus },
+    );
+
     // Revalidate paths
     revalidatePath(ROUTES.ADMIN.ADMIN_TEST_DRIVES);
     revalidatePath(ROUTES.RESERVATIONS);
@@ -84,6 +96,13 @@ export async function updateTestDriveStatus(
       data: "Test drive status updated successfully",
     };
   } catch (error) {
+    log.error(
+      "Error updating test drive status (bookingId: {bookingId}): {error}",
+      {
+        bookingId,
+        error: (error as Error).message,
+      },
+    );
     throw new Error(
       `Error updating test drive status:${(error as Error).message}`,
     );

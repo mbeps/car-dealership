@@ -1,7 +1,10 @@
 "use server";
 
+import { getLogger } from "@/lib/logger";
 import { createClient } from "@/lib/supabase/supabase";
 import type { User } from "@/types/user/user";
+
+const log = getLogger(["app", "actions", "auth"]);
 
 /**
  * Ensures auth user has corresponding database profile.
@@ -26,6 +29,10 @@ export async function ensureProfile(): Promise<User | null> {
     return null;
   }
 
+  log.debug("Ensuring user profile exists (userId: {userId})", {
+    userId: authUser.id,
+  });
+
   try {
     // Check if profile exists
     const { data: existingUser, error: fetchError } = await supabase
@@ -36,7 +43,10 @@ export async function ensureProfile(): Promise<User | null> {
 
     if (fetchError && fetchError.code !== "PGRST116") {
       // PGRST116 = no rows returned, which is expected for new users
-      console.error("Error fetching user profile:", fetchError);
+      log.error("Error fetching user profile (userId: {userId}): {message}", {
+        userId: authUser.id,
+        message: fetchError.message,
+      });
       return null;
     }
 
@@ -81,13 +91,22 @@ export async function ensureProfile(): Promise<User | null> {
         }
       }
 
-      console.error("Error creating user profile:", createError);
+      log.error("Error creating user profile (userId: {userId}): {message}", {
+        userId: authUser.id,
+        message: createError.message,
+      });
       return null;
     }
 
+    log.info("User profile created successfully (userId: {userId})", {
+      userId: authUser.id,
+    });
     return newUser as User;
   } catch (error) {
-    console.error("Unexpected error in ensureProfile:", error);
+    log.error("Unexpected error in ensureProfile (userId: {userId}): {error}", {
+      userId: authUser.id,
+      error: (error as Error).message,
+    });
     return null;
   }
 }

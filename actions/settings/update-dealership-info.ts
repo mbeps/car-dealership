@@ -3,9 +3,12 @@
 import { revalidatePath } from "next/cache";
 import { ROUTES } from "@/constants/routes";
 import { revalidateBrandingPages } from "@/lib/helpers/branding-cache";
+import { getLogger } from "@/lib/logger";
 import { ensureAdminUser } from "@/lib/supabase/ensure-admin-user";
 import { dealershipInfoSchema } from "@/schemas/dealership-info";
 import type { ActionResponse } from "@/types/common/action-response";
+
+const log = getLogger(["app", "actions", "settings"]);
 
 /**
  * Updates dealership contact information.
@@ -47,6 +50,11 @@ export async function updateDealershipInfo(
 
     if (updateError) throw updateError;
 
+    log.info(
+      "Dealership info updated successfully (dealershipId: {dealershipId})",
+      { dealershipId },
+    );
+
     revalidatePath(ROUTES.ADMIN.ADMIN_SETTINGS);
     // Revalidate test-drive pages as dealership info is shown there
     revalidatePath("/test-drive");
@@ -57,7 +65,9 @@ export async function updateDealershipInfo(
       data: "Dealership information updated successfully",
     };
   } catch (error) {
-    console.error("Error updating dealership info:", error);
+    log.error("Error updating dealership info: {error}", {
+      error: error instanceof Error ? error.message : String(error),
+    });
     return {
       success: false,
       error: error instanceof Error ? error.message : "Unexpected error",

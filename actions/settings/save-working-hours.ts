@@ -2,9 +2,12 @@
 
 import { revalidatePath } from "next/cache";
 import { ROUTES } from "@/constants/routes";
+import { getLogger } from "@/lib/logger";
 import { ensureAdminUser } from "@/lib/supabase/ensure-admin-user";
 import type { ActionResponse } from "@/types/common/action-response";
 import type { WorkingHour } from "@/types/dealership/working-hour";
+
+const log = getLogger(["app", "actions", "settings"]);
 
 type WorkingHourInput = Omit<
   WorkingHour,
@@ -50,6 +53,11 @@ export async function saveWorkingHours(
       if (insertError) throw insertError;
     }
 
+    log.info(
+      "Working hours saved successfully (dealershipId: {dealershipId}, count: {count})",
+      { dealershipId, count: workingHours.length },
+    );
+
     revalidatePath(ROUTES.ADMIN.ADMIN_SETTINGS);
     // Revalidate test-drive pages as working hours affect availability
     revalidatePath("/test-drive");
@@ -59,7 +67,13 @@ export async function saveWorkingHours(
       data: "Working hours updated successfully",
     };
   } catch (error) {
-    console.error("Error saving working hours:", error);
+    log.error(
+      "Error saving working hours (dealershipId: {dealershipId}): {error}",
+      {
+        dealershipId,
+        error: error instanceof Error ? error.message : String(error),
+      },
+    );
     return {
       success: false,
       error: error instanceof Error ? error.message : "Unexpected error",

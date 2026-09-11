@@ -3,8 +3,11 @@
 import { unstable_cache } from "next/cache";
 import { DEALERSHIP_NAME } from "@/constants/dealership-name";
 import { BRANDING_CACHE_TAG } from "@/lib/helpers/branding-cache";
+import { getLogger } from "@/lib/logger";
 import { createPublicClient } from "@/lib/supabase/supabase";
 import type { PublicBranding } from "@/types/dealership/public-branding";
+
+const log = getLogger(["app", "actions", "settings"]);
 
 /**
  * Time-to-live for branding cache in seconds (24 hours).
@@ -54,10 +57,13 @@ const getCachedPublicBranding = unstable_cache(
  * @returns Public branding information
  */
 export async function getPublicBranding(): Promise<PublicBranding> {
+  log.debug("Fetching public branding");
   try {
     return await getCachedPublicBranding();
   } catch (error) {
-    console.error("Error fetching public branding:", error);
+    log.error("Error fetching public branding: {error}", {
+      error: error instanceof Error ? error.message : String(error),
+    });
     return {
       logoUrl: null,
       logoVersion: null,

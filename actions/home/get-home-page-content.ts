@@ -1,8 +1,11 @@
 "use server";
 
 import { unstable_cache } from "next/cache";
+import { getLogger } from "@/lib/logger";
 import { createPublicClient } from "@/lib/supabase/supabase";
 import type { HomePageContent } from "@/types/home-content/home-page-content";
+
+const log = getLogger(["app", "actions", "home"]);
 
 const HOME_CONTENT_TAG = "home-content";
 
@@ -14,6 +17,7 @@ const HOME_CONTENT_TAG = "home-content";
  */
 export const getHomePageContent = unstable_cache(
   async (): Promise<HomePageContent | null> => {
+    log.debug("Fetching homepage content");
     const supabase = createPublicClient();
     const { data, error } = await supabase
       .from("HomePageContent")
@@ -21,7 +25,9 @@ export const getHomePageContent = unstable_cache(
       .single();
 
     if (error) {
-      console.error("Error fetching home page content:", error);
+      log.error("Error fetching home page content: {message}", {
+        message: error.message,
+      });
       return null;
     }
 

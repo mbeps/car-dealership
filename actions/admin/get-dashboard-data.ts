@@ -3,9 +3,12 @@
 import { BookingStatusEnum as BookingStatus } from "@/enums/booking-status";
 import { CarStatusEnum as CarStatus } from "@/enums/car-status";
 import { UserRoleEnum as UserRole } from "@/enums/user-role";
+import { getLogger } from "@/lib/logger";
 import { createClient } from "@/lib/supabase/supabase";
 import type { ActionResponse } from "@/types/common/action-response";
 import type { DashboardData } from "@/types/common/dashboard-data";
+
+const log = getLogger(["app", "actions", "admin"]);
 
 /**
  * Calculates KPIs for admin dashboard.
@@ -18,6 +21,7 @@ import type { DashboardData } from "@/types/common/dashboard-data";
 export async function getDashboardData(): Promise<
   ActionResponse<DashboardData>
 > {
+  log.debug("Fetching dashboard data");
   try {
     const supabase = await createClient();
 
@@ -25,7 +29,10 @@ export async function getDashboardData(): Promise<
       data: { user: authUser },
       error: authError,
     } = await supabase.auth.getUser();
-    if (authError || !authUser) throw new Error("Unauthorized");
+    if (authError || !authUser) {
+      log.warn("Unauthorized attempt to fetch dashboard data");
+      throw new Error("Unauthorized");
+    }
 
     const { data: user } = await supabase
       .from("User")
@@ -34,6 +41,7 @@ export async function getDashboardData(): Promise<
       .single();
 
     if (!user || user.role !== UserRole.ADMIN) {
+      log.warn("Forbidden attempt to fetch dashboard data");
       return {
         success: false,
         error: "Unauthorized",
@@ -112,7 +120,9 @@ export async function getDashboardData(): Promise<
       },
     };
   } catch (error) {
-    console.error("Error fetching dashboard data:", (error as Error).message);
+    log.error("Error fetching dashboard data: {error}", {
+      error: (error as Error).message,
+    });
     return {
       success: false,
       error: (error as Error).message,

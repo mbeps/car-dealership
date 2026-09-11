@@ -1,10 +1,13 @@
 "use server";
 
 import { serializeCarData } from "@/lib/helpers/serialize-car";
+import { getLogger } from "@/lib/logger";
 import { createClient } from "@/lib/supabase/supabase";
 import type { SerializedCar } from "@/types/car/serialized-car";
 import type { ActionResponse } from "@/types/common/action-response";
 import { getOrCreateDbUser } from "./get-or-create-db-user";
+
+const log = getLogger(["app", "actions", "cars"]);
 
 /**
  * Retrieves user's wishlist with car details.
@@ -16,6 +19,7 @@ import { getOrCreateDbUser } from "./get-or-create-db-user";
  * @see ROUTES.SAVED_CARS - Page displaying wishlist
  */
 export async function getSavedCars(): Promise<ActionResponse<SerializedCar[]>> {
+  log.debug("Fetching saved cars");
   try {
     const supabase = await createClient();
 
@@ -24,6 +28,7 @@ export async function getSavedCars(): Promise<ActionResponse<SerializedCar[]>> {
       error: authError,
     } = await supabase.auth.getUser();
     if (authError || !authUser) {
+      log.warn("Unauthorized attempt to fetch saved cars");
       return {
         success: false,
         error: "Unauthorized",
@@ -58,7 +63,9 @@ export async function getSavedCars(): Promise<ActionResponse<SerializedCar[]>> {
       data: cars,
     };
   } catch (error) {
-    console.error("Error fetching saved cars:", error);
+    log.error("Error fetching saved cars: {error}", {
+      error: (error as Error).message,
+    });
     return {
       success: false,
       error: (error as Error).message,

@@ -4,10 +4,13 @@ import { revalidateBrandingPages } from "@/lib/helpers/branding-cache";
 import { buildVersionedLogoPath } from "@/lib/helpers/build-versioned-logo-path";
 import { getErrorMessage } from "@/lib/helpers/get-error-message";
 import { validateAndPrepareLogoUpload } from "@/lib/helpers/validate-and-prepare-logo-upload";
+import { getLogger } from "@/lib/logger";
 import { ensureAdminUser } from "@/lib/supabase/ensure-admin-user";
 import { createAdminClient } from "@/lib/supabase/supabase";
 import type { LogoUploadPayload } from "@/schemas/logo-upload";
 import type { ActionResponse } from "@/types/common/action-response";
+
+const log = getLogger(["app", "actions", "settings"]);
 
 /**
  * Uploads and updates the dealership logo metadata.
@@ -89,6 +92,11 @@ export async function updateDealershipLogo(
         .remove([dealership.logoPath]);
     }
 
+    log.info(
+      "Dealership logo updated successfully (dealershipId: {dealershipId}, version: {logoVersion})",
+      { dealershipId, logoVersion },
+    );
+
     revalidateBrandingPages();
 
     return {
@@ -103,11 +111,18 @@ export async function updateDealershipLogo(
           .from("branding-assets")
           .remove([uploadedPath]);
       } catch (cleanupError) {
-        console.error("Error cleaning up failed logo upload:", cleanupError);
+        log.error("Error cleaning up failed logo upload: {error}", {
+          error:
+            cleanupError instanceof Error
+              ? cleanupError.message
+              : String(cleanupError),
+        });
       }
     }
 
-    console.error("Error updating dealership logo:", error);
+    log.error("Error updating dealership logo: {error}", {
+      error: getErrorMessage(error),
+    });
     return {
       success: false,
       error: getErrorMessage(error),

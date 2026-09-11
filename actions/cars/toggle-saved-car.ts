@@ -2,9 +2,12 @@
 
 import { revalidatePath } from "next/cache";
 import { ROUTES } from "@/constants/routes";
+import { getLogger } from "@/lib/logger";
 import { createClient } from "@/lib/supabase/supabase";
 import type { ActionResponse } from "@/types/common/action-response";
 import { getOrCreateDbUser } from "./get-or-create-db-user";
+
+const log = getLogger(["app", "actions", "cars"]);
 
 /**
  * Toggles car in user's wishlist.
@@ -26,7 +29,12 @@ export async function toggleSavedCar(
       data: { user: authUser },
       error: authError,
     } = await supabase.auth.getUser();
-    if (authError || !authUser) throw new Error("Unauthorized");
+    if (authError || !authUser) {
+      log.warn("Unauthorized attempt to toggle saved car (carId: {carId})", {
+        carId,
+      });
+      throw new Error("Unauthorized");
+    }
 
     const user = await getOrCreateDbUser(supabase, authUser);
 
@@ -68,6 +76,7 @@ export async function toggleSavedCar(
         throw deleteError;
       }
 
+      log.info("Car removed from favorites (carId: {carId})", { carId });
       revalidatePath(ROUTES.SAVED_CARS);
       return {
         success: true,
@@ -88,6 +97,7 @@ export async function toggleSavedCar(
       throw insertError;
     }
 
+    log.info("Car added to favorites (carId: {carId})", { carId });
     revalidatePath(ROUTES.SAVED_CARS);
     return {
       success: true,
@@ -97,6 +107,10 @@ export async function toggleSavedCar(
       },
     };
   } catch (error) {
+    log.error("Error toggling saved car (carId: {carId}): {error}", {
+      carId,
+      error: (error as Error).message,
+    });
     throw new Error(`Error toggling saved car:${(error as Error).message}`);
   }
 }

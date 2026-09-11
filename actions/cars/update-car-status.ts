@@ -2,8 +2,11 @@
 
 import { revalidatePath } from "next/cache";
 import type { CarStatusEnum as CarStatus } from "@/enums/car-status";
+import { getLogger } from "@/lib/logger";
 import { createClient } from "@/lib/supabase/supabase";
 import type { ActionResponse } from "@/types/common/action-response";
+
+const log = getLogger(["app", "actions", "cars"]);
 
 /**
  * Updates car status or featured flag from admin table.
@@ -26,7 +29,10 @@ export async function updateCarStatus(
       data: { user: authUser },
       error: authError,
     } = await supabase.auth.getUser();
-    if (authError || !authUser) throw new Error("Unauthorized");
+    if (authError || !authUser) {
+      log.warn("Unauthorized attempt to update car status (id: {id})", { id });
+      throw new Error("Unauthorized");
+    }
 
     const updateData: {
       status?: CarStatus;
@@ -49,6 +55,8 @@ export async function updateCarStatus(
 
     if (error) throw error;
 
+    log.info("Car status updated successfully (id: {id})", { id });
+
     // Revalidate the cars list page
     revalidatePath("/admin/cars");
 
@@ -57,7 +65,10 @@ export async function updateCarStatus(
       data: null,
     };
   } catch (error) {
-    console.error("Error updating car status:", error);
+    log.error("Error updating car status (id: {id}): {error}", {
+      id,
+      error: (error as Error).message,
+    });
     return {
       success: false,
       error: (error as Error).message,

@@ -3,8 +3,11 @@
 import { revalidatePath } from "next/cache";
 import { ROUTES } from "@/constants/routes";
 import type { UserRoleEnum as UserRole } from "@/enums/user-role";
+import { getLogger } from "@/lib/logger";
 import { ensureAdminUser } from "@/lib/supabase/ensure-admin-user";
 import type { ActionResponse } from "@/types/common/action-response";
+
+const log = getLogger(["app", "actions", "settings"]);
 
 /**
  * Updates user role from admin settings.
@@ -24,6 +27,9 @@ export async function updateUserRole(
 
     // Don't allow updating own role
     if (currentUserId === userId) {
+      log.warn("User attempted to update own role (userId: {userId})", {
+        userId,
+      });
       return {
         success: false,
         error: "You cannot change your own role",
@@ -38,6 +44,11 @@ export async function updateUserRole(
 
     if (updateError) throw updateError;
 
+    log.info(
+      "User role updated successfully (userId: {userId}, newRole: {newRole})",
+      { userId, newRole },
+    );
+
     revalidatePath(ROUTES.ADMIN.ADMIN_SETTINGS);
 
     return {
@@ -45,7 +56,10 @@ export async function updateUserRole(
       data: "User role updated successfully",
     };
   } catch (error) {
-    console.error("Error updating user role:", error);
+    log.error("Error updating user role (userId: {userId}): {error}", {
+      userId,
+      error: error instanceof Error ? error.message : String(error),
+    });
     return {
       success: false,
       error: error instanceof Error ? error.message : "Unexpected error",
