@@ -1,9 +1,9 @@
 "use client";
 
 import Link from "next/link";
+import type { NavItem } from "@/components/header/nav-items";
 import { Button } from "@/components/ui/button";
 import { UserRoleEnum as UserRole } from "@/enums/user-role";
-import type { NavItem } from "./nav-items";
 
 /**
  * Props for the desktop navigation bar.

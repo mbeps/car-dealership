@@ -9,7 +9,7 @@ import {
   LayoutDashboard,
   type LucideIcon,
 } from "lucide-react";
-import { ROUTES } from "@/constants/routes";
+import { ROUTES } from "@/config/routes";
 
 /**
  * Navigation item used by desktop and mobile navigation components.

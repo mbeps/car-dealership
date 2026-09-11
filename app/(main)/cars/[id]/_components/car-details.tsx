@@ -5,6 +5,11 @@ import { Calendar, Car, Fuel, Gauge, Pencil, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
+import { CarDealershipInfo } from "@/app/(main)/cars/[id]/_components/car-dealership-info";
+import { CarGallery } from "@/app/(main)/cars/[id]/_components/car-gallery";
+import { CarInquiryCard } from "@/app/(main)/cars/[id]/_components/car-inquiry-card";
+import { CarSecondaryActions } from "@/app/(main)/cars/[id]/_components/car-secondary-actions";
+import { CarSpecifications } from "@/app/(main)/cars/[id]/_components/car-specifications";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import {
   AlertDialog,
@@ -25,20 +30,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { ROUTES } from "@/constants/routes";
+import { ROUTES } from "@/config/routes";
 import { CarStatusEnum as CarStatus } from "@/enums/car-status";
+import useAuthModal from "@/hooks/use-auth-modal";
 import { useCarAdmin } from "@/hooks/use-car-admin";
-import useAuthModal from "@/hooks/useAuthModal";
-import { useUser } from "@/hooks/useUser";
+import { useUser } from "@/hooks/use-user";
 import { formatCurrency } from "@/lib/helpers/format-currency";
 import type { SerializedCar } from "@/types/car/serialized-car";
 import type { SerializedDealershipInfo } from "@/types/dealership/serialized-dealership-info";
 import type { UserTestDrive } from "@/types/test-drive/user-test-drive";
-import { CarDealershipInfo } from "./car-dealership-info";
-import { CarGallery } from "./car-gallery";
-import { CarInquiryCard } from "./car-inquiry-card";
-import { CarSecondaryActions } from "./car-secondary-actions";
-import { CarSpecifications } from "./car-specifications";
 
 /**
  * Car detail page content.

@@ -1,5 +1,5 @@
-import { ROUTES } from "@/constants/routes";
-import { createCarSearchUrl } from "@/lib/route/createCarSearchUrl";
+import { ROUTES } from "@/config/routes";
+import { createCarSearchUrl } from "@/lib/route/create-car-search-url";
 
 describe("createCarSearchUrl", () => {
   it("builds query string with only truthy values", () => {

@@ -1,4 +1,4 @@
-import type { LogoExtension } from "@/schemas/logo-upload";
+import type { LogoExtension } from "@/schemas/dealership/logo-upload.schema";
 import type { RasterDimensions } from "@/types/logo/raster-dimensions";
 
 /**

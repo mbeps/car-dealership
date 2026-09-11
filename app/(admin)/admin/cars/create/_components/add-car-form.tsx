@@ -1,7 +1,7 @@
 "use client";
 
 import { Loader2 } from "lucide-react";
-import { CarFormFields } from "@/components/car-form";
+import { CarFormFields } from "@/components/car/car-form";
 import { Button } from "@/components/ui/button";
 import {
   Card,

@@ -1,8 +1,8 @@
 "use client";
 
 import { Check, Loader2, Pencil, Trash2, X } from "lucide-react";
+import type { PasskeyEntry } from "@/components/header/account-dialog";
 import { Button } from "@/components/ui/button";
-import type { PasskeyEntry } from "./account-dialog";
 
 /**
  * Props for a single passkey row with edit and delete controls.

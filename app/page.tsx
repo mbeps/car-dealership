@@ -4,9 +4,9 @@ import Link from "next/link";
 import { getFAQs } from "@/actions/home/get-faqs";
 import { getFeaturedCars } from "@/actions/home/get-featured-cars";
 import { getHomePageContent } from "@/actions/home/get-home-page-content";
-import { SignedOut } from "@/components/auth-helpers";
-import { CarCard } from "@/components/car-card";
-import { HomeSearch } from "@/components/home-search";
+import { SignedOut } from "@/components/auth/signed-out";
+import { CarCard } from "@/components/car/car-card";
+import { HomeSearch } from "@/components/home/home-search";
 import {
   Accordion,
   AccordionContent,
@@ -14,10 +14,9 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
-import { bodyTypes } from "@/constants/body-types";
-import { carMakes } from "@/constants/car-makes";
-import { ROUTES } from "@/constants/routes";
-import { createCarSearchUrl } from "@/lib/route/createCarSearchUrl";
+import { bodyTypes, carMakes } from "@/config/constants";
+import { ROUTES } from "@/config/routes";
+import { createCarSearchUrl } from "@/lib/route/create-car-search-url";
 
 /**
  * Renders the public home page.

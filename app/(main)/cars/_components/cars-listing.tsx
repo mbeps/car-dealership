@@ -5,7 +5,8 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { getCars } from "@/actions/cars/get-public-cars";
-import { CarCard } from "@/components/car-card";
+import CarListingsLoading from "@/app/(main)/cars/_components/car-listing-loading";
+import { CarCard } from "@/components/car/car-card";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -18,9 +19,8 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
-import { ROUTES } from "@/constants/routes";
+import { ROUTES } from "@/config/routes";
 import useFetch from "@/hooks/use-fetch";
-import CarListingsLoading from "./car-listing-loading";
 
 /**
  * Main car inventory listing with search and pagination.

@@ -15,8 +15,8 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ROUTES } from "@/constants/routes";
-import { forgotPasswordSchema } from "@/schemas/forgot-password";
+import { ROUTES } from "@/config/routes";
+import { forgotPasswordSchema } from "@/schemas/auth/forgot-password.schema";
 
 /**
  * Forgot password page for requesting password reset.

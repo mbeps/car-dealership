@@ -6,9 +6,9 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { toggleSavedCar } from "@/actions/cars/toggle-saved-car";
 import { Button } from "@/components/ui/button";
+import useAuthModal from "@/hooks/use-auth-modal";
 import useFetch from "@/hooks/use-fetch";
-import useAuthModal from "@/hooks/useAuthModal";
-import { useUser } from "@/hooks/useUser";
+import { useUser } from "@/hooks/use-user";
 
 export interface CarSecondaryActionsProps {
   carId: string;

@@ -7,7 +7,7 @@ import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { updateCar } from "@/actions/cars/update-car";
-import { CarFormFields } from "@/components/car-form";
+import { CarFormFields } from "@/components/car/car-form";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -16,9 +16,9 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { ROUTES } from "@/constants/routes";
+import { ROUTES } from "@/config/routes";
 import useFetch from "@/hooks/use-fetch";
-import { type CarFormData, carFormSchema } from "@/schemas/car-form";
+import { type CarFormData, carFormSchema } from "@/schemas/car/car-form.schema";
 import type { SerializedCar } from "@/types/car/serialized-car";
 import type { CarColorOption } from "@/types/car-color/car-color-option";
 import type { CarMakeOption } from "@/types/car-make/car-make-option";

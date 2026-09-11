@@ -1,4 +1,4 @@
-import type { WorkingHour } from "./working-hour";
+import type { WorkingHour } from "@/types/dealership/working-hour";
 
 /**
  * Serialized working hour with string dates.

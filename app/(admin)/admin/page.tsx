@@ -1,5 +1,5 @@
 import { getDashboardData } from "@/actions/admin/get-dashboard-data";
-import { Dashboard } from "./dashboard/Dashboard";
+import { Dashboard } from "@/app/(admin)/admin/_components/dashboard";
 
 export const dynamic = "force-dynamic";
 

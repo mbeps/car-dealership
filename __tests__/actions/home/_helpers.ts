@@ -77,7 +77,7 @@ vi.mock("next/navigation", () => ({
   useRouter: () => ({ push: vi.fn(), refresh: vi.fn() }),
 }));
 vi.mock("@/lib/arcjet", () => ({ default: {} }));
-vi.mock("@/lib/env", () => ({
+vi.mock("@/config/env", () => ({
   env: { NEXT_PUBLIC_SUPABASE_URL: "https://sup.example.com" },
 }));
 

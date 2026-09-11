@@ -7,7 +7,7 @@ import { validateAndPrepareLogoUpload } from "@/lib/helpers/validate-and-prepare
 import { getLogger } from "@/lib/logger";
 import { ensureAdminUser } from "@/lib/supabase/ensure-admin-user";
 import { createAdminClient } from "@/lib/supabase/supabase";
-import type { LogoUploadPayload } from "@/schemas/logo-upload";
+import type { LogoUploadPayload } from "@/schemas/dealership/logo-upload.schema";
 import type { ActionResponse } from "@/types/common/action-response";
 
 const log = getLogger(["app", "actions", "settings"]);

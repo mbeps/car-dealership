@@ -1,4 +1,4 @@
-import type { DealershipInfo } from "./dealership-info";
+import type { DealershipInfo } from "@/types/dealership/dealership-info";
 
 /**
  * Public dealership branding data.

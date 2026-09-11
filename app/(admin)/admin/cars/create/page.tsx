@@ -1,6 +1,6 @@
 import { getCarColors } from "@/actions/cars/get-car-colors";
 import { getCarMakes } from "@/actions/cars/get-car-makes";
-import { AddCarForm } from "./_components/add-car-form";
+import { AddCarForm } from "@/app/(admin)/admin/cars/create/_components/add-car-form";
 
 /**
  * Add car page metadata.

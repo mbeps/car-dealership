@@ -1,5 +1,5 @@
-import { ROUTES } from "@/constants/routes";
-import { createSignInRedirect } from "@/lib/route/createSignInRedirect";
+import { ROUTES } from "@/config/routes";
+import { createSignInRedirect } from "@/lib/route/create-sign-in-redirect";
 
 describe("createSignInRedirect", () => {
   it("returns sign-in path with encoded redirect", () => {

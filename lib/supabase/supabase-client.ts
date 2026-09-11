@@ -1,6 +1,6 @@
 import { createBrowserClient as createBrowserClientSSR } from "@supabase/ssr";
 
-import { env } from "@/lib/env";
+import { env } from "@/config/env";
 
 /**
  * Creates a Supabase client for authenticated client components.

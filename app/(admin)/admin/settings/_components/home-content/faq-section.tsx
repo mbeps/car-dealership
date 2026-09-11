@@ -19,6 +19,7 @@ import { Loader2, Plus } from "lucide-react";
 import type { UseFormReturn } from "react-hook-form";
 import { toast } from "sonner";
 import { reorderFAQs } from "@/actions/home/reorder-faqs";
+import { SortableFAQItem } from "@/app/(admin)/admin/settings/_components/home-content/sortable-faq-item";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -38,9 +39,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import type { FAQFormValues } from "@/schemas/home-content";
+import type { FAQFormValues } from "@/schemas/home/faq.schema";
 import type { FAQ } from "@/types/home-content/faq";
-import { SortableFAQItem } from "./sortable-faq-item";
 
 interface FAQSectionProps {
   /** FAQ records displayed in the list. */

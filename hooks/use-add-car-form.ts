@@ -6,10 +6,10 @@ import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { addCar } from "@/actions/cars/add-car";
-import { ROUTES } from "@/constants/routes";
+import { ROUTES } from "@/config/routes";
 import { CarStatusEnum as CarStatus } from "@/enums/car-status";
 import useFetch from "@/hooks/use-fetch";
-import { type CarFormData, carFormSchema } from "@/schemas/car-form";
+import { type CarFormData, carFormSchema } from "@/schemas/car/car-form.schema";
 
 /**
  * Hook for car creation form.

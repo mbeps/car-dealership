@@ -1,7 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import { ROUTES } from "@/constants/routes";
+import { ROUTES } from "@/config/routes";
 import { getLogger } from "@/lib/logger";
 import { createClient } from "@/lib/supabase/supabase";
 

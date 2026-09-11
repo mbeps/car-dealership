@@ -15,8 +15,8 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ROUTES } from "@/constants/routes";
-import { updatePasswordSchema } from "@/schemas/update-password";
+import { ROUTES } from "@/config/routes";
+import { updatePasswordSchema } from "@/schemas/auth/update-password.schema";
 
 /**
  * Update password page for setting new password after reset.

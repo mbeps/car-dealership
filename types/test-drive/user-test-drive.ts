@@ -1,4 +1,4 @@
-import type { SerializedTestDriveBooking } from "./serialized-test-drive-booking";
+import type { SerializedTestDriveBooking } from "@/types/test-drive/serialized-test-drive-booking";
 
 /**
  * User-facing test drive summary.

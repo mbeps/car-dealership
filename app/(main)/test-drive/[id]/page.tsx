@@ -1,8 +1,8 @@
 import { notFound, redirect } from "next/navigation";
 import { isCurrentUserAdmin } from "@/actions/auth/is-current-user-admin";
 import { getCarById } from "@/actions/cars/get-car-by-id";
-import { ROUTES } from "@/constants/routes";
-import { TestDriveForm } from "./_components/test-drive-form";
+import { TestDriveForm } from "@/app/(main)/test-drive/[id]/_components/test-drive-form";
+import { ROUTES } from "@/config/routes";
 
 /**
  * Defines SEO metadata for the test-drive booking page.

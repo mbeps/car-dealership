@@ -3,7 +3,7 @@ import { createServerClient } from "@supabase/ssr";
 import { createClient as createSupabaseClient } from "@supabase/supabase-js";
 import { cookies } from "next/headers";
 
-import { env } from "@/lib/env";
+import { env } from "@/config/env";
 
 /**
  * Creates a Supabase client for server components and server actions.
@@ -56,7 +56,7 @@ export const createClient = async () => {
 /**
  * Re-exports the browser Supabase client for client-side code.
  */
-export { createBrowserClient } from "./supabase-client";
+export { createBrowserClient } from "@/lib/supabase/supabase-client";
 
 /**
  * Creates a Supabase admin client with the service role key.

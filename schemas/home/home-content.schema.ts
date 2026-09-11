@@ -1,0 +1,54 @@
+import { z } from "zod";
+
+/**
+ * Validates homepage CMS content for the marketing hero and feature callouts.
+ * Keeps copy within display limits used by the home page content editor.
+ */
+export const homePageContentSchema = z.object({
+  heroTitle: z
+    .string()
+    .min(1, "Hero title is required")
+    .max(40, "Hero title must be 40 characters or fewer"),
+  heroSubtitle: z
+    .string()
+    .min(1, "Hero subtitle is required")
+    .max(80, "Hero subtitle must be 80 characters or fewer"),
+  feature1Title: z
+    .string()
+    .min(1, "Feature 1 title is required")
+    .max(30, "Feature title must be 30 characters or fewer"),
+  feature1Description: z
+    .string()
+    .min(1, "Feature 1 description is required")
+    .max(150, "Feature description must be 150 characters or fewer"),
+  feature2Title: z
+    .string()
+    .min(1, "Feature 2 title is required")
+    .max(30, "Feature title must be 30 characters or fewer"),
+  feature2Description: z
+    .string()
+    .min(1, "Feature 2 description is required")
+    .max(150, "Feature description must be 150 characters or fewer"),
+  feature3Title: z
+    .string()
+    .min(1, "Feature 3 title is required")
+    .max(30, "Feature title must be 30 characters or fewer"),
+  feature3Description: z
+    .string()
+    .min(1, "Feature 3 description is required")
+    .max(150, "Feature description must be 150 characters or fewer"),
+  ctaTitle: z
+    .string()
+    .min(1, "CTA title is required")
+    .max(50, "CTA title must be 50 characters or fewer"),
+  ctaSubtitle: z
+    .string()
+    .min(1, "CTA subtitle is required")
+    .max(200, "CTA subtitle must be 200 characters or fewer"),
+});
+
+/**
+ * Parsed homepage CMS values produced by `homePageContentSchema`.
+ * Used by the home content editor and server actions that persist homepage copy.
+ */
+export type HomePageContentFormValues = z.infer<typeof homePageContentSchema>;

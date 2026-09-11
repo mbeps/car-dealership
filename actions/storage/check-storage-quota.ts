@@ -1,7 +1,7 @@
 "use server";
 
-import { env } from "@/lib/env";
-import { getStorageUsage } from "./get-storage-usage";
+import { getStorageUsage } from "@/actions/storage/get-storage-usage";
+import { env } from "@/config/env";
 
 /**
  * Checks if the storage limit has been reached, optionally including

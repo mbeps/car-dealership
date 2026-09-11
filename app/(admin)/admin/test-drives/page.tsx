@@ -1,4 +1,4 @@
-import { TestDrivesList } from "./_components/test-drive-list";
+import { TestDrivesList } from "@/app/(admin)/admin/test-drives/_components/test-drive-list";
 
 /**
  * Test drive management page metadata.

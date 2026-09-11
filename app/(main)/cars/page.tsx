@@ -1,6 +1,6 @@
 import { getCarFilters } from "@/actions/cars/get-car-filters";
-import { CarFilters } from "./_components/car-filters";
-import { CarListings } from "./_components/cars-listing";
+import { CarFilters } from "@/app/(main)/cars/_components/car-filters";
+import { CarListings } from "@/app/(main)/cars/_components/cars-listing";
 
 /**
  * Defines SEO metadata for the car inventory page.

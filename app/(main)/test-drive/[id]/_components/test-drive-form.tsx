@@ -37,13 +37,16 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { DEALERSHIP_NAME } from "@/constants/dealership-name";
-import { ROUTES } from "@/constants/routes";
+import { DEALERSHIP_NAME } from "@/config/constants";
+import { ROUTES } from "@/config/routes";
 import type { DayOfWeekEnum } from "@/enums/day-of-week";
 import useFetch from "@/hooks/use-fetch";
 import { formatCurrency } from "@/lib/helpers/format-currency";
 import { cn } from "@/lib/utils";
-import { type TestDriveFormData, testDriveSchema } from "@/schemas/test-drive";
+import {
+  type TestDriveFormData,
+  testDriveSchema,
+} from "@/schemas/test-drive/test-drive.schema";
 import type { SerializedCar } from "@/types/car/serialized-car";
 import type { SerializedDealershipInfo } from "@/types/dealership/serialized-dealership-info";
 import type { UserTestDrive } from "@/types/test-drive/user-test-drive";

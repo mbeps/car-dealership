@@ -1,7 +1,10 @@
 import { parseDataUrl } from "@/lib/helpers/parse-data-url";
 import { validateMagicBytes } from "@/lib/helpers/validate-magic-bytes";
 import { validateSvgSafeguards } from "@/lib/helpers/validate-svg-safeguards";
-import type { LogoExtension, LogoUploadPayload } from "@/schemas/logo-upload";
+import type {
+  LogoExtension,
+  LogoUploadPayload,
+} from "@/schemas/dealership/logo-upload.schema";
 import {
   getLogoExtensionFromFileName,
   isAllowedLogoMimeType,
@@ -15,7 +18,7 @@ import {
   MIN_ASPECT_RATIO,
   MIN_DIMENSION_PX,
   normaliseLogoMimeType,
-} from "@/schemas/logo-upload";
+} from "@/schemas/dealership/logo-upload.schema";
 import type { RasterDimensions } from "@/types/logo/raster-dimensions";
 import type { ValidatedLogoUpload } from "@/types/logo/validated-logo-upload";
 

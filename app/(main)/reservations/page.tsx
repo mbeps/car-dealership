@@ -1,9 +1,9 @@
 import { redirect } from "next/navigation";
 import { ensureProfile } from "@/actions/auth/ensure-profile";
 import { getUserTestDrives } from "@/actions/test-drive/get-user-test-drives";
-import { ROUTES } from "@/constants/routes";
-import { createSignInRedirect } from "@/lib/route/createSignInRedirect";
-import { ReservationsList } from "./_components/reservations-list";
+import { ReservationsList } from "@/app/(main)/reservations/_components/reservations-list";
+import { ROUTES } from "@/config/routes";
+import { createSignInRedirect } from "@/lib/route/create-sign-in-redirect";
 
 /**
  * Defines SEO metadata for the user reservations page.

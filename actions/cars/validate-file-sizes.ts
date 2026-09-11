@@ -1,4 +1,4 @@
-import { env } from "@/lib/env";
+import { env } from "@/config/env";
 
 const MAX_IMAGE_SIZE_MB = env.NEXT_PUBLIC_MAX_CAR_IMAGE_SIZE_MB;
 const MAX_IMAGE_SIZE_BYTES = MAX_IMAGE_SIZE_MB * 1024 * 1024;

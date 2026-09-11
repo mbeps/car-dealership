@@ -1,9 +1,9 @@
 import { CarStatusEnum } from "@/enums/car-status";
-import { carFormSchema } from "@/schemas/car-form";
-import { dealershipInfoSchema } from "@/schemas/dealership-info";
-import { forgotPasswordSchema } from "@/schemas/forgot-password";
-import { testDriveSchema } from "@/schemas/test-drive";
-import { updatePasswordSchema } from "@/schemas/update-password";
+import { forgotPasswordSchema } from "@/schemas/auth/forgot-password.schema";
+import { updatePasswordSchema } from "@/schemas/auth/update-password.schema";
+import { carFormSchema } from "@/schemas/car/car-form.schema";
+import { dealershipInfoSchema } from "@/schemas/dealership/dealership-info.schema";
+import { testDriveSchema } from "@/schemas/test-drive/test-drive.schema";
 
 const baseCarFormData = {
   carMakeId: "make-1",

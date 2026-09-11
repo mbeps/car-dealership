@@ -4,7 +4,7 @@ import { Loader2 } from "lucide-react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
-import { GoogleIcon } from "@/components/google-icon";
+import { GoogleIcon } from "@/components/icons/google-icon";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import {
@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ROUTES } from "@/constants/routes";
+import { ROUTES } from "@/config/routes";
 import { getSiteUrl } from "@/lib/site-url";
 import { createBrowserClient } from "@/lib/supabase/supabase-client";
 

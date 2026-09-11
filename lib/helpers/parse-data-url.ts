@@ -1,4 +1,4 @@
-import { normaliseLogoMimeType } from "@/schemas/logo-upload";
+import { normaliseLogoMimeType } from "@/schemas/dealership/logo-upload.schema";
 import type { ParsedLogoDataUrl } from "@/types/logo/parsed-logo-data-url";
 
 /**
