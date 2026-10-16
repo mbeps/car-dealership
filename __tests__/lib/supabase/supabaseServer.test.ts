@@ -20,7 +20,7 @@ vi.mock("@/config/env", () => ({
 }));
 
 import { cookies } from "next/headers";
-import { createClient } from "@/lib/supabase/supabase";
+import { createClient, runWithMcpSupabase } from "@/lib/supabase/supabase";
 
 const mockedCookies = vi.mocked(cookies);
 
@@ -139,5 +139,14 @@ describe("createClient (server)", () => {
     const client = await createClient();
 
     expect(client).toEqual({ auth: "server-client" });
+  });
+
+  it("returns bound mcp client without touching cookies when inside runWithMcpSupabase", async () => {
+    const fakeMcpClient = { auth: "mcp-bound-client" } as never;
+    await runWithMcpSupabase(fakeMcpClient, async () => {
+      const client = await createClient();
+      expect(client).toBe(fakeMcpClient);
+      expect(mockedCookies).not.toHaveBeenCalled();
+    });
   });
 });

@@ -105,11 +105,18 @@ import { getCars } from "@/actions/cars/get-cars";
 import { getCars as getPublicCars } from "@/actions/cars/get-public-cars";
 
 describe("getCars (admin)", () => {
+  const authenticateAsAdmin = () => {
+    h.authUser.value = { id: "auth-admin" };
+    h.singleQueues.User = [
+      { data: { id: "db-admin", role: "ADMIN" }, error: null },
+    ];
+  };
+
   beforeEach(() => {
     vi.clearAllMocks();
     for (const k of Object.keys(h.results)) delete h.results[k];
     for (const k of Object.keys(h.singleQueues)) delete h.singleQueues[k];
-    h.authUser.value = null;
+    authenticateAsAdmin();
     h.makeTermIds.value = [];
     h.colorTermIds.value = [];
   });
@@ -157,6 +164,27 @@ describe("getCars (admin)", () => {
 
     expect(res.success).toBe(false);
     expect(res.error).toContain("denied");
+  });
+
+  it("returns error when unauthenticated", async () => {
+    h.authUser.value = null;
+
+    const res = await getCars();
+
+    expect(res.success).toBe(false);
+    expect(res.error).toContain("Unauthorized");
+  });
+
+  it("returns error when user is not an admin", async () => {
+    h.authUser.value = { id: "auth-user" };
+    h.singleQueues.User = [
+      { data: { id: "db-user", role: "USER" }, error: null },
+    ];
+
+    const res = await getCars();
+
+    expect(res.success).toBe(false);
+    expect(res.error).toContain("Unauthorized access");
   });
 });
 

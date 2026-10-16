@@ -1,7 +1,11 @@
 import arcjet, { createMiddleware, detectBot, shield } from "@arcjet/next";
 import type { CookieOptions } from "@supabase/ssr";
 import { createServerClient } from "@supabase/ssr";
-import { type NextRequest, NextResponse } from "next/server";
+import {
+  type NextFetchEvent,
+  type NextRequest,
+  NextResponse,
+} from "next/server";
 import { env } from "@/config/env";
 import { PROTECTED_ROUTES, ROUTES } from "@/config/routes";
 import { createSignInRedirect } from "@/lib/route/create-sign-in-redirect";
@@ -21,16 +25,29 @@ const isProtectedRoute = (pathname: string): boolean => {
 };
 
 /**
- * Arcjet security proxy.
+ * Checks if pathname is an MCP or RFC 9728 discovery endpoint.
+ * These endpoints retain Arcjet Shield WAF protection but bypass
+ * browser-only detectBot checks and cookie refresh proxies.
+ */
+const isMcpRoute = (pathname: string): boolean => {
+  return (
+    pathname === "/api/mcp" ||
+    pathname.startsWith("/api/mcp/") ||
+    pathname === "/.well-known/oauth-protected-resource" ||
+    pathname.startsWith("/.well-known/")
+  );
+};
+
+/**
+ * Arcjet security proxy for browser and general web routes.
  * Enables shield protection and bot detection.
  * Allows search engine crawlers.
  *
  * @see https://arcjet.com/bot-list
  */
-const aj = arcjet({
+const ajBrowser = arcjet({
   key: env.ARCJET_KEY,
   rules: [
-    // Shield protection for content and security
     shield({
       mode: "LIVE",
     }),
@@ -38,8 +55,20 @@ const aj = arcjet({
       mode: "LIVE", // will block requests. Use "DRY_RUN" to log only
       allow: [
         "CATEGORY:SEARCH_ENGINE", // Google, Bing, etc
-        // See the full list at https://arcjet.com/bot-list
       ],
+    }),
+  ],
+});
+
+/**
+ * Arcjet security proxy for MCP endpoints.
+ * Protects via Shield WAF while permitting MCP clients (Claude, Cursor, Copilot).
+ */
+const ajMcp = arcjet({
+  key: env.ARCJET_KEY,
+  rules: [
+    shield({
+      mode: "LIVE",
     }),
   ],
 });
@@ -116,13 +145,42 @@ async function supabaseProxy(request: NextRequest) {
 }
 
 /**
- * Chained proxy pipeline.
- * Arcjet runs first for security, then Supabase for auth.
- * Uses Node.js runtime (not Edge).
+ * Pre-configured middleware for browser traffic (Arcjet shield + detectBot + Supabase session proxy).
+ */
+const browserMiddleware = createMiddleware(ajBrowser, supabaseProxy);
+
+/**
+ * Main application proxy pipeline.
+ * Routes MCP and RFC 9728 discovery requests through ajMcp (WAF only)
+ * and web requests through browserMiddleware.
  *
  * @see https://arcjet.com/docs/nextjs/reference/middleware
  */
-export default createMiddleware(aj, supabaseProxy);
+export default async function middleware(
+  request: NextRequest,
+  event: NextFetchEvent,
+) {
+  const pathname = request.nextUrl.pathname;
+
+  if (isMcpRoute(pathname)) {
+    const decision = await ajMcp.protect(request);
+    if (decision.isDenied()) {
+      if (decision.reason.isRateLimit()) {
+        return NextResponse.json(
+          { code: 429, message: "Too Many Requests" },
+          { status: 429 },
+        );
+      }
+      return NextResponse.json(
+        { code: 403, message: "Forbidden" },
+        { status: 403 },
+      );
+    }
+    return NextResponse.next();
+  }
+
+  return browserMiddleware(request, event);
+}
 export const config = {
   matcher: [
     // Skip Next.js internals and all static files, unless found in search params
