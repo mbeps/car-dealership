@@ -33,7 +33,7 @@ export async function GET() {
       "client_secret_post",
       "client_secret_basic",
     ],
-    scopes_supported: ["openid", "email", "profile"],
+    scopes_supported: ["openid", "email", "profile", "offline_access"],
   };
 
   try {
@@ -47,9 +47,19 @@ export async function GET() {
 
     if (upstreamRes.ok) {
       const upstreamData = await upstreamRes.json();
+      const scopes = Array.from(
+        new Set([
+          ...(Array.isArray(upstreamData.scopes_supported)
+            ? upstreamData.scopes_supported
+            : standardMetadata.scopes_supported),
+          "offline_access",
+        ]),
+      );
+
       return NextResponse.json(
         {
           ...upstreamData,
+          scopes_supported: scopes,
           registration_endpoint:
             upstreamData.registration_endpoint ||
             standardMetadata.registration_endpoint,

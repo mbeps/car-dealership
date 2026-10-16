@@ -1,6 +1,6 @@
 import { AlertCircle } from "lucide-react";
 import Link from "next/link";
-import { buttonVariants } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button-variants";
 import { ROUTES } from "@/config/routes";
 
 /**
