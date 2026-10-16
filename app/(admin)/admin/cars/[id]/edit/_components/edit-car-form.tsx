@@ -3,7 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { updateCar } from "@/actions/cars/update-car";
@@ -79,19 +79,7 @@ export const EditCarForm = ({ car, carMakes, carColors }: EditCarFormProps) => {
   });
 
   // Custom hooks for API calls
-  const {
-    loading: updateCarLoading,
-    fn: updateCarFn,
-    data: updateCarResult,
-  } = useFetch(updateCar);
-
-  // Handle successful car update
-  useEffect(() => {
-    if (updateCarResult?.success) {
-      toast.success("Car updated successfully");
-      router.push(ROUTES.ADMIN.ADMIN_CARS);
-    }
-  }, [updateCarResult, router]);
+  const { loading: updateCarLoading, fn: updateCarFn } = useFetch(updateCar);
 
   /**
    * Remove an existing image from the edit form and queue it for deletion.
@@ -138,7 +126,11 @@ export const EditCarForm = ({ car, carMakes, carColors }: EditCarFormProps) => {
     });
 
     // Call the updateCar function
-    await updateCarFn(formData);
+    const result = await updateCarFn(formData);
+    if (result?.success) {
+      toast.success("Car updated successfully");
+      router.push(ROUTES.ADMIN.ADMIN_CARS);
+    }
   };
 
   return (

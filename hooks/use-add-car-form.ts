@@ -2,7 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { addCar } from "@/actions/cars/add-car";
@@ -47,18 +47,7 @@ export const useAddCarForm = () => {
     },
   });
 
-  const {
-    loading: addCarLoading,
-    fn: addCarFn,
-    data: addCarResult,
-  } = useFetch(addCar);
-
-  useEffect(() => {
-    if (addCarResult?.success) {
-      toast.success("Car added successfully");
-      router.push(ROUTES.ADMIN.ADMIN_CARS);
-    }
-  }, [addCarResult, router]);
+  const { loading: addCarLoading, fn: addCarFn } = useFetch(addCar);
 
   const onSubmit = async (data: CarFormData) => {
     if (uploadedImages.length === 0) {
@@ -80,7 +69,11 @@ export const useAddCarForm = () => {
       formData.append("images", image);
     });
 
-    await addCarFn(formData);
+    const result = await addCarFn(formData);
+    if (result?.success) {
+      toast.success("Car added successfully");
+      router.push(ROUTES.ADMIN.ADMIN_CARS);
+    }
   };
 
   return {
