@@ -21,6 +21,7 @@ export const ROUTES = {
     AUTH_CALLBACK: "/auth/callback",
     FORGOT_PASSWORD: "/forgot-password",
     UPDATE_PASSWORD: "/update-password",
+    OAUTH_CONSENT: "/oauth/consent",
   },
 
   SAVED_CARS: "/saved-cars",
@@ -35,6 +36,16 @@ export const ROUTES = {
     ADMIN_TEST_DRIVES: `${ADMIN_BASE}/test-drives`,
     ADMIN_SETTINGS: `${ADMIN_BASE}/settings`,
   },
+
+  API: {
+    MCP: "/api/mcp",
+    OAUTH_REGISTER: "/api/oauth/register",
+  },
+
+  WELL_KNOWN: {
+    OAUTH_PROTECTED_RESOURCE: "/.well-known/oauth-protected-resource",
+    OAUTH_AUTHORIZATION_SERVER: "/.well-known/oauth-authorization-server",
+  },
 } as const;
 
 export type Routes = typeof ROUTES;
@@ -47,4 +58,5 @@ export const PROTECTED_ROUTES = [
   ROUTES.ADMIN.ADMIN,
   ROUTES.SAVED_CARS,
   ROUTES.RESERVATIONS,
+  ROUTES.AUTH.OAUTH_CONSENT,
 ] as const;

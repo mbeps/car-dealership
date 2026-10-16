@@ -163,6 +163,18 @@ describe("verifyMcpToken", () => {
     const result = await verifyMcpToken(req);
     expect(result).toBeUndefined();
   });
+
+  it("throws OAuthError(InvalidToken) when ?auth=required is set and request is unauthenticated", async () => {
+    const req = new Request("http://localhost/api/mcp?auth=required", {
+      method: "POST",
+    });
+
+    await expect(verifyMcpToken(req)).rejects.toThrow(OAuthError);
+    await expect(verifyMcpToken(req)).rejects.toMatchObject({
+      code: OAuthErrorCode.InvalidToken,
+      message: "Authentication required",
+    });
+  });
 });
 
 describe("auth guard helpers", () => {

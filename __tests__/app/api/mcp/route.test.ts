@@ -46,7 +46,7 @@ vi.mock("@/lib/supabase/supabase", async (importOriginal) => {
   };
 });
 
-import { GET as getProtectedResourceMetadata } from "@/app/.well-known/oauth-protected-resource/route";
+import { GET as getProtectedResourceMetadata } from "@/app/.well-known/oauth-protected-resource/[[...resource]]/route";
 import { POST } from "@/app/api/mcp/route";
 
 function parseMcpResponse(text: string) {
@@ -221,7 +221,7 @@ describe("MCP Route Handlers: /api/mcp & /.well-known/oauth-protected-resource",
   });
 
   describe("RFC 9728 Protected Resource Metadata Discovery", () => {
-    it("returns RFC 9728 metadata pointing to Supabase Auth issuer", async () => {
+    it("returns RFC 9728 metadata pointing to Supabase Auth issuer at root", async () => {
       const request = new Request(
         "http://localhost:3000/.well-known/oauth-protected-resource",
         {
@@ -235,6 +235,53 @@ describe("MCP Route Handlers: /api/mcp & /.well-known/oauth-protected-resource",
       const data = await response.json();
       expect(data.authorization_servers).toContain(
         "https://example.supabase.co/auth/v1",
+      );
+    });
+
+    it("returns path-scoped RFC 9728 metadata for /api/mcp", async () => {
+      const request = new Request(
+        "http://localhost:3000/.well-known/oauth-protected-resource/api/mcp",
+        {
+          method: "GET",
+        },
+      );
+
+      const response = await getProtectedResourceMetadata(request);
+      expect(response.status).toBe(200);
+
+      const data = await response.json();
+      expect(data.resource).toBe("http://localhost:3000/api/mcp");
+      expect(data.authorization_servers).toContain(
+        "https://example.supabase.co/auth/v1",
+      );
+    });
+  });
+
+  describe("On-Demand 401 OAuth Challenge (?auth=required)", () => {
+    it("returns 401 with WWW-Authenticate header when unauthenticated and ?auth=required", async () => {
+      const request = new Request(
+        "http://localhost:3000/api/mcp?auth=required",
+        {
+          method: "POST",
+          headers: defaultHeaders,
+          body: JSON.stringify({
+            jsonrpc: "2.0",
+            id: 1,
+            method: "initialize",
+            params: {
+              protocolVersion: "2024-11-05",
+              capabilities: {},
+              clientInfo: { name: "oauth-client", version: "1.0.0" },
+            },
+          }),
+        },
+      );
+
+      const response = await POST(request);
+      expect(response.status).toBe(401);
+      expect(response.headers.get("www-authenticate")).toContain("Bearer");
+      expect(response.headers.get("www-authenticate")).toContain(
+        "resource_metadata",
       );
     });
   });

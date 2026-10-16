@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getLogger } from "@/lib/logger";
+import { getSafeRedirectPath } from "@/lib/route/safe-redirect";
 import { createClient } from "@/lib/supabase/supabase";
 
 const log = getLogger(["app", "api", "auth-callback"]);
@@ -7,7 +8,7 @@ const log = getLogger(["app", "api", "auth-callback"]);
 export async function GET(request: Request) {
   const requestUrl = new URL(request.url);
   const code = requestUrl.searchParams.get("code");
-  const redirect = requestUrl.searchParams.get("redirect") || "/";
+  const redirect = getSafeRedirectPath(requestUrl.searchParams.get("redirect"));
 
   log.debug("Processing auth callback request for redirect to '{redirect}'", {
     redirect,

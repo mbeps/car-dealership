@@ -115,7 +115,20 @@ export async function verifyMcpToken(
     }
   }
 
-  // Case 3: Unauthenticated (Guest)
+  // Case 3: Check if auth is explicitly required via ?auth=required query param
+  try {
+    const url = new URL(req.url);
+    if (url.searchParams.get("auth") === "required") {
+      throw new OAuthError(
+        OAuthErrorCode.InvalidToken,
+        "Authentication required",
+      );
+    }
+  } catch (err) {
+    if (err instanceof OAuthError) throw err;
+  }
+
+  // Case 4: Unauthenticated (Guest)
   return undefined;
 }
 

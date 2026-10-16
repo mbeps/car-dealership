@@ -2,6 +2,10 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import {
+  buildAuthCallbackRedirectUrl,
+  getSafeRedirectPath,
+} from "@/lib/route/safe-redirect";
 import { getSiteUrl } from "@/lib/site-url";
 import { createBrowserClient } from "@/lib/supabase/supabase-client";
 
@@ -54,7 +58,7 @@ export function useSignIn(options?: UseSignInOptions) {
       }
 
       if (options?.redirectUrl) {
-        router.push(options.redirectUrl);
+        router.push(getSafeRedirectPath(options.redirectUrl));
       }
 
       router.refresh();
@@ -72,11 +76,16 @@ export function useSignIn(options?: UseSignInOptions) {
     setError("");
     setSuccess("");
     try {
-      const redirectTo = options?.redirectUrl || window.location.pathname;
+      const targetRedirect = options?.redirectUrl || window.location.pathname;
+      const safeRedirect = getSafeRedirectPath(targetRedirect);
+      const callbackUrl = buildAuthCallbackRedirectUrl(
+        getSiteUrl(),
+        safeRedirect,
+      );
       const { error } = await supabase.auth.signInWithOAuth({
         provider: "google",
         options: {
-          redirectTo: `${getSiteUrl()}/auth/callback?redirect=${redirectTo}`,
+          redirectTo: callbackUrl,
           queryParams: {
             access_type: "offline",
             prompt: "consent",
