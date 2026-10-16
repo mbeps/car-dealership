@@ -25,8 +25,12 @@ export async function GET() {
     token_endpoint: `${supabaseUrl}/auth/v1/oauth/token`,
     registration_endpoint: `${siteUrl}/api/oauth/register`,
     jwks_uri: `${supabaseUrl}/auth/v1/.well-known/jwks.json`,
+    userinfo_endpoint: `${supabaseUrl}/auth/v1/oauth/userinfo`,
     response_types_supported: ["code"],
+    response_modes_supported: ["query"],
     grant_types_supported: ["authorization_code", "refresh_token"],
+    subject_types_supported: ["public"],
+    id_token_signing_alg_values_supported: ["ES256", "RS256"],
     code_challenge_methods_supported: ["S256", "plain"],
     token_endpoint_auth_methods_supported: [
       "none",
@@ -34,6 +38,21 @@ export async function GET() {
       "client_secret_basic",
     ],
     scopes_supported: ["openid", "email", "profile", "offline_access"],
+    claims_supported: [
+      "sub",
+      "aud",
+      "iss",
+      "exp",
+      "iat",
+      "auth_time",
+      "nonce",
+      "email",
+      "email_verified",
+      "name",
+      "picture",
+      "preferred_username",
+      "updated_at",
+    ],
   };
 
   try {
