@@ -17,6 +17,10 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ROUTES } from "@/config/routes";
+import {
+  buildAuthCallbackRedirectUrl,
+  getSafeRedirectPath,
+} from "@/lib/route/safe-redirect";
 import { getSiteUrl } from "@/lib/site-url";
 import { createBrowserClient } from "@/lib/supabase/supabase-client";
 
@@ -38,7 +42,7 @@ export default function SignUpPage() {
   const [success, setSuccess] = useState("");
   const router = useRouter();
   const searchParams = useSearchParams();
-  const redirect = searchParams.get("redirect") || "/";
+  const redirect = getSafeRedirectPath(searchParams.get("redirect"));
   const supabase = createBrowserClient();
 
   /**
@@ -73,7 +77,7 @@ export default function SignUpPage() {
           data: {
             full_name: fullName,
           },
-          emailRedirectTo: `${getSiteUrl()}/auth/callback?redirect=${redirect}`,
+          emailRedirectTo: buildAuthCallbackRedirectUrl(getSiteUrl(), redirect),
         },
       });
 
@@ -84,7 +88,11 @@ export default function SignUpPage() {
 
       setSuccess("Account created! Please check your email to verify.");
       setTimeout(() => {
-        router.push(ROUTES.AUTH.SIGN_IN);
+        router.push(
+          redirect !== "/"
+            ? `${ROUTES.AUTH.SIGN_IN}?redirect=${encodeURIComponent(redirect)}`
+            : ROUTES.AUTH.SIGN_IN,
+        );
       }, 2000);
     } catch (error) {
       setError("An unexpected error occurred");
@@ -104,10 +112,11 @@ export default function SignUpPage() {
     setError("");
     setSuccess("");
     try {
+      const callbackUrl = buildAuthCallbackRedirectUrl(getSiteUrl(), redirect);
       const { error } = await supabase.auth.signInWithOAuth({
         provider: "google",
         options: {
-          redirectTo: `${getSiteUrl()}/auth/callback?redirect=${redirect}`,
+          redirectTo: callbackUrl,
           queryParams: {
             access_type: "offline",
             prompt: "consent",
@@ -134,7 +143,11 @@ export default function SignUpPage() {
           <CardDescription>
             Or{" "}
             <Link
-              href={ROUTES.AUTH.SIGN_IN}
+              href={
+                redirect !== "/"
+                  ? `${ROUTES.AUTH.SIGN_IN}?redirect=${encodeURIComponent(redirect)}`
+                  : ROUTES.AUTH.SIGN_IN
+              }
               className="text-blue-600 hover:underline"
             >
               sign in to your account

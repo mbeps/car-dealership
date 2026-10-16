@@ -7,12 +7,21 @@ describe("ROUTES", () => {
     expect(ROUTES.HOME.CARS).toBe("/cars");
     expect(ROUTES.AUTH.SIGN_IN).toBe("/sign-in");
     expect(ROUTES.AUTH.SIGN_UP).toBe("/sign-up");
+    expect(ROUTES.AUTH.OAUTH_CONSENT).toBe("/oauth/consent");
     expect(ROUTES.SAVED_CARS).toBe("/saved-cars");
     expect(ROUTES.RESERVATIONS).toBe("/reservations");
     expect(ROUTES.ADMIN.ADMIN).toBe("/admin");
     expect(ROUTES.ADMIN.ADMIN_CARS).toBe("/admin/cars");
     expect(ROUTES.ADMIN.ADMIN_CAR_CREATE).toBe("/admin/cars/create");
     expect(ROUTES.ADMIN.ADMIN_SETTINGS).toBe("/admin/settings");
+    expect(ROUTES.API.MCP).toBe("/api/mcp");
+    expect(ROUTES.API.OAUTH_REGISTER).toBe("/api/oauth/register");
+    expect(ROUTES.WELL_KNOWN.OAUTH_PROTECTED_RESOURCE).toBe(
+      "/.well-known/oauth-protected-resource",
+    );
+    expect(ROUTES.WELL_KNOWN.OAUTH_AUTHORIZATION_SERVER).toBe(
+      "/.well-known/oauth-authorization-server",
+    );
   });
 
   it("builds dynamic routes", () => {

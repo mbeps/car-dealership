@@ -9,6 +9,7 @@ import {
 import { env } from "@/config/env";
 import { PROTECTED_ROUTES, ROUTES } from "@/config/routes";
 import { createSignInRedirect } from "@/lib/route/create-sign-in-redirect";
+import { getSafeRedirectPath } from "@/lib/route/safe-redirect";
 
 // Protected routes that require authentication
 const protectedRoutes = PROTECTED_ROUTES;
@@ -33,6 +34,8 @@ const isMcpRoute = (pathname: string): boolean => {
   return (
     pathname === "/api/mcp" ||
     pathname.startsWith("/api/mcp/") ||
+    pathname === "/api/oauth/register" ||
+    pathname.startsWith("/api/oauth/") ||
     pathname === "/.well-known/oauth-protected-resource" ||
     pathname.startsWith("/.well-known/")
   );
@@ -132,12 +135,20 @@ async function supabaseProxy(request: NextRequest) {
     user &&
     (pathname === ROUTES.AUTH.SIGN_IN || pathname === ROUTES.AUTH.SIGN_UP)
   ) {
-    return NextResponse.redirect(new URL(ROUTES.HOME.HOME, request.url));
+    const safeRedirect = getSafeRedirectPath(
+      request.nextUrl.searchParams.get("redirect"),
+      ROUTES.HOME.HOME,
+    );
+    return NextResponse.redirect(new URL(safeRedirect, request.url));
   }
 
   // Redirect to sign-in if accessing protected route without auth
   if (isProtectedRoute(pathname) && !user) {
-    const redirectUrl = new URL(createSignInRedirect(pathname), request.url);
+    const fullOriginalUrl = `${pathname}${request.nextUrl.search}`;
+    const redirectUrl = new URL(
+      createSignInRedirect(fullOriginalUrl),
+      request.url,
+    );
     return NextResponse.redirect(redirectUrl);
   }
 
