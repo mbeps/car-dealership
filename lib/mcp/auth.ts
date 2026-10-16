@@ -32,6 +32,42 @@ function parseJwtExp(token: string): number | undefined {
   }
 }
 
+interface CreateAuthInfoParams {
+  authUser: { id: string; email?: string | null };
+  dbUser: { id: string; role?: string | null };
+  supabase: SupabaseClient;
+  token: string;
+  expiresAt?: number;
+}
+
+/**
+ * Builds AuthInfo payload containing user role, scopes, and McpAuthContext.
+ */
+function createAuthInfo({
+  authUser,
+  dbUser,
+  supabase,
+  token,
+  expiresAt,
+}: CreateAuthInfoParams): AuthInfo {
+  const role = (dbUser.role as UserRole) || UserRole.USER;
+  const authContext: McpAuthContext = {
+    authUserId: authUser.id,
+    userId: dbUser.id,
+    email: authUser.email ?? "",
+    role,
+    supabase,
+  };
+
+  return {
+    clientId: authUser.id,
+    token,
+    scopes: role === UserRole.ADMIN ? ["user", "admin"] : ["user"],
+    ...(expiresAt ? { expiresAt } : {}),
+    extra: authContext as unknown as Record<string, unknown>,
+  };
+}
+
 /**
  * Token verifier for withMcpAuth.
  * Handles Bearer tokens and SSR cookie fallbacks.
@@ -62,24 +98,15 @@ export async function verifyMcpToken(
     }
 
     const dbUser = await getOrCreateDbUser(supabase, authUser);
-    const role = (dbUser.role as UserRole) || UserRole.USER;
     const expiresAt = parseJwtExp(bearerToken);
 
-    const authContext: McpAuthContext = {
-      authUserId: authUser.id,
-      userId: dbUser.id,
-      email: authUser.email ?? "",
-      role,
+    return createAuthInfo({
+      authUser,
+      dbUser,
       supabase,
-    };
-
-    return {
-      clientId: authUser.id,
       token: bearerToken,
-      scopes: role === UserRole.ADMIN ? ["user", "admin"] : ["user"],
-      ...(expiresAt ? { expiresAt } : {}),
-      extra: authContext as unknown as Record<string, unknown>,
-    };
+      expiresAt,
+    });
   }
 
   // Case 2: SSR cookie fallback if cookies are present
@@ -93,22 +120,12 @@ export async function verifyMcpToken(
 
       if (authUser) {
         const dbUser = await getOrCreateDbUser(supabase, authUser);
-        const role = (dbUser.role as UserRole) || UserRole.USER;
-
-        const authContext: McpAuthContext = {
-          authUserId: authUser.id,
-          userId: dbUser.id,
-          email: authUser.email ?? "",
-          role,
+        return createAuthInfo({
+          authUser,
+          dbUser,
           supabase,
-        };
-
-        return {
-          clientId: authUser.id,
           token: "cookie-session",
-          scopes: role === UserRole.ADMIN ? ["user", "admin"] : ["user"],
-          extra: authContext as unknown as Record<string, unknown>,
-        };
+        });
       }
     } catch {
       // Cookie session lookup failed, fall through to Guest
@@ -116,16 +133,18 @@ export async function verifyMcpToken(
   }
 
   // Case 3: Check if auth is explicitly required via ?auth=required query param
+  let isAuthRequired = false;
   try {
-    const url = new URL(req.url);
-    if (url.searchParams.get("auth") === "required") {
-      throw new OAuthError(
-        OAuthErrorCode.InvalidToken,
-        "Authentication required",
-      );
-    }
-  } catch (err) {
-    if (err instanceof OAuthError) throw err;
+    isAuthRequired = new URL(req.url).searchParams.get("auth") === "required";
+  } catch {
+    // Relative or malformed URL in mock environment; fall through to guest
+  }
+
+  if (isAuthRequired) {
+    throw new OAuthError(
+      OAuthErrorCode.InvalidToken,
+      "Authentication required",
+    );
   }
 
   // Case 4: Unauthenticated (Guest)
