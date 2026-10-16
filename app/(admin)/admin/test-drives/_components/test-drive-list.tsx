@@ -51,19 +51,12 @@ export const TestDrivesList = () => {
     error: testDrivesError,
   } = useFetch(getAdminTestDrives);
 
-  const {
-    loading: updatingStatus,
-    fn: updateStatusFn,
-    data: updateResult,
-    error: updateError,
-  } = useFetch(updateTestDriveStatus);
+  const { loading: updatingStatus, fn: updateStatusFn } = useFetch(
+    updateTestDriveStatus,
+  );
 
-  const {
-    loading: cancelling,
-    fn: cancelTestDriveFn,
-    data: cancelResult,
-    error: cancelError,
-  } = useFetch(cancelTestDrive);
+  const { loading: cancelling, fn: cancelTestDriveFn } =
+    useFetch(cancelTestDrive);
 
   // Initial fetch and refetch on search/filter changes
   useEffect(() => {
@@ -76,27 +69,7 @@ export const TestDrivesList = () => {
     if (testDrivesError) {
       toast.error("Failed to load test drives");
     }
-    if (updateError) {
-      toast.error("Failed to update test drive status");
-    }
-    if (cancelError) {
-      toast.error("Failed to cancel test drive");
-    }
-  }, [testDrivesError, updateError, cancelError]);
-
-  // Handle successful operations
-  useEffect(() => {
-    if (updateResult?.success) {
-      toast.success("Test drive status updated successfully");
-      const actualStatus = statusFilter === "all" ? "" : statusFilter;
-      fetchTestDrives({ search, status: actualStatus });
-    }
-    if (cancelResult?.success) {
-      toast.success("Test drive cancelled successfully");
-      const actualStatus = statusFilter === "all" ? "" : statusFilter;
-      fetchTestDrives({ search, status: actualStatus });
-    }
-  }, [updateResult, cancelResult, statusFilter, search, fetchTestDrives]);
+  }, [testDrivesError]);
 
   /**
    * Submit search and status filters, then reload bookings.
@@ -121,8 +94,14 @@ export const TestDrivesList = () => {
     bookingId: string,
     newStatus: BookingStatus,
   ) => {
-    if (newStatus) {
-      await updateStatusFn(bookingId, newStatus);
+    if (!newStatus) return;
+    const result = await updateStatusFn(bookingId, newStatus);
+    if (result?.success) {
+      toast.success("Test drive status updated successfully");
+      const actualStatus = statusFilter === "all" ? "" : statusFilter;
+      fetchTestDrives({ search, status: actualStatus });
+    } else if (!result || result.success === false) {
+      toast.error("Failed to update test drive status");
     }
   };
 
@@ -133,7 +112,14 @@ export const TestDrivesList = () => {
    * @returns Nothing
    */
   const handleCancel = async (bookingId: string) => {
-    await cancelTestDriveFn(bookingId);
+    const result = await cancelTestDriveFn(bookingId);
+    if (result?.success) {
+      toast.success("Test drive cancelled successfully");
+      const actualStatus = statusFilter === "all" ? "" : statusFilter;
+      fetchTestDrives({ search, status: actualStatus });
+    } else if (!result || result.success === false) {
+      toast.error("Failed to cancel test drive");
+    }
   };
 
   return (

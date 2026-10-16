@@ -207,4 +207,52 @@ describe("useCarAdmin", () => {
 
     expect(result.current.updatingStatus).toBe(false);
   });
+
+  it("does not re-fire toast or callback when the hook re-renders after a status update", async () => {
+    const { updateCarStatus } = await getMocks();
+    updateCarStatus.mockResolvedValue({ success: true });
+    const onUpdateSuccess1 = vi.fn();
+    const onUpdateSuccess2 = vi.fn();
+
+    const { result, rerender } = renderHook(
+      ({ onUpdateSuccess }) => useCarAdmin({ onUpdateSuccess }),
+      { initialProps: { onUpdateSuccess: onUpdateSuccess1 } },
+    );
+
+    await act(async () => {
+      await result.current.handleUpdateStatus("car-7", "AVAILABLE");
+    });
+
+    expect(toast.success).toHaveBeenCalledTimes(1);
+    expect(onUpdateSuccess1).toHaveBeenCalledTimes(1);
+
+    rerender({ onUpdateSuccess: onUpdateSuccess2 });
+
+    expect(toast.success).toHaveBeenCalledTimes(1);
+    expect(onUpdateSuccess2).not.toHaveBeenCalled();
+  });
+
+  it("does not re-fire toast or callback when the hook re-renders after a deletion", async () => {
+    const { deleteCar } = await getMocks();
+    deleteCar.mockResolvedValue({ success: true });
+    const onDeleteSuccess1 = vi.fn();
+    const onDeleteSuccess2 = vi.fn();
+
+    const { result, rerender } = renderHook(
+      ({ onDeleteSuccess }) => useCarAdmin({ onDeleteSuccess }),
+      { initialProps: { onDeleteSuccess: onDeleteSuccess1 } },
+    );
+
+    await act(async () => {
+      await result.current.handleDeleteCar("car-8");
+    });
+
+    expect(toast.success).toHaveBeenCalledTimes(1);
+    expect(onDeleteSuccess1).toHaveBeenCalledTimes(1);
+
+    rerender({ onDeleteSuccess: onDeleteSuccess2 });
+
+    expect(toast.success).toHaveBeenCalledTimes(1);
+    expect(onDeleteSuccess2).not.toHaveBeenCalled();
+  });
 });

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useRef } from "react";
 import { toast } from "sonner";
 import { deleteCar } from "@/actions/cars/delete-car";
 import { updateCarStatus } from "@/actions/cars/update-car-status";
@@ -26,63 +26,47 @@ interface UseCarAdminOptions {
  * @see updateCarStatus - Server action for status updates
  */
 export function useCarAdmin(options: UseCarAdminOptions = {}) {
-  const {
-    loading: deletingCar,
-    fn: deleteCarFn,
-    data: deleteResult,
-    error: deleteError,
-  } = useFetch(deleteCar);
+  const optionsRef = useRef(options);
+  optionsRef.current = options;
 
-  const {
-    loading: updatingStatus,
-    fn: updateCarStatusFn,
-    data: updateResult,
-    error: updateError,
-  } = useFetch(updateCarStatus);
+  const { loading: deletingCar, fn: deleteCarFn } = useFetch(deleteCar);
 
-  // Handle delete success
-  useEffect(() => {
-    if (deleteResult?.success) {
-      toast.success("Car deleted successfully");
-      options.onDeleteSuccess?.();
-    }
-  }, [deleteResult, options.onDeleteSuccess]);
-
-  // Handle delete error
-  useEffect(() => {
-    if (deleteError) {
-      toast.error("Failed to delete car");
-    }
-  }, [deleteError]);
-
-  // Handle update success
-  useEffect(() => {
-    if (updateResult?.success) {
-      toast.success("Car status updated");
-      options.onUpdateSuccess?.();
-    }
-  }, [updateResult, options.onUpdateSuccess]);
-
-  // Handle update error
-  useEffect(() => {
-    if (updateError) {
-      toast.error("Failed to update car status");
-    }
-  }, [updateError]);
+  const { loading: updatingStatus, fn: updateCarStatusFn } =
+    useFetch(updateCarStatus);
 
   const handleDeleteCar = async (carId: string) => {
-    await deleteCarFn(carId);
+    const result = await deleteCarFn(carId);
+    if (result?.success) {
+      toast.success("Car deleted successfully");
+      optionsRef.current.onDeleteSuccess?.();
+    } else if (!result || result.success === false) {
+      toast.error("Failed to delete car");
+    }
   };
 
   const handleUpdateStatus = async (carId: string, status: CarStatus) => {
-    await updateCarStatusFn(carId, { status });
+    const result = await updateCarStatusFn(carId, { status });
+    if (result?.success) {
+      toast.success("Car status updated");
+      optionsRef.current.onUpdateSuccess?.();
+    } else if (!result || result.success === false) {
+      toast.error("Failed to update car status");
+    }
   };
 
   const handleToggleFeatured = async (
     carId: string,
     currentFeatured: boolean,
   ) => {
-    await updateCarStatusFn(carId, { featured: !currentFeatured });
+    const result = await updateCarStatusFn(carId, {
+      featured: !currentFeatured,
+    });
+    if (result?.success) {
+      toast.success("Car status updated");
+      optionsRef.current.onUpdateSuccess?.();
+    } else if (!result || result.success === false) {
+      toast.error("Failed to update car status");
+    }
   };
 
   return {
