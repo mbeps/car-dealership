@@ -32,6 +32,24 @@ export async function HEAD() {
 }
 
 /**
+ * Merges standard CORS headers onto outgoing responses if missing.
+ */
+function withCors(res: Response): Response {
+  const headers = new Headers(res.headers);
+  for (const [k, v] of Object.entries(CORS_HEADERS)) {
+    if (!headers.has(k)) {
+      headers.set(k, v);
+    }
+  }
+
+  return new Response(res.body, {
+    status: res.status,
+    statusText: res.statusText,
+    headers,
+  });
+}
+
+/**
  * Normalizes incoming POST requests before delegating to mcp-handler.
  * Avoids 415 Unsupported Media Type if automated client probes or gateways
  * omit the Content-Type header or send plain text.
@@ -61,47 +79,13 @@ export async function POST(req: Request) {
   }
 
   const res = await mcpHandler(requestToHandle);
-
-  const headers = new Headers(res.headers);
-  for (const [k, v] of Object.entries(CORS_HEADERS)) {
-    if (!headers.has(k)) {
-      headers.set(k, v);
-    }
-  }
-
-  return new Response(res.body, {
-    status: res.status,
-    statusText: res.statusText,
-    headers,
-  });
+  return withCors(res);
 }
 
 export async function GET(req: Request) {
-  const res = await mcpHandler(req);
-  const headers = new Headers(res.headers);
-  for (const [k, v] of Object.entries(CORS_HEADERS)) {
-    if (!headers.has(k)) {
-      headers.set(k, v);
-    }
-  }
-  return new Response(res.body, {
-    status: res.status,
-    statusText: res.statusText,
-    headers,
-  });
+  return withCors(await mcpHandler(req));
 }
 
 export async function DELETE(req: Request) {
-  const res = await mcpHandler(req);
-  const headers = new Headers(res.headers);
-  for (const [k, v] of Object.entries(CORS_HEADERS)) {
-    if (!headers.has(k)) {
-      headers.set(k, v);
-    }
-  }
-  return new Response(res.body, {
-    status: res.status,
-    statusText: res.statusText,
-    headers,
-  });
+  return withCors(await mcpHandler(req));
 }
