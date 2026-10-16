@@ -18,4 +18,3 @@ const handler = protectedResourceHandler({
 const corsOptionsHandler = metadataCorsOptionsRequestHandler();
 
 export { corsOptionsHandler as OPTIONS, handler as GET };
-

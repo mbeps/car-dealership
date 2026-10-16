@@ -80,4 +80,3 @@ export async function OPTIONS() {
     headers: CORS_HEADERS,
   });
 }
-
