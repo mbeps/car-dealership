@@ -383,7 +383,7 @@ describe("deleteCar", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     for (const k of Object.keys(h.results)) delete h.results[k];
-    h.authUser.value = adminUser;
+    authenticateAsAdmin();
     h.getUserError.value = null;
     h.adminStorage.list.mockResolvedValue({
       data: [{ name: "img.jpg" }],
@@ -437,13 +437,25 @@ describe("deleteCar", () => {
     expect(res.success).toBe(false);
     expect(res.error).toContain("Unauthorized");
   });
+
+  it("returns error when user is not an admin", async () => {
+    h.authUser.value = { id: "auth-user" };
+    h.singleQueues.User = [
+      { data: { id: "db-user", role: "USER" }, error: null },
+    ];
+
+    const res = await deleteCar("car-1");
+
+    expect(res.success).toBe(false);
+    expect(res.error).toContain("Unauthorized access");
+  });
 });
 
 describe("updateCarStatus", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     for (const k of Object.keys(h.results)) delete h.results[k];
-    h.authUser.value = adminUser;
+    authenticateAsAdmin();
     h.getUserError.value = null;
   });
 
@@ -492,5 +504,17 @@ describe("updateCarStatus", () => {
 
     expect(res.success).toBe(false);
     expect(res.error).toContain("Unauthorized");
+  });
+
+  it("returns error when user is not an admin", async () => {
+    h.authUser.value = { id: "auth-user" };
+    h.singleQueues.User = [
+      { data: { id: "db-user", role: "USER" }, error: null },
+    ];
+
+    const res = await updateCarStatus("car-1", { status: "SOLD" as never });
+
+    expect(res.success).toBe(false);
+    expect(res.error).toContain("Unauthorized access");
   });
 });

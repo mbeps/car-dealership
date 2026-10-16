@@ -1,9 +1,48 @@
+import { AsyncLocalStorage } from "node:async_hooks";
 import type { CookieOptions } from "@supabase/ssr";
 import { createServerClient } from "@supabase/ssr";
+import type { SupabaseClient } from "@supabase/supabase-js";
 import { createClient as createSupabaseClient } from "@supabase/supabase-js";
 import { cookies } from "next/headers";
 
 import { env } from "@/config/env";
+
+const mcpSupabaseStorage = new AsyncLocalStorage<SupabaseClient>();
+
+/**
+ * Executes a function within the context of a bound SupabaseClient.
+ * Used during MCP request handling to ensure downstream Server Actions
+ * consume the caller's authenticated or guest Supabase instance.
+ */
+export function runWithMcpSupabase<T>(
+  client: SupabaseClient,
+  fn: () => Promise<T>,
+): Promise<T> {
+  return mcpSupabaseStorage.run(client, fn);
+}
+
+/**
+ * Creates a stateless Supabase client scoped to an explicit Bearer JWT token.
+ * Passes the Authorization header so PostgREST RLS and auth.getUser evaluate the token.
+ */
+export const createTokenClient = (accessToken: string) => {
+  return createSupabaseClient(
+    env.NEXT_PUBLIC_SUPABASE_URL,
+    env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY,
+    {
+      global: {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      },
+      auth: {
+        persistSession: false,
+        autoRefreshToken: false,
+        detectSessionInUrl: false,
+      },
+    },
+  );
+};
 
 /**
  * Creates a Supabase client for server components and server actions.
@@ -14,6 +53,9 @@ import { env } from "@/config/env";
  * @see createPublicClient for stateless RLS-aware reads.
  */
 export const createClient = async () => {
+  const mcpClient = mcpSupabaseStorage.getStore();
+  if (mcpClient) return mcpClient;
+
   const cookieStore = await cookies();
 
   return createServerClient(

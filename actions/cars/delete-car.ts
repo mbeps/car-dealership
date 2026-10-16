@@ -2,7 +2,8 @@
 
 import { revalidatePath } from "next/cache";
 import { getLogger } from "@/lib/logger";
-import { createAdminClient, createClient } from "@/lib/supabase/supabase";
+import { ensureAdminUser } from "@/lib/supabase/ensure-admin-user";
+import { createAdminClient } from "@/lib/supabase/supabase";
 import type { ActionResponse } from "@/types/common/action-response";
 
 const log = getLogger(["app", "actions", "cars"]);
@@ -20,16 +21,7 @@ const log = getLogger(["app", "actions", "cars"]);
  */
 export async function deleteCar(id: string): Promise<ActionResponse<null>> {
   try {
-    const supabase = await createClient();
-
-    const {
-      data: { user: authUser },
-      error: authError,
-    } = await supabase.auth.getUser();
-    if (authError || !authUser) {
-      log.warn("Unauthorized attempt to delete car (id: {id})", { id });
-      throw new Error("Unauthorized");
-    }
+    const { supabase } = await ensureAdminUser();
 
     // Delete associated test drive bookings first to avoid FK constraint violation
     const { error: bookingsError } = await supabase

@@ -4,7 +4,7 @@ import { getColorIdsForTerm } from "@/actions/cars/get-color-ids-for-term";
 import { getMakeIdsForTerm } from "@/actions/cars/get-make-ids-for-term";
 import { serializeCarData } from "@/lib/helpers/serialize-car";
 import { getLogger } from "@/lib/logger";
-import { createClient } from "@/lib/supabase/supabase";
+import { ensureAdminUser } from "@/lib/supabase/ensure-admin-user";
 import type { SerializedCar } from "@/types/car/serialized-car";
 import type { ActionResponse } from "@/types/common/action-response";
 
@@ -23,7 +23,7 @@ export async function getCars(
 ): Promise<ActionResponse<SerializedCar[]>> {
   log.debug("Fetching all cars (search: '{search}')", { search });
   try {
-    const supabase = await createClient();
+    const { supabase } = await ensureAdminUser();
 
     // Build query
     let query = supabase

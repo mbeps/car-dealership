@@ -45,15 +45,14 @@ next-env.d.ts
 
 # agents
 AGENTS.md
+.agents/**
 .vscode/mcp.json
-copilot-instructions.md
-.github/skills/**
-
 subagents/**
-wiki/**
 graphify-out/**
+.plans/**
+.plan/**
+
+wiki/**
 
 todo.md
-.github/instructions/**
-.agents/**
 skills-lock.json

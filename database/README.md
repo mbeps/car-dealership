@@ -1,20 +1,57 @@
-# Database setup
+# Database & Supabase Configuration
 
-Supabase now owns all database provisioning directly through SQL. Run the files
-in numerical order from the Supabase SQL Editor (or via `psql`) against the
-project database:
+This project manages Supabase declarative configuration and database migrations directly in code using the **Supabase CLI**.
 
-1. `001_schema.sql` – creates the enums, tables, indexes, and base defaults.
-2. `010_functions.sql` – installs helper functions/triggers for timestamps and
-   admin checks.
-3. `020_policies.sql` – grants Supabase roles the required privileges, enables
-   Row Level Security, and creates the per-table policies.
+---
 
-The scripts are designed for a freshly created database. If you need to re-run
-them on an existing project, make sure to drop conflicting objects first or wrap
-the statements in conditional guards as needed.
+## 1. Directory Structure
 
-Storage bucket policies for the `car-images` bucket still have to be created via
-the Supabase Dashboard (Storage > Policies) because they live in the `storage`
-schema. Keep those in sync with the admin policies defined here if you add new
-roles or tables.
+* **`supabase/config.toml`**: Declarative platform settings (Auth providers, Google OAuth via `.env`, email confirmation, storage limits, API and pooler settings).
+* **`supabase/migrations/`**: Version-controlled SQL migrations executed in chronological order:
+  * `20260622173923_check_storage_columns.sql` (legacy migration)
+  * `20261004000001_schema.sql` (enums, tables, indexes, default makes/colors)
+  * `20261004000002_functions.sql` (triggers, updated_at, `is_admin()`, storage tracking)
+  * `20261004000003_policies.sql` (privileges, Row Level Security, table policies)
+  * `20261004000004_storage.sql` (storage buckets & RLS policies for `car-images` and `branding-assets`)
+  * `20261004000005_logo_branding.sql` (branding metadata columns)
+* **`supabase/seed.sql`**: Initial development seed data applied during `supabase db reset`.
+* **`database/`**: Legacy standalone SQL scripts preserved for manual reference.
+
+---
+
+## 2. Environment Variables (`.env`)
+
+For Auth and OAuth provider configuration, secrets and credentials are kept in `.env` and referenced dynamically in `supabase/config.toml`:
+
+```env
+# Supabase CLI Auth (Google OAuth)
+SUPABASE_AUTH_EXTERNAL_GOOGLE_CLIENT_ID="<your-google-client-id>"
+SUPABASE_AUTH_EXTERNAL_GOOGLE_SECRET="<your-google-client-secret>"
+```
+
+In `supabase/config.toml`:
+```toml
+[auth.external.google]
+enabled = true
+client_id = "env(SUPABASE_AUTH_EXTERNAL_GOOGLE_CLIENT_ID)"
+secret = "env(SUPABASE_AUTH_EXTERNAL_GOOGLE_SECRET)"
+skip_nonce_check = false
+email_optional = false
+```
+
+---
+
+## 3. Common Supabase CLI Commands
+
+Commands can be run via `npm run` or `yarn`:
+
+| Command | Description |
+| :--- | :--- |
+| `npm run supabase:config:diff` | Compare local `supabase/config.toml` against the linked remote project |
+| `npm run supabase:config:push` | Push local `config.toml` declarative settings to the linked project |
+| `npm run supabase:migration:list` | List local vs remote migrations status |
+| `npm run supabase:db:push` | Push pending local migrations to the remote database |
+| `npm run supabase:migration:new <name>` | Create a new timestamped migration file in `supabase/migrations/` |
+| `npm run supabase:gen-types` | Regenerate TypeScript types from the database schema |
+| `npm run supabase:start` | Start local Supabase Docker / Podman containers |
+| `npm run supabase:stop` | Stop local Supabase containers |

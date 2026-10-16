@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import type { CarStatusEnum as CarStatus } from "@/enums/car-status";
 import { getLogger } from "@/lib/logger";
-import { createClient } from "@/lib/supabase/supabase";
+import { ensureAdminUser } from "@/lib/supabase/ensure-admin-user";
 import type { ActionResponse } from "@/types/common/action-response";
 
 const log = getLogger(["app", "actions", "cars"]);
@@ -23,16 +23,7 @@ export async function updateCarStatus(
   { status, featured }: { status?: CarStatus; featured?: boolean },
 ): Promise<ActionResponse<null>> {
   try {
-    const supabase = await createClient();
-
-    const {
-      data: { user: authUser },
-      error: authError,
-    } = await supabase.auth.getUser();
-    if (authError || !authUser) {
-      log.warn("Unauthorized attempt to update car status (id: {id})", { id });
-      throw new Error("Unauthorized");
-    }
+    const { supabase } = await ensureAdminUser();
 
     const updateData: {
       status?: CarStatus;
