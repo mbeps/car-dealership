@@ -79,6 +79,27 @@ export async function POST(req: NextRequest) {
 
   const supabaseUrl = env.NEXT_PUBLIC_SUPABASE_URL.replace(/\/+$/, "");
 
+  const defaultScope = "openid email profile offline_access";
+  const effectiveScope =
+    typeof scope === "string" && scope.trim().length > 0
+      ? Array.from(
+          new Set([...scope.trim().split(/\s+/), "offline_access"]),
+        ).join(" ")
+      : defaultScope;
+
+  const effectiveGrantTypes =
+    Array.isArray(grant_types) && grant_types.length > 0
+      ? Array.from(
+          new Set([...grant_types, "authorization_code", "refresh_token"]),
+        )
+      : ["authorization_code", "refresh_token"];
+
+  const upstreamPayload = {
+    ...body,
+    scope: effectiveScope,
+    grant_types: effectiveGrantTypes,
+  };
+
   // 1. Attempt registration against Supabase's public DCR endpoint
   try {
     const upstreamRes = await fetch(
@@ -89,7 +110,7 @@ export async function POST(req: NextRequest) {
           "Content-Type": "application/json",
           apikey: env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY,
         },
-        body: JSON.stringify(body),
+        body: JSON.stringify(upstreamPayload),
       },
     );
 
@@ -134,13 +155,13 @@ export async function POST(req: NextRequest) {
       client_name: name,
       client_uri: typeof client_uri === "string" ? client_uri : undefined,
       redirect_uris: redirect_uris as string[],
-      grant_types: Array.isArray(grant_types)
-        ? (grant_types as ["authorization_code" | "refresh_token"])
-        : undefined,
+      grant_types: effectiveGrantTypes as [
+        "authorization_code" | "refresh_token",
+      ],
       response_types: Array.isArray(response_types)
         ? (response_types as ["code"])
-        : undefined,
-      scope: typeof scope === "string" ? scope : undefined,
+        : ["code"],
+      scope: effectiveScope,
       token_endpoint_auth_method:
         typeof token_endpoint_auth_method === "string"
           ? (token_endpoint_auth_method as

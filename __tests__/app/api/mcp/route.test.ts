@@ -47,7 +47,7 @@ vi.mock("@/lib/supabase/supabase", async (importOriginal) => {
 });
 
 import { GET as getProtectedResourceMetadata } from "@/app/.well-known/oauth-protected-resource/[[...resource]]/route";
-import { POST } from "@/app/api/mcp/route";
+import { HEAD, OPTIONS, POST } from "@/app/api/mcp/route";
 
 function parseMcpResponse(text: string) {
   for (const line of text.split("\n")) {
@@ -92,6 +92,49 @@ describe("MCP Route Handlers: /api/mcp & /.well-known/oauth-protected-resource",
       const data = parseMcpResponse(await response.text());
       expect(data.result.serverInfo.name).toBe("ai-car-marketplace");
       expect(data.result.capabilities.tools).toBeDefined();
+    });
+
+    it("handles OPTIONS preflight request with 204 and CORS headers", async () => {
+      const response = await OPTIONS();
+      expect(response.status).toBe(204);
+      expect(response.headers.get("access-control-allow-origin")).toBe("*");
+      expect(response.headers.get("access-control-allow-methods")).toContain(
+        "POST",
+      );
+      expect(response.headers.get("access-control-allow-methods")).toContain(
+        "OPTIONS",
+      );
+    });
+
+    it("handles HEAD probe requests with 200 and CORS headers", async () => {
+      const response = await HEAD();
+      expect(response.status).toBe(200);
+      expect(response.headers.get("access-control-allow-origin")).toBe("*");
+      expect(response.headers.get("content-type")).toBe("application/json");
+    });
+
+    it("normalizes requests missing Content-Type to application/json instead of rejecting with 415", async () => {
+      const request = new Request("http://localhost:3000/api/mcp", {
+        method: "POST",
+        headers: {
+          Accept: "application/json, text/event-stream",
+        },
+        body: JSON.stringify({
+          jsonrpc: "2.0",
+          id: 1,
+          method: "initialize",
+          params: {
+            protocolVersion: "2024-11-05",
+            capabilities: {},
+            clientInfo: { name: "probe-client", version: "1.0.0" },
+          },
+        }),
+      });
+
+      const response = await POST(request);
+      expect(response.status).toBe(200);
+      const data = parseMcpResponse(await response.text());
+      expect(data.result.serverInfo.name).toBe("ai-car-marketplace");
     });
 
     it("rejects request missing text/event-stream accept header with 406 Not Acceptable", async () => {
@@ -236,6 +279,8 @@ describe("MCP Route Handlers: /api/mcp & /.well-known/oauth-protected-resource",
       expect(data.authorization_servers).toContain(
         "https://example.supabase.co/auth/v1",
       );
+      expect(data.scopes_supported).toContain("offline_access");
+      expect(data.bearer_methods_supported).toContain("header");
     });
 
     it("returns path-scoped RFC 9728 metadata for /api/mcp", async () => {
@@ -254,6 +299,8 @@ describe("MCP Route Handlers: /api/mcp & /.well-known/oauth-protected-resource",
       expect(data.authorization_servers).toContain(
         "https://example.supabase.co/auth/v1",
       );
+      expect(data.scopes_supported).toContain("offline_access");
+      expect(data.bearer_methods_supported).toContain("header");
     });
   });
 

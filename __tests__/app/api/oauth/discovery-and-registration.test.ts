@@ -58,7 +58,9 @@ describe("OAuth 2.1 RFC 8414 Discovery & RFC 7591 Registration Endpoints", () =>
       expect(data.token_endpoint).toContain("/auth/v1/oauth/token");
       expect(data.registration_endpoint).toContain("/api/oauth/register");
       expect(data.grant_types_supported).toContain("authorization_code");
+      expect(data.grant_types_supported).toContain("refresh_token");
       expect(data.code_challenge_methods_supported).toContain("S256");
+      expect(data.scopes_supported).toContain("offline_access");
 
       expect(res.headers.get("access-control-allow-origin")).toBe("*");
     });
@@ -73,6 +75,7 @@ describe("OAuth 2.1 RFC 8414 Discovery & RFC 7591 Registration Endpoints", () =>
             token_endpoint: "https://example.supabase.co/auth/v1/oauth/token",
             jwks_uri:
               "https://example.supabase.co/auth/v1/.well-known/jwks.json",
+            scopes_supported: ["openid", "email", "profile"],
           }),
           { status: 200 },
         ),
@@ -83,6 +86,7 @@ describe("OAuth 2.1 RFC 8414 Discovery & RFC 7591 Registration Endpoints", () =>
 
       const data = await res.json();
       expect(data.registration_endpoint).toContain("/api/oauth/register");
+      expect(data.scopes_supported).toContain("offline_access");
     });
 
     it("handles OPTIONS request with CORS headers", async () => {
